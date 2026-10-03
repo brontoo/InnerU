@@ -16,7 +16,7 @@ const SHELL = [
   './content-skeletal.js', './app.js', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circulatory.js',
   './rich-pages.js', './muscle-visuals.js', './muscle-learning.js', './muscle.js',
   './circulatory-integration.js', './respiratory.js', './integumentary.js', './excretory.js',
-  './capstone.js', './a11y.js', './teacher.js', './pwa.js', './review.js', './habit.js', './muscle-force.js', './muscle-figure.js', './glossary.js', './speech.js', './content-skeletal.js',
+  './capstone.js', './a11y.js', './teacher.js', './pwa.js', './review.js', './habit.js', './muscle-force.js', './glossary.js', './speech.js', './content-skeletal.js',
   './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg'
 ];
 const ASSET_RE = /\.(glb|webp|png|jpg|jpeg|svg|woff2?|ttf)$/i;
