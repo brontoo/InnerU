@@ -1,0 +1,14 @@
+# dependencies / build output
+node_modules/
+dist/
+build/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# local logs
+*.log
+serve-out.txt
+serve-err.txt

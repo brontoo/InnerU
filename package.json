@@ -1,0 +1,12 @@
+{
+  "name": "inneru",
+  "version": "1.0.0",
+  "private": true,
+  "description": "InnerU - interactive human-body learning site for Grade 10 Science, Um Al-Emarat School.",
+  "scripts": {
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./serve.ps1",
+    "start": "powershell -NoProfile -ExecutionPolicy Bypass -File ./serve.ps1"
+  },
+  "keywords": ["education", "anatomy", "science", "grade-10", "gamified-learning"],
+  "license": "UNLICENSED"
+}
