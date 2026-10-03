@@ -1,0 +1,17 @@
+# Files that are useful in the repository but must NOT be published as part of the website.
+# Vercel uploads everything else (index.html, *.css, *.js, assets/**, 404.html, favicon.svg ...).
+
+# development helpers
+serve.ps1
+dev.cmd
+push-updates.ps1
+push-updates.cmd
+
+# recovery / documentation
+README.md
+SOURCE-BACKUP.md
+_download-report.txt
+_download-log.txt
+_export-manifest.json
+.gitattributes
+.gitignore
