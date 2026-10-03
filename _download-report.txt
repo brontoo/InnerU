@@ -1,65 +1,26 @@
 ﻿
-Status  Url                                                                                                      Note                         
-------  ---                                                                                                      ----                         
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/                                               index.html                   
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/favicon.svg?v=2                                525 bytes                    
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/style.css                                      26,285 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/exhibit.css                                    43,159 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/muscle.css                                     19,041 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/muscle-learning.css                            6,654 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/welcome.css                                    3,426 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/circulatory.css                                13,842 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/body-atlas.css                                 9,112 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/respiratory.css                                4,958 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/integumentary.css                              3,100 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/excretory.css                                  2,586 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/anatomy.js                                     8,256 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/visuals.js                                     14,844 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/body-atlas-ui.js                               7,409 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/app.js                                         62,812 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/circulatory.js                                 33,099 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/rich-pages.js                                  22,484 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/muscle-visuals.js                              8,582 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/muscle-learning.js                             10,694 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/muscle.js                                      54,074 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/circulatory-integration.js                     3,214 bytes                  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/respiratory.js                                 23,991 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/integumentary.js                               21,498 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/excretory.js                                   22,962 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/heart-explorer.js                              13,480 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/body-atlas.js                                  33,141 bytes                 
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/cdn-cgi/challenge-platform/scripts/jsd/main.js 21,137 bytes                 
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/manifest.webmanifest                           server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site.webmanifest                               server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/asset-manifest.json                            server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/package.json                                   server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/package-lock.json                              server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/README.md                                      server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site-config.json                               server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/config.json                                    server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/version.json                                   server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/favicon.ico                                    server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sw.js                                          server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/service-worker.js                              server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/robots.txt                                     server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sitemap.xml                                    server returned the SPA shell
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/404.html                                       3,035 bytes                  
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_headers                                       server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_redirects                                     server returned the SPA shell
-MISSING https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/CNAME                                          server returned the SPA shell
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/inneru-mark.svg                                525 bytes (from bundle)      
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/inneru-mark-light.svg                          525 bytes (from bundle)      
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/shoulder.js                                    2,533 bytes (from bundle)    
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/muscle-fallback.webp                    64,792 bytes (from bundle)   
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/three/three.module.js                   662,772 bytes (from bundle)  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/three/GLTFLoader.js                     117,582 bytes (from bundle)  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/three/OrbitControls.js                  40,767 bytes (from bundle)   
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/muscle-additions.glb                    2,950,588 bytes (from bundle)
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/excretory-kidney-hero.webp              209,944 bytes (from bundle)  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/anatomical-heart.glb                    598,232 bytes (from bundle)  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/muscle-hero-icon.webp                   48,140 bytes (from bundle)   
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/hot-day-runners.webp                    104,972 bytes (from bundle)  
-OK      https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/knee-investigator.webp                  94,586 bytes (from bundle)   
+Status      Url                                                                                                      Note                               
+------      ---                                                                                                      ----                               
+OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/                                               index.html                         
+OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/cdn-cgi/challenge-platform/scripts/jsd/main.js 20,447 bytes                       
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/manifest.webmanifest                           server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site.webmanifest                               server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/asset-manifest.json                            server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/package-lock.json                              server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site-config.json                               server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/config.json                                    server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/version.json                                   server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/favicon.ico                                    server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sw.js                                          server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/service-worker.js                              server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/robots.txt                                     server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sitemap.xml                                    server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_headers                                       server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_redirects                                     server returned the SPA shell      
+MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/CNAME                                          server returned the SPA shell      
+OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/utils/BufferGeometryUtils.js            37,731 bytes (referenced from code)
+OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/utils/SkeletonUtils.js                  11,554 bytes (referenced from code)
+DEP-MISSING (relative references)                                                                                    1 missing                          
 
 
 

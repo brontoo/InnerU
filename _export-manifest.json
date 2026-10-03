@@ -1,15 +1,30 @@
 ﻿{
     "source_url":  "https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/",
     "sites_project":  "appgprj_6aaed33fdc948191b343dd435e2bbd61",
-    "exported_utc":  "2026-10-03 09:16:52Z",
-    "file_count":  42,
-    "total_bytes":  5396393,
+    "exported_utc":  "2026-10-03 09:36:32Z",
+    "file_count":  55,
+    "total_bytes":  5461616,
     "note":  "Byte-exact copy of the files served by the live site. The site ships unbundled, readable source files, so this is the real source code, not a reconstruction.",
     "files":  [
                   {
+                      "path":  ".gitattributes",
+                      "bytes":  8,
+                      "sha256":  "705FD4D6451A31D36B3DF7DE96F83F30AC976C9B4A6D1E51671D8E2F33E2D0DA"
+                  },
+                  {
+                      "path":  ".gitignore",
+                      "bytes":  149,
+                      "sha256":  "4759BAA409A9BF1E13FEEA6DC6EE964ABD8904B5B593E9681C32D32D4189C2CF"
+                  },
+                  {
+                      "path":  ".vercelignore",
+                      "bytes":  407,
+                      "sha256":  "F6D7BE3A0F95FE94C0C8E9DDA67FF9427DA44F69BF1D0B317A217A6C793D21F8"
+                  },
+                  {
                       "path":  "404.html",
-                      "bytes":  3035,
-                      "sha256":  "09433D99FA8D7B70DEFA0814F65AE220838E3379B437918B53748D8C9DD51067"
+                      "bytes":  2097,
+                      "sha256":  "71AF9B351E22A448CCAFBABADFF6308F8A98E9CAD3E019B9C0737CCAC7417396"
                   },
                   {
                       "path":  "anatomy.js",
@@ -38,8 +53,8 @@
                   },
                   {
                       "path":  "circulatory-integration.js",
-                      "bytes":  3214,
-                      "sha256":  "A5BF436146D801170D6AEF28D21E78567BF3C2AF34D76BCC7E731B9489A542BC"
+                      "bytes":  3218,
+                      "sha256":  "47B24CB55DB722BBD11A5D09754E3F8423255681960D224799B5DF4C4437CC2C"
                   },
                   {
                       "path":  "circulatory.css",
@@ -50,6 +65,11 @@
                       "path":  "circulatory.js",
                       "bytes":  33099,
                       "sha256":  "94C7DD00C3B331DD81776AA519644FA12F9A4C5FCF23D8925E51E25E1E6710DD"
+                  },
+                  {
+                      "path":  "dev.cmd",
+                      "bytes":  258,
+                      "sha256":  "10A644707866F8BD27A58A1322C65F5A76B32A78E6D12B280809F3F3A85A76DC"
                   },
                   {
                       "path":  "excretory.css",
@@ -79,7 +99,7 @@
                   {
                       "path":  "index.html",
                       "bytes":  3035,
-                      "sha256":  "6B4A512C8BB46DE8A326C85A56F1E049F61B7AD28D501B222B4AB712201FE708"
+                      "sha256":  "6AA5E44015DFA79F3982658F1AAB6A607F054887A074C612CA6C775FD792E661"
                   },
                   {
                       "path":  "inneru-mark-light.svg",
@@ -127,14 +147,34 @@
                       "sha256":  "77E3E7371DD7094710ED9E2EC705F3BB862D7F0DDADDD199A3D9C1DEC63F32FA"
                   },
                   {
+                      "path":  "package.json",
+                      "bytes":  461,
+                      "sha256":  "668378081091E3E095DD19B55CCF7D1B16E96CCB1A3B80509186CB3DFD3536AA"
+                  },
+                  {
+                      "path":  "push-updates.cmd",
+                      "bytes":  209,
+                      "sha256":  "96C5278C70B35B62E8018066FCEB1FA358BB922B1AEEDBFC75EDE293BB19438A"
+                  },
+                  {
+                      "path":  "push-updates.ps1",
+                      "bytes":  1781,
+                      "sha256":  "EB031D29E31014E3EC7B10BECB4D1A135BB4D29953DD4AFB06D3EBB0944CC4A0"
+                  },
+                  {
+                      "path":  "README.md",
+                      "bytes":  6411,
+                      "sha256":  "3C2849485164F83B7DCA9FAD75AFFE81F200EC8EF01CA052E5A457097964F47A"
+                  },
+                  {
                       "path":  "respiratory.css",
                       "bytes":  4958,
                       "sha256":  "D1FD5C6BFA3ED962FEEF8D0ABFC161A3337DAB35F101CE1C44A2418322B9AA86"
                   },
                   {
                       "path":  "respiratory.js",
-                      "bytes":  23991,
-                      "sha256":  "BA988A0FF01F97C1DF71550381FA5B6E78F7C146E7F0D83115859BB87357ADE7"
+                      "bytes":  23995,
+                      "sha256":  "51F769F22459BF409EE4826CCC4F28907C5B241B4B324754124B06FC298236DD"
                   },
                   {
                       "path":  "rich-pages.js",
@@ -142,14 +182,29 @@
                       "sha256":  "AE2DBCA742779EE1C18CC20086A1124DCE95A4530FB6F655B78A587FE854A454"
                   },
                   {
+                      "path":  "serve.ps1",
+                      "bytes":  5045,
+                      "sha256":  "7E9BD81F3FAF7433A1A8A851BF3DC70C7ACDE9C54409BC7D2388E1E968EFE959"
+                  },
+                  {
                       "path":  "shoulder.js",
                       "bytes":  2533,
                       "sha256":  "7772E1664D0F8EE08A1F71148E6A9E0DD6E97906C9E2EA4639CC1C467F8AE613"
                   },
                   {
+                      "path":  "SOURCE-BACKUP.md",
+                      "bytes":  2394,
+                      "sha256":  "3E097829BB13B2781E3EB544342F56AFE0F3A24E8DCBF98B492CB81040D0634F"
+                  },
+                  {
                       "path":  "style.css",
                       "bytes":  26285,
                       "sha256":  "8F068A84F354F5F9848641ED50A540E9B3348DB5B778E234F5A20931C77B6D9A"
+                  },
+                  {
+                      "path":  "vercel.json",
+                      "bytes":  435,
+                      "sha256":  "121050758B6F23ECB255F724305BD7118B755EE2AA6B95D1D8A63492615AAC13"
                   },
                   {
                       "path":  "visuals.js",
@@ -212,9 +267,19 @@
                       "sha256":  "9052042D676CB0FDC1DDFEFE193053F34B7AC0513A616FDAC4535D49987812EA"
                   },
                   {
+                      "path":  "assets/utils/BufferGeometryUtils.js",
+                      "bytes":  37731,
+                      "sha256":  "B734A42D1144D69EDF7733EF6D45DFED1C5B16E9FFB9626209CDCC0D1068B6BC"
+                  },
+                  {
+                      "path":  "assets/utils/SkeletonUtils.js",
+                      "bytes":  11554,
+                      "sha256":  "5983EBECE3945759B6494AF0EE3CED782B2EC459293370B7A249361F42AC42A8"
+                  },
+                  {
                       "path":  "cdn-cgi/challenge-platform/scripts/jsd/main.js",
-                      "bytes":  21137,
-                      "sha256":  "5BD5C3DD42E0C1724325C58686EC871EE79177DBF560D9F16F2D90B1A00EF175"
+                      "bytes":  20447,
+                      "sha256":  "34D7E4C87975E423C7EA31219F1D2B7E4F6F1AAF98A30FCDA0A19B49ECB01622"
                   }
               ]
 }
