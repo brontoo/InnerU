@@ -15,6 +15,7 @@ ChatGPT Sites source became unreachable. They are kept here as a record and as a
 | File | What it does |
 |---|---|
 | `restore-inneru.ps1` | byte-exact download of every file the published site serves, recursively following imports; writes `_export-manifest.json` with a SHA-256 per file, then runs a dependency check |
+| `restore-missing-assets.ps1` | downloads the seven assets whose paths the site builds **at run time** (`assets/${kind}-atlas.glb` in `body-atlas.js`, `assets/${fast?'sprint':'endurance'}.webp` in `muscle.js`). No text scan can find those paths, so the first mirror missed them and every Body Atlas 3D viewer fell back to its static placeholder. Never overwrites an existing file unless you pass `-Force`. |
 | `publish-to-github.ps1` | first upload only: verifies the remote repository is empty, then init + commit + push |
 
 The double-click wrappers (`run.cmd`, `publish-to-github.cmd`) are not archived — run the `.ps1`

@@ -1,0 +1,49 @@
+{
+    "source_url":  "https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/",
+    "restored_utc":  "2026-10-03 19:06:06Z",
+    "note":  "These seven assets are reachable in the code only through run-time template strings, which is why the original mirror (and its dependency check) could not see them. This file is the record for them; _export-manifest.json is an older mixed snapshot and does not include them.",
+    "files":  [
+                  {
+                      "path":  "assets/integumentary-atlas.glb",
+                      "status":  "downloaded",
+                      "bytes":  1147464,
+                      "sha256":  "9F2632590FF8C197B427ED443C184E7A0130B6463887C2F6F05B67AA3322B1CB"
+                  },
+                  {
+                      "path":  "assets/skeletal-atlas.glb",
+                      "status":  "downloaded",
+                      "bytes":  2203136,
+                      "sha256":  "BD5FF8713B97E8740B1934E90139FB5843917C13149889A0B12A4E46E439D6D0"
+                  },
+                  {
+                      "path":  "assets/muscular-atlas.glb",
+                      "status":  "downloaded",
+                      "bytes":  1850184,
+                      "sha256":  "B1920865B267F1A1AF72146F2C0485DCA27B1EBD36C3CDB84590B02A2E6C0D32"
+                  },
+                  {
+                      "path":  "assets/respiratory-atlas.glb",
+                      "status":  "downloaded",
+                      "bytes":  493508,
+                      "sha256":  "8C4D8A2B4F2E347B4DC87B09C768B839A97E3E99C64DCF70FAC5B0087E7B9FEA"
+                  },
+                  {
+                      "path":  "assets/excretory-atlas.glb",
+                      "status":  "downloaded",
+                      "bytes":  741408,
+                      "sha256":  "37F9A8E6CCEE0A3A270AFE4E0F91E36D473AB4D6B80A73368CC3475841344FBC"
+                  },
+                  {
+                      "path":  "assets/sprint.webp",
+                      "status":  "downloaded",
+                      "bytes":  61766,
+                      "sha256":  "DB5C3593C75E45527F860065A23B0405B7234E381CE3B39076378B52AEADE27F"
+                  },
+                  {
+                      "path":  "assets/endurance.webp",
+                      "status":  "downloaded",
+                      "bytes":  60650,
+                      "sha256":  "09AB5CFD7B3CB7A19A19C585DB7A2FEC930780B8BA000D7ECFB8C06995895814"
+                  }
+              ]
+}
