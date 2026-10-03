@@ -3,10 +3,12 @@
 Interactive, gamified human-body learning for **Grade 10 Science** at **Um Al-Emarat School**.
 Plain HTML / CSS / JavaScript: **no build step, no framework, no dependencies, no server**.
 
-The muscular world uses a **labelled front-view figure** with soft highlights rather than a
-rotatable 3D model: selecting a muscle in the list marks where it lies and explains what it does.
-Four muscles (triceps, latissimus dorsi, gluteals, hamstrings) are on the back of the body and are
-described rather than marked, because the figure is a front view.
+The muscular world uses a **supplied labelled figure** instead of a 3D mesh. It can be turned
+(drag, arrow keys, Auto rotate, Reset view) and it behaves like the other labs: choosing a muscle
+makes the body translucent and spotlights that muscle in full colour, with a ring around it, either
+from the Muscle List or by tapping one of the 31 dots on the figure. The four muscles that lie on
+the back of the body (triceps, latissimus dorsi, gluteals, hamstrings) get a dashed ring where they
+pass behind the silhouette, plus a note, so all 17 entries respond.
 
 Six worlds (one per body system) + a final mission that ties them together, a
 spaced-practice review system, classroom tools for the teacher, and an offline copy
@@ -117,8 +119,8 @@ the home card, the dashboard and the capstone gate.
   and usable without wifi: **network-first** for the shell and code so a push is picked
   up immediately, **stale-while-revalidate** for large immutable assets.
 * `/?nosw=1` skips the service worker — use it if a stale offline copy ever gets in the way.
-* The muscular route no longer loads three.js or the 1.85 MB muscular mesh at all: it shows a
-  52 KB WebP figure instead, so that world's first paint is far lighter than the other 3D labs.
+* The muscular route loads no three.js and no mesh at all: it shows a 51 KB WebP figure, keeps the
+  musculature readable with CSS masks (a dimmed copy plus spotlit copies), and stays interactive.
 * 3D payload per route: skeleton 2.2 MB, muscular 4.7 MB, skin 1.1 MB, heart 0.6 MB.
   These `.glb` files ship uncompressed; compressing them (Draco/meshopt) is the main
   remaining performance win.
