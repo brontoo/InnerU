@@ -1,0 +1,54 @@
+.body-atlas{margin:26px 0 35px;padding:clamp(18px,3vw,32px);border-radius:24px;border:1px solid #376b76;background:radial-gradient(circle at 35% 42%,#276479,#112f45 60%,#0b273e);color:#e7f6f4;box-shadow:0 18px 38px #092b3c2c}
+.body-atlas.muscular{border-color:#9c6974;background:radial-gradient(circle at 35% 43%,#55465a,#1d3448 64%,#172b40)}
+.body-atlas-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}.body-atlas-heading h2{font-size:clamp(1.5rem,2.5vw,2.25rem);margin:6px 0;color:white}.body-atlas-heading p{color:#cfe5e5;margin:0}.body-atlas-heading .eyebrow{color:#a6e3dd}.body-atlas-indicator{font-size:.7rem;letter-spacing:.13em;font-weight:800;border:1px solid #7ab7bd88;padding:7px 10px;border-radius:20px;white-space:nowrap;color:#c7edeb}
+.body-atlas-layout{display:grid;grid-template-columns:minmax(270px,1.1fr) minmax(260px,.9fr);gap:24px;align-items:stretch}.body-atlas-stage{height:clamp(410px,43vw,570px);position:relative;isolation:isolate;overflow:hidden;border-radius:18px;border:1px solid #89b8bd44;background:radial-gradient(circle at 50% 42%,#55a3a02c,transparent 48%),linear-gradient(145deg,#1c4a5a8a,#102b40);touch-action:none}.body-atlas-stage:focus-visible{outline:3px solid #f6d8a9;outline-offset:3px}.body-atlas-stage canvas{position:absolute;inset:0;z-index:2;display:block}.body-atlas-floor{position:absolute;bottom:6%;left:24%;right:24%;height:7%;border:1px solid #a8dbdc55;border-radius:50%;box-shadow:0 0 22px #72c5c888;background:#6dbec631}.body-atlas-loading{position:absolute;z-index:3;inset:0;display:grid;place-items:center;color:#e0eeee;background:#153a4aef;font-size:.95rem}.body-atlas-side{min-width:0;display:flex;flex-direction:column;gap:12px}.body-atlas-directions{color:#cce3e5;font-size:.88rem;line-height:1.55}.body-atlas-views,.body-atlas-parts{display:flex;gap:7px;flex-wrap:wrap}.body-atlas button{border:1px solid #8dbaad8c;background:#17485c;color:#edf8f7;border-radius:9px;padding:8px 11px;min-height:40px;font-size:.85rem;font-weight:700;cursor:pointer}.body-atlas button:hover,.body-atlas button:focus-visible,.body-atlas button[aria-pressed=true]{background:#d9f0e9;color:#194456;outline:2px solid #a5ddd5;outline-offset:2px}.body-atlas-label{font-size:.72rem;color:#a5dbd8;font-weight:800;letter-spacing:.12em;margin-top:8px}.body-atlas-parts button{flex:1 1 115px}.body-atlas-info{border-radius:12px;padding:16px;background:#0c293ab3;border:1px solid #8ab5b15f;min-height:92px;line-height:1.55;color:#e7f6f4;font-size:.91rem}.body-atlas-info strong{color:#f7d4ab}.body-atlas-info small{display:block;color:#bdd7d9;margin-top:4px}.body-atlas-error{padding:12px;background:#523d4b;border:1px solid #d7a8a7;border-radius:10px;color:white;font-size:.85rem}.body-atlas-source{display:inline-block;color:#b6dfdf;font-size:.77rem;margin-top:12px;text-underline-offset:3px}
+@media(max-width:850px){.body-atlas-layout{grid-template-columns:1fr}.body-atlas-stage{height:480px}.body-atlas-side{gap:10px}.body-atlas-heading{align-items:flex-start}}
+@media(max-width:550px){.body-atlas{padding:16px}.body-atlas-stage{height:440px}.body-atlas-indicator{display:none}.body-atlas-parts button{flex:1 1 42%}}
+/* Respiratory atlas depth controls and magnified exchange view. */
+.body-atlas.respiratory .body-atlas-stage{background:radial-gradient(ellipse at 50% 36%,#4b8b9b35,transparent 58%),linear-gradient(155deg,#163e56,#10283f)}
+.body-atlas-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.body-atlas .body-atlas-modes button{font-size:.78rem;line-height:1.25;min-height:48px;padding:7px 5px;border-color:#a6d3d077;background:#103d55}
+.body-atlas .body-atlas-modes button[aria-pressed=true]{background:#d0f2ed;color:#143d4e;box-shadow:0 0 18px #81e2d355}
+.body-atlas-scale{font-size:.76rem;line-height:1.45;color:#b5d7dc;margin:0}
+.body-atlas.respiratory .body-atlas-parts button[data-part="Alveoli"]{border-color:#e8a5ae;color:#ffe2e1}
+.body-atlas.respiratory .body-atlas-parts button[data-part="Alveoli"][aria-pressed=true]{color:#173e51}
+@media(max-width:420px){.body-atlas-modes{grid-template-columns:1fr 1fr}.body-atlas-modes button:last-child{grid-column:1/-1}}
+.body-atlas.muscular .body-atlas-stage{background:radial-gradient(ellipse at 50% 38%,#496c78 0%,#19394f 55%,#0d2438 100%)}
+/* Muscular explorer: larger teaching viewport and graceful static recovery. */
+.body-atlas.muscular .body-atlas-layout{grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr)}
+.body-atlas.muscular .body-atlas-stage{height:clamp(560px,57vw,720px);background:radial-gradient(ellipse at 50% 35%,#41677a 0%,#1b3d53 52%,#10283e 100%)}
+.body-atlas.muscular .body-atlas-loading{background:radial-gradient(circle at 50% 42%,#2c6575,#15374b 70%);font-weight:700;letter-spacing:.02em}
+.body-atlas.muscular .body-atlas-fallback[hidden]{display:none!important}
+.body-atlas.muscular .body-atlas-fallback{position:absolute;inset:0;z-index:2;display:grid;grid-template-rows:minmax(0,1fr) auto;justify-items:center;align-items:center;padding:14px;background:#14364b;color:#e7f6f4;text-align:center;font-size:.9rem}
+.body-atlas.muscular .body-atlas-fallback img{display:block;width:auto;max-width:100%;height:100%;max-height:calc(100% - 12px);object-fit:contain;border-radius:12px}
+.body-atlas.muscular .body-atlas-fallback span{padding:8px 10px}
+.body-atlas.muscular .body-atlas-parts button{flex:1 1 125px}
+.body-atlas.muscular button:disabled{opacity:.5;cursor:default}
+@media(max-width:850px){.body-atlas.muscular .body-atlas-layout{grid-template-columns:1fr}.body-atlas.muscular .body-atlas-stage{height:620px}}
+@media(max-width:550px){.body-atlas.muscular .body-atlas-stage{height:520px}.body-atlas.muscular .body-atlas-parts button{flex:1 1 43%}}
+/* Phase 3: unobtrusive hotspots and muscle learning card. */
+.body-atlas.muscular .body-atlas-hotspots{position:absolute;inset:0;z-index:4;pointer-events:none}
+.body-atlas.muscular .body-atlas-hotspot[hidden]{display:none!important}
+.body-atlas.muscular .body-atlas-hotspot{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:50%;background:transparent;pointer-events:auto;box-shadow:none;outline:0;transition:transform .18s ease}
+.body-atlas.muscular .body-atlas-hotspot:before{content:"";position:absolute;inset:15px;border-radius:50%;background:#a8ece0;border:2px solid #173e52;box-shadow:0 0 0 4px #8ce3db55,0 0 15px #8ce3dbb8;transition:inset .18s ease,background .18s ease,box-shadow .18s ease}
+.body-atlas.muscular .body-atlas-hotspot:hover,.body-atlas.muscular .body-atlas-hotspot:focus-visible{transform:translate(-50%,-50%) scale(1.13);background:transparent;outline:2px solid #ffe9b9;outline-offset:-3px}
+.body-atlas.muscular .body-atlas-hotspot:hover:before,.body-atlas.muscular .body-atlas-hotspot:focus-visible:before{inset:12px;background:#f6dbb5}
+.body-atlas.muscular .body-atlas-hotspot[aria-pressed=true]:before{inset:11px;background:#f9d08d;box-shadow:0 0 0 5px #f5c88877,0 0 20px #ffd197}
+.body-atlas.muscular .body-atlas-parts button{flex:1 1 45%;min-width:0;text-align:left;padding:8px 10px;font-size:.84rem;line-height:1.28}
+.body-atlas.muscular .body-atlas-more{border:1px solid #7ea5ab70;border-radius:10px;padding:0 12px 12px;background:#13394c70}
+.body-atlas.muscular .body-atlas-more summary{cursor:pointer;padding:10px 3px;font-size:.88rem;font-weight:700;color:#d5efeb}
+.body-atlas.muscular .body-atlas-more summary:focus-visible{outline:2px solid #f6d8a9;outline-offset:2px}
+.body-atlas.muscular .body-atlas-more .body-atlas-parts{padding-top:6px}
+.body-atlas.muscular .body-atlas-info{padding:20px;min-height:116px;background:linear-gradient(150deg,#173d50,#102c40);border-color:#92b6ba85}
+.body-atlas.muscular .body-atlas-info-kicker{display:block;color:#a7e4dd;font-size:.72rem;font-weight:800;letter-spacing:.13em;margin-bottom:8px}
+.body-atlas.muscular .body-atlas-info h3{font-size:1.5rem;color:#fff3e8;margin:0 0 14px;line-height:1.2}
+.body-atlas.muscular .body-atlas-info p{margin:0;line-height:1.55}
+.body-atlas.muscular .muscle-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+.body-atlas.muscular .muscle-facts>div{padding:10px 0;border-top:1px solid #80abb354;min-width:0}
+.body-atlas.muscular .muscle-facts dt{color:#a7e4dd;text-transform:uppercase;letter-spacing:.08em;font-size:.69rem;font-weight:800;margin-bottom:5px}
+.body-atlas.muscular .muscle-facts dd{margin:0;font-size:.87rem;line-height:1.45;color:#f2f7f6}
+.body-atlas.muscular .muscle-try{background:#d9eee9;color:#173d50;padding:13px 15px;border-radius:10px;margin-top:14px}
+.body-atlas.muscular .muscle-try b{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px}
+.body-atlas.muscular .muscle-try p{font-size:.88rem}
+@media(max-width:550px){.body-atlas.muscular .body-atlas-parts button{flex:1 1 45%}.body-atlas.muscular .muscle-facts{grid-template-columns:1fr 1fr}.body-atlas.muscular .body-atlas-info{padding:17px}}
+@media(max-width:380px){.body-atlas.muscular .muscle-facts{grid-template-columns:1fr}}

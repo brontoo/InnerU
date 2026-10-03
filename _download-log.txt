@@ -1,0 +1,86 @@
+﻿InnerU site recovery
+Source : https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/
+Target : C:\Users\Ahmed\OneDrive - NATIONWIDE MIDDLE EAST PROPERTIES LLC\Documents\deepseek-harness\default-workspace\inneru-recovery\inneru-site
+Date   : 2026-10-03 13:16:24Z
+Tool   : curl.exe
+
+index.html downloaded: 3,035 bytes
+Referenced same-origin assets found: 45
+  saved  /favicon.svg                                                        525 bytes
+  saved  /style.css                                                       26,285 bytes
+  saved  /exhibit.css                                                     43,159 bytes
+  saved  /muscle.css                                                      19,041 bytes
+  saved  /muscle-learning.css                                              6,654 bytes
+  saved  /welcome.css                                                      3,426 bytes
+  saved  /circulatory.css                                                 13,842 bytes
+  saved  /body-atlas.css                                                   9,112 bytes
+  saved  /respiratory.css                                                  4,958 bytes
+  saved  /integumentary.css                                                3,100 bytes
+  saved  /excretory.css                                                    2,586 bytes
+  saved  /anatomy.js                                                       8,256 bytes
+  saved  /visuals.js                                                      14,844 bytes
+  saved  /body-atlas-ui.js                                                 7,409 bytes
+  saved  /app.js                                                          62,812 bytes
+  saved  /circulatory.js                                                  33,099 bytes
+  saved  /rich-pages.js                                                   22,484 bytes
+  saved  /muscle-visuals.js                                                8,582 bytes
+  saved  /muscle-learning.js                                              10,694 bytes
+  saved  /muscle.js                                                       54,074 bytes
+  saved  /circulatory-integration.js                                       3,214 bytes
+  saved  /respiratory.js                                                  23,991 bytes
+  saved  /integumentary.js                                                21,498 bytes
+  saved  /excretory.js                                                    22,962 bytes
+  saved  /heart-explorer.js                                               13,480 bytes
+  saved  /body-atlas.js                                                   33,141 bytes
+  saved  /cdn-cgi/challenge-platform/scripts/jsd/main.js                  21,137 bytes
+  saved  /404.html                                                         3,035 bytes
+Assets referenced from inside the bundles: 13
+  saved  /inneru-mark.svg                                                    525 bytes
+  saved  /inneru-mark-light.svg                                              525 bytes
+  saved  /shoulder.js                                                      2,533 bytes
+  saved  /assets/muscle-fallback.webp                                     64,792 bytes
+  saved  /assets/three/three.module.js                                   662,772 bytes
+  saved  /assets/three/GLTFLoader.js                                     117,582 bytes
+  saved  /assets/three/OrbitControls.js                                   40,767 bytes
+  saved  /assets/muscle-additions.glb                                  2,950,588 bytes
+  saved  /assets/excretory-kidney-hero.webp                              209,944 bytes
+  saved  /assets/anatomical-heart.glb                                    598,232 bytes
+  saved  /assets/muscle-hero-icon.webp                                    48,140 bytes
+  saved  /assets/hot-day-runners.webp                                    104,972 bytes
+  saved  /assets/knee-investigator.webp                                   94,586 bytes
+
+Readable source files downloaded: 30
+This site is NOT bundled. It ships separate, readable .js/.css files,
+which means what you just downloaded IS effectively the original source code.
+
+--- fingerprint ---
+JS files      : 20
+JS total size : 1,185,331 bytes
+  react        : no
+  vite         : no
+  next         : yes
+  svelte       : no
+  vue          : no
+  tailwind     : no
+  supabase     : no
+  firebase     : no
+  localStorage : yes
+
+--- largest files ---
+   2,950,588  assets\muscle-additions.glb
+     662,772  assets\three\three.module.js
+     598,232  assets\anatomical-heart.glb
+     209,944  assets\excretory-kidney-hero.webp
+     117,582  assets\three\GLTFLoader.js
+     104,972  assets\hot-day-runners.webp
+      94,586  assets\knee-investigator.webp
+      64,792  assets\muscle-fallback.webp
+      62,812  app.js
+      54,074  muscle.js
+      48,140  assets\muscle-hero-icon.webp
+      43,159  exhibit.css
+      40,767  assets\three\OrbitControls.js
+      33,141  body-atlas.js
+      33,099  circulatory.js
+
+Manifest written: _export-manifest.json (42 files, SHA-256 each)

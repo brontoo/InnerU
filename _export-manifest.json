@@ -1,0 +1,220 @@
+﻿{
+    "source_url":  "https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/",
+    "sites_project":  "appgprj_6aaed33fdc948191b343dd435e2bbd61",
+    "exported_utc":  "2026-10-03 09:16:52Z",
+    "file_count":  42,
+    "total_bytes":  5396393,
+    "note":  "Byte-exact copy of the files served by the live site. The site ships unbundled, readable source files, so this is the real source code, not a reconstruction.",
+    "files":  [
+                  {
+                      "path":  "404.html",
+                      "bytes":  3035,
+                      "sha256":  "09433D99FA8D7B70DEFA0814F65AE220838E3379B437918B53748D8C9DD51067"
+                  },
+                  {
+                      "path":  "anatomy.js",
+                      "bytes":  8256,
+                      "sha256":  "A063347664A317584AD6E6F1DB54D2CFE5AEA8379013C94A608E0B75C55D9FB7"
+                  },
+                  {
+                      "path":  "app.js",
+                      "bytes":  62812,
+                      "sha256":  "E431D9F53E2D29E51ECF02CBDBB46CBC0A7DECFD98A8787AEAE6512A47706F93"
+                  },
+                  {
+                      "path":  "body-atlas-ui.js",
+                      "bytes":  7409,
+                      "sha256":  "910FBE5933ACE5F9A9109E55297099A0B7DF6AD8B25D353977C6866972CCF096"
+                  },
+                  {
+                      "path":  "body-atlas.css",
+                      "bytes":  9112,
+                      "sha256":  "7676B5BF278970D3E13D5F3A0F131D18D983C1D9EF3D985A84810B952EBE2F4B"
+                  },
+                  {
+                      "path":  "body-atlas.js",
+                      "bytes":  33141,
+                      "sha256":  "56E9D10D3387D93A2101C9E248D40F1BBA73D4E08849BADE79547919A19E41D9"
+                  },
+                  {
+                      "path":  "circulatory-integration.js",
+                      "bytes":  3214,
+                      "sha256":  "A5BF436146D801170D6AEF28D21E78567BF3C2AF34D76BCC7E731B9489A542BC"
+                  },
+                  {
+                      "path":  "circulatory.css",
+                      "bytes":  13842,
+                      "sha256":  "934F82266D52AEB5C406B9065D631C0008F8907DC0E559E9D785EC1C6E6C25E4"
+                  },
+                  {
+                      "path":  "circulatory.js",
+                      "bytes":  33099,
+                      "sha256":  "94C7DD00C3B331DD81776AA519644FA12F9A4C5FCF23D8925E51E25E1E6710DD"
+                  },
+                  {
+                      "path":  "excretory.css",
+                      "bytes":  2586,
+                      "sha256":  "1BA77B5542FA79BD614829DDB769C0A342F0FBBFA62BD3C46EC03D5462DDC32B"
+                  },
+                  {
+                      "path":  "excretory.js",
+                      "bytes":  22962,
+                      "sha256":  "7A18B3DE1A2EAEBCD26A9F00375E4E0087B2D1D933BEEB16FCDD7196245B7AC3"
+                  },
+                  {
+                      "path":  "exhibit.css",
+                      "bytes":  43159,
+                      "sha256":  "4A8481ED67AB622F1F39C35AE83804E1EF3E95178D9FF94B73F54E6671538E8A"
+                  },
+                  {
+                      "path":  "favicon.svg",
+                      "bytes":  525,
+                      "sha256":  "01B8D59585A389AA8D01B1602E0E09F3129C56C52F7D63111DE8B00C1501DF1A"
+                  },
+                  {
+                      "path":  "heart-explorer.js",
+                      "bytes":  13480,
+                      "sha256":  "CB1123A585F94C229265BC2BC612A35BF09B020DA1062A2367E975D052467CAD"
+                  },
+                  {
+                      "path":  "index.html",
+                      "bytes":  3035,
+                      "sha256":  "6B4A512C8BB46DE8A326C85A56F1E049F61B7AD28D501B222B4AB712201FE708"
+                  },
+                  {
+                      "path":  "inneru-mark-light.svg",
+                      "bytes":  525,
+                      "sha256":  "902DD5D81E26A0B32D3E992FEAF23D09E46DA74C4A861FCA56EC257A8E194968"
+                  },
+                  {
+                      "path":  "inneru-mark.svg",
+                      "bytes":  525,
+                      "sha256":  "01B8D59585A389AA8D01B1602E0E09F3129C56C52F7D63111DE8B00C1501DF1A"
+                  },
+                  {
+                      "path":  "integumentary.css",
+                      "bytes":  3100,
+                      "sha256":  "989C0220A341BE396239877376BBC57640E692EDE4E37A5C68994291F09467B9"
+                  },
+                  {
+                      "path":  "integumentary.js",
+                      "bytes":  21498,
+                      "sha256":  "E77C058E93EB91C65AD1CD1F0168B9436D35F2A33EF0796753F53D36D59C07E3"
+                  },
+                  {
+                      "path":  "muscle-learning.css",
+                      "bytes":  6654,
+                      "sha256":  "32200DE2697A4215AED21BAC8C95597CBFA14F0BB2E047B79EE85C8E4311294A"
+                  },
+                  {
+                      "path":  "muscle-learning.js",
+                      "bytes":  10694,
+                      "sha256":  "E03A5DF19A95BFEB85DB731931980A2A6CC9542B6D224F9B833844ABD014665A"
+                  },
+                  {
+                      "path":  "muscle-visuals.js",
+                      "bytes":  8582,
+                      "sha256":  "80F98795A99B717CB5F788F10CD55899883B2D89E403766B38AEDC082527CB57"
+                  },
+                  {
+                      "path":  "muscle.css",
+                      "bytes":  19041,
+                      "sha256":  "2D8556EC443D11EF23D800E0721B3D142A2B7AE5CBCC00B7F19112A3786F50D9"
+                  },
+                  {
+                      "path":  "muscle.js",
+                      "bytes":  54074,
+                      "sha256":  "77E3E7371DD7094710ED9E2EC705F3BB862D7F0DDADDD199A3D9C1DEC63F32FA"
+                  },
+                  {
+                      "path":  "respiratory.css",
+                      "bytes":  4958,
+                      "sha256":  "D1FD5C6BFA3ED962FEEF8D0ABFC161A3337DAB35F101CE1C44A2418322B9AA86"
+                  },
+                  {
+                      "path":  "respiratory.js",
+                      "bytes":  23991,
+                      "sha256":  "BA988A0FF01F97C1DF71550381FA5B6E78F7C146E7F0D83115859BB87357ADE7"
+                  },
+                  {
+                      "path":  "rich-pages.js",
+                      "bytes":  22484,
+                      "sha256":  "AE2DBCA742779EE1C18CC20086A1124DCE95A4530FB6F655B78A587FE854A454"
+                  },
+                  {
+                      "path":  "shoulder.js",
+                      "bytes":  2533,
+                      "sha256":  "7772E1664D0F8EE08A1F71148E6A9E0DD6E97906C9E2EA4639CC1C467F8AE613"
+                  },
+                  {
+                      "path":  "style.css",
+                      "bytes":  26285,
+                      "sha256":  "8F068A84F354F5F9848641ED50A540E9B3348DB5B778E234F5A20931C77B6D9A"
+                  },
+                  {
+                      "path":  "visuals.js",
+                      "bytes":  14844,
+                      "sha256":  "B54330BC58D16889E1B26A1C6A80654FAF1D4FC5A6809E6E4D42031563251B63"
+                  },
+                  {
+                      "path":  "welcome.css",
+                      "bytes":  3426,
+                      "sha256":  "E563C64762304D19A95AE11EA5CD12DBEB1D944DC9173404083CDFB163B25F34"
+                  },
+                  {
+                      "path":  "assets/anatomical-heart.glb",
+                      "bytes":  598232,
+                      "sha256":  "758F3D8B8EA0ACB78887098D34757E34F2ECA98296983B8A84FC8108E349E064"
+                  },
+                  {
+                      "path":  "assets/excretory-kidney-hero.webp",
+                      "bytes":  209944,
+                      "sha256":  "E5BFD0CD0B26284EDE1F03ADE771E2502059F67FD7DDB4368544ABC90E29CBAD"
+                  },
+                  {
+                      "path":  "assets/hot-day-runners.webp",
+                      "bytes":  104972,
+                      "sha256":  "D68BB996164C34D31E408CE3CF34679770B63C6C2050DDF9ABFF928FB949EA08"
+                  },
+                  {
+                      "path":  "assets/knee-investigator.webp",
+                      "bytes":  94586,
+                      "sha256":  "E0E467C6091006C5376B4BB7B2CD16A5080317BD9E226D8AB09F2E88D5117FFA"
+                  },
+                  {
+                      "path":  "assets/muscle-additions.glb",
+                      "bytes":  2950588,
+                      "sha256":  "CF03B74927B7959C262AE8FB28A1A2C3C97003CA95B25720B3417607EDE0B40E"
+                  },
+                  {
+                      "path":  "assets/muscle-fallback.webp",
+                      "bytes":  64792,
+                      "sha256":  "FBA12D9FB5DB11176755F32EA48D22CA47B436AE64BF62FE00471B538118818B"
+                  },
+                  {
+                      "path":  "assets/muscle-hero-icon.webp",
+                      "bytes":  48140,
+                      "sha256":  "D9D1A4A5D8B7664BC34630D19855AD9B78EB52A8DD0FD1CDD8C039A51BC3E0DF"
+                  },
+                  {
+                      "path":  "assets/three/GLTFLoader.js",
+                      "bytes":  117582,
+                      "sha256":  "CF7240766FE4FAEBFD0553543BB2C8ECA9208B71080246C140A8B1DFAA667053"
+                  },
+                  {
+                      "path":  "assets/three/OrbitControls.js",
+                      "bytes":  40767,
+                      "sha256":  "30386F7141D5CE5D5E0A3AB643E4EB16265F4564466108105CE449857F62FDDA"
+                  },
+                  {
+                      "path":  "assets/three/three.module.js",
+                      "bytes":  662772,
+                      "sha256":  "9052042D676CB0FDC1DDFEFE193053F34B7AC0513A616FDAC4535D49987812EA"
+                  },
+                  {
+                      "path":  "cdn-cgi/challenge-platform/scripts/jsd/main.js",
+                      "bytes":  21137,
+                      "sha256":  "5BD5C3DD42E0C1724325C58686EC871EE79177DBF560D9F16F2D90B1A00EF175"
+                  }
+              ]
+}
