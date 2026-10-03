@@ -48,3 +48,23 @@
 .mq-force-state.is-heavy{color:#b4636c}
 .mq-force label{display:block;margin:12px 0 4px;font-size:.85rem;color:#33596a}
 @media(max-width:760px){.mq-force-grid{grid-template-columns:1fr}}
+
+/* labelled muscle figure (replaces the rotatable model on this lab) */
+.body-atlas[data-muscle-figure] .body-atlas-stage{background:#0b2b43;height:auto;min-height:0;padding:16px}
+.body-atlas[data-muscle-figure] .body-atlas-floor{display:none}
+/* the highlight layer must cover exactly the image box, so the wrapper is sized by
+   the image itself and the layer is inset into it - percentages then line up */
+.muscle-figure{position:relative;width:min(100%,520px);margin:0 auto}
+.muscle-figure img{display:block;width:100%;height:auto;border-radius:10px}
+.muscle-figure-layer{position:absolute;inset:0;pointer-events:none}
+.muscle-figure-layer .muscle-glow{position:absolute;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(255,246,180,.72) 0%,rgba(124,215,201,.42) 48%,rgba(124,215,201,0) 74%);
+  box-shadow:0 0 22px 8px rgba(124,215,201,.30);animation:muscleGlow .25s ease-out}
+@keyframes muscleGlow{from{opacity:0;transform:translate(-50%,-50%) scale(.86)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.body-atlas-info .muscle-figure-note{background:#fff6e0;border-left:3px solid #d9a444;padding:8px 11px;border-radius:8px;font-size:.86rem;color:#6b4f14}
+.body-atlas[data-muscle-figure] .body-atlas-views button[data-muscle-labels][aria-pressed=false]{opacity:.75}
+@media (max-width:760px){.muscle-figure{width:min(100%,360px)}}
+@media (prefers-reduced-motion:reduce){.muscle-figure-layer .muscle-glow{animation:none}}
+/* the muscular lab no longer uses the DBCLS meshes, so their credit is not shown
+   there (display:none also keeps it out of the accessibility tree) */
+.body-atlas[data-muscle-figure] a.body-atlas-source{display:none}

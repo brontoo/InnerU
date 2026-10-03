@@ -26,5 +26,6 @@ be asserted before its scripts have run (which shows up as a mysteriously empty 
 | `verify-stage5.py` | the breathing simulator and the spaced-practice review system |
 | `verify-stage6.py` | the habit layer (streak, plan, banner) and the force-vs-load simulator |
 | `verify-stage7.py` | the tap-to-define glossary and the read-aloud control |
+| `verify-muscle-figure.py` | the labelled muscle figure that replaced the rotatable muscular model |
 
 Each harness pins its own port, so they can be run one at a time.
