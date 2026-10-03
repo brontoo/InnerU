@@ -3,6 +3,8 @@
 (() => {
   'use strict';
   if (!('serviceWorker' in navigator)) return;
+  /* ?nosw=1 skips the worker: handy for debugging or if a stale offline copy gets in the way. */
+  if (/[?&]nosw/.test(location.search)) return;
   const secure = location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname);
   if (!secure) return;
   window.addEventListener('load', () => {

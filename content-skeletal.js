@@ -7,6 +7,10 @@
    ========================================================================== */
 
 
+/* The assessment items below are built with this small helper, so it lives here
+   with its callers rather than in the engine. */
+const q=(text,options,answer,why)=>({text,options,answer,why});
+
 /* --- missions: The seven skeletal missions plus the boss challenge. --- */
 const missions=[['Meet your skeleton','Discover the two divisions of your framework.'],['Bone detective','Match a bone’s shape to the job it does.'],['Inside a bone','Find out how bones stay strong but light.'],['Joint lab','Explore the ways your body can move.'],['Bone remodeling','Balance demolition and construction.'],['Repair the fracture','Rebuild a bone, one stage at a time.'],['Body Detective','Follow the evidence. Solve four mysteries.']];
 

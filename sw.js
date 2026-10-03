@@ -12,11 +12,11 @@ const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './muscle.css', './muscle-learning.css',
   './body-atlas.css', './respiratory.css', './integumentary.css', './excretory.css',
-  './circulatory.css', './capstone.css', './teacher.css',
+  './circulatory.css', './capstone.css', './teacher.css', './review.css',
   './content-skeletal.js', './app.js', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circulatory.js',
   './rich-pages.js', './muscle-visuals.js', './muscle-learning.js', './muscle.js',
   './circulatory-integration.js', './respiratory.js', './integumentary.js', './excretory.js',
-  './capstone.js', './a11y.js', './teacher.js', './pwa.js',
+  './capstone.js', './a11y.js', './teacher.js', './pwa.js', './review.js', './content-skeletal.js',
   './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg'
 ];
 const ASSET_RE = /\.(glb|webp|png|jpg|jpeg|svg|woff2?|ttf)$/i;

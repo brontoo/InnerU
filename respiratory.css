@@ -3,3 +3,13 @@
 .resp-lab-visual [class*=resp-] span,.resp-lab-visual .resp-route span{transition:transform .18s,box-shadow .18s,background .18s}
 .resp-lab-visual .is-active{box-shadow:0 0 0 3px #7cd7c9,0 0 20px #7cd7c966;border-radius:12px;background:#0d5f66;color:#fff;transform:translateY(-2px)}
 .resp-lab-route .is-active,.resp-route .is-active{background:#0d5f66}
+
+/* breathing simulator */
+.resp-breath-grid{display:grid;grid-template-columns:minmax(150px,.7fr) minmax(240px,1.3fr);gap:20px;align-items:start}
+.resp-lung-art{display:grid;place-items:center;gap:10px;padding:12px;background:#eef6f7;border-radius:14px}
+.resp-lung{display:flex;gap:8px;align-items:flex-end;height:150px}
+.resp-lung span{display:block;width:44px;height:var(--fill,30%);background:linear-gradient(180deg,#f2b9c2,#c9768a);border-radius:50% 50% 42% 42%;transition:height .18s ease}
+.resp-flow{font-size:.7rem;letter-spacing:.12em;color:#4f6b78}
+.resp-flow.is-in{color:#0d7d78}.resp-flow.is-out{color:#b4636c}
+.resp-breath label{display:block;margin:12px 0 4px;font-size:.85rem;color:#33596a}
+@media(max-width:760px){.resp-breath-grid{grid-template-columns:1fr}}

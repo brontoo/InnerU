@@ -1,0 +1,23 @@
+/* ============================================================================
+   Review — retrieval practice
+   ========================================================================== */
+.review-world{max-width:1000px}
+.review-hero{background:radial-gradient(circle at 86% 34%,#176c7355,transparent 70%),linear-gradient(117deg,#0b2035,#10374a 70%);
+  color:#fff;border-radius:20px;padding:clamp(22px,3vw,38px);margin:16px 0 22px}
+.review-hero h1{color:#fff;margin:10px 0 8px;font-size:clamp(1.8rem,3vw,2.6rem)}
+.review-hero p{color:#d6e5e9;max-width:640px}
+.review-hero .eyebrow{color:#8fe3d6}
+.review-stats h2{font-size:2.1rem;margin:6px 0;color:#0b3b48}
+.review-stats .panel{padding:20px}
+.review-start{margin-top:18px}
+.review-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:12px 0 14px}
+.review-progress{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#4f6b78}
+.review-card h2{font-size:1.3rem;margin:12px 0 16px}
+.review-options{display:grid;gap:10px}
+.review-feedback:empty{display:none}
+.review-weaklist{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.review-weak{background:#eef6f7;border:1px solid #cfe2e6;border-radius:999px;padding:9px 14px;font-size:.84rem;text-decoration:none;color:#1d4453}
+.review-weak:hover{border-color:#0d7d78;color:#0d7d78}
+.review-redo{display:grid;gap:12px;margin-top:10px}
+.review-redo-item{border-left:3px solid #d9a444;padding:6px 0 6px 12px}
+.review-dashboard .review-progress{color:#4f6b78}
