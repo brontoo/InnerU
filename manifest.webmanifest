@@ -1,0 +1,16 @@
+{
+  "name": "InnerU - Explore the Human Body",
+  "short_name": "InnerU",
+  "description": "Interactive, gamified human-body learning for Grade 10 Science at Um Al-Emarat School.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b2035",
+  "theme_color": "#0b3b48",
+  "lang": "en",
+  "icons": [
+    { "src": "inneru-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

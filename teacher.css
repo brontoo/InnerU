@@ -1,0 +1,22 @@
+/* ============================================================================
+   Teacher tools
+   ========================================================================== */
+.teacher-world{max-width:1000px}
+.teacher-hero{background:radial-gradient(circle at 88% 30%,#176c7355,transparent 70%),linear-gradient(117deg,#0b2035,#10374a 70%);
+  color:#fff;border-radius:20px;padding:clamp(22px,3vw,38px);margin:16px 0 22px}
+.teacher-hero h1{color:#fff;margin:10px 0 8px;font-size:clamp(1.7rem,2.8vw,2.5rem)}
+.teacher-hero p{color:#d6e5e9;max-width:620px}
+.teacher-hero .eyebrow{color:#8fe3d6}
+.teacher-card{margin-bottom:18px}
+.teacher-card h2{font-size:1.25rem;margin:0 0 10px}
+.teacher-help{color:#4f6b78;font-size:.92rem}
+.teacher-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.teacher-code{margin-top:14px}
+.teacher-code textarea{font-size:.8rem;line-height:1.5}
+.teacher-summary-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.teacher-summary-head .teacher-actions{margin-top:0}
+.teacher-table{width:100%;border-collapse:collapse;margin:14px 0 10px;font-size:.9rem}
+.teacher-table th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#4f6b78;padding:8px 10px;border-bottom:2px solid #dbe6e9}
+.teacher-table td{padding:9px 10px;border-bottom:1px solid #e6eef0;color:#1d4453}
+.teacher-table tr:nth-child(even) td{background:#f7fbfb}
+@media(max-width:760px){.teacher-table{font-size:.8rem}.teacher-table th,.teacher-table td{padding:6px}}
