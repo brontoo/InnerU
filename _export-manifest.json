@@ -1,9 +1,9 @@
 ﻿{
     "source_url":  "https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/",
     "sites_project":  "appgprj_6aaed33fdc948191b343dd435e2bbd61",
-    "exported_utc":  "2026-10-03 09:36:32Z",
-    "file_count":  55,
-    "total_bytes":  5461616,
+    "exported_utc":  "2026-10-03 09:47:50Z",
+    "file_count":  56,
+    "total_bytes":  6919729,
     "note":  "Byte-exact copy of the files served by the live site. The site ships unbundled, readable source files, so this is the real source code, not a reconstruction.",
     "files":  [
                   {
@@ -99,7 +99,7 @@
                   {
                       "path":  "index.html",
                       "bytes":  3035,
-                      "sha256":  "6AA5E44015DFA79F3982658F1AAB6A607F054887A074C612CA6C775FD792E661"
+                      "sha256":  "E24B7432987D0861EF273AF6D5231CDE358EB9F4CA0A790C95FE27F2B77FC4D3"
                   },
                   {
                       "path":  "inneru-mark-light.svg",
@@ -260,6 +260,11 @@
                       "path":  "assets/three/OrbitControls.js",
                       "bytes":  40767,
                       "sha256":  "30386F7141D5CE5D5E0A3AB643E4EB16265F4564466108105CE449857F62FDDA"
+                  },
+                  {
+                      "path":  "assets/three/three.core.js",
+                      "bytes":  1458113,
+                      "sha256":  "9EDDE002B066A9A05676A6127F67735B62BAF399BDEA529F2F7E31657DA769E6"
                   },
                   {
                       "path":  "assets/three/three.module.js",

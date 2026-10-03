@@ -1,26 +1,24 @@
 ﻿
-Status      Url                                                                                                      Note                               
-------      ---                                                                                                      ----                               
-OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/                                               index.html                         
-OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/cdn-cgi/challenge-platform/scripts/jsd/main.js 20,447 bytes                       
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/manifest.webmanifest                           server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site.webmanifest                               server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/asset-manifest.json                            server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/package-lock.json                              server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site-config.json                               server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/config.json                                    server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/version.json                                   server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/favicon.ico                                    server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sw.js                                          server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/service-worker.js                              server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/robots.txt                                     server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sitemap.xml                                    server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_headers                                       server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_redirects                                     server returned the SPA shell      
-MISSING     https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/CNAME                                          server returned the SPA shell      
-OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/utils/BufferGeometryUtils.js            37,731 bytes (referenced from code)
-OK          https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/utils/SkeletonUtils.js                  11,554 bytes (referenced from code)
-DEP-MISSING (relative references)                                                                                    1 missing                          
+Status   Url                                                                                  Note                                  
+------   ---                                                                                  ----                                  
+OK       https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/                           index.html                            
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/manifest.webmanifest       server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site.webmanifest           server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/asset-manifest.json        server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/package-lock.json          server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/site-config.json           server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/config.json                server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/version.json               server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/favicon.ico                server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sw.js                      server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/service-worker.js          server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/robots.txt                 server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/sitemap.xml                server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_headers                   server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/_redirects                 server returned the SPA shell         
+MISSING  https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/CNAME                      server returned the SPA shell         
+OK       https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/assets/three/three.core.js 1,458,113 bytes (referenced from code)
+DEPCHECK (all relative references)                                                            OK                                    
 
 
 

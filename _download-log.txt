@@ -1,26 +1,24 @@
 ﻿InnerU site recovery
 Source : https://body-quest-um-al-emarat.ahmed87ahmed.chatgpt.site/
 Target : C:\Users\Ahmed\OneDrive - NATIONWIDE MIDDLE EAST PROPERTIES LLC\Documents\deepseek-harness\default-workspace\inneru-recovery\inneru-site
-Date   : 2026-10-03 13:36:16Z
+Date   : 2026-10-03 13:47:23Z
 Tool   : curl.exe
 
 index.html downloaded: 3,035 bytes
 Referenced same-origin assets found: 45
-  saved  /cdn-cgi/challenge-platform/scripts/jsd/main.js                  20,447 bytes
-  round 1: scanned 30 code file(s), 24 new reference(s)
-  saved  /assets/utils/BufferGeometryUtils.js                             37,731 bytes
-  saved  /assets/utils/SkeletonUtils.js                                   11,554 bytes
-  round 2: scanned 2 code file(s), 4 new reference(s)
+  round 1: scanned 32 code file(s), 32 new reference(s)
+  saved  /assets/three/three.core.js                                   1,458,113 bytes
+  round 2: scanned 1 code file(s), 8 new reference(s)
 Code scan finished after 2 round(s).
 
-Readable source files downloaded: 32
+Readable source files downloaded: 33
 This site is NOT bundled. It ships separate, readable .js/.css files,
 which means what you just downloaded IS effectively the original source code.
 
 --- fingerprint ---
-JS files      : 22
-JS total size : 1,233,934 bytes
-  react        : no
+JS files      : 23
+JS total size : 2,692,047 bytes
+  react        : yes
   vite         : no
   next         : yes
   svelte       : no
@@ -32,6 +30,7 @@ JS total size : 1,233,934 bytes
 
 --- largest files ---
    2,950,588  assets\muscle-additions.glb
+   1,458,113  assets\three\three.core.js
      662,772  assets\three\three.module.js
      598,232  assets\anatomical-heart.glb
      209,944  assets\excretory-kidney-hero.webp
@@ -45,9 +44,7 @@ JS total size : 1,233,934 bytes
       43,159  exhibit.css
       40,767  assets\three\OrbitControls.js
       37,731  assets\utils\BufferGeometryUtils.js
-      33,141  body-atlas.js
 
-Manifest written: _export-manifest.json (55 files, SHA-256 each)
+Manifest written: _export-manifest.json (56 files, SHA-256 each)
 
-Dependency check: 1 MISSING reference(s) - features using them will hang or fail:
-    assets/three/three.module.js   needs   ./three.core.js
+Dependency check: OK - every file referenced by the code exists locally.
