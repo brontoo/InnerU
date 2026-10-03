@@ -1,1 +1,21 @@
 .exc-world{--exc-purple:#a487c4}.exc-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(230px,.75fr);gap:24px;align-items:center;min-height:350px;padding:clamp(26px,4vw,50px);border-radius:26px;background:radial-gradient(circle at 85% 45%,#544b76,#203849 64%);color:#fff;margin-bottom:28px}.exc-hero h1{font-size:clamp(2.8rem,4vw,4.6rem);color:#fff;margin:14px 0}.exc-hero p{font-size:1.05rem;line-height:1.65;color:#e9e4f1;max-width:620px}.exc-hero .eyebrow{color:#d8b7ef}.exc-hero .btn{margin-top:14px}.exc-hero .exc-progress{font-size:.85rem;color:#d1d7eb;margin-top:20px}.exc-hero-art{min-height:290px;display:grid;place-items:center;position:relative;isolation:isolate}.exc-hero-art::before{content:"";position:absolute;inset:8% 2%;border-radius:50%;background:radial-gradient(circle,#e8b4c353,transparent 68%);filter:blur(18px);z-index:-1}.exc-hero-art img{display:block;width:min(100%,350px);height:auto;max-height:390px;object-fit:contain;filter:drop-shadow(0 24px 27px #081e34a0)}.body-atlas.excretory{border-color:#a68fb5;background:radial-gradient(circle at 35% 42%,#554b6c,#18394d 68%)}.body-atlas.excretory .body-atlas-stage{background:radial-gradient(ellipse at 49% 38%,#765f7a66,transparent 61%),linear-gradient(145deg,#344559,#152d43)}.exc-intro{margin:24px 0}.exc-intro h2{margin:9px 0}.exc-locked{color:#667f86;font-size:.86rem}.exc-lab{border-color:#d9c9df}.exc-lab .eyebrow{color:#815d9f}.exc-lab-top{display:flex;justify-content:space-between;align-items:center;color:#79579b;font-weight:800;font-size:.8rem;letter-spacing:.08em;margin-top:17px}.exc-sparks{color:#c47e99}.exc-lab-scene{background:radial-gradient(circle at 50% 35%,#465073,#283851);border-radius:18px;padding:clamp(18px,3vw,30px);min-height:170px;color:#fff;margin-top:9px}.exc-lab-scene h3{font-size:1.16rem;color:#fff;margin:0 0 14px}.exc-lab-scene .resp-choices{margin:0}.exc-lab-scene .resp-choices button{background:#faf3f8;border-color:#dabbd4;color:#354454}.exc-lab-scene .resp-choices button:hover,.exc-lab-scene .resp-choices button:focus-visible,.exc-lab-scene .resp-choices button.resp-correct{background:#a26694;color:#fff}.exc-lab-scene .exc-next{margin-top:16px}.exc-lab-feedback{color:#4a6476;background:#f4eaf4;border-radius:10px;padding:12px;margin-top:12px;min-height:45px}.exc-error{outline:2px solid #d7868c}.body-atlas.excretory .body-atlas-parts button{flex:1 1 122px}.exc-world .resp-mission-header .eyebrow{color:#79579b}@media(max-width:680px){.exc-hero{grid-template-columns:1fr;min-height:0}.exc-hero-art{min-height:210px}.exc-hero-art img{max-height:250px}}
+
+/* interactive labs: sorting chips, bins and the sequence builder */
+.exc-prompt{color:#33596a;margin:8px 0 14px}
+.exc-chips{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}
+.exc-chip{background:#eef6f7;border:1px solid #cfe2e6;border-radius:999px;padding:10px 15px;font-size:.9rem;color:#1d4453;min-height:44px}
+.exc-chip:hover{border-color:#0d7d78}
+.exc-chip[aria-pressed=true]{background:#0d7d78;border-color:#0d7d78;color:#fff}
+.exc-chip.exc-placed{opacity:.45;text-decoration:line-through}
+.exc-bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0}
+.exc-bin{border:2px dashed #cfe2e6;border-radius:14px;padding:14px;background:#fbfdfd;min-height:130px;cursor:pointer}
+.exc-bin:hover,.exc-bin:focus-visible{border-color:#0d7d78;background:#f4fbfa;outline:none}
+.exc-bin h4{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#0d7d78;margin:0 0 8px}
+.exc-bin-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.exc-bin-list li{background:#e2f4f1;border-radius:8px;padding:7px 10px;font-size:.85rem;color:#134a4c}
+.exc-seq{margin:14px 0;padding-left:22px;color:#1d4453}
+.exc-seq li{padding:5px 0;font-size:.92rem}
+.exc-hint{color:#6d8792;font-size:.84rem;margin:10px 0 0}
+.exc-lab-feedback{margin-top:14px}
+.exc-lab-feedback:empty{display:none}
+@media(max-width:640px){.exc-bins{grid-template-columns:1fr}}

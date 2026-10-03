@@ -13,7 +13,7 @@ const SHELL = [
   './style.css', './exhibit.css', './welcome.css', './muscle.css', './muscle-learning.css',
   './body-atlas.css', './respiratory.css', './integumentary.css', './excretory.css',
   './circulatory.css', './capstone.css', './teacher.css',
-  './app.js', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circulatory.js',
+  './content-skeletal.js', './app.js', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circulatory.js',
   './rich-pages.js', './muscle-visuals.js', './muscle-learning.js', './muscle.js',
   './circulatory-integration.js', './respiratory.js', './integumentary.js', './excretory.js',
   './capstone.js', './a11y.js', './teacher.js', './pwa.js',
