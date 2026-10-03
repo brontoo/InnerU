@@ -12,8 +12,12 @@ push-updates.cmd
 # recovery / documentation
 README.md
 SOURCE-BACKUP.md
+_recovery-tools/
 _download-report.txt
 _download-log.txt
 _export-manifest.json
 .gitattributes
 .gitignore
+
+# host-injected bot-challenge script (not part of this project)
+cdn-cgi/

@@ -3,6 +3,9 @@ node_modules/
 dist/
 build/
 
+# host-injected bot-challenge script (belongs to the old host, not to this project)
+cdn-cgi/
+
 # OS noise
 .DS_Store
 Thumbs.db
