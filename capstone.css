@@ -1,0 +1,86 @@
+/* ============================================================================
+   WORLD 07 · Capstone — styles for the final mission and the certificate.
+   Loaded after every world stylesheet so it can re-dress the shared panels.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- home card */
+.final-destination.is-unlocked{border-color:#7cd7c9;box-shadow:0 0 0 1px #7cd7c955,0 12px 30px #123b4614}
+.final-destination .cap-enter{margin-top:14px}
+
+/* ---------------------------------------------------------------- page shell */
+.cap-world{max-width:1080px}
+.cap-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(180px,.5fr);align-items:center;gap:22px;background:radial-gradient(circle at 84% 40%,#176c7380,transparent 70%),linear-gradient(117deg,#0b2035,#10374a 65%,#0d3d48);color:#fff;border-radius:22px;padding:clamp(24px,3.4vw,44px);margin:18px 0 26px}
+.cap-hero h1{font-size:clamp(2rem,3.4vw,3rem);color:#fff;margin:12px 0}
+.cap-hero p{color:#d8e6ea;max-width:620px}
+.cap-hero .eyebrow{color:#8fe3d6}
+.cap-hero-art{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:2.6rem;color:#92e6d9;opacity:.85}
+.cap-hero-art span:nth-child(2){font-size:1.4rem;color:#f4b1bd}
+.cap-meter{margin-top:16px;max-width:420px;color:#cfe6ea;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.cap-meter .bar{background:#ffffff2b}
+.cap-meter .bar i{background:#92e6d9}
+
+/* ---------------------------------------------------------------- stations */
+.cap-station{margin-bottom:18px;border-left:4px solid #d6e6ea;transition:border-color .2s}
+.cap-station.is-done{border-left-color:#159b74;background:#f7fbf9}
+.cap-station-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cap-chip{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:#0d7d78;background:#e2f4f1;border-radius:999px;padding:5px 11px}
+.cap-station.is-done .cap-chip{color:#0d6b4f;background:#dcf3e7}
+.cap-situation{margin:12px 0 6px;padding:12px 14px;background:#eef5f7;border-radius:10px;color:#1d4453;font-size:.95rem}
+.cap-station h3{font-size:1.05rem;margin:12px 0 10px}
+.cap-options{display:grid;gap:9px}
+.cap-options .choice{margin:0}
+.cap-feedback{margin-top:12px}
+.cap-feedback:empty{display:none}
+.cap-link{display:inline-block;margin-top:12px;font-size:.82rem}
+
+/* ---------------------------------------------------------------- synthesis */
+.cap-synthesis{margin-top:26px}
+.cap-synthesis textarea{min-height:130px;font-size:.95rem;line-height:1.6}
+.cap-rubric{margin:18px 0;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.cap-rubric legend{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#4a6d7a;padding:0 6px}
+.cap-rubric label{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-size:.92rem;color:#1d4453}
+.cap-rubric input{margin-top:3px;accent-color:#0d7d78}
+.cap-actions{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+
+/* ---------------------------------------------------------------- certificate */
+.cap-certificate{margin-top:30px;background:linear-gradient(160deg,#f7fbfa,#eef6f8);border-color:#c9e2df}
+.cap-cert-frame{text-align:center;padding:clamp(18px,3vw,38px);border:2px solid #bfe3dc;border-radius:16px;background:#fff}
+.cap-cert-frame .eyebrow{color:#0d7d78}
+.cap-cert-frame h1{font-size:clamp(1.7rem,3vw,2.5rem);margin:14px 0 6px}
+.cap-cert-lead{color:#4a6d7a;margin:6px 0;font-size:.95rem}
+.cap-cert-name{font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:800;color:#0b3b48;margin:6px 0 10px;letter-spacing:-.5px}
+.cap-cert-stats{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:20px 0 8px}
+.cap-cert-stats span{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#4a6d7a}
+.cap-cert-stats b{display:block;font-size:1.5rem;color:#0d7d78;letter-spacing:-.5px}
+
+/* ---------------------------------------------------------------- locked page */
+.cap-locked{margin-top:20px}
+.cap-keygrid{margin:20px 0}
+.cap-key{display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--line);border-radius:12px;text-decoration:none;background:#fff;color:#1d4453}
+.cap-key span{font-size:1.2rem;color:#9db4bd}
+.cap-key small{color:#6d8792;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.cap-key.is-earned{border-color:#9dd8c4;background:#f4fbf7}
+.cap-key.is-earned span{color:#159b74}
+.cap-key.is-earned small{color:#0d6b4f}
+
+/* ---------------------------------------------------------------- dashboard + badges */
+.cap-dashboard .bar{margin:12px 0 16px}
+.cap-total{margin:14px 0 20px;color:#33596a;font-size:.95rem}
+.cap-total b{color:#0b3b48}
+
+/* ---------------------------------------------------------------- responsive */
+@media(max-width:760px){
+  .cap-hero{grid-template-columns:1fr}
+  .cap-hero-art{flex-direction:row;font-size:1.8rem;justify-content:flex-start}
+  .cap-cert-stats{gap:16px}
+}
+
+/* ---------------------------------------------------------------- print: the certificate only */
+@media print{
+  .sidebar,.topbar,.skip,.cap-actions,.cap-locked,.cap-station,.cap-synthesis,.cap-hero,.textlink,footer,.toast{display:none!important}
+  html,body{background:#fff!important}
+  .shell{display:block!important}
+  .main{padding:0!important;max-width:none!important}
+  .cap-certificate{border:0!important;background:#fff!important;margin:0!important;padding:0!important}
+  .cap-cert-frame{border:2px solid #0d7d78!important;border-radius:0!important}
+}
