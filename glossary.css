@@ -1,0 +1,44 @@
+/* ============================================================================
+   Reading support: term highlights, definitions, reader controls, glossary page
+   ========================================================================== */
+.term{border-bottom:2px dotted #7fb6c4;cursor:pointer;padding-bottom:1px}
+.term:hover{border-bottom-color:#0d7d78;background:#eef8f6}
+.term:focus-visible{outline:2px solid #0d7d78;outline-offset:2px;border-radius:3px}
+.term[aria-expanded=true]{border-bottom-color:#0d7d78;background:#e2f4f1}
+.term-pop{position:fixed;z-index:60;background:#fff;border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 14px 40px #0b3b4826;padding:14px 16px;max-width:calc(100vw - 24px)}
+.term-pop[hidden]{display:none}
+.term-pop-word{font-size:1rem;color:#0b3b48}
+.term-pop-ar{display:block;color:#4f6b78;font-size:.86rem;margin-top:3px}
+.term-pop-def{margin:9px 0 12px;font-size:.9rem;color:#1d4453;line-height:1.5}
+.term-pop-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.term-pop-actions .btn{padding:7px 12px;font-size:.82rem;min-height:38px}
+.tts-word{background:#ffe9a8;color:inherit;border-radius:3px}
+.is-reading{background:#f7fdfc;box-shadow:-3px 0 0 #0d7d78;padding-left:9px;border-radius:3px}
+.reader-tools{display:flex;gap:7px;align-items:center;margin-left:14px}
+.reader-btn{background:#eef6f7;border:1px solid #cfe2e6;border-radius:999px;padding:6px 11px;
+  font-size:.76rem;font-weight:700;color:#1d4453;cursor:pointer;white-space:nowrap;min-height:34px}
+.reader-btn:hover{border-color:#0d7d78;color:#0d7d78}
+.reader-btn[aria-pressed=true]{background:#0d7d78;border-color:#0d7d78;color:#fff}
+.reader-note{display:none;font-size:.72rem;color:#b4636c;max-width:190px;line-height:1.3}
+.reader-note.is-visible{display:inline}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.glossary-page{max-width:1000px}
+.glossary-page h1{margin:8px 0 6px}
+.glossary-group{margin-top:18px}
+.glossary-list{display:grid;grid-template-columns:minmax(140px,220px) 1fr;gap:6px 18px;margin:12px 0 0}
+.glossary-list dt{font-weight:700;color:#0b3b48;font-size:.9rem;padding-top:4px}
+.glossary-list dt span{display:block;font-weight:400;color:#4f6b78;font-size:.84rem}
+.glossary-list dd{margin:0;font-size:.9rem;color:#1d4453;line-height:1.5;padding-top:4px}
+@media(max-width:760px){
+  .reader-tools{margin-left:0}
+  #tts-rate{display:none}
+  .glossary-list{grid-template-columns:1fr;gap:2px}
+  .glossary-list dd{margin-bottom:10px}
+}
+@media print{
+  .reader-tools,.term-pop{display:none!important}
+  .term{border-bottom:none}
+  .glossary-list{grid-template-columns:1fr 1fr}
+  .glossary-group{break-inside:avoid}
+}

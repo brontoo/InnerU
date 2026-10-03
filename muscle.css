@@ -35,3 +35,16 @@
 @media(max-width:750px){.mq-landing .mq-path{grid-template-columns:1fr}.mq-landing .mq-hero{grid-template-columns:minmax(0,1fr) 210px;min-height:0}.mq-landing .mq-body-hero{height:230px}.mq-landing .mq-hero-stats{gap:16px}.mq-landing .mq-hero-stats span{font-size:.75rem}.mq-landing .mq-boss-banner{grid-template-columns:1fr}.mq-landing .mq-boss-banner img{max-height:230px;min-height:0}}
 @media(max-width:600px){.mq-landing{gap:22px}.mq-landing .mq-hero{grid-template-columns:1fr;padding:24px;gap:4px}.mq-landing .mq-hero h1{font-size:clamp(2.05rem,10vw,3rem)}.mq-landing .mq-body-hero{width:min(100%,250px);height:230px;margin:0 auto 18px}.mq-landing .mq-hero-stats{justify-content:space-between}.mq-landing .mq-hero-stats span{flex:1 1 90px}.mq-landing .mq-process{grid-template-columns:repeat(2,minmax(0,1fr))}.mq-landing .mq-process span:nth-child(3):before{display:none}.mq-landing .mq-pair-card{grid-template-columns:1fr}.mq-landing .mq-completion-state{align-items:flex-start}.mq-landing .mq-completion-state strong{font-size:1.7rem}}
 @media(max-width:380px){.mq-landing .mq-essential-grid,.mq-landing .mq-term-grid{grid-template-columns:1fr}.mq-landing .mq-path-card,.mq-landing .mq-path-card:nth-child(even){grid-template-columns:1fr}.mq-landing .mq-path-art{max-width:160px}.mq-landing .mq-completion-state{flex-direction:column}}
+
+/* force vs load simulator (integration layer, mission 2) */
+.mq-force{margin-top:22px}
+.mq-force-grid{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(240px,1.2fr);gap:20px;align-items:start}
+.mq-force-art{display:grid;place-items:center;gap:8px;padding:14px;background:#eef6f7;border-radius:14px;text-align:center}
+.mq-force-bar{width:100%;height:14px;border-radius:8px;background:#dbe9ea;overflow:hidden}
+.mq-force-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7cd7c9,#0d7d78);transition:width .15s}
+.mq-force-load i{background:linear-gradient(90deg,#f0b3b8,#b4636c)}
+.mq-force-state{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:#4f6b78}
+.mq-force-state.is-lift{color:#0d7d78}
+.mq-force-state.is-heavy{color:#b4636c}
+.mq-force label{display:block;margin:12px 0 4px;font-size:.85rem;color:#33596a}
+@media(max-width:760px){.mq-force-grid{grid-template-columns:1fr}}

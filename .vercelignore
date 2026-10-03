@@ -21,3 +21,6 @@ _export-manifest.json
 
 # host-injected bot-challenge script (not part of this project)
 cdn-cgi/
+
+# development-time verification harnesses
+_dev-tools/

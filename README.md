@@ -1,184 +1,139 @@
 # InnerU — Explore What's Inside
 
-Interactive, gamified human-body learning site for **Grade 10 Science** at **Um Al-Emarat School**.
-Six "worlds" = six body systems, each with missions, three checks per mission, a final challenge and a **System Key**.
+Interactive, gamified human-body learning for **Grade 10 Science** at **Um Al-Emarat School**.
+Plain HTML / CSS / JavaScript: **no build step, no framework, no dependencies, no server**.
 
-Plain HTML / CSS / JavaScript. **No build step, no framework, no dependencies.**
-
----
-
-## Daily workflow — two double-clicks
-
-| Click this | When | What it does |
-|---|---|---|
-| **`start-work.cmd`** | when you sit down to work | pulls the latest changes from GitHub, then starts the local server and opens the site |
-| **`push-updates.cmd`** | when you finish | commits every change and pushes it to GitHub → Vercel redeploys automatically |
-
-Both live in this folder. Nothing else to type — on any computer.
-
-**Golden rule with two computers:** click `push-updates.cmd` before you leave one, and `start-work.cmd`
-when you arrive at the other. Never edit on both at the same time.
-
-> **Why not just open `index.html`?** The 3D labs use ES modules (`heart-explorer.js`, `body-atlas.js`)
-> and load `.glb` models with `fetch()`. Browsers block both on `file://` URLs, so the 3D viewers stay
-> on "Loading…" forever. Always go through the local server.
-
-`serve.ps1` is a self-contained static server (no admin rights, no internet, no extra installs).
-Manual use: `powershell -ExecutionPolicy Bypass -File .\serve.ps1 -Port 5500 -NoBrowser`
+Six worlds (one per body system) + a final mission that ties them together, a
+spaced-practice review system, classroom tools for the teacher, and an offline copy
+for weak wifi.
 
 ---
 
-## Setting the project up on a second computer (e.g. your laptop)
+## What a student does
 
-1. Install **Git for Windows**: https://git-scm.com/download/win (defaults are fine).
-2. Open PowerShell and run:
-   ```powershell
-   cd C:\
-   git clone https://github.com/brontoo/InnerU.git InnerU
-   ```
-   Sign in with the GitHub account that owns the repository (**brontoo**).
-3. Open `C:\InnerU` and double-click **`start-work.cmd`** — that is the whole setup.
-
-Tips
-
-- Clone **outside OneDrive / Google Drive** (e.g. `C:\InnerU`). Cloud sync and Git fight over the
-  `.git` folder — GitHub is your sync mechanism.
-- Optional one-time identity, so commits carry your name instead of "InnerU Backup":
-  ```powershell
-  git config --global user.name  "Ahmed"
-  git config --global user.email "you@example.com"
-  ```
-- `serve.ps1`, `dev.cmd`, `start-work.*` and `push-updates.*` are development helpers: they live in the
-  repo but are excluded from the public deployment by `.vercelignore`.
-
----
-
-## Deploy
-
-The repository root **is** the deployable site — there is nothing to build.
-
-| Host | How |
+| Where | What it is |
 |---|---|
-| Cloudflare Pages | Direct Upload, or connect this repo (build command: *none*, output: `/`) |
-| Netlify | drag the folder onto https://app.netlify.com/drop, or connect the repo |
-| GitHub Pages | Settings → Pages → deploy from branch `main`, folder `/` |
-| Any static host | copy the folder |
+| `#home` | the human systems map: six worlds, each with missions, checks and a System Key |
+| `#world`, `#integumentary`, `#muscle`, `#respiratory`, `#circulatory`, `#excretory` | the six worlds: 6–7 missions each, an interactive lab, three checks per mission, and a final challenge that earns the Key |
+| `#mission/N` | a skeletal-system mission (World 02; its content lives in `content-skeletal.js`) |
+| `#detective`, `#connect`, `#badges`, `#daily` | Body Detective cases, System Connections, achievements, the daily question |
+| `#final` | **Keep the body alive** — the capstone: one scenario, six applied decisions across all six systems, a written synthesis, and a printable certificate (unlocked with 6/6 System Keys) |
+| `#review` | **spaced practice**: 54 questions from all six systems, Leitner boxes (1 · 3 · 7 · 16 days), missed items return first |
+| `#glossary` | every key term in the six systems, one sentence each, with the Arabic term beside it |
+| `#teacher` | **classroom tools** (see below) |
 
-Routing is hash-based (`#world`, `#mission/3`, `#respiratory/mastery`), so **no SPA rewrite rules are needed**.
-`404.html` is a copy of the shell used as a fallback.
+Progress is stored in **`localStorage`** under `bodyquest-v1`; nothing is uploaded.
+
+Two reading supports run on every lesson page: **tap any underlined term** for a one-sentence
+definition with the Arabic word beside it, and **▶ Listen** to have the page read aloud with the
+words highlighted as they are spoken. Both respect a per-student preference and need no network.
+
+## What the teacher gets (`#teacher`)
+
+* A **progress code** per student (about 90 characters, checksum protected) that moves
+  a student between devices.
+* A **class list** built by pasting codes or saving the current device, printable as a
+  one-page PDF.
+* **"Finish for the next student"** — one tap to clear a shared tablet, with a
+  10-minute undo.
+
+## Daily workflow (two double-clicks)
+
+| Click | When | What it does |
+|---|---|---|
+| `start-work.cmd` | when you sit down | pulls from GitHub, starts the local server, opens the site |
+| `push-updates.cmd` | when you finish | commits and pushes → Vercel redeploys |
+
+Always work through `start-work.cmd` (or `dev.cmd`): the 3D labs use ES modules and
+`fetch()` for `.glb` models, which browsers block on `file://`.
 
 ---
 
 ## Architecture
 
-```
-index.html          loads 10 stylesheets, 14 classic scripts, then 2 ES modules — in a deliberate order
-app.js              core: state, storage, router, layout, home / world / mission / dashboard / badges /
-                    detective / connect / daily / info, progression + XP + badges
-anatomy.js          body map drawing used by the home screen
-visuals.js          muscle/micro-anatomy SVG generators
-body-atlas-ui.js    shared 3D "atlas" markup + helpers
-body-atlas.js       (ES module) three.js scene builder for the atlases
-heart-explorer.js   (ES module) interactive 3D heart
-shoulder.js         extra atlas part data
-rich-pages.js       presentation layer for the skeletal world pages
-muscle*.js          muscular world: missions, learning widgets, visuals
-circulatory*.js     circulatory world: 7 missions, mastery, boss, dashboard/badges integration
-respiratory.js      respiratory world (6 missions + final challenge)
-integumentary.js    integumentary world (6 missions + final challenge)
-excretory.js        excretory world (6 missions + final challenge)
-*.css               one stylesheet per world + shared style.css / exhibit.css
-assets/three/       vendored three.js r-? (three.module.js, GLTFLoader.js, OrbitControls.js)
-assets/*.glb        anatomical 3D models (heart, muscle additions)
-assets/*.webp       photographic assets
-```
+### The shell
 
-### The extension pattern (important)
+`index.html` loads, in this order:
 
-Each world is a self-contained module that *wraps* the core without editing it:
+**Stylesheets (14)** — ``teacher.css` · `review.css` · `habit.css` · `style.css` · `exhibit.css` · `muscle.css` · `muscle-learning.css` · `welcome.css` · `circulatory.css` · `body-atlas.css` · `respiratory.css` · `integumentary.css` · `excretory.css` · `capstone.css``
+
+**Scripts (21)** — ``anatomy.js` · `visuals.js` · `body-atlas-ui.js` · `content-skeletal.js` · `app.js` · `circulatory.js` · `rich-pages.js` · `muscle-visuals.js` · `muscle-learning.js` · `muscle.js` · `circulatory-integration.js` · `respiratory.js` · `integumentary.js` · `excretory.js` · `capstone.js` · `a11y.js` · `teacher.js` · `review.js` · `habit.js` · `muscle-force.js` · `pwa.js``
+
+**On-demand modules (`body-atlas.js`, `heart-explorer.js`)** — imported only when a 3D view is on screen, so the ~2 MB
+three.js bundle is not downloaded by pages that do not need it.
+
+`404.html` is a byte-identical copy of `index.html`, used as the fallback shell.
+
+### The extension pattern
+
+Nothing edits the core. Every world and every later feature is an **outer wrapper**:
 
 ```js
-const oldRoute = route;
-window.removeEventListener('hashchange', oldRoute);
-route = function () { /* my hashes first */ ... else oldRoute(); };
+const previousRoute = route;
+window.removeEventListener('hashchange', previousRoute);
+route = function () { /* my routes first */ ... ; previousRoute(); };
 window.addEventListener('hashchange', route);
 
-const oldHome = home;   home = function(){ oldHome(); /* decorate the home screen */ };
-const oldPortal = portal; portal = function(i){ if(i!==MY_INDEX) return oldPortal(i); /* my card */ };
+const previousHome = home; home = function () { previousHome(); /* decorate */ };
 ```
 
-**Load order in `index.html` matters**: the last loaded module becomes the outermost wrapper and
-runs its decorations last. If you add a world, append its script tag after the existing ones.
+Loading order therefore matters: the last script loaded is the outermost wrapper.
+`glossary.js` marks key terms in the rendered text and `speech.js` reads a page aloud — both
+are wrappers too, so no world file knows they exist. `a11y.js` decorates whatever the worlds rendered (progress-bar roles, focus, titles),
+and `habit.js` / `teacher.js` / `review.js` / `capstone.js` / `muscle-force.js` add
+their layers on top.
 
-### State model
+### State
 
-- One `localStorage` key: **`bodyquest-v1`** (see `save()` / the `state` object in `app.js`).
-- Global slice: `state.name`, `state.xp`, `state.done[]` (skeletal world: missions 1–7 + boss 8),
-  `state.rewards[]`, `state.weak[]`, `state.level` (Explorer / Challenger / Master), `state.motion`.
-- Per-world slice: `state.integumentary`, `state.respiratory`, `state.excretory`, `state.circ`, `state.muscle`
-  — each `{ done: [], steps: {}, mastery: bool }`.
-- Six System Keys: one per world, earned by finishing that world's final challenge.
+```
+bodyquest-v1
+├── name, xp, level, motion, rewards[], weak[]      (skeletal world lives here)
+├── integumentary / respiratory / excretory  { done[], steps{}, mastery, weak[] }
+├── circ   { done[], steps[], mastery, boss }
+├── muscle { done[], tasks{}, weak[], xp }
+├── capstone { done, date, stations{}, response, rubric[] }
+├── review   { items{ box, lastSeen, due }, answers, correct, sessions }
+└── habit    { last, streak, best, days{}, dismissed }
+```
 
-### Routes
+Six **System Keys** are counted by one function (`keysEarned()` in `app.js`), used by
+the home card, the dashboard and the capstone gate.
 
-`#home` `#world` `#mission/N` `#dashboard` `#detective` `#connect` `#badges` `#daily`
-`#sources` `#about` `#privacy` `#attribution`
-plus per world: `#respiratory[/mission/N|/mastery]`, `#integumentary[...]`, `#excretory[...]`,
-`#muscle[/mission/N|/complete|/review]`, `#circulatory[/N|/mastery|/boss]`
+### Content
 
----
+* `content-skeletal.js` — World 02 content only (missions, 24 assessment items, cases, references)
+* every other world keeps its lessons, labs and checks at the top of its own file
+* `review.js` holds the 54-item review pool
+* `capstone.js` holds the final-mission scenario and rubric
 
-## Provenance and changes
+## Offline and performance
 
-This repository began as a **byte-exact export of the published site** (see `SOURCE-BACKUP.md`
-and `_export-manifest.json`). The first commit is the untouched export; every later commit is a
-deliberate change. Current changes:
+* `sw.js` + `manifest.webmanifest` (registered by `pwa.js`) make the site installable
+  and usable without wifi: **network-first** for the shell and code so a push is picked
+  up immediately, **stale-while-revalidate** for large immutable assets.
+* `/?nosw=1` skips the service worker — use it if a stale offline copy ever gets in the way.
+* 3D payload per route: skeleton 2.2 MB, muscular 4.7 MB, skin 1.1 MB, heart 0.6 MB.
+  These `.glb` files ship uncompressed; compressing them (Draco/meshopt) is the main
+  remaining performance win.
 
-1. **Fixed `NaN`** shown to students — `Number(someState.mastery)` on a fresh profile evaluates to
-   `NaN` (`undefined` coerced). Affected: `respiratory.js` (percent + `/6 keys`), and the same latent
-   pattern in `circulatory-integration.js`.
-2. **Removed the Cloudflare bot-challenge snippet** that the host had injected into `index.html` and
-   `404.html`, and deleted the downloaded `cdn-cgi/` folder. It belongs to the old host, not the app.
-3. Added `serve.ps1`, `dev.cmd`, `package.json`, `README.md`, `SOURCE-BACKUP.md`, `.gitignore`,
-   `.gitattributes`.
+## Deploy
 
----
+The repository root **is** the site; there is nothing to build. Vercel deploys it on
+every push (`.vercelignore` keeps the development tools and docs out of the deployment,
+`vercel.json` sets cache headers). Netlify, Cloudflare Pages and GitHub Pages work too —
+routing is hash-based, so no rewrite rules are needed.
 
-## Content credits
+## Development tools
 
-In-app: `#sources`, `#attribution`, `#about`, `#privacy`.
-The 3D heart mesh is derived from **DBCLS BodyParts3D** (CC BY-SA 2.1 Japan); textbook figures are not
-reproduced. Progress is stored only in the student's own browser.
+`_dev-tools/` holds the headless verification harnesses used while building the site.
+They serve this folder read-only on a local port and drive the real pages in Chrome:
+run `python _dev-tools/verify-stage6.py`, open the printed URL, and read the PASS/FAIL
+report. They are excluded from the deployment.
 
----
+## Provenance
 
-## ملخص سريع بالعربية
-
-**نظام العمل بملفين، على أي جهاز:**
-
-- **`start-work.cmd`** — ابدأ جلستك: يجلب آخر التعديلات من GitHub، ثم يشغّل الموقع محليًا ويفتح المتصفح.
-- **`push-updates.cmd`** — أنهِ جلستك: يثبّت كل تعديلاتك ويدفعها إلى GitHub، وVercel ينشر تلقائيًا.
-
-**القاعدة الذهبية عند العمل من جهازين:** اضغط `push-updates.cmd` قبل أن تترك أي جهاز، واضغط
-`start-work.cmd` عند وصولك للجهاز الآخر. لا تعدّل على الجهازين في وقت واحد.
-
-**تجهيز المشروع على اللاب توب (مرة واحدة فقط):**
-
-1. ثبّت **Git for Windows** من https://git-scm.com/download/win
-2. افتح PowerShell واكتب:
-   ```powershell
-   cd C:\
-   git clone https://github.com/brontoo/InnerU.git InnerU
-   ```
-   سجّل الدخول بحساب **brontoo** (مالك المستودع).
-3. افتح `C:\InnerU` وانقر مرتين على **`start-work.cmd`** — انتهى الإعداد.
-
-**ملاحظات:**
-
-- لا تضع مجلد العمل داخل OneDrive على اللاب توب (استخدم `C:\InnerU`) — المزامنة عبر Git لا OneDrive.
-- لا تفتح `index.html` مباشرة أبدًا؛ استخدم دائمًا `start-work.cmd` (مختبرات 3D لا تعمل من نظام الملفات).
-- **للنشر:** ارفع المجلد كما هو إلى Cloudflare Pages أو Netlify — لا توجد عملية بناء، والتوجيه بـ `#hash`
-  فلا تحتاج قواعد إعادة كتابة. (وهو منشور حاليًا على Vercel تلقائيًا من GitHub.)
-- **لإضافة عالم جديد:** ملف JS مستقل يلتفّ حول `route`/`home`/`portal`، ويُضاف في نهاية قائمة السكربتات
-  في `index.html`، مع مقطع حالة خاص به في `state`.
-- **التقدّم** يُحفظ في `localStorage` تحت المفتاح `bodyquest-v1`.
+The source was recovered from the published site after ChatGPT Sites became unreachable —
+see `SOURCE-BACKUP.md` and `_export-manifest.json`. Since then the project has been
+restructured: the NaN fixes, the Cloudflare snippet removal, the recovered 3D assets,
+the six interactive labs, the capstone, review, teacher tools and the habit layer.
+The manifest describes the **original export**, not the current tree.

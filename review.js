@@ -92,7 +92,8 @@
   }
   const entry = id => { const r = data(); const e = r.items[id]; return e && typeof e === 'object' ? e : null; };
   const boxOf = id => (entry(id) ? Math.min(4, Math.max(0, Number(entry(id).b) || 0)) : 0);
-  const dueAt = id => { const e = entry(id); if (!e) return 0; return (Number(e.t) || 0) + INTERVALS[boxOf(id)] * DAY; };
+  /* the stored due date is authoritative; fall back to box + last seen */
+  const dueAt = id => { const e = entry(id); if (!e) return 0; return Number(e.d) || ((Number(e.t) || 0) + INTERVALS[boxOf(id)] * DAY); };
   const isNew = id => !entry(id);
   const isDue = (id, now) => !isNew(id) && dueAt(id) <= now;
 
@@ -287,6 +288,9 @@
       }
     };
   }
+
+  /* Small public accessor so the habit layer can quote real numbers. */
+  window.inneruReviewStats = () => ({ pool: ITEMS.length, due: dueCount(), next: nextDueLabel() });
 
   route();
 })();

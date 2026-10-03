@@ -1,0 +1,19 @@
+/* ============================================================================
+   Habit layer
+   ========================================================================== */
+.habit-chip{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:700;color:#0d7d78;background:#e2f4f1;border-radius:999px;padding:5px 11px}
+.habit-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  background:linear-gradient(110deg,#e6f6f3,#f2fbf9);border:1px solid #bfe3dc;border-left:4px solid #0d7d78;
+  border-radius:14px;padding:14px 18px;margin-bottom:20px;color:#1d4453;font-size:.93rem}
+.habit-banner-actions{display:flex;gap:10px;flex-wrap:wrap}
+.habit-card h2{margin:6px 0 12px;font-size:1.5rem}
+.habit-dots{display:flex;gap:6px;margin:4px 0 16px}
+.habit-dot{width:16px;height:16px;border-radius:50%;background:#e2ebed;display:block}
+.habit-dot.is-on{background:#0d7d78}
+.habit-plan{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.habit-plan li{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.habit-plan li.is-done{background:#f6fbf9;border-color:#cfe7dd}
+.habit-plan li span{font-size:1.1rem;color:#9db4bd}
+.habit-plan li.is-done span{color:#159b74}
+.habit-plan li b{display:block;font-size:.95rem}
+.habit-plan li a{font-size:.84rem}
