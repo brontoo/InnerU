@@ -7,20 +7,49 @@ Plain HTML / CSS / JavaScript. **No build step, no framework, no dependencies.**
 
 ---
 
-## Run it locally
+## Daily workflow — two double-clicks
 
-Double-click **`dev.cmd`**, or:
+| Click this | When | What it does |
+|---|---|---|
+| **`start-work.cmd`** | when you sit down to work | pulls the latest changes from GitHub, then starts the local server and opens the site |
+| **`push-updates.cmd`** | when you finish | commits every change and pushes it to GitHub → Vercel redeploys automatically |
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\serve.ps1          # http://localhost:8080
-powershell -ExecutionPolicy Bypass -File .\serve.ps1 -Port 5500 -NoBrowser
-```
+Both live in this folder. Nothing else to type — on any computer.
+
+**Golden rule with two computers:** click `push-updates.cmd` before you leave one, and `start-work.cmd`
+when you arrive at the other. Never edit on both at the same time.
 
 > **Why not just open `index.html`?** The 3D labs use ES modules (`heart-explorer.js`, `body-atlas.js`)
-> and load `.glb` models with `fetch()`. Browsers block both on `file://` URLs, so the 3D viewers
-> fail silently when the file is opened directly. Always use the local server for development.
+> and load `.glb` models with `fetch()`. Browsers block both on `file://` URLs, so the 3D viewers stay
+> on "Loading…" forever. Always go through the local server.
 
 `serve.ps1` is a self-contained static server (no admin rights, no internet, no extra installs).
+Manual use: `powershell -ExecutionPolicy Bypass -File .\serve.ps1 -Port 5500 -NoBrowser`
+
+---
+
+## Setting the project up on a second computer (e.g. your laptop)
+
+1. Install **Git for Windows**: https://git-scm.com/download/win (defaults are fine).
+2. Open PowerShell and run:
+   ```powershell
+   cd C:\
+   git clone https://github.com/brontoo/InnerU.git InnerU
+   ```
+   Sign in with the GitHub account that owns the repository (**brontoo**).
+3. Open `C:\InnerU` and double-click **`start-work.cmd`** — that is the whole setup.
+
+Tips
+
+- Clone **outside OneDrive / Google Drive** (e.g. `C:\InnerU`). Cloud sync and Git fight over the
+  `.git` folder — GitHub is your sync mechanism.
+- Optional one-time identity, so commits carry your name instead of "InnerU Backup":
+  ```powershell
+  git config --global user.name  "Ahmed"
+  git config --global user.email "you@example.com"
+  ```
+- `serve.ps1`, `dev.cmd`, `start-work.*` and `push-updates.*` are development helpers: they live in the
+  repo but are excluded from the public deployment by `.vercelignore`.
 
 ---
 
@@ -125,10 +154,31 @@ reproduced. Progress is stored only in the student's own browser.
 
 ## ملخص سريع بالعربية
 
-- **للتشغيل:** انقر مرتين على `dev.cmd` — سيفتح الموقع على `http://localhost:8080`
-  (لا تفتح `index.html` مباشرة، لأن مختبرات 3D لا تعمل من نظام الملفات).
-- **للنشر:** ارفع المجلد كما هو إلى Cloudflare Pages أو Netlify — لا توجد عملية بناء.
-  التوجيه بـ `#hash` فلا تحتاج قواعد إعادة كتابة.
-- **لإضافة عالم جديد:** ملف JS مستقل يلتفّ حول `route`/`home`/`portal`، ويُضاف في نهاية قائمة
-  السكربتات في `index.html`، مع مقطع حالة خاص به في `state`.
+**نظام العمل بملفين، على أي جهاز:**
+
+- **`start-work.cmd`** — ابدأ جلستك: يجلب آخر التعديلات من GitHub، ثم يشغّل الموقع محليًا ويفتح المتصفح.
+- **`push-updates.cmd`** — أنهِ جلستك: يثبّت كل تعديلاتك ويدفعها إلى GitHub، وVercel ينشر تلقائيًا.
+
+**القاعدة الذهبية عند العمل من جهازين:** اضغط `push-updates.cmd` قبل أن تترك أي جهاز، واضغط
+`start-work.cmd` عند وصولك للجهاز الآخر. لا تعدّل على الجهازين في وقت واحد.
+
+**تجهيز المشروع على اللاب توب (مرة واحدة فقط):**
+
+1. ثبّت **Git for Windows** من https://git-scm.com/download/win
+2. افتح PowerShell واكتب:
+   ```powershell
+   cd C:\
+   git clone https://github.com/brontoo/InnerU.git InnerU
+   ```
+   سجّل الدخول بحساب **brontoo** (مالك المستودع).
+3. افتح `C:\InnerU` وانقر مرتين على **`start-work.cmd`** — انتهى الإعداد.
+
+**ملاحظات:**
+
+- لا تضع مجلد العمل داخل OneDrive على اللاب توب (استخدم `C:\InnerU`) — المزامنة عبر Git لا OneDrive.
+- لا تفتح `index.html` مباشرة أبدًا؛ استخدم دائمًا `start-work.cmd` (مختبرات 3D لا تعمل من نظام الملفات).
+- **للنشر:** ارفع المجلد كما هو إلى Cloudflare Pages أو Netlify — لا توجد عملية بناء، والتوجيه بـ `#hash`
+  فلا تحتاج قواعد إعادة كتابة. (وهو منشور حاليًا على Vercel تلقائيًا من GitHub.)
+- **لإضافة عالم جديد:** ملف JS مستقل يلتفّ حول `route`/`home`/`portal`، ويُضاف في نهاية قائمة السكربتات
+  في `index.html`، مع مقطع حالة خاص به في `state`.
 - **التقدّم** يُحفظ في `localStorage` تحت المفتاح `bodyquest-v1`.

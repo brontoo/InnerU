@@ -4,6 +4,8 @@
 # development helpers
 serve.ps1
 dev.cmd
+start-work.ps1
+start-work.cmd
 push-updates.ps1
 push-updates.cmd
 
