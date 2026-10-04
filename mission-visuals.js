@@ -61,7 +61,7 @@
   }
 
   /* diagrams taller than the standard panel */
-  const TALL = { integumentary: { 1: 400, 2: 400 } };
+  const TALL = { integumentary: { 1: 400, 2: 400 }, respiratory: { 1: 400, 2: 400 } };
 
 
   /* --------------------------------------------------------------------------
@@ -213,27 +213,127 @@
       'A clot seals the wound, then dividing cells rebuild the skin beneath the scab.',
   ];
 
+
+  /* --------------------------------------------------------------------------
+     A full respiratory figure: head in profile, airway, lobed lungs with the
+     bronchial tree, and the diaphragm. Modelled on the supplied reference.
+     opts: { numbered, flow, arrows }
+     ------------------------------------------------------------------------ */
+  function bronchialTree() {
+    let o = '';
+    // two main bronchi splitting from the trachea base
+    o += path('M258 186 q-24 10 -40 24', 'ra-bronchus') + path('M258 186 q26 10 44 24', 'ra-bronchus');
+    // second and third generation branches, then alveolar clusters
+    const branches = [
+      [218, 210, -26, 34], [218, 210, -6, 46], [302, 210, 28, 34], [302, 210, 8, 46],
+      [212, 236, -22, 30], [206, 254, -16, 34], [308, 236, 24, 30], [314, 254, 18, 34]
+    ];
+    branches.forEach(([x, y, dx, dy], i) => {
+      o += path(`M${x} ${y} q${dx * .5} ${dy * .4} ${dx} ${dy}`, 'ra-bronchiole');
+      const ex = x + dx, ey = y + dy;
+      o += [...Array(4)].map((_, k) => {
+        const a = (k / 4) * Math.PI * 2 + i;
+        return circ(ex + Math.cos(a) * 9, ey + Math.sin(a) * 8, 4.6, 'ra-alveoli');
+      }).join('');
+    });
+    return o;
+  }
+
+  function lungAnatomy(opts) {
+    const o0 = opts || {};
+    let o = '';
+    /* head and neck */
+    o += path('M232 40 q46 -8 60 26 q10 24 -4 40 l14 6 q-6 12 -22 12 q-4 14 -22 16 q-30 3 -38 -22 q-8 -28 12 -78 z', 'ra-head');
+    o += path('M286 70 q10 4 8 14 q-2 8 -10 6', 'ra-nose');
+    o += path('M240 84 q10 6 6 16', 'ra-ear');
+    o += path('M252 128 q10 6 10 22 v10', 'ra-neck');
+    /* torso */
+    o += path('M232 158 q-74 6 -92 46 q-12 28 -10 72 q2 26 10 30 q96 12 200 2 q22 -4 24 -30 q4 -48 -12 -74 q-18 -44 -96 -46 z', 'ra-torso');
+    /* nasal cavity, pharynx, larynx */
+    o += path('M264 62 q22 2 22 14 q0 10 -16 12 q-14 1 -18 -10 q-3 -14 12 -16 z', 'ra-nasal');
+    o += path('M262 92 q14 2 14 16 q0 12 -10 18 q-12 4 -16 -10 q-4 -16 12 -24 z', 'ra-pharynx');
+    o += path('M256 128 q14 0 14 12 q0 10 -10 12 q-12 0 -12 -12 q0 -10 8 -12 z', 'ra-larynx');
+    o += path('M250 124 q10 -10 20 -2 l-4 6 q-8 -5 -14 2 z', 'ra-epiglottis');
+    /* trachea with cartilage rings */
+    o += path('M258 140 V190', 'ra-trachea');
+    o += [...Array(6)].map((_, i) => path(`M250 ${146 + i * 8} q8 -3 16 0`, 'ra-ring')).join('');
+    /* lungs: lobed, with a notch on the left */
+    o += path('M244 196 q-46 -16 -72 10 q-22 22 -18 62 q4 34 30 36 q30 2 46 -22 q14 -22 14 -50 z', 'ra-lung');
+    o += path('M272 196 q46 -16 72 10 q22 22 18 62 q-4 34 -30 36 q-30 2 -46 -22 q-14 -22 -14 -50 z', 'ra-lung');
+    o += path('M244 214 q-30 -6 -44 16 q-12 20 -10 44 q12 -34 42 -40 z', 'ra-lobe-line');
+    o += path('M272 214 q30 -6 44 16 q12 20 10 44 q-12 -34 -42 -40 z', 'ra-lobe-line');
+    o += path('M262 236 q-16 22 -34 34', 'ra-fissure') + path('M278 236 q16 22 34 34', 'ra-fissure');
+    /* bronchial tree inside the lungs */
+    o += `<g class="ra-tree">${bronchialTree()}</g>`;
+    /* diaphragm */
+    o += path('M154 300 q46 -30 98 -22 q54 8 100 22 l8 14 q-108 12 -214 0 z', 'ra-diaphragm');
+    o += [...Array(7)].map((_, i) => path(`M${168 + i * 32} 300 q10 -10 20 0`, 'ra-diaphragm-fibre')).join('');
+
+    if (o0.flow) o += flow('M258 148 V186 q-24 12 -40 26', 3.4) + flow('M258 148 V186 q26 12 44 26', 3.4);
+
+    if (o0.arrows) {
+      o += arrow(120, 70, 236, 62) + L(38, 62, 'O₂ in', 'start', 14);
+      o += arrow(232, 96, 118, 104) + L(30, 118, 'CO₂ out', 'start', 14);
+      o += rr(430, 210, 210, 130, 14, 'ra-cell') + L(452, 200, 'Body cell', 'start', 13.5);
+      o += circ(500, 262, 20, 'ra-nucleus') + L(452, 300, 'Oxygen used,', 'start', 12.5) + L(452, 316, 'ATP released', 'start', 12.5);
+      o += arrow(400, 232, 428, 244) + arrow(428, 300, 400, 288);
+      o += `<circle class="ra-atp ma-breathe" cx="600" cy="288" r="13"/>` + L(586, 320, 'ATP', 'middle', 12.5);
+    }
+
+    if (o0.numbered) {
+      const tag = (n, x, y, name, lx, ly) => circ(x, y, 11, 'ra-num') +
+        L(x, y + 4.5, String(n), 'middle', 12).replace('class="ma-l"', 'class="ra-num-l"') +
+        lead(x, y, lx, ly) + L(lx + (lx > x ? 8 : -8), ly + 5, name, lx > x ? 'start' : 'end', 13);
+      o += tag(1, 300, 74, 'Nose', 352, 52);
+      o += tag(2, 268, 74, 'Nasal cavity', 432, 74);
+      o += tag(3, 268, 108, 'Pharynx', 432, 104);
+      o += tag(4, 262, 136, 'Larynx', 432, 134);
+      o += tag(5, 258, 168, 'Trachea', 432, 166);
+      o += tag(6, 276, 200, 'Bronchi', 432, 196);
+      o += tag(7, 214, 250, 'Lungs', 92, 232);
+      o += tag(8, 190, 268, 'Alveoli', 92, 288);
+      o += tag(9, 258, 306, 'Diaphragm', 432, 314);
+    }
+    return o;
+  }
+
+  /* three panels for the respiratory lab: the three linked events */
+  function respEvents() {
+    const panel = (py, title, event, body) =>
+      `<g class="ra-event" data-event="${event}">` +
+        rr(10, py, 440, 122, 14, 'ra-panel') +
+        L(28, py + 26, title, 'start', 13.5) +
+        body +
+      '</g>';
+    let inner = '';
+    /* ventilation: the chest and diaphragm move air in and out */
+    inner += panel(10, 'VENTILATION', 'ventilation',
+      arrow(150, 112, 150, 52) + L(118, 62, 'air in', 'middle', 13) +
+      arrow(240, 52, 240, 112) + L(272, 62, 'air out', 'middle', 13) +
+      path('M108 118 q62 -16 124 0', 'ra-dome') + path('M108 112 q62 -16 124 0', 'ra-dome-line') +
+      L(356, 62, 'Pressure', 'start', 12.5) + L(356, 80, 'drives the', 'start', 12.5) + L(356, 98, 'air flow', 'start', 12.5));
+    /* external exchange: at the alveolus, across a one-cell wall */
+    inner += panel(140, 'EXTERNAL EXCHANGE', 'exchange',
+      circ(150, 202, 34, 'ra-alveolus') + path('M116 202 q34 -22 68 0 q-34 22 -68 0 z', 'ra-cap') +
+      arrow(224, 174, 186, 188) + L(230, 172, 'O₂ in', 'start', 13) +
+      arrow(186, 222, 224, 236) + L(230, 242, 'CO₂ out', 'start', 13) +
+      L(290, 194, 'Alveolus meets', 'start', 12.5) + L(290, 212, 'a lung capillary', 'start', 12.5));
+    /* cellular respiration: the cell releases ATP */
+    inner += panel(270, 'CELLULAR RESPIRATION', 'cellular',
+      rr(120, 300, 150, 74, 12, 'ra-cell') + circ(166, 337, 17, 'ra-nucleus') +
+      arrow(78, 318, 114, 330) + L(74, 312, 'O₂', 'end', 13) +
+      arrow(114, 360, 78, 348) + L(74, 372, 'CO₂', 'end', 13) +
+      '<circle class="ra-atp ma-breathe" cx="330" cy="336" r="12"/>' +
+      L(330, 366, 'ATP', 'middle', 12.5) + L(352, 330, 'Energy released', 'start', 12.5) + L(352, 348, 'for the cell', 'start', 12.5));
+    return `<svg viewBox="0 0 460 402" role="img" aria-label="The three linked events: ventilation moves air, external exchange swaps gases at the alveoli, and cellular respiration releases ATP in body cells" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+  }
+
   /* ---------------------------------------------------------------- respiratory */
   const resp = [
-    () => `${path('M300 54 q-72 10 -86 76 q-10 52 46 52 q52 0 44 -52 q-8 -66 -4 -76 z', 'ma-lung')}
-      ${path('M330 54 q72 10 86 76 q10 52 -46 52 q-52 0 -44 -52 q8 -66 4 -76 z', 'ma-lung')}
-      ${path('M300 54 q15 -26 30 0', 'ma-airway')}${L(292, 40, 'Air in')}
-      ${arrow(120, 96, 200, 96)}${L(120, 86, 'O₂')}
-      ${arrow(200, 130, 120, 130)}${L(120, 148, 'CO₂')}
-      ${rr(452, 88, 92, 74, 12, 'ma-cell')}${circ(498, 118, 12, 'ma-nucleus')}${L(462, 78, 'Body cell')}
-      ${arrow(392, 108, 452, 108)}${L(400, 98, 'O₂ for respiration')}
-      ${arrow(452, 140, 392, 140)}${L(400, 158, 'CO₂ made here')}
-      ${breathe(500, 176, 6, 'ma-a')}${L(512, 180, 'ATP')}`,
-      'Breathing supplies the oxygen a cell needs and removes the carbon dioxide it makes.',
-    () => `${path('M120 60 q30 0 44 28 q10 22 34 30', 'ma-airway')}
-      ${path('M208 118 q26 8 40 34', 'ma-airway')}${path('M248 152 q10 30 -6 54', 'ma-airway')}
-      ${[0, 1, 2].map(i => path(`M${262 + i * 18} ${196 - i * 8} q14 6 18 -6 q-12 -8 -18 6`, 'ma-alveoli')).join('')}
-      ${[0, 1, 2, 3].map(i => circ(96 + i * 34, 54, 8, 'ma-stop')).join('')}
-      ${L(78, 34, 'Nose and mouth')}${L(206, 96, 'Trachea')}${lead(206, 100, 214, 116)}
-      ${L(276, 130, 'Bronchi')}${lead(276, 134, 250, 140)}
-      ${L(300, 168, 'Bronchioles')}${L(330, 214, 'Alveoli')}${lead(328, 210, 292, 200)}
-      ${flow('M120 70 q40 40 96 62 q34 16 44 42', 3.6)}`,
-      'The air route: nose and mouth, trachea, bronchi, bronchioles, then the alveoli.',
+    () => lungAnatomy({ arrows: true }),
+      'Air is drawn into the lungs, oxygen crosses into the blood at the alveoli, and body cells use it to release energy while giving off carbon dioxide.',
+    () => lungAnatomy({ numbered: true, flow: true }),
+      'The numbered route through the respiratory system: nose, nasal cavity, pharynx, larynx, trachea, bronchi, lungs, alveoli, with the diaphragm beneath.',
     () => `${circ(300, 120, 68, 'ma-alveolus')}
       ${path('M232 120 q68 -30 136 0 q-68 30 -136 0 z', 'ma-cap')}
       ${path('M300 52 q30 40 0 68 q-30 -28 0 -68 z', 'ma-alveolus-in')}
@@ -416,5 +516,6 @@
     return figure(system, set.name + ' diagram: ' + caption, caption, draw(), h);
   };
 
+  window.inneruRespEvents = respEvents;
   window.missionArtSystems = Object.keys(ART);
 })();
