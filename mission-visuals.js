@@ -46,37 +46,140 @@
     </radialGradient>
   </defs>`;
 
-  function figure(system, label, caption, inner) {
-    return `<figure class="mission-art ma-${system}" role="group" aria-label="${label}">
-      <svg class="ma" viewBox="0 0 720 240" role="img" aria-label="${label}" preserveAspectRatio="xMidYMid meet">
+  function figure(system, label, caption, inner, height) {
+    const h = height || 240;
+    const tall = h > 240 ? ' is-tall' : '';
+    return `<figure class="mission-art ma-${system}${tall}" role="group" aria-label="${label}">
+      <svg class="ma" viewBox="0 0 720 ${h}" role="img" aria-label="${label}" preserveAspectRatio="xMidYMid meet">
         ${defs}
-        <rect class="ma-panel" x="0" y="0" width="720" height="240" rx="16" fill="url(#maPanel)"/>
-        <rect class="ma-panel-sheen" x="0" y="0" width="720" height="240" rx="16" fill="url(#maGlow)"/>
+        <rect class="ma-panel" x="0" y="0" width="720" height="${h}" rx="16" fill="url(#maPanel)"/>
+        <rect class="ma-panel-sheen" x="0" y="0" width="720" height="${h}" rx="16" fill="url(#maGlow)"/>
         ${inner}
       </svg>
       <figcaption>${caption}</figcaption>
     </figure>`;
   }
 
+  /* diagrams taller than the standard panel */
+  const TALL = { integumentary: { 1: 400, 2: 400 } };
+
+
+  /* --------------------------------------------------------------------------
+     A detailed skin cross-section, shared by this system's first two missions.
+     Blocks: a top skin surface with depth, then the cut face carrying the strata,
+     the dermis contents and the fat lobules.
+     ------------------------------------------------------------------------ */
+  const SKIN = {
+    left: 196, right: 556, top: 100, depth: 30, bottom: 356,
+    bands: [['corneum', 100, 132], ['lucidum', 132, 143], ['granulosum', 143, 167],
+            ['spinosum', 167, 206], ['basale', 206, 224], ['dermis', 224, 302], ['fat', 302, 356]]
+  };
+  const SKIN_FILL = { corneum: 'ma-stratum-corneum', lucidum: 'ma-stratum-lucidum',
+    granulosum: 'ma-stratum-granulosum', spinosum: 'ma-stratum-spinosum',
+    basale: 'ma-stratum-basale', dermis: 'ma-dermis', fat: 'ma-hypodermis' };
+
+  function skinCross(overlay) {
+    const S = SKIN, X = S.left, R = S.right, D = S.depth;
+    const band = n => S.bands.find(b => b[0] === n);
+    const ya = n => band(n)[1], yb = n => band(n)[2], ym = n => (ya(n) + yb(n)) / 2;
+    let o = '';
+
+    /* the block: skin surface plus the cut side */
+    o += path(`M${X} ${S.top} H${R} L${R + D} ${S.top - D} H${X + D} Z`, 'ma-surface');
+    o += path(`M${R} ${S.top} L${R + D} ${S.top - D} V${S.bottom - D} L${R} ${S.bottom} Z`, 'ma-side');
+
+    /* strata */
+    S.bands.forEach(([n, a, b]) => { o += path(`M${X} ${a} H${R} V${b} H${X} Z`, SKIN_FILL[n]); });
+
+    /* corneum flakes, granular cells, prickle cells, basal cells */
+    o += [...Array(6)].map((_, i) => path(`M${X + 22 + i * 58} ${ya('corneum') + 8} q20 -12 40 0`, 'ma-flake')).join('');
+    o += [...Array(10)].map((_, i) => circ(X + 30 + i * 38, ya('granulosum') + 12, 5, 'ma-granule')).join('');
+    o += [...Array(8)].map((_, i) => {
+      const cx = X + 40 + i * 46, cy = ya('spinosum') + 19;
+      return circ(cx, cy, 10, 'ma-prickle') +
+        path(`M${cx - 17} ${cy} h6 M${cx + 11} ${cy} h6 M${cx} ${cy - 17} v6 M${cx} ${cy + 11} v6`, 'ma-spine');
+    }).join('');
+    o += [...Array(12)].map((_, i) => rr(X + 20 + i * 29, ya('basale') + 5, 20, 12, 5, 'ma-basal-cell')).join('');
+    o += [0, 1, 2].map(i => {
+      const cx = X + 96 + i * 130;
+      return circ(cx, ya('basale') + 9, 8, 'ma-melanocyte') +
+        [...Array(4)].map((_, k) => circ(cx + 8 + k * 6, ya('basale') - 7 - k * 7, 2.4, 'ma-melanin-grain')).join('');
+    }).join('');
+
+    /* dermis: collagen, vessels, glands, nerve, hairs */
+    o += [...Array(5)].map((_, i) => path(`M${X + 8} ${ya('dermis') + 20 + i * 15} q130 ${i % 2 ? 12 : -12} 260 0 q70 -4 92 4`, 'ma-collagen')).join('');
+    o += path('M206 254 q50 -22 96 4 q40 18 74 -4 q66 -40 120 4 q40 24 54 -8', 'ma-vessel-red');
+    o += path('M206 284 q56 -18 100 4 q44 16 78 -8 q62 -34 118 2', 'ma-vessel-blue');
+    o += [...Array(4)].map((_, i) => path(`M${250 + i * 78} ${250 + (i % 2) * 22} q10 -16 20 0`, 'ma-vessel-branch')).join('');
+    o += flow('M216 258 q44 -20 92 4 q42 18 76 -4', 3.6);
+    o += path('M300 216 q26 -20 48 -6 q10 -22 30 -12 q14 8 6 30 q-8 24 -34 22 q-30 -2 -50 -34 z', 'ma-sebaceous');
+    o += path('M420 274 q14 -18 28 0 q14 18 28 0 q-2 22 -14 26 q-16 6 -30 -6 q-10 -8 -12 -20 z', 'ma-sweat-coil');
+    o += path('M452 268 q-6 -86 4 -168', 'ma-duct');
+    o += flow('M456 254 q-6 -74 2 -154', 4.2);
+    o += ell(268, 284, 19, 11, 'ma-nerve-end') + path('M268 272 q-4 -42 -18 -60', 'ma-nerve-fibre');
+    o += [[236, 292], [352, 258], [468, 226]].map(([hx, fy]) => {
+      const midY = (S.top + fy) / 2;
+      return path(`M${hx} ${S.top + 4} Q${hx + 7} ${midY} ${hx + 9} ${fy - 14}`, 'ma-follicle-tube') +
+        path(`M${hx - 2} ${S.top + 2} L${hx - 34} 44`, 'ma-hair') +
+        path(`M${hx} ${S.top + 10} Q${hx + 5} ${midY} ${hx + 7} ${fy - 18}`, 'ma-hair') +
+        circ(hx + 9, fy - 6, 11, 'ma-bulb');
+    }).join('');
+
+    /* fat lobules */
+    o += [...Array(16)].map((_, i) => circ(X + 28 + (i % 8) * 46, ya('fat') + 18 + Math.floor(i / 8) * 24, 14, 'ma-fat-cell')).join('');
+    o += L(X + 20, yb('fat') - 12, 'Fat cells', 'start', 12.5);
+
+    /* --- left column: strata labels with leader lines into the block */
+    const leftLabel = (name, y, size) => {
+      const t = L(12, y + 5, name, 'start', size);
+      return t + lead(150, y, X - 4, y) + dot(X - 2, y);
+    };
+    o += leftLabel('Stratum corneum', ym('corneum'));
+    o += leftLabel('Stratum lucidum', ym('lucidum'), 11.5);
+    o += leftLabel('Stratum granulosum', ym('granulosum'), 11.5);
+    o += leftLabel('Stratum spinosum', ym('spinosum'));
+    o += leftLabel('Basal layer', ym('basale'), 11.5);
+    o += L(12, ya('basale') + 34, 'Melanocyte', 'start', 11.5) + lead(150, ya('basale') + 30, 284, ya('basale') + 12) + dot(288, ya('basale') + 9);
+    o += L(58, 40, 'Hair shaft') + lead(150, 44, 196, 58) + dot(200, 60);
+
+    /* dermis contents: numbered markers, named in the legend under the block */
+    const marker = (n, x, y) => circ(x, y, 9.5, 'ma-marker') + L(x, y + 4.5, String(n), 'middle', 11.5).replace('class="ma-l"', 'class="ma-marker-num"');
+    o += marker(1, 352, ya('dermis') + 4);
+    o += marker(2, 452, ya('dermis') + 58);
+    o += marker(3, 300, ya('dermis') + 30);
+    o += marker(4, 268, ya('dermis') + 62);
+
+    /* brackets */
+    const bracket = (a, b, label) => {
+      const bx = R + D + 12;
+      return path(`M${bx} ${a} h10 V${b} h-10`, 'ma-bracket') + L(bx + 18, (a + b) / 2 + 5, label);
+    };
+    o += bracket(ya('corneum'), yb('basale'), 'Epidermis');
+    o += bracket(yb('basale'), yb('dermis'), 'Dermis');
+    o += bracket(yb('dermis'), S.bottom, 'Hypodermis');
+
+    /* legend, so the crowded dermis needs no overlapping labels */
+    const legend = ['Sebaceous gland', 'Sweat gland', 'Blood vessels', 'Nerve ending'];
+    let lx = 30;
+    legend.forEach((name, i) => {
+      o += circ(lx + 8, S.bottom + 26, 9.5, 'ma-marker') +
+           L(lx + 8, S.bottom + 30.5, String(i + 1), 'middle', 11.5).replace('class="ma-l"', 'class="ma-marker-num"') +
+           L(lx + 24, S.bottom + 31, name, 'start', 12).replace('class="ma-l"', 'class="ma-l ma-legend"');
+      lx += 34 + name.length * 7.4;
+    });
+    return o + (overlay || '');
+  }
+
+  const skinRenewal = () => skinCross(
+    arrow(470, 214, 470, 126) + L(484, 172, 'New cells push') + L(484, 188, 'upward') +
+    path('M300 100 q30 -28 68 -16', 'ma-shed') + L(376, 78, 'Old cells shed'));
+
   /* ---------------------------------------------------------------- integumentary */
   const integ = [
-    () => `${rr(60, 70, 470, 130, 14, 'ma-skin')}
-      ${path('M60 110 H530', 'ma-ink-line')}${path('M60 160 H530', 'ma-ink-line')}
-      ${L(72, 96, 'Epidermis')}${L(72, 142, 'Dermis')}${L(72, 192, 'Subcutaneous')}
-      ${dot(420, 92)}${lead(420, 92, 470, 78)}${L(474, 82, 'Dead cells, shed')}
-      ${dot(300, 140)}${lead(300, 140, 360, 158)}${L(364, 162, 'Collagen fibres')}
-      ${path('M120 58 q40 -34 96 -6', 'ma-barrier')}
-      ${arrow(250, 40, 250, 76)}${L(262, 46, 'Water loss blocked')}
-      ${breathe(150, 140, 7, 'ma-a')}${L(166, 144, 'Nerve')}`,
-      'Skin is the barrier: three layers, with the outer sheet stopping water loss.',
-    () => `${rr(60, 60, 470, 140, 14, 'ma-skin')}
-      ${path('M60 104 H530', 'ma-ink-line')}${path('M60 154 H530', 'ma-ink-line')}
-      ${L(72, 90, 'Epidermis')}${L(72, 136, 'Dermis')}${L(72, 186, 'Fat layer')}
-      ${[0, 1, 2].map(i => path(`M${300} ${190 - i * 26} q10 -12 20 0`, 'ma-cell')).join('')}
-      ${arrow(310, 176, 310, 74)}${L(322, 120, 'New cells push up')}
-      ${arrow(360, 74, 400, 60)}${L(404, 64, 'Old cells shed')}
-      ${circ(430, 150, 5, 'ma-a')}${L(442, 154, 'Capillary loop')}`,
-      'New cells are made in the base layer and are pushed up as older cells are shed.',
+    () => skinCross(),
+      'Skin in section: the five epidermal strata, the dermis with its hairs, glands and vessels, and the fat layer beneath. Numbered markers are named in the legend.',
+    () => skinRenewal(),
+      'New cells are made in the basal layer and are pushed up through the strata as older cells are shed from the surface.',
     () => `${rr(60, 60, 470, 140, 14, 'ma-skin')}
       ${path('M60 112 H530', 'ma-ink-line')}
       ${path('M200 190 q-16 -60 6 -96 q22 -34 0 -34', 'ma-ink-line')}
@@ -309,7 +412,8 @@
     const i = (Math.min(Math.max(1, n), set.count) - 1) * 2;
     const draw = set.list[i], caption = set.list[i + 1];
     if (typeof draw !== 'function') return '';
-    return figure(system, set.name + ' diagram: ' + caption, caption, draw());
+    const h = (TALL[system] && TALL[system][n]) || 240;
+    return figure(system, set.name + ' diagram: ' + caption, caption, draw(), h);
   };
 
   window.missionArtSystems = Object.keys(ART);
