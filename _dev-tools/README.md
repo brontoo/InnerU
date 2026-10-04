@@ -18,6 +18,8 @@ script requests each page needs, and under Chrome's virtual-time budget a frame 
 be asserted before its scripts have run (which shows up as a mysteriously empty page).
 
 | File | What it covers |
+| erify-mission-art.py | the mission illustrations: presence, shared style, no overlap, and reduced motion |
+
 |---|---|
 | `verify-stage1.py` | answer-position mixing, withheld feedback, weak-concept tracking, the central System Key counter |
 | `verify-stage2.py` | the capstone mission, the labs of the time, the certificate, the accessibility layer |
