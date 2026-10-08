@@ -253,3 +253,26 @@
 .ra-event.is-active { filter: drop-shadow(0 2px 6px #0d7d7822); }
 .ra-part.is-active { filter: drop-shadow(0 0 6px #0d7d7888); }
 @media (max-width: 760px) { .ra-events { grid-template-columns: 1fr; } }
+/* ---- mission maps --------------------------------------------------------
+   The Skeletal world already renders .missiongrid / .missioncard cards with a
+   .mission-card-art band. The other systems reuse those exact classes, so the cards
+   look and behave identically; only the tint of the art band changes per system. */
+.missionmap { margin: 26px 0 12px; }
+.missionmap .headrow { margin-bottom: 18px; }
+.missionmap .chip { align-self: flex-start; }
+.mission-card-art .mission-art { margin: 0; }
+.mission-card-art figcaption { display: none; }
+/* at thumbnail size the leader labels would be unreadable, and the card already
+   carries the title and goal in text */
+.mission-card-art .ma-l, .mission-card-art .ma-lead, .mission-card-art .ma-tag { display: none; }
+.mission-card-art svg { width: 100%; height: auto; max-height: 150px; }
+.mission-card-art .mq-diagram { width: 100%; height: auto; max-height: 150px; }
+.missionmap[data-system="integumentary"] .mission-card-art { background: radial-gradient(ellipse, #f8e3d5, #fdf7f2); }
+.missionmap[data-system="respiratory"]   .mission-card-art { background: radial-gradient(ellipse, #dbeaf6, #f4f9fd); }
+.missionmap[data-system="excretory"]     .mission-card-art { background: radial-gradient(ellipse, #f6e8cd, #fdfaf1); }
+.missionmap[data-system="circ"]          .mission-card-art { background: radial-gradient(ellipse, #f6dde1, #fdf6f7); }
+.missionmap[data-system="muscle"]        .mission-card-art { background: radial-gradient(ellipse, #f7ded7, #fdf5f3); }
+@media (max-width: 760px) {
+  .mission-card-art { height: 130px; }
+  .mission-card-art svg { max-height: 124px; }
+}
