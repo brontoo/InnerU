@@ -64,41 +64,20 @@ const EXC_LABS={
           ['Dialysis several times a week',1,'Dialysis replaces filtration when the kidneys cannot do it.']]}
 };
 function excShuffle(len){const a=Array.from({length:len},(_,i)=>i);for(let i=len-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
-/* the activity figure, placed inside each lab section */
-
-/* The figure follows the lab: a chosen bin lights that organ or outcome, the
-   sequencing lab advances as steps are placed, and the ADH slider moves the band. */
-(()=>{'use strict';
- if(window.__excArtWire)return;window.__excArtWire=1;
- const art=()=>document.getElementById('exc-lab-art');
- const set=i=>{const a=art();if(a&&i!=null&&i>-1)a.dataset.stage=String(i)};
- document.addEventListener('click',e=>{
-  const bin=e.target.closest('[data-exc-bin]');
-  if(bin){set(+bin.dataset.excBin);return}
-  const step=e.target.closest('[data-exc-step],.exc-seq li');
-  if(step){const placed=document.querySelectorAll('#exc-seq li').length;set(Math.max(0,placed-1));return}
-  const chip=e.target.closest('[data-exc-item]');
-  if(chip){const placed=document.querySelectorAll('#exc-seq li').length;if(placed)set(Math.max(0,placed-1))}
- },true);
- document.addEventListener('input',e=>{
-  if(e.target.id==='adh-level'){const v=+e.target.value,max=+(e.target.max||10);const band=v/max<0.34?0:v/max<0.67?1:2;set(band)}
- },true);
-})();
-const excArt=n=>{const a=(typeof inneruActivityArt==='function')?inneruActivityArt('excretory',n):'';return a?`<div class="exc-lab-art" id="exc-lab-art">${a}</div>`:''};
 function excLabMarkup(n){
  const lab=EXC_LABS[n];
  if(!lab)return adhLab(n);
  const saved=done(`${n}-lab`);
  const head=`<span class="eyebrow">INTERACTIVE LAB</span><h2>${lab.title}</h2><p class="exc-prompt">${lab.intro}</p>`;
  if(lab.kind==='sort'){
-  return `<section class="panel exc-lab">${excArt(n)}${head}
+  return `<section class="panel exc-lab">${head}
    <p class="exc-lab-count" id="exc-lab-step">${saved?'\u2713 Discovery saved \u00b7 replay to practise':`0 / ${lab.items.length} placed`}</p>
    <div class="exc-chips" role="group" aria-label="Substances to sort">${excShuffle(lab.items.length).map(i=>`<button type="button" class="exc-chip" data-exc-item="${i}" aria-pressed="false">${esc(lab.items[i][0])}</button>`).join('')}</div>
    <div class="exc-bins">${lab.bins.map((b,i)=>`<section class="exc-bin" data-exc-bin="${i}" role="button" tabindex="0" aria-label="Place in ${esc(b)}"><h4>${esc(b)}</h4><ul class="exc-bin-list" id="exc-bin-${i}"></ul></section>`).join('')}</div>
    <p class="exc-hint">Pick a substance, then choose where it goes.</p>
    <div id="exc-lab-feedback" class="exc-lab-feedback" role="status" aria-live="polite"></div></section>`;
  }
- return `<section class="panel exc-lab">${excArt(n)}${head}
+ return `<section class="panel exc-lab">${head}
   <p class="exc-lab-count" id="exc-lab-step">${saved?'\u2713 Discovery saved \u00b7 replay to practise':`0 / ${lab.order.length} chosen`}</p>
   <ol class="exc-seq" id="exc-seq"></ol>
   <div class="exc-chips" role="group" aria-label="Structures to order">${excShuffle(lab.order.length).map(i=>`<button type="button" class="exc-chip" data-exc-step="${i}" aria-pressed="false">${esc(lab.order[i])}</button>`).join('')}</div>
@@ -160,7 +139,7 @@ function lab(n){return excLabMarkup(n)}
 
 
 /* A real manipulation for the homeostasis missions: change ADH, watch the kidney respond. */
-function adhLab(n){return `<section class="panel exc-adh" id="exc-adh-panel">${excArt(n)}<span class="eyebrow">SIMULATION \u00b7 ADH AND WATER BALANCE</span>
+function adhLab(n){return `<section class="panel exc-adh" id="exc-adh-panel"><span class="eyebrow">SIMULATION \u00b7 ADH AND WATER BALANCE</span>
 <h2>Set the hormone, keep the balance</h2>
 <p>ADH tells the collecting ducts how much water to return to the blood. She has just been sweating heavily, so her body needs to conserve water.</p>
 <label for="adh-level">ADH level: <b id="adh-value">35%</b></label>
@@ -186,7 +165,7 @@ status.textContent=msg;
 if(volume<=0.6&&volume>=0.3){if(!done(n+'-adh')){step(n+'-adh',15);out('adh-result').innerHTML='\u2713 Discovery saved: ADH controls how much water the collecting duct returns. +15 XP'}else{out('adh-result').innerHTML='\u2713 Target held.'}}
 else{out('adh-result').textContent=''}}
 slider.oninput=update;update()}
-function mission(n){const p=progress();if(!Number.isInteger(n)||n<1||n>6||n>1&&!p.done.includes(n-1)){location.hash='excretory';return}const d=lessons[n-1];layout(`<div class="exc-world"><a class="textlink" href="#excretory">← The Balance Mission</a><div class="resp-mission-header"><span class="eyebrow">SYSTEM 06 · MISSION ${String(n).padStart(2,'0')}</span><h1>${titles[n-1]}</h1><p>${d.goal}</p></div>${typeof inneruMissionArt==='function'?inneruMissionArt('excretory',n):''}<div class="resp-columns"><div><section class="panel resp-lesson"><span class="eyebrow">LEARN THE SCIENCE</span><h2>The idea</h2><p>${d.text}</p><p class="hint"><strong>Remember:</strong> ${d.clue}</p></section>${lab(n)}<section class="panel resp-checks"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>Three checks</h2>${d.checks.map((q,i)=>`<div class="resp-question" data-exc-question="${i}"><h3>${i+1}. ${q[0]}</h3><div class="resp-choices">${q[1].map((a,j)=>`<button type="button" data-choice="${j}" ${done(`${n}-q${i}`)?'disabled':''}>${a}</button>`).join('')}</div><div class="resp-feedback" role="status">${done(`${n}-q${i}`)?'✓ '+q[3]:''}</div></div>`).join('')}<div id="exc-finish"></div></section></div><aside class="panel resp-aside"><h3>Mission guide</h3><p><strong>Goal:</strong> ${d.goal}</p><p><strong>Keywords:</strong> ${d.terms}</p><p><strong>Clue:</strong> ${d.clue}</p><a class="textlink" href="#excretory">Open the 3D explorer →</a></aside></div></div>`);
+function mission(n){const p=progress();if(!Number.isInteger(n)||n<1||n>6||n>1&&!p.done.includes(n-1)){location.hash='excretory';return}const d=lessons[n-1];layout(`<div class="exc-world"><a class="textlink" href="#excretory">← The Balance Mission</a><div class="resp-mission-header"><span class="eyebrow">SYSTEM 06 · MISSION ${String(n).padStart(2,'0')}</span><h1>${titles[n-1]}</h1><p>${d.goal}</p></div><div class="resp-columns"><div><section class="panel resp-lesson"><span class="eyebrow">LEARN THE SCIENCE</span><h2>The idea</h2><p>${d.text}</p><p class="hint"><strong>Remember:</strong> ${d.clue}</p></section>${lab(n)}<section class="panel resp-checks"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h2>Three checks</h2>${d.checks.map((q,i)=>`<div class="resp-question" data-exc-question="${i}"><h3>${i+1}. ${q[0]}</h3><div class="resp-choices">${q[1].map((a,j)=>`<button type="button" data-choice="${j}" ${done(`${n}-q${i}`)?'disabled':''}>${a}</button>`).join('')}</div><div class="resp-feedback" role="status">${done(`${n}-q${i}`)?'✓ '+q[3]:''}</div></div>`).join('')}<div id="exc-finish"></div></section></div><aside class="panel resp-aside"><h3>Mission guide</h3><p><strong>Goal:</strong> ${d.goal}</p><p><strong>Keywords:</strong> ${d.terms}</p><p><strong>Clue:</strong> ${d.clue}</p><a class="textlink" href="#excretory">Open the 3D explorer →</a></aside></div></div>`);
 const finish=()=>{if(done(`${n}-lab`)&&d.checks.every((_,i)=>done(`${n}-q${i}`))){if(!p.done.includes(n)){p.done.push(n);save();reward('exc-mission-'+n,25)}document.getElementById('exc-finish').innerHTML=`<div class="feedback">Mission complete. Balance fragment ${n}/6 secured. <a href="#excretory/${n===6?'mastery':'mission/'+(n+1)}">${n===6?'Final challenge':'Next mission'} →</a></div>`}};
 wireExcLab(n,finish);
 document.querySelectorAll('[data-exc-question]').forEach(el=>{const i=+el.dataset.excQuestion,q=d.checks[i],weakId=n+'-q'+i;el.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>{const good=+b.dataset.choice===q[2],tries=+el.dataset.tries||0;if(!good)el.dataset.tries=String(tries+1);el.querySelector('.resp-feedback').textContent=good?'Correct. '+q[3]:(tries<1?'Not yet. Re-read the mission guide, then try again.':'Look again. '+q[3]);el.classList.toggle('resp-wrong',!good);const pw=progress();if(good){pw.weak=pw.weak.filter(x=>x!==weakId)}else if(!pw.weak.includes(weakId)){pw.weak.push(weakId)}save();if(good){b.classList.add('resp-correct');el.querySelectorAll('button').forEach(x=>x.disabled=true);step(`${n}-q${i}`,7);finish()}})});wireAdh(n);finish()}
@@ -200,7 +179,4 @@ document.getElementById('main').append(section);const reset=document.getElementB
 const priorBadges=badges;badges=function(){priorBadges();const p=progress();document.getElementById('main').insertAdjacentHTML('beforeend',`<section class="panel spacer"><h2>Balance Mission discoveries</h2><div class="resp-grid">${titles.map((title,i)=>`<a class="badge ${p.done.includes(i+1)?'':'locked'}" href="#excretory/mission/${i+1}"><span>◈</span><h3>${title}</h3><p>${p.done.includes(i+1)?'Earned':'Complete mission '+(i+1)}</p></a>`).join('')}</div><p>${p.mastery?'Excretory System Key earned.':'Complete all missions and the final challenge to earn the System Key.'}</p></section>`)};
 const priorInfo=info;info=function(r){priorInfo(r);if(r==='sources')document.querySelector('#main .sourcelist')?.insertAdjacentHTML('beforeend','<li><b>UAE Inspire Science Biology · Grade 10 General · Excretory System, supplied lesson pp. 40–44.</b><br>Organs of excretion, renal structure, nephron filtration and reabsorption, kidney disorders and treatments. Original 3D teaching model is simplified; textbook figures are not reproduced.</li>')};
 const priorRoute=route;window.removeEventListener('hashchange',priorRoute);route=function(){const h=location.hash.slice(1);if(h==='excretory')landing();else if(h.startsWith('excretory/mission/'))mission(Number(h.split('/')[2]));else if(h==='excretory/mastery')mastery();else priorRoute();window.scrollTo(0,0)};window.addEventListener('hashchange',route);route();
-
-/* the mission map reads this list */
-window.inneruMissions=(window.inneruMissions||{});window.inneruMissions.excretory=lessons.map((l,i)=>({n:i+1,title:titles[i],goal:l.goal}));
 })();
