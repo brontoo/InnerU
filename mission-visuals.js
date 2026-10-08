@@ -299,8 +299,9 @@
 
   /* three panels for the respiratory lab: the three linked events */
   function respEvents() {
+    let panelIndex = 0;
     const panel = (py, title, event, body) =>
-      `<g class="ra-event" data-event="${event}">` +
+      `<g class="ra-event" data-event="${event}" data-i="${panelIndex++}">` +
         rr(10, py, 440, 122, 14, 'ra-panel') +
         L(28, py + 26, title, 'start', 13.5) +
         body +

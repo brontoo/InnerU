@@ -64,20 +64,41 @@ const EXC_LABS={
           ['Dialysis several times a week',1,'Dialysis replaces filtration when the kidneys cannot do it.']]}
 };
 function excShuffle(len){const a=Array.from({length:len},(_,i)=>i);for(let i=len-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+/* the activity figure, placed inside each lab section */
+
+/* The figure follows the lab: a chosen bin lights that organ or outcome, the
+   sequencing lab advances as steps are placed, and the ADH slider moves the band. */
+(()=>{'use strict';
+ if(window.__excArtWire)return;window.__excArtWire=1;
+ const art=()=>document.getElementById('exc-lab-art');
+ const set=i=>{const a=art();if(a&&i!=null&&i>-1)a.dataset.stage=String(i)};
+ document.addEventListener('click',e=>{
+  const bin=e.target.closest('[data-exc-bin]');
+  if(bin){set(+bin.dataset.excBin);return}
+  const step=e.target.closest('[data-exc-step],.exc-seq li');
+  if(step){const placed=document.querySelectorAll('#exc-seq li').length;set(Math.max(0,placed-1));return}
+  const chip=e.target.closest('[data-exc-item]');
+  if(chip){const placed=document.querySelectorAll('#exc-seq li').length;if(placed)set(Math.max(0,placed-1))}
+ },true);
+ document.addEventListener('input',e=>{
+  if(e.target.id==='adh-level'){const v=+e.target.value,max=+(e.target.max||10);const band=v/max<0.34?0:v/max<0.67?1:2;set(band)}
+ },true);
+})();
+const excArt=n=>{const a=(typeof inneruActivityArt==='function')?inneruActivityArt('excretory',n):'';return a?`<div class="exc-lab-art" id="exc-lab-art">${a}</div>`:''};
 function excLabMarkup(n){
  const lab=EXC_LABS[n];
  if(!lab)return adhLab(n);
  const saved=done(`${n}-lab`);
  const head=`<span class="eyebrow">INTERACTIVE LAB</span><h2>${lab.title}</h2><p class="exc-prompt">${lab.intro}</p>`;
  if(lab.kind==='sort'){
-  return `<section class="panel exc-lab">${head}
+  return `<section class="panel exc-lab">${excArt(n)}${head}
    <p class="exc-lab-count" id="exc-lab-step">${saved?'\u2713 Discovery saved \u00b7 replay to practise':`0 / ${lab.items.length} placed`}</p>
    <div class="exc-chips" role="group" aria-label="Substances to sort">${excShuffle(lab.items.length).map(i=>`<button type="button" class="exc-chip" data-exc-item="${i}" aria-pressed="false">${esc(lab.items[i][0])}</button>`).join('')}</div>
    <div class="exc-bins">${lab.bins.map((b,i)=>`<section class="exc-bin" data-exc-bin="${i}" role="button" tabindex="0" aria-label="Place in ${esc(b)}"><h4>${esc(b)}</h4><ul class="exc-bin-list" id="exc-bin-${i}"></ul></section>`).join('')}</div>
    <p class="exc-hint">Pick a substance, then choose where it goes.</p>
    <div id="exc-lab-feedback" class="exc-lab-feedback" role="status" aria-live="polite"></div></section>`;
  }
- return `<section class="panel exc-lab">${head}
+ return `<section class="panel exc-lab">${excArt(n)}${head}
   <p class="exc-lab-count" id="exc-lab-step">${saved?'\u2713 Discovery saved \u00b7 replay to practise':`0 / ${lab.order.length} chosen`}</p>
   <ol class="exc-seq" id="exc-seq"></ol>
   <div class="exc-chips" role="group" aria-label="Structures to order">${excShuffle(lab.order.length).map(i=>`<button type="button" class="exc-chip" data-exc-step="${i}" aria-pressed="false">${esc(lab.order[i])}</button>`).join('')}</div>
@@ -139,7 +160,7 @@ function lab(n){return excLabMarkup(n)}
 
 
 /* A real manipulation for the homeostasis missions: change ADH, watch the kidney respond. */
-function adhLab(n){return `<section class="panel exc-adh" id="exc-adh-panel"><span class="eyebrow">SIMULATION \u00b7 ADH AND WATER BALANCE</span>
+function adhLab(n){return `<section class="panel exc-adh" id="exc-adh-panel">${excArt(n)}<span class="eyebrow">SIMULATION \u00b7 ADH AND WATER BALANCE</span>
 <h2>Set the hormone, keep the balance</h2>
 <p>ADH tells the collecting ducts how much water to return to the blood. She has just been sweating heavily, so her body needs to conserve water.</p>
 <label for="adh-level">ADH level: <b id="adh-value">35%</b></label>
