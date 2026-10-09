@@ -1,0 +1,124 @@
+/* ============================================================================
+   Circulatory mission map — card chrome
+   ----------------------------------------------------------------------------
+   Scoped to `.circ-map`, which only the Circulatory world receives. This world uses
+   its own .circ-card / .circ-path / .finalmission markup, so its rules are separate
+   from the .resp-card worlds on purpose.
+   ========================================================================== */
+
+.circ-map .circ-card {
+  padding: 0;
+  gap: 0;
+  min-height: 318px;
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf4e6 100%);
+  border: 1.5px solid #f0d3a6;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px #8a5b460f;
+  overflow: hidden;
+}
+
+.circ-map .circ-card .circ-card-art {
+  height: 154px;
+  border-bottom: 1px solid #f4e0c2;
+  border-radius: 0;
+  background: radial-gradient(120% 108% at 50% 0%, #fff7e9 0%, #fbe5c4 100%);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: transform .3s ease;
+}
+
+/* scale the 360x168 artwork to the band, or the panel clips it */
+.circ-card-art > svg { display: block; width: 100%; height: 100%; }
+
+.circ-map .circ-card > :not(.circ-card-art) { margin-left: 22px; margin-right: 22px; }
+
+.circ-map .circ-card > .missionnum {
+  margin-top: 18px;
+  color: #c4603c;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+}
+.circ-map .circ-card h3 { color: #12354f; font-size: 1.16rem; margin: 3px 0 0; }
+.circ-map .circ-card p { color: #6b7b85; font-size: .92rem; line-height: 1.5; margin: 9px 0 0; }
+
+.circ-map .circ-card > .btn {
+  margin-top: auto;
+  margin-bottom: 22px;
+  align-self: flex-start;
+  background: #0e8b84;
+  border-color: #0e8b84;
+  color: #ffffff;
+  padding: 11px 20px;
+  border-radius: 11px;
+  font-weight: 600;
+}
+.circ-map .circ-card > .btn:hover { background: #0b736d; border-color: #0b736d; }
+
+/* locked: legible card, calmer artwork, and a cream pill for the disabled button */
+.circ-map .circ-card.locked { opacity: 1; }
+.circ-map .circ-card.locked .circ-card-art { filter: saturate(.5) contrast(.96); opacity: .82; }
+.circ-map .circ-card.locked h3 { color: #7f8f99; }
+.circ-map .circ-card.locked p { color: #94a3ab; }
+.circ-map .circ-card.locked > .btn.line,
+.circ-map .circ-card.locked > .btn[disabled] {
+  margin-top: auto;
+  margin-bottom: 22px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fbf3e3;
+  border: 1px solid #f0dfc4;
+  color: #8a7ba8;
+  font-size: .86rem;
+  font-weight: 500;
+}
+
+/* the mastery panel is this world's final challenge */
+.circ-map .finalmission {
+  padding: 0;
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf4e6 100%);
+  border: 1.5px solid #f0d3a6;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px #8a5b460f;
+  overflow: hidden;
+}
+.circ-map .finalmission.has-art { flex-wrap: wrap; }
+.circ-map .finalmission.has-art .circ-card-art {
+  flex: 1 1 100%;
+  order: -1;
+  height: 168px;
+  border: 0;
+  border-bottom: 1px solid #f4e0c2;
+  border-radius: 0;
+  background: radial-gradient(120% 108% at 50% 0%, #fff7e9 0%, #fbe5c4 100%);
+}
+.circ-map .finalmission > div { padding: 20px 22px; }
+.circ-map .finalmission .eyebrow { color: #c4603c; font-size: .72rem; font-weight: 700; letter-spacing: .09em; }
+.circ-map .finalmission h3 { color: #12354f; margin: 5px 0 0; }
+.circ-map .finalmission p { color: #6b7b85; margin: 9px 0 0; }
+.circ-map .finalmission > .btn,
+.circ-map .finalmission > .circ-boss-links { margin: 0 22px 22px; }
+.circ-map .finalmission > .btn.line,
+.circ-map .finalmission > .btn[disabled] {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fbf3e3;
+  border: 1px solid #f0dfc4;
+  color: #8a7ba8;
+  font-size: .86rem;
+}
+
+.circ-map .circ-card:not(.locked):hover .circ-card-art { transform: translateY(-4px); }
+.circ-map .circ-card:not(.locked):focus-within .circ-card-art { box-shadow: 0 0 0 3px #0e8b8422; }
+
+@media (max-width: 760px) {
+  .circ-map .circ-card { min-height: 0; }
+  .circ-map .circ-card .circ-card-art { height: 132px; }
+  .circ-map .finalmission.has-art .circ-card-art { height: 140px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circ-map .circ-card .circ-card-art { transition: none; }
+  .circ-map .circ-card:not(.locked):hover .circ-card-art { transform: none; }
+}
