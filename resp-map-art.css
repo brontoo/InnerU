@@ -1,0 +1,127 @@
+/* ============================================================================
+   Respiratory mission map — card chrome
+   ----------------------------------------------------------------------------
+   Scoped to `.resp-map`, which only the Respiratory world receives, so the
+   Integumentary system (which borrows these same .resp-card classes) is unaffected.
+   ========================================================================== */
+
+.resp-map .resp-card {
+  padding: 0;
+  gap: 0;
+  min-height: 318px;
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf4e6 100%);
+  border: 1.5px solid #f0d3a6;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px #8a5b460f;
+  overflow: hidden;
+}
+
+.resp-map .resp-card .resp-card-art {
+  height: 154px;
+  border-bottom: 1px solid #f4e0c2;
+  border-radius: 0;
+  background: radial-gradient(120% 108% at 50% 0%, #fff7e9 0%, #fbe5c4 100%);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: transform .3s ease;
+}
+
+/* the artwork is authored in a 360x168 viewBox: scale it to the band, or the panel
+   clips it */
+.resp-card-art > svg { display: block; width: 100%; height: 100%; }
+
+.resp-map .resp-card > :not(.resp-card-art) { margin-left: 22px; margin-right: 22px; }
+.resp-map .resp-card > .eyebrow { margin-top: 18px; }
+
+.resp-map .resp-card .eyebrow {
+  color: #c4603c;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+}
+.resp-map .resp-card h3 { color: #12354f; font-size: 1.16rem; margin: 3px 0 0; }
+.resp-map .resp-card p { color: #6b7b85; font-size: .92rem; line-height: 1.5; margin: 9px 0 0; }
+
+/* the action button: solid teal, whether it is the plain or secondary variant */
+.resp-map .resp-card > .btn {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-bottom: 22px;
+  background: #0e8b84;
+  border-color: #0e8b84;
+  color: #ffffff;
+  padding: 11px 20px;
+  border-radius: 11px;
+  font-weight: 600;
+}
+.resp-map .resp-card > .btn:hover { background: #0b736d; border-color: #0b736d; }
+
+/* locked: the card stays legible, the artwork calms, and the disabled button reads
+   as a cream pill */
+.resp-map .resp-locked { opacity: 1; }
+.resp-map .resp-locked .resp-card-art { filter: saturate(.5) contrast(.96); opacity: .82; }
+.resp-map .resp-locked h3 { color: #7f8f99; }
+.resp-map .resp-locked p { color: #94a3ab; }
+.resp-map .resp-locked > .btn.line,
+.resp-map .resp-locked > .btn[disabled] {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-bottom: 22px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fbf3e3;
+  border: 1px solid #f0dfc4;
+  color: #8a7ba8;
+  font-size: .86rem;
+  font-weight: 500;
+}
+
+/* final challenge: same cream card with the band on top */
+.resp-map .resp-finale {
+  padding: 0;
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf4e6 100%);
+  border: 1.5px solid #f0d3a6;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px #8a5b460f;
+  overflow: hidden;
+}
+.resp-map .resp-finale.has-art { flex-wrap: wrap; }
+.resp-map .resp-finale.has-art .resp-card-art {
+  flex: 1 1 100%;
+  order: -1;
+  height: 168px;
+  border: 0;
+  border-bottom: 1px solid #f4e0c2;
+  border-radius: 0;
+  background: radial-gradient(120% 108% at 50% 0%, #fff7e9 0%, #fbe5c4 100%);
+}
+.resp-map .resp-finale > div { padding: 20px 22px; }
+.resp-map .resp-finale .eyebrow { color: #c4603c; font-size: .72rem; font-weight: 700; letter-spacing: .09em; }
+.resp-map .resp-finale h3 { color: #12354f; margin: 5px 0 0; }
+.resp-map .resp-finale p { color: #6b7b85; margin: 9px 0 0; }
+.resp-map .resp-finale > .btn { margin: 0 22px 22px; }
+.resp-map .resp-finale > .btn.line,
+.resp-map .resp-finale > .btn[disabled] {
+  margin: 0 22px 22px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fbf3e3;
+  border: 1px solid #f0dfc4;
+  color: #8a7ba8;
+  font-size: .86rem;
+}
+
+.resp-map .resp-card:not(.resp-locked):hover .resp-card-art { transform: translateY(-4px); }
+.resp-map .resp-card:not(.resp-locked):focus-within .resp-card-art { box-shadow: 0 0 0 3px #0e8b8422; }
+
+@media (max-width: 760px) {
+  .resp-map .resp-card { min-height: 0; }
+  .resp-map .resp-card .resp-card-art { height: 132px; }
+  .resp-map .resp-finale.has-art .resp-card-art { height: 140px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resp-map .resp-card .resp-card-art { transition: none; }
+  .resp-map .resp-card:not(.resp-locked):hover .resp-card-art { transform: none; }
+}
