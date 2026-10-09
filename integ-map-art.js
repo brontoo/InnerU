@@ -62,6 +62,8 @@
         <stop offset="0" stop-color="${C.veinHi}"/><stop offset="1" stop-color="${C.veinLo}"/></linearGradient>
       <linearGradient id="${g}nerve" x1="0" y1="0" x2=".3" y2="1">
         <stop offset="0" stop-color="${C.nerveHi}"/><stop offset="1" stop-color="${C.nerveLo}"/></linearGradient>
+      <linearGradient id="${g}finger" x1=".12" y1="0" x2=".6" y2="1">
+        <stop offset="0" stop-color="#F9C9A6"/><stop offset="1" stop-color="#DE9169"/></linearGradient>
       <linearGradient id="${g}nail" x1=".2" y1="0" x2=".3" y2="1">
         <stop offset="0" stop-color="${C.nailHi}"/><stop offset="1" stop-color="${C.nailLo}"/></linearGradient>
       <linearGradient id="${g}wound" x1="0" y1="0" x2="0" y2="1">
@@ -204,27 +206,70 @@
       return svg('The three skin layers shown as separate sheets peeling apart, with new cells rising through the top sheet and one shedding from the surface', s);
     },
 
-    /* 03 — a hair follicle, and a fingertip with its nail */
+    /* 03 — a hair-bearing skin block, and a larger fingertip with its nail.
+       Composition follows the supplied reference: a cutaway with three curving hairs
+       and their follicles on the left, a glossy nail over the fingertip on the right. */
     3: () => {
       const k = kit();
+      const x0 = 26, x1 = 196, top = 54, eBot = 69, dBot = 120, bot = 152, d = 11;
       let s = k.defs;
-      s += shadow(k.g, 120, 148, 66, 8);
-      s += `<path d="M56 138 V104 C56 86 68 76 84 76 C100 76 112 86 112 104 V138 Z" fill="url(#${k.g}derm)"/>`;
-      s += `<path d="M56 138 V104 C56 86 68 76 84 76 C100 76 112 86 112 104 V138 Z" fill="url(#${k.g}epi)" opacity=".45"/>`;
-      s += `<path d="M52 138 V104 C52 84 66 72 84 72 C102 72 116 84 116 104 V138" fill="none" stroke="#C9977C" stroke-width="1.2" opacity=".4"/>`;
-      s += follicle(k.g, 84, 82, 132, { gland: true, w: 10 });
-      s += shadow(k.g, 254, 148, 62, 8);
-      s += `<g>
-        <path d="M214 142 C214 106 224 88 246 84 C272 79 292 92 294 114 L294 142 Z" fill="url(#${k.g}skin)"/>
-        <path d="M214 142 C214 106 224 88 246 84 C272 79 292 92 294 114 L294 142 Z" fill="none" stroke="#C9977C" stroke-width="1.2" opacity=".35"/>
-        <path d="M226 120 C229 100 238 92 252 91 C272 90 283 101 285 118 L285 126 C264 134 240 134 226 126 Z"
-          fill="url(#${k.g}nail)"/>
-        <path d="M226 126 C240 134 264 134 285 126" stroke="#E7B4A6" stroke-width="3.4" fill="none" opacity=".85"/>
-        <path d="M232 118 C235 102 242 97 252 96 C264 95 274 102 277 114"
-          stroke="#FFFFFF" stroke-opacity=".75" stroke-width="2.6" fill="none"/>
-        <path d="M240 92 C250 87 266 88 276 95" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="2" fill="none"/>
-      </g>`;
-      return svg('A hair follicle with its sebaceous gland emerging from a piece of skin, and beside it a fingertip showing the curved nail plate over the nail bed', s);
+
+      s += shadow(k.g, 112, 158, 92, 8);
+      /* the block, with a right-hand face for depth */
+      s += `<path d="M${x1} ${top} L${x1 + d} ${top - d} L${x1 + d} ${bot - d} L${x1} ${bot} Z" fill="${C.dermLo}" opacity=".85"/>`;
+      s += `<path d="M${x0} ${top} L${x1} ${top} L${x1 + d} ${top - d} L${x0 + d} ${top - d} Z" fill="url(#${k.g}skin)"/>`;
+      s += `<rect x="${x0}" y="${top}" width="${x1 - x0}" height="${eBot - top}" fill="url(#${k.g}epi)"/>`;
+      s += `<rect x="${x0}" y="${eBot}" width="${x1 - x0}" height="${dBot - eBot}" fill="url(#${k.g}derm)"/>`;
+      s += `<rect x="${x0}" y="${dBot}" width="${x1 - x0}" height="${bot - dBot}" fill="url(#${k.g}fat)"/>`;
+      /* dermal texture, then the vessels threading through it */
+      s += `<path d="M${x0 + 6} ${eBot + 15} q42 -8 82 0 q44 8 82 -2" stroke="#C98C84" stroke-width="1.2" fill="none" opacity=".4"/>`;
+      s += `<path d="M34 112 C60 96 92 104 118 98 C146 92 170 100 190 94" stroke="url(#${k.g}art)" stroke-width="4.6" fill="none" stroke-linecap="round"/>`;
+      s += `<path d="M34 118 C62 108 96 115 122 109 C150 103 172 109 190 105" stroke="url(#${k.g}vein)" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      /* adipose lobules in the fat layer */
+      [0, 1, 2, 3, 4].forEach(i => {
+        const cx = x0 + 20 + i * 34;
+        s += `<circle cx="${cx}" cy="${bot - 14}" r="12" fill="url(#${k.g}lobe)"/>`;
+        s += `<circle cx="${cx - 3}" cy="${bot - 18}" r="3.4" fill="#FFFFFF" opacity=".32"/>`;
+      });
+      /* three follicles, each with its hair continuing clear of the skin */
+      [[74, 118], [112, 126], [150, 114]].forEach(([fx, fb], i) => {
+        const tip = [[52, 10], [106, 4], [170, 12]][i];
+        s += `<path d="M${fx - 8} ${top} C${fx - 9} ${top + 34} ${fx - 6} ${fb - 20} ${fx} ${fb - 8}
+                 C${fx + 6} ${fb - 20} ${fx + 9} ${top + 34} ${fx + 8} ${top} Z" fill="url(#${k.g}tube)"/>`;
+        s += `<circle cx="${fx}" cy="${fb - 4}" r="11" fill="url(#${k.g}tube)"/>`;
+        s += `<circle cx="${fx}" cy="${fb - 4}" r="6" fill="#E8B79A" opacity=".8"/>`;
+        s += `<circle cx="${fx - 3}" cy="${fb - 8}" r="2.6" fill="#C98F73" opacity=".55"/>`;
+        s += `<path d="M${fx - 2} ${fb - 16} C${fx + 1} ${fb - 44} ${fx + 2} ${top + 20} ${fx + 1} ${top - 2}
+                 C${fx + 1} ${top - 20} ${(fx + tip[0]) / 2} ${tip[1] + 26} ${tip[0]} ${tip[1]}"
+                 stroke="url(#${k.g}hair)" stroke-width="5.4" stroke-linecap="round" fill="none"/>`;
+        s += `<path d="M${fx - 3} ${fb - 18} C${fx - .4} ${fb - 44} ${fx + .8} ${top + 20} ${fx - .4} ${top - 2}
+                 C${fx - .6} ${top - 20} ${(fx + tip[0]) / 2 - 1} ${tip[1] + 28} ${tip[0] - 1.6} ${tip[1] + 2}"
+                 stroke="#A97C58" stroke-width="1.2" fill="none" opacity=".55"/>`;
+      });
+      /* the sebaceous gland, attached to the middle follicle */
+      s += `<path d="M122 80 C138 68 156 72 156 86 C156 100 138 104 121 94 Z" fill="url(#${k.g}sebum)"/>`;
+      s += `<path d="M126 82 C140 73 152 76 152 86" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="2" fill="none"/>`;
+      s += `<path d="M122 88 q6 -3 10 1" stroke="#C79A5C" stroke-width="1.1" fill="none" opacity=".5"/>`;
+      s += `<path d="M${x0} ${top + 1} H${x1}" stroke="#FFF4E4" stroke-width="2.4" opacity=".5"/>`;
+
+      /* the finger: a narrow digit with the nail set into its upper-left face and the
+         fingertip pad curving above the nail, as in the reference */
+      s += shadow(k.g, 282, 158, 40, 7);
+      s += `<path d="M254 156 V96 C254 68 260 52 279 50 C298 48 308 64 308 92 V156 Z" fill="url(#${k.g}finger)"/>`;
+      s += `<path d="M296 52 C304 62 308 76 308 94 V156 H288 C296 124 295 80 286 53 Z" fill="#C97F5C" opacity=".3"/>`;
+      s += `<path d="M254 156 V96 C254 72 258 60 268 54 C260 66 258 80 258 100 V156 Z" fill="#FFFFFF" opacity=".18"/>`;
+      s += `<path d="M254 156 V96 C254 68 260 52 279 50 C298 48 308 64 308 92 V156 Z" fill="none" stroke="#C08260" stroke-width="1.1" opacity=".4"/>`;
+      /* the nail fold, then the plate itself */
+      s += `<path d="M259 66 C266 62 292 62 299 67" stroke="#F6CDB2" stroke-width="3" fill="none" opacity=".9"/>`;
+      s += `<path d="M258 104 C258 80 263 67 276 66 C289 65 296 76 296 98 L296 106 C284 112 268 112 258 106 Z" fill="url(#${k.g}nail)"/>`;
+      s += `<path d="M258 106 C268 112 286 112 296 106" stroke="#DFA48F" stroke-width="2.6" fill="none" opacity=".9"/>`;
+      s += `<ellipse cx="277" cy="104" rx="12" ry="5" fill="#FFFFFF" opacity=".32"/>`;
+      s += `<path d="M264 96 C264 78 268 70 277 69 C286 68 291 78 292 92" stroke="#FFFFFF" stroke-opacity=".9" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+      s += `<ellipse cx="269" cy="81" rx="3.6" ry="7.5" fill="#FFFFFF" opacity=".42" transform="rotate(-12 269 81)"/>`;
+      s += `<path d="M261 70 C268 66 284 66 292 71" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="1.8" fill="none"/>`;
+      s += `<path d="M256 150 C270 155 298 155 306 150" stroke="#C08260" stroke-width="1.4" fill="none" opacity=".3"/>`;
+
+      return svg('A block of skin in cutaway with three hairs growing from their follicles and a sebaceous gland, beside a larger fingertip showing the glossy curved nail plate over the nail bed', s);
     },
 
     /* 04 — sweating and vessel response */
