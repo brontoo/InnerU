@@ -1,0 +1,120 @@
+/* ============================================================================
+   Integumentary mission map — card chrome to match the supplied reference
+   ----------------------------------------------------------------------------
+   Scoped to `.integ-map`, which only the Integumentary world page receives. The
+   respiratory system uses the same .resp-card markup and is deliberately untouched.
+   ========================================================================== */
+
+/* the card: cream panel with a warm hairline border, illustration filling the top */
+.integ-map .resp-card {
+  padding: 0;
+  gap: 0;
+  min-height: 318px;
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf4e6 100%);
+  border: 1.5px solid #f0d3a6;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px #8a5b460f;
+  overflow: hidden;
+}
+
+.integ-map .resp-card .integ-card-art {
+  height: 154px;
+  border: 0;
+  border-bottom: 1px solid #f4e0c2;
+  border-radius: 0;
+  background: radial-gradient(120% 108% at 50% 0%, #fff7e9 0%, #fbe5c4 100%);
+  transition: transform .3s ease;
+}
+
+/* the artwork is authored in a 360x168 viewBox: it must be scaled to the band, not
+   rendered at its natural width, or the panel clips it */
+.integ-card-art > svg { display: block; width: 100%; height: 100%; }
+
+/* the text and controls keep consistent insets now that the card has no padding */
+.integ-map .resp-card > :not(.integ-card-art) { margin-left: 22px; margin-right: 22px; }
+.integ-map .resp-card > .eyebrow { margin-top: 18px; }
+
+.integ-map .resp-card .eyebrow {
+  color: #c4603c;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+}
+.integ-map .resp-card h3 { color: #12354f; font-size: 1.16rem; margin: 3px 0 0; }
+.integ-map .resp-card p { color: #6b7b85; font-size: .92rem; line-height: 1.5; margin: 9px 0 0; }
+
+/* the action button, solid teal as in the reference */
+.integ-map .resp-card > .btn {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-bottom: 22px;
+  background: #0e8b84;
+  border-color: #0e8b84;
+  color: #ffffff;
+  padding: 11px 20px;
+  border-radius: 11px;
+  font-weight: 600;
+}
+.integ-map .resp-card > .btn:hover { background: #0b736d; border-color: #0b736d; }
+
+/* locked: the card stays fully legible, the artwork calms down, and the lock reads
+   as a cream pill rather than a bare line of text */
+.integ-map .resp-locked { opacity: 1; }
+.integ-map .resp-locked .integ-card-art { filter: saturate(.5) contrast(.96); opacity: .82; }
+.integ-map .resp-locked h3 { color: #7f8f99; }
+.integ-map .resp-locked p { color: #94a3ab; }
+.integ-map .resp-locked > span[aria-label="Locked"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  align-self: flex-start;
+  margin-top: auto;
+  margin-bottom: 22px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fbf3e3;
+  border: 1px solid #f0dfc4;
+  color: #8a7ba8;
+  font-size: .86rem;
+}
+
+/* final challenge: same cream card, band on top, note on the right */
+.integ-map .resp-finale {
+  padding: 0;
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf4e6 100%);
+  border: 1.5px solid #f0d3a6;
+  border-radius: 20px;
+  box-shadow: 0 3px 12px #8a5b460f;
+  overflow: hidden;
+}
+.integ-map .resp-finale.has-art { flex-wrap: wrap; }
+.integ-map .resp-finale.has-art .integ-card-art {
+  flex: 1 1 100%;
+  order: -1;
+  height: 168px;
+  border: 0;
+  border-bottom: 1px solid #f4e0c2;
+  border-radius: 0;
+  background: radial-gradient(120% 108% at 50% 0%, #fff7e9 0%, #fbe5c4 100%);
+}
+.integ-map .resp-finale > div { padding: 20px 22px; }
+.integ-map .resp-finale .eyebrow { color: #c4603c; font-size: .72rem; font-weight: 700; letter-spacing: .09em; }
+.integ-map .resp-finale h2 { color: #12354f; margin: 5px 0 0; }
+.integ-map .resp-finale p { color: #6b7b85; margin: 9px 0 0; }
+.integ-map .resp-finale > span { padding: 0 22px 22px; color: #8595a0; font-size: .9rem; }
+.integ-map .resp-finale > .btn { margin: 0 22px 22px; }
+
+/* the inviting card lifts its illustration; the locked ones do not */
+.integ-map .resp-card:not(.resp-locked):hover .integ-card-art { transform: translateY(-4px); }
+.integ-map .resp-card:not(.resp-locked):focus-within .integ-card-art { box-shadow: 0 0 0 3px #0e8b8422; }
+
+@media (max-width: 760px) {
+  .integ-map .resp-card { min-height: 0; }
+  .integ-map .resp-card .integ-card-art { height: 132px; }
+  .integ-map .resp-finale.has-art .integ-card-art { height: 140px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .integ-map .resp-card .integ-card-art { transition: none; }
+  .integ-map .resp-card:not(.resp-locked):hover .integ-card-art { transform: none; }
+}
