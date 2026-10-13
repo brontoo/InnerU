@@ -28,3 +28,11 @@ be asserted before its scripts have run (which shows up as a mysteriously empty 
 | `verify-stage7.py` | the tap-to-define glossary and the read-aloud control |
 
 Each harness pins its own port, so they can be run one at a time.
+
+## Current excretory expedition
+
+Run `python3 _dev-tools/verify-excretory.py` with Python Playwright and Chromium.
+It serves the current checkout automatically, checks the actual interactions,
+reports a nonzero exit status on failure, and stops its own server. See
+[EXCRETORY-CONTENT.md](EXCRETORY-CONTENT.md) for lesson coverage. Stage 4 targets
+an older excretory interface; the new runner covers the redesigned activities.

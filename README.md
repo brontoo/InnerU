@@ -35,6 +35,28 @@ Two reading supports run on every lesson page: **tap any underlined term** for a
 definition with the Arabic word beside it, and **▶ Listen** to have the page read aloud with the
 words highlighted as they are spoken. Both respect a per-student preference and need no network.
 
+## Excretory expedition
+
+World 06 follows the supplied textbook lesson (pp. 40–44) through six missions:
+waste relay, kidney mapping, selective filtration, reabsorption, homeostasis and
+kidney-care case files. A mission combines a field briefing, an interactive lab,
+three checks and optional side quests. Earn fragments and a final Balance Key.
+
+Use **Preview all activities**, or **Preview freely** on any mission card, to
+open every activity and the final challenge without completing prerequisites.
+Preview also exposes answer explanations and keeps student XP, progress and
+keys unchanged. Return to expedition to earn real progress.
+
+The **Anatomy Studio** rebuilds the excretory model with four tabs: urinary
+organs, kidney cutaway, nephron and animated urine flow. Drag or use left/right
+arrows to rotate; scroll or use +/− to zoom. Select structures to isolate them and
+read their functions. The original teaching meshes are simplified, not to scale.
+An illustration and structure explanations remain available without WebGL.
+
+Run `python3 _dev-tools/verify-excretory.py` for the current excretory browser
+checks. See `_dev-tools/EXCRETORY-CONTENT.md` for lesson alignment and scientific
+clarifications.
+
 ## What the teacher gets (`#teacher`)
 
 * A **progress code** per student (about 90 characters, checksum protected) that moves
@@ -66,7 +88,7 @@ Always work through `start-work.cmd` (or `dev.cmd`): the 3D labs use ES modules 
 
 **Scripts (21)** — ``anatomy.js` · `visuals.js` · `body-atlas-ui.js` · `content-skeletal.js` · `app.js` · `circulatory.js` · `rich-pages.js` · `muscle-visuals.js` · `muscle-learning.js` · `muscle.js` · `circulatory-integration.js` · `respiratory.js` · `integumentary.js` · `excretory.js` · `capstone.js` · `a11y.js` · `teacher.js` · `review.js` · `habit.js` · `muscle-force.js` · `pwa.js``
 
-**On-demand modules (`body-atlas.js`, `heart-explorer.js`)** — imported only when a 3D view is on screen, so the ~2 MB
+**On-demand modules (`body-atlas.js`, `heart-explorer.js`, `excretory-explorer.js`, `excretory-model.js`)** — imported only when a 3D view is on screen, so the ~2 MB
 three.js bundle is not downloaded by pages that do not need it.
 
 `404.html` is a byte-identical copy of `index.html`, used as the fallback shell.

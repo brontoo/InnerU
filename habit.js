@@ -116,6 +116,7 @@
     renderChip();
     const hash = (location.hash.slice(1) || 'home').split('/')[0];
     if (hash === 'review' || hash === 'teacher') return;
+    if (location.hash.startsWith('#excretory') && new URLSearchParams(location.hash.split('?')[1] || '').get('preview') === '1') return;
     const main = document.getElementById('main');
     if (!main) return;
     const html = banner();
@@ -135,7 +136,8 @@
   route = function () {
     const hash = location.hash.slice(1);
     /* opening a learning page counts as a day of work, and must be persisted */
-    if (hash.startsWith('mission/') || hash.includes('mission/') || hash === 'review' || hash === 'daily') save();
+    const preview = hash.startsWith('excretory') && new URLSearchParams(hash.split('?')[1] || '').get('preview') === '1';
+    if (!preview && (hash.startsWith('mission/') || hash.includes('mission/') || hash === 'review' || hash === 'daily')) save();
     previousRoute();
   };
   window.addEventListener('hashchange', route);
