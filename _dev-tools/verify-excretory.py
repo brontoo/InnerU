@@ -147,10 +147,46 @@ try:
         before = state(page)['xp']
         page.reload()
         check(state(page)['xp'] == before and state(page)['excretory']['mastery'], 'earned Key persists with no repeated XP on reload')
+        # Anatomical relationships and surface orientation must hold independently of rendering.
+        go(page, '')
+        anatomy = page.evaluate("""async () => {
+          const {createExcretoryModel} = await import('./excretory-model.js');
+          const model = createExcretoryModel('organs');
+          const landmark = model.anatomy;
+          const kidneys = model.meshes.filter(m => m.name.endsWith('kidney'));
+          const volumes = kidneys.map(m => {
+            const p = m.geometry.attributes.position, ids = m.geometry.index.array;
+            let v = 0;
+            for (let i=0;i<ids.length;i+=3) {
+              const a=ids[i],b=ids[i+1],c=ids[i+2];
+              v += p.getX(a)*(p.getY(b)*p.getZ(c)-p.getZ(b)*p.getY(c))
+                 + p.getY(a)*(p.getZ(b)*p.getX(c)-p.getX(b)*p.getZ(c))
+                 + p.getZ(a)*(p.getX(b)*p.getY(c)-p.getY(b)*p.getX(c));
+            }
+            return v/6;
+          });
+          const artery = model.meshes.filter(m => m.name === 'Renal artery');
+          const vein = model.meshes.filter(m => m.name === 'Renal vein');
+          const result = {
+            rightLower: landmark.right.center[1] < landmark.left.center[1],
+            venaCavaRight: landmark.venaCava[0] < landmark.aorta[0],
+            outwardSurfaces: volumes.every(v => Number.isFinite(v) && v > 0.05),
+            finiteNormals: kidneys.every(m => [...m.geometry.attributes.normal.array].every(Number.isFinite)),
+            arteryConnected: artery.every(m => Math.abs(m.geometry.parameters.path.getPoint(0).x-landmark.aorta[0]) < .001),
+            veinConnected: vein.every(m => Math.abs(m.geometry.parameters.path.getPoint(1).x-landmark.venaCava[0]) < .001),
+            hilumOrder: vein.every((v,i) => v.geometry.parameters.path.getPoint(0).z > artery[i].geometry.parameters.path.getPoint(1).z),
+            posteriorUreters: model.paths.slice(0,2).every(c => c.getPoint(1).z < landmark.bladderCenter[2] && c.getPoint(1).y < landmark.bladderCenter[1])
+          };
+          model.meshes.forEach(m => { m.geometry.dispose(); m.material.dispose(); });
+          model.textures.forEach(t => t.dispose());
+          return result;
+        }""")
+        for invariant, passed in anatomy.items():
+            check(passed, f'anatomical invariant: {invariant}')
         # Model views: each structure is selectable, modes restore, rotation changes camera.
         go(page, '')
         page.wait_for_function('window.inneruExcretoryExplorerState && window.inneruExcretoryExplorerState().canvas')
-        for view, expected in [('organs',7),('kidney',7),('nephron',9),('flow',7)]:
+        for view, expected in [('organs',10),('kidney',13),('nephron',9),('flow',10)]:
             page.locator(f'[data-explorer-tab="{view}"]').click()
             live = page.evaluate('window.inneruExcretoryExplorerState()')
             check(live['view'] == view and live['rotatable'], f'{view}: 3D view is rendered and rotatable')
@@ -162,6 +198,11 @@ try:
                 check(name in live['structures'] and live['selection'] == name, f'{view}: {name} has an actual selectable mesh')
         check(page.evaluate('window.inneruExcretoryExplorerState().particleCount') > 0, 'urine-flow view has moving markers on the ureters and urethra')
         page.locator('[data-explorer-tab="organs"]').click()
+        initial_frame = page.evaluate('window.inneruExcretoryExplorerState().camera')
+        page.locator('[data-structure="Right kidney"]').click()
+        page.locator('[data-model-action="focus"]').click()
+        check(page.evaluate('window.inneruExcretoryExplorerState().camera[2]') < initial_frame[2], 'focus control magnifies a selected anatomical structure')
+        page.locator('[data-model-action="reset"]').click()
         initial = page.evaluate('window.inneruExcretoryExplorerState().camera')
         page.locator('.exc-explorer-stage').focus()
         page.keyboard.press('ArrowLeft')
@@ -184,7 +225,7 @@ try:
         no_gl = fallback.new_page()
         go(no_gl, '')
         no_gl.wait_for_selector('.exc-model-fallback', state='visible')
-        check(no_gl.locator('[data-structure]').count() == 7, 'non-WebGL fallback keeps the structure controls')
+        check(no_gl.locator('[data-structure]').count() == 10, 'non-WebGL fallback keeps the structure controls')
         no_gl.locator('[data-explorer-tab="nephron"]').click()
         no_gl.locator('[data-structure="Glomerulus"]').click()
         check('Blood pressure' in no_gl.locator('.exc-structure-info').inner_text(), 'non-WebGL fallback explains nephron structures')

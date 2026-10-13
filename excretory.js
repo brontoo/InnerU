@@ -287,7 +287,7 @@
     return `<div class="exc-mode-banner ${preview ? "is-preview" : ""}" role="status"><div><b>${preview ? "Preview mode · every activity is open" : "Expedition mode · earn your Balance Key"}</b><span>${preview ? "Try any activity in any order. Your progress, XP and System Keys stay unchanged." : "Complete a challenge and its three checks to secure each fragment."}</span></div><a class="btn line" href="${link(preview ? "" : path, !preview)}">${preview ? "Return to expedition" : "Preview all activities"}</a></div>`;
   }
   function explorerMarkup() {
-    return `<section class="exc-explorer" aria-labelledby="exc-explorer-title" id="exc-explorer"><div class="exc-section-heading"><div><span class="eyebrow">ANATOMY STUDIO</span><h2 id="exc-explorer-title">Look closer. Follow the flow.</h2><p>A fresh 3D model, from whole organs to a single nephron.</p></div><span class="exc-pill">ROTATE · SELECT · DISCOVER</span></div><div class="exc-explorer-tabs" role="tablist" aria-label="Anatomy views">${[
+    return `<section class="exc-explorer" aria-labelledby="exc-explorer-title" id="exc-explorer"><div class="exc-section-heading"><div><span class="eyebrow">ANATOMY STUDIO</span><h2 id="exc-explorer-title">Look closer. Follow the flow.</h2><p>Explore anatomical structure, from the urinary organs to a magnified nephron.</p></div><span class="exc-pill">ROTATE · SELECT · DISCOVER</span></div><div class="exc-explorer-tabs" role="tablist" aria-label="Anatomy views">${[
       ["organs", "01", "Urinary organs"],
       ["kidney", "02", "Kidney cutaway"],
       ["nephron", "03", "Nephron"],
@@ -299,12 +299,12 @@
       )
       .join(
         "",
-      )}</div><div id="exc-anatomy-panel" role="tabpanel" aria-labelledby="exc-tab-organs" class="exc-anatomy-panel"><div><div class="exc-explorer-stage" tabindex="0" role="group" aria-label="Rotatable anatomy model. Drag or use left and right arrows to rotate; plus and minus zoom."><img class="exc-model-fallback" hidden src="assets/excretory-science-plate.png" alt="Kidney cutaway with cortex, medullary pyramids, calyces, pelvis and ureter; urinary tract alongside."></div><div class="exc-model-controls"><button type="button" data-model-action="spin" aria-pressed="false">Auto rotate</button><button type="button" data-model-action="reset">Reset view</button><button type="button" data-model-action="flow" aria-pressed="true" hidden>Pause flow</button></div><p class="exc-model-status" role="status">Loading anatomy studio…</p></div><aside><span class="eyebrow">EXAMINE A STRUCTURE</span><div class="exc-structures" role="group" aria-label="Anatomical structures"></div><div class="exc-structure-info" aria-live="polite"></div><p class="exc-scale-note"></p><div class="exc-legend"><span><i class="artery"></i>Blood entering</span><span><i class="vein"></i>Blood returning</span><span><i class="urine"></i>Urine / filtrate</span></div></aside></div></section>`;
+      )}</div><div id="exc-anatomy-panel" role="tabpanel" aria-labelledby="exc-tab-organs" class="exc-anatomy-panel"><div><div class="exc-explorer-stage" tabindex="0" role="group" aria-label="Rotatable anatomy model. Drag or use left and right arrows to rotate; plus and minus zoom."><img class="exc-model-fallback" hidden src="assets/excretory-science-plate.png" alt="Kidney cutaway with cortex, medullary pyramids, calyces, pelvis and ureter; urinary tract alongside."></div><div class="exc-model-controls"><button type="button" data-model-action="spin" aria-pressed="false">Auto rotate</button><button type="button" data-model-action="focus" disabled>Focus structure</button><button type="button" data-model-action="reset">Reset view</button><button type="button" data-model-action="flow" aria-pressed="true" hidden>Pause flow</button></div><p class="exc-model-status" role="status">Loading anatomy studio…</p></div><aside><span class="eyebrow">EXAMINE A STRUCTURE</span><div class="exc-structures" role="group" aria-label="Anatomical structures"></div><div class="exc-structure-info" aria-live="polite"></div><p class="exc-scale-note"></p><div class="exc-legend"><span><i class="artery"></i>Blood entering</span><span><i class="vein"></i>Blood returning</span><span><i class="urine"></i>Urine / filtrate</span></div></aside></div></section>`;
   }
   function mountExplorer() {
     const root = document.getElementById("exc-explorer");
     if (root)
-      import("./excretory-explorer.js")
+      import("./excretory-explorer.js?v=renal-anatomy-2")
         .then((m) => {
           if (root.isConnected) m.mountExcretoryExplorer(root);
         })
@@ -329,12 +329,10 @@
         )}</div><section class="exc-final-card"><div class="exc-final-symbol" aria-hidden="true">◈</div><div><span class="eyebrow">FINAL CHALLENGE / THE BALANCE KEY</span><h2>Keep the body in balance.</h2><p>Connect all six discoveries in eight applied decisions.</p></div><div>${preview || p.done.length >= 6 ? `<a class="btn" href="${link("/mastery")}">${preview ? "Preview final challenge" : "Accept the challenge"} →</a>` : '<span class="exc-locked">Secure all six fragments to earn the Key</span>'}${!preview ? `<a class="textlink" href="${link("/mastery", true)}">Preview final challenge ↗</a>` : ""}</div></section>${explorerMarkup()}<p class="exc-source-note">Lesson reference: UAE Inspire Science Biology, Grade 10 General, pp. 40–44. Figures and 3D meshes are original simplified teaching illustrations.</p></div>`,
     );
     document.getElementById("exc-browse-missions").onclick = () =>
-      document
-        .getElementById("exc-mission-map")
-        .scrollIntoView({
-          behavior: motionReduced() ? "instant" : "smooth",
-          block: "start",
-        });
+      document.getElementById("exc-mission-map").scrollIntoView({
+        behavior: motionReduced() ? "instant" : "smooth",
+        block: "start",
+      });
     mountExplorer();
   }
   /* Original vector diagrams: accessible labels stay separate from generated artwork. */

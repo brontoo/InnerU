@@ -1,6 +1,9 @@
 import * as THREE from "./assets/three/three.module.js";
 import { OrbitControls } from "./assets/three/OrbitControls.js";
-import { createExcretoryModel, STRUCTURES } from "./excretory-model.js";
+import {
+  createExcretoryModel,
+  STRUCTURES,
+} from "./excretory-model.js?v=renal-anatomy-2";
 let disposeCurrent = () => {};
 export function mountExcretoryExplorer(root) {
   disposeCurrent();
@@ -24,6 +27,24 @@ export function mountExcretoryExplorer(root) {
     flow = true,
     particles = [];
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const matches = (mesh, name) =>
+    mesh.userData.structure === name ||
+    mesh.userData.structures?.includes(name);
+  function frameBounds(bounds, oblique = false) {
+    const center = bounds.getCenter(new THREE.Vector3());
+    const extent = bounds.getSize(new THREE.Vector3());
+    const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    const distance =
+      Math.max(extent.y / (2 * tan), extent.x / (2 * tan * camera.aspect)) *
+        1.2 +
+      extent.z / 2;
+    const offset = new THREE.Vector3(oblique ? 0.23 : 0.035, 0.025, 1)
+      .normalize()
+      .multiplyScalar(Math.max(distance, 1.0));
+    controls.target.copy(center);
+    camera.position.copy(center.clone().add(offset));
+    controls.update();
+  }
   function highlight(name) {
     selection = name;
     list
@@ -42,9 +63,11 @@ export function mountExcretoryExplorer(root) {
       ? item[1]
       : "Select a label or tap the model to examine its function.";
     info.append(h, p);
+    root.querySelector('[data-model-action="focus"]').disabled =
+      !name || !renderer || disposed;
     if (!model) return;
     model.meshes.forEach((m) => {
-      const on = !name || m.userData.structure === name;
+      const on = !name || matches(m, name);
       m.material.transparent = !on;
       m.material.opacity = on ? 1 : 0.14;
       m.material.depthWrite = on;
@@ -59,6 +82,7 @@ export function mountExcretoryExplorer(root) {
       o.geometry?.dispose();
       if (o.material) o.material.dispose();
     });
+    model.textures?.forEach((texture) => texture.dispose());
     particles.forEach((p) => {
       scene.remove(p.mesh);
       p.mesh.geometry.dispose();
@@ -98,18 +122,19 @@ export function mountExcretoryExplorer(root) {
       .forEach((b) => (b.onclick = () => highlight(b.dataset.structure)));
     root.querySelector(".exc-scale-note").textContent =
       next === "nephron"
-        ? "Nephron enlarged separately; shapes and spacing simplified. Filtrate flows through the tubule; blood remains in capillaries."
+        ? "Magnified nephron: the corpuscle and convoluted tubules lie in the cortex; the loop extends into the medulla. Blood and filtrate follow separate routes. Spacing is adjusted for inspection."
         : next === "kidney"
-          ? "Open cutaway: outer cortex, inner medullary pyramids and collecting spaces. Simplified shapes; not to scale."
-          : "Anterior view: the patient’s right is on your left. Organs and urethral length are simplified; not to scale.";
+          ? "Coronal cutaway: cortical columns separate medullary pyramids. Urine flows from papillae to minor calyces, major calyces, pelvis and ureter. This anatomy-informed teaching reconstruction is enlarged, not a patient scan."
+          : "Anterior view: the patient’s right is on your left, with the right kidney lower. Veins lie anterior to arteries; the pelvis is posterior. A short female urethra is illustrated. Each view is enlarged independently; this is a teaching reconstruction.";
     root.querySelector('[data-model-action="flow"]').hidden = next !== "flow";
     if (renderer) {
       clearModel();
       model = createExcretoryModel(next);
       scene.add(model.group);
-      camera.position.set(0.15, 0, next === "kidney" ? 5.7 : 5.9);
-      controls.target.set(0, 0, 0);
-      controls.update();
+      frameBounds(
+        new THREE.Box3().setFromObject(model.group),
+        next === "kidney",
+      );
       if (next === "flow")
         model.paths.forEach((curve, index) => {
           for (let i = 0; i < 4; i++) {
@@ -149,10 +174,17 @@ export function mountExcretoryExplorer(root) {
           flow = !flow;
           b.setAttribute("aria-pressed", String(flow));
           b.textContent = flow ? "Pause flow" : "Play flow";
-        } else if (camera) {
-          camera.position.set(0.15, 0, 5.9);
-          controls.target.set(0, 0, 0);
-          controls.update();
+        } else if (b.dataset.modelAction === "focus" && camera && selection) {
+          const bounds = new THREE.Box3();
+          model.meshes
+            .filter((mesh) => matches(mesh, selection))
+            .forEach((mesh) => bounds.expandByObject(mesh));
+          frameBounds(bounds);
+        } else if (camera && model) {
+          frameBounds(
+            new THREE.Box3().setFromObject(model.group),
+            view === "kidney",
+          );
           highlight(null);
         }
       }),
@@ -193,7 +225,7 @@ export function mountExcretoryExplorer(root) {
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enablePan = false;
-    controls.minDistance = 2.7;
+    controls.minDistance = 0.75;
     controls.maxDistance = 9;
     controls.autoRotateSpeed = 0.8;
     scene.add(new THREE.HemisphereLight(0xfff7eb, 0x557783, 2.2));
@@ -208,6 +240,11 @@ export function mountExcretoryExplorer(root) {
       camera.aspect = stage.clientWidth / stage.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(stage.clientWidth, stage.clientHeight);
+      if (model && !selection)
+        frameBounds(
+          new THREE.Box3().setFromObject(model.group),
+          view === "kidney",
+        );
     };
     resize = new ResizeObserver(size);
     resize.observe(stage);
@@ -282,7 +319,10 @@ export function mountExcretoryExplorer(root) {
     window.inneruExcretoryExplorerState = () => ({
       view,
       selection,
-      structures: model?.meshes.map((m) => m.userData.structure),
+      structures: model?.meshes.flatMap(
+        (m) => m.userData.structures || [m.userData.structure],
+      ),
+      anatomy: model?.anatomy,
       rotatable: !!controls?.enableRotate,
       canvas: !!renderer,
       particleCount: particles.length,

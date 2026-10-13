@@ -50,7 +50,10 @@ keys unchanged. Return to expedition to earn real progress.
 The **Anatomy Studio** rebuilds the excretory model with four tabs: urinary
 organs, kidney cutaway, nephron and animated urine flow. Drag or use left/right
 arrows to rotate; scroll or use +/− to zoom. Select structures to isolate them and
-read their functions. The original teaching meshes are simplified, not to scale.
+read their functions. **Focus structure** frames the selected organ or region.
+The anatomy-informed surfaces include renal vessels connected to the aorta and
+vena cava, posterior bladder entry, papillae, minor/major calyces and a magnified
+nephron. Each view is enlarged independently; these are teaching reconstructions.
 An illustration and structure explanations remain available without WebGL.
 
 Run `python3 _dev-tools/verify-excretory.py` for the current excretory browser

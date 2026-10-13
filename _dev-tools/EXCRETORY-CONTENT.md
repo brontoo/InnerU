@@ -58,3 +58,24 @@ layouts and the non-WebGL fallback. Stage 6 and 7 remain useful regression suite
 The stage-4 harness documents an earlier excretory interface (a now-replaced
 kidney sequencing activity and quantitative ADH outputs); use the new harness
 for the redesigned expedition.
+
+## Anatomical surface revision
+
+The original outer surfaces now preserve kidney volume, medial hilar concavity
+and outward-facing normals. The organ view includes the relevant aorta and vena
+cava segments: the cava is to the patient's right, the right kidney sits lower,
+renal veins lie anterior to the arteries, and the pelvis lies posteriorly.
+Ureters terminate on the posteroinferior bladder; a short female urethra is shown.
+
+The coronal cutaway separately identifies the capsule, cortex, cortical columns,
+medullary pyramids, papillae, minor and major calyces, sinus and pelvis. The
+nephron uses continuous proximal/loop/distal/collecting routes and a capillary
+tuft connected to its afferent/efferent arterioles. Surface texture, spacing and
+visible detail support classroom inspection rather than clinical measurements.
+No external scan meshes are bundled; the geometry and textures are original.
+
+Browser checks verify outward surface orientation, lower right-kidney position,
+cava/aorta placement, vessel attachment, hilar vessel order, posterior ureter
+entry and the focus control, alongside the existing activity and preview checks.
+Versioned module URLs and a bumped offline-cache version avoid reusing an earlier
+model after this revision is deployed.
