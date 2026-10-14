@@ -36,3 +36,11 @@ It serves the current checkout automatically, checks the actual interactions,
 reports a nonzero exit status on failure, and stops its own server. See
 [EXCRETORY-CONTENT.md](EXCRETORY-CONTENT.md) for lesson coverage. Stage 4 targets
 an older excretory interface; the new runner covers the redesigned activities.
+
+## Living-skin anatomy studio
+
+Run `python3 _dev-tools/verify-skin.py` for the current integumentary 3D studio.
+It checks the generated anatomical geometry, rendered selection transparency,
+all structure/view controls, animated function routes, keyboard access, mobile
+layout, reduced motion and the scientific fallback. See
+[SKIN-ANATOMY.md](SKIN-ANATOMY.md) for anatomical choices and rendering behavior.
