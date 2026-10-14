@@ -188,11 +188,11 @@ export function mountExcretoryExplorer(root) {
     fallbackImage.src =
       next === "nephron"
         ? "assets/excretory-nephron-plate.png"
-        : "assets/excretory-science-plate.png";
+        : "assets/excretory-kidney-cutaway.png";
     fallbackImage.alt =
       next === "nephron"
         ? "Magnified nephron: glomerular tuft inside the capsule, convoluted tubules, loop of Henle, collecting duct and surrounding capillaries."
-        : "Kidney cutaway and urinary organs: cortex, medullary pyramids, calyces, pelvis, ureter and bladder.";
+        : "Kidney cutaway: cortex, medullary pyramids, calyces, pelvis, renal artery, renal vein and ureter.";
     root.querySelectorAll("[data-explorer-tab]").forEach((b) => {
       const active = b.dataset.explorerTab === next;
       b.setAttribute("aria-selected", String(active));
