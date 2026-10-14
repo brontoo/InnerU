@@ -2,10 +2,10 @@
 import * as THREE from "./assets/three/three.module.js";
 
 export const SKIN_STRUCTURES = [
-  { name: "Epidermis", location: "Outer skin", color: "#edb19b", job: "A thin, renewing epithelial barrier. Keratin helps limit water loss and protect the surface. The epidermis contains no blood vessels.", find: "Look for the thin surface layer above the wavy junction.", lesson: 2 },
-  { name: "Dermis", location: "Under the epidermis", color: "#c87d73", job: "A thicker connective-tissue layer. Collagen and elastin support the skin; vessels, nerves, hair follicles and glands run through it.", find: "Follow the dermal papillae up toward the epidermis.", lesson: 2 },
+  { name: "Epidermis", location: "Outer skin", color: "#dfcfab", job: "A thin, avascular epithelial barrier. In this hairy-skin example, cells pass through basal, spinous, granular and cornified layers. Flattened keratin-rich surface cells help limit water loss.", find: "Use the cell lens to compare the basal row at the wavy junction with flatter cells near the surface. Stratum lucidum belongs to thick glabrous skin and is not shown here.", lesson: 2 },
+  { name: "Dermis", location: "Under the epidermis", color: "#c8c6b9", job: "Papillary connective tissue interlocks with the epidermis. Deeper reticular dermis contains interwoven collagen bundles and elastic fibers, with vessels, nerves, hair follicles and glands.", find: "Inspect the collagen lens, then follow a capillary loop into a dermal papilla. Fibers run in several directions, rather than forming a stack of flat sheets.", lesson: 2 },
   { name: "Subcutaneous layer", location: "Beneath the skin proper", color: "#dcb46e", job: "Fat and connective tissue cushion the body, store energy and reduce heat loss. This layer lies beneath the epidermis and dermis.", find: "Examine the lobules of fat beneath the dermis.", lesson: 2 },
-  { name: "Hair follicle", location: "Dermis into upper subcutis", color: "#9b614c", job: "A follicle surrounds the hair root. Dividing cells near the bulb form the hair; a vascular dermal papilla supports growth at its base.", find: "Follow the shaft down to the bulb and its small dermal papilla.", lesson: 3 },
+  { name: "Hair follicle", location: "Dermis into upper subcutis", color: "#9b8068", job: "The hair root lies within inner and outer root sheaths, a glassy basement membrane and a connective-tissue sheath. Near the bulb, matrix cells surround the vascular dermal papilla and produce the growing hair.", find: "The follicle lens exposes nested sheath walls and their cells. Follow the darker shaft down into the bulb and its dermal papilla.", lesson: 3 },
   { name: "Sweat gland", location: "Deep dermis", color: "#e6c1a7", job: "This eccrine gland has a coiled secretory tube and a duct opening directly onto the skin surface. Evaporation of sweat removes heat.", find: "Trace the coil into its continuous duct and the surface pore.", lesson: 4 },
   { name: "Sebaceous gland", location: "Beside the upper follicle", color: "#d5b98c", job: "Lobules release sebum into the hair follicle through a short duct. Sebum helps lubricate skin and hair.", find: "Find the grape-like lobules connected to the follicle.", lesson: 3 },
   { name: "Arrector pili", location: "Follicle to superficial dermis", color: "#b66561", job: "This small smooth muscle pulls the hair upright when it contracts, producing goose bumps. It is not the main mechanism of heat production in humans.", find: "Find the oblique muscle joining the follicle to the upper dermis.", lesson: 3 },
@@ -16,24 +16,41 @@ export const SKIN_STRUCTURES = [
 ];
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
-const C = { epidermis: 0xe3a48c, dermis: 0xc78677, fat: 0xe0ba77, hair: 0x493128, sheath: 0xb16d60, gland: 0xdcb895, sweat: 0xe6c3ad, muscle: 0xb9605c, artery: 0xb84955, vein: 0x50778b, nerve: 0xd8b86b, receptor: 0xdcc299 };
+const C = { epidermis: 0xded1ac, dermis: 0xc9c5b9, fat: 0xe9dfad, hair: 0x665d4b, sheath: 0xc5b69a, gland: 0xe0cb88, sweat: 0xa7bbc3, muscle: 0xae7066, artery: 0xb44650, vein: 0x4f7598, nerve: 0xd4ba6c, receptor: 0xdbca9c };
+
+export const skinJunction=(x,z)=>1.075+.075*Math.cos(x*16.4)+.012*Math.cos(z*11+x*2);
+const skinSurface=(x,z)=>1.285+.013*Math.sin(x*3.1)*Math.cos(z*4.2);
 
 function tissueTexture(kind) {
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 512;
+  canvas.width = canvas.height = 1024;
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = kind === "epidermis" ? "#e4aa94" : kind === "dermis" ? "#ce8f80" : "#dfba79";
-  ctx.fillRect(0, 0, 512, 512);
+  ctx.fillStyle = kind === "epidermis" ? "#d7c8a8" : kind === "surface" ? "#e7d6ba" : "#c9c6bc";
+  ctx.fillRect(0, 0, 1024, 1024);
   let seed = kind === "epidermis" ? 83 : 147;
   const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
-  for (let i = 0; i < 1700; i++) {
-    const x = rnd() * 512, y = rnd() * 512;
-    ctx.strokeStyle = i % 3 === 0 ? "rgba(255,240,223,.19)" : "rgba(128,74,63,.09)";
-    ctx.lineWidth = .5 + rnd();
-    ctx.beginPath();
-    if (kind === "epidermis") ctx.ellipse(x, y, 1 + rnd() * 4, 1 + rnd() * 2, rnd() * 3, 0, Math.PI * 2);
-    else { ctx.moveTo(x, y); ctx.bezierCurveTo(x + 9, y - 8, x + 18, y + 7, x + 28 + rnd() * 22, y - 3); }
-    ctx.stroke();
+  if(kind === "epidermis") {
+    // Polygonal cell boundaries; cells flatten toward the keratinized surface.
+    for(let row=0;row<22;row++)for(let col=0;col<31;col++){
+      const x=col*35+(row%2)*17,y=row*48;
+      ctx.fillStyle=["#e7dbbc","#ded0ac","#d3c19c","#ede2c7"][(row+col)%4];
+      ctx.strokeStyle="#a99b79";ctx.lineWidth=1.3;
+      ctx.beginPath();ctx.moveTo(x+4,y+5);ctx.lineTo(x+26,y+2);ctx.lineTo(x+37,y+23);ctx.lineTo(x+28,y+43);ctx.lineTo(x+6,y+46);ctx.lineTo(x-4,y+23);ctx.closePath();ctx.fill();ctx.stroke();
+      if(row>6){ctx.fillStyle="rgba(103,100,88,.28)";ctx.beginPath();ctx.ellipse(x+16,y+24,3.5,4.5,.3,0,Math.PI*2);ctx.fill();}
+    }
+  } else if(kind === "surface") {
+    for(let row=-1;row<15;row++)for(let col=-1;col<15;col++){
+      const x=col*78+(row%2)*36,y=row*77;
+      ctx.strokeStyle="rgba(140,115,82,.22)";ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(x+4,y+13);ctx.lineTo(x+53,y+1);ctx.lineTo(x+82,y+33);ctx.lineTo(x+66,y+70);ctx.lineTo(x+15,y+79);ctx.lineTo(x-8,y+43);ctx.closePath();ctx.stroke();
+    }
+    for(let i=0;i<3500;i++){const x=rnd()*1024,y=rnd()*1024;ctx.fillStyle=i%4?"rgba(255,251,231,.27)":"rgba(115,89,60,.18)";ctx.fillRect(x,y,.5+rnd()*2,.5+rnd()*2);}
+  } else {
+    for(let i=0;i<2400;i++){
+      const x=rnd()*1024,y=rnd()*1024,angle=rnd()*Math.PI, length=25+rnd()*120;
+      ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.strokeStyle=i%4?"rgba(253,248,225,.24)":"rgba(118,135,131,.13)";ctx.lineWidth=.6+rnd()*2;
+      ctx.beginPath();ctx.moveTo(0,0);ctx.bezierCurveTo(length*.3,-8,length*.6,9,length,0);ctx.stroke();ctx.restore();
+    }
   }
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;
@@ -43,7 +60,7 @@ function tissueTexture(kind) {
 }
 
 // Closed tissue slabs have a common undulating epidermal–dermal junction.
-function slab(top, bottom, front = .46, back = -.64) {
+function slab(top, bottom, front = .46, back = -.92) {
   const positions = [], uv = [], indices = [], nx = 72, nz = 24;
   const surface = (fn, reverse) => {
     const base = positions.length / 3;
@@ -81,12 +98,12 @@ function slab(top, bottom, front = .46, back = -.64) {
 }
 
 // An open follicular sheath exposes the root instead of hiding it in a cylinder.
-function follicleSheath(curve) {
+function follicleSheath(curve, scale=1) {
   const pos=[], uv=[], idx=[], rings=70, sides=28;
   for(let i=0;i<=rings;i++) {
     const t=i/rings, point=curve.getPointAt(t);
     const tangent=curve.getTangentAt(t), lateral=V(tangent.y,-tangent.x,0).normalize();
-    const radius=.105 + .115*Math.exp(-Math.pow((t-.08)/.15,2));
+    const radius=scale*(.077 + .092*Math.exp(-Math.pow((t-.08)/.15,2)));
     for(let j=0;j<=sides;j++) {
       const a=Math.PI/2+1.10+(Math.PI*2-2.20)*j/sides;
       const v=point.clone().addScaledVector(lateral,Math.cos(a)*radius).addScaledVector(V(0,0,1),Math.sin(a)*radius);
@@ -95,6 +112,16 @@ function follicleSheath(curve) {
     }
   }
   const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));g.setAttribute("uv",new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;
+}
+
+// Beveled polygonal cells give cut faces a packed cellular mosaic, rather than
+// a row of spheres. The shallow version supplies real epidermal relief.
+function cellGeometry(depth=.12, variation=0) {
+  const shape=new THREE.Shape(),v=variation*.018;
+  const points=[[-.96,-.34],[-.51-v,-.92],[.49,-.89+v],[.97,.02],[.53+v,.91],[-.52,.87-v]];
+  shape.moveTo((points[5][0]+points[0][0])/2,(points[5][1]+points[0][1])/2);
+  for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];shape.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);}shape.closePath();
+  return new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelThickness:.045,bevelSize:.035,bevelSegments:1,steps:1,curveSegments:3});
 }
 
 export function createSkinModel() {
@@ -106,7 +133,7 @@ export function createSkinModel() {
     const key=`${color instanceof THREE.Color ? color.getHex() : color}:${kind}`;
     if(!materials.has(key)) {
       const m=new THREE.MeshPhysicalMaterial({color,roughness:kind==="hair"?.34:kind==="tissue"?.69:.48,metalness:0,clearcoat:kind==="tissue"?.08:.22,clearcoatRoughness:.6,side:THREE.DoubleSide});
-      if(["epidermis","dermis"].includes(kind)) {const map=tissueTexture(kind);textures.push(map);m.map=map;m.bumpMap=map;m.bumpScale=.018;m.color.setHex(0xffffff);m.roughness=.72;}
+      if(["epidermis","dermis","surface"].includes(kind)) {const map=tissueTexture(kind);textures.push(map);m.map=map;m.bumpMap=map;m.bumpScale=kind==="surface"?.018:.012;m.color.setHex(0xffffff);m.roughness=.76;}
       materials.set(key,m);
     }
     return materials.get(key).clone();
@@ -117,37 +144,66 @@ export function createSkinModel() {
     m.userData.baseClearcoat=m.material.clearcoat;
     parent.add(m);meshes.push(m);return m;
   }
-  function ball(p,scale,color,part,parent=layers.dermis) {
-    const m=mesh(new THREE.SphereGeometry(1,24,16),color,part,parent);m.position.copy(p);m.scale.set(...scale);return m;
+  function ball(p,scale,color,part,parent=layers.dermis,detail=16) {
+    const m=mesh(new THREE.SphereGeometry(1,detail,Math.max(4,Math.floor(detail*.65))),color,part,parent);m.position.copy(p);m.scale.set(...scale);return m;
   }
   function tube(points,radius,color,part,parent=layers.dermis,segments=70) {
     const curve=points instanceof THREE.Curve?points:new THREE.CatmullRomCurve3(points.map(p=>Array.isArray(p)?V(...p):p));
     const m=mesh(new THREE.TubeGeometry(curve,segments,radius,10,false),color,part,parent);
     return {mesh:m,curve};
   }
-  const junction=(x,z)=>1.08+.035*Math.sin(x*16)+.014*Math.cos(z*14+x*3);
-  const surface=(x,z)=>1.27+.023*Math.sin(x*2.7)*Math.cos(z*4);
-  mesh(slab(surface,junction,.65),C.epidermis,"Epidermis",layers.epidermis,"epidermis");
-  mesh(slab((x,z)=>surface(x,z)+.002,(x,z)=>surface(x,z)-.022,.651),0xc89078,"Epidermis",layers.epidermis,"tissue");
-  mesh(slab(junction,()=>-.59),C.dermis,"Dermis",layers.dermis,"dermis");
-  mesh(slab(()=>-.59,()=>-1.24,.4),C.fat,"Subcutaneous layer",layers.fat,"tissue");
+  const junction=skinJunction, surface=skinSurface;
+  mesh(slab((x,z)=>surface(x,z)-.025,(x,z)=>junction(x,z)+.028,.65),C.epidermis,"Epidermis",layers.epidermis,"epidermis");
+  mesh(slab((x,z)=>surface(x,z)+.002,(x,z)=>surface(x,z)-.025,.653),C.epidermis,"Epidermis",layers.epidermis,"surface");
+  mesh(slab((x,z)=>junction(x,z)+.028,junction,.657),0xa7997f,"Epidermis",layers.epidermis,"tissue");
+  mesh(slab(junction,()=>.77),0xd2d2c7,"Dermis",layers.dermis,"dermis");
+  mesh(slab(()=>.77,()=>-.59),C.dermis,"Dermis",layers.dermis,"dermis");
+  mesh(slab(()=>-.59,()=>-1.26,.84),C.fat,"Subcutaneous layer",layers.fat,"tissue");
 
-  // Fat lobules are rounded but vary in size and are held in a connective matrix.
-  for(let row=0;row<3;row++)for(let col=0;col<12;col++) {
-    const phase=col*1.713+row*2.4;
-    const x=-1.37+col*.25+(row%2)*.045,y=-.73-row*.20+.024*Math.sin(phase),z=.45+.024*Math.cos(phase);
-    const r=.115+.012*Math.sin(phase);
-    const m=ball(V(x,y,z),[r,r*.87,r*.87],new THREE.Color(C.fat).offsetHSL(0,0,[-.035,-.01,.012,.034][(col+row)%4]),"Subcutaneous layer",layers.fat);
-    m.rotation.z=.2*Math.sin(phase);
+  // Actual cellular relief on the front and side of the viable epidermis.
+  const cellColors=[0xe0d2af,0xe8dcbd,0xd8c9a7,0xece0c2];
+  for(let col=0;col<56;col++)for(let row=0;row<5;row++){
+    const x=-1.47+col*.053+(row%2)*.009,bottom=junction(x,.66),height=surface(x,.66)-bottom-.035;
+    const fraction=.13+row*.17,y=bottom+height*fraction;
+    const cell=mesh(cellGeometry(.12,(col+row)%4),cellColors[(col+row)%4],"Epidermis",layers.epidermis,"tissue");cell.position.set(x,y,.655);cell.scale.set(.025,height*.084,.018);
+    if(row<3&&(col+row)%7===0)ball(V(x+.003,y,.659),[.004,.006,.0015],0xa39b84,"Epidermis",layers.epidermis,6);
   }
-  for(let i=0;i<13;i++) tube([[-1.45+i*.24,-1.19,.49],[-1.44+i*.24,-.97,.52],[-1.43+i*.24,-.7,.50]],.007,0xe8d8b0,"Subcutaneous layer",layers.fat,12);
+  for(let col=0;col<29;col++)for(let row=0;row<5;row++){
+    const z=-.89+col*.053,bottom=junction(1.5,z),height=surface(1.5,z)-bottom-.035;
+    const cell=mesh(cellGeometry(.12,(col+row)%4),cellColors[(col+row)%4],"Epidermis",layers.epidermis,"tissue");cell.position.set(1.503,bottom+height*(.13+row*.17),z);cell.rotation.y=Math.PI/2;cell.scale.set(.025,height*.084,.018);
+  }
+  // Packed adipocytes fill a three-dimensional cushion, including the terrace
+  // exposed in front of the recessed dermis and the visible side cut face.
+  for(let depth=0;depth<8;depth++)for(let row=0;row<3;row++)for(let col=0;col<14;col++){
+    const phase=col*1.713+row*2.4+depth*.73;
+    const x=-1.43+col*.22+(row%2)*.025,y=-.706-row*.211+.006*Math.sin(phase),z=-.80+depth*.235;
+    const r=.105+.004*Math.sin(phase);
+    const m=mesh(cellGeometry(1.9,(col+row+depth)%4),new THREE.Color(C.fat).offsetHSL(0,0,[-.025,0,.023,.04][(col+row+depth)%4]),"Subcutaneous layer",layers.fat,"tissue");m.position.set(x,y,z-.10);m.scale.set(r*1.08,r*1.08,r*1.03);
+    m.rotation.z=.18*Math.sin(phase);
+    if(depth===7&&(col+row*2)%8===0)ball(V(x+.054,y+.061,z-.10+r*1.03*1.945+.001),[.010,.012,.003],0x989c99,"Subcutaneous layer",layers.fat,8);
+  }
+  for(let depth=0;depth<8;depth++)for(let row=0;row<3;row++){
+    const cell=mesh(cellGeometry(.12,(row+depth)%4),C.fat,"Subcutaneous layer",layers.fat,"tissue");cell.position.set(1.54,-.706-row*.211,-.80+depth*.235);cell.rotation.y=Math.PI/2;cell.scale.set(.108,.101,.02);
+  }
+  for(let i=0;i<14;i++)tube([[-1.48+i*.22,-1.24,.91],[-1.45+i*.22,-1.02,.925],[-1.44+i*.22,-.63,.92]],.004,0xc0b58e,"Subcutaneous layer",layers.fat,14);
 
   const follicleCurve=new THREE.CatmullRomCurve3([V(-.55,-.69,.63),V(-.67,-.38,.62),V(-.72,.22,.59),V(-.81,.78,.56),V(-.86,1.32,.54)]);
-  mesh(follicleSheath(follicleCurve),C.sheath,"Hair follicle");
-  tube([[-.57,-.57,.69],[-.65,-.22,.68],[-.74,.38,.66],[-.85,1.24,.65],[-.9,1.61,.62],[-1.04,1.99,.61]],.052,C.hair,"Hair follicle",layers.dermis,95);
-  const bulb=ball(V(-.56,-.57,.66),[.14,.21,.105],0x5b3d30,"Hair follicle");bulb.rotation.z=-.25;
+  // Open walls expose the connective sheath, glassy basement membrane,
+  // outer root sheath and inner root sheath.
+  mesh(follicleSheath(follicleCurve,1.26),0xab9e85,"Hair follicle");
+  mesh(follicleSheath(follicleCurve,1.12),0xe3d3ae,"Hair follicle");
+  mesh(follicleSheath(follicleCurve,.94),0xb6a482,"Hair follicle");
+  mesh(follicleSheath(follicleCurve,.78),0xe4d7b7,"Hair follicle");
+  for(let row=0;row<39;row++)for(const side of [-1,1]){
+    const t=.06+row*.022,point=follicleCurve.getPointAt(t),tangent=follicleCurve.getTangentAt(t),lateral=V(tangent.y,-tangent.x,0).normalize();
+    const r=1.12*(.077+.092*Math.exp(-Math.pow((t-.08)/.15,2)));
+    const cell=ball(point.clone().addScaledVector(lateral,side*r*.91).add(V(0,0,.040)),[.012,.021,.010],row%2?0xe3d3ae:0xb6a482,"Hair follicle",layers.dermis,8);cell.rotation.z=-.12;
+  }
+  tube([[-.57,-.57,.69],[-.65,-.22,.68],[-.74,.38,.66],[-.85,1.24,.65],[-.9,1.61,.62],[-1.04,1.99,.61]],.033,C.hair,"Hair follicle",layers.dermis,110);
+  const bulb=ball(V(-.56,-.57,.66),[.105,.17,.082],0x766c53,"Hair follicle");bulb.rotation.z=-.25;
   ball(V(-.55,-.70,.75),[.044,.093,.04],0xd59583,"Hair follicle");
-  tube([[-.73,-.9,.64],[-.62,-.78,.66],[-.55,-.68,.75]],.011,C.artery,"Blood vessels",layers.dermis,18);
+  for(let i=0;i<15;i++){const a=Math.PI*.05+i/14*Math.PI*.90;ball(V(-.56+.092*Math.cos(a),-.66+.12*Math.sin(a),.745),[.013,.017,.009],0xc6b898,"Hair follicle",layers.dermis,8);}
+  tube([[-.73,-.79,1.01],[-.62,-.73,.88],[-.55,-.68,.75]],.011,C.artery,"Blood vessels",layers.dermis,24);
   // Small rear hairs provide surface context without crowding the cut plane.
   for(const [x,z] of [[.63,-.2],[1.12,-.38],[-.25,-.39]]) tube([[x,1.23,z],[x+.03,1.53,z],[x+.09,1.75,z-.02]],.013,C.hair,"Hair follicle",layers.dermis,24);
 
@@ -174,12 +230,20 @@ export function createSkinModel() {
   const pore=mesh(new THREE.TorusGeometry(.033,.009,8,24),0xd1987a,"Sweat gland",layers.epidermis);pore.rotation.x=Math.PI/2;pore.position.set(.55,surface(.55,.60)+.008,.60);
   const sweatPath=new THREE.CurvePath();sweatPath.add(coil.curve);sweatPath.add(duct.curve);
 
-  const artery=tube([[-1.43,-.80,.71],[-.72,-.77,.71],[0,-.81,.71],[.75,-.79,.71],[1.43,-.75,.71]],.044,C.artery,"Blood vessels",layers.dermis,90);
-  const vein=tube([[1.43,-.99,.70],[.75,-.97,.70],[0,-.97,.70],[-.72,-.95,.70],[-1.43,-.98,.70]],.051,C.vein,"Blood vessels",layers.dermis,90);
-  for(const x of [-1.28,-.98,-.12,.23,.92,1.27]) {
-    const y=junction(x,.48)-.026;
-    tube([[x-.10,-.79,.64],[x-.14,-.32,.63],[x-.11,.28,.57],[x-.06,.72,.54],[x-.041,y-.04,.51],[x,y,.51]],.013,C.artery,"Blood vessels",layers.dermis,70);
-    tube([[x,y,.51],[x+.045,y-.035,.51],[x+.065,.70,.54],[x+.10,.25,.57],[x+.12,-.40,.63],[x+.12,-.97,.65]],.014,C.vein,"Blood vessels",layers.dermis,70);
+  const artery=tube([[-1.43,-.80,1.01],[-.72,-.77,1.01],[0,-.81,1.01],[.75,-.79,1.01],[1.43,-.75,1.01]],.033,C.artery,"Blood vessels",layers.dermis,90);
+  const vein=tube([[1.43,-.99,1.01],[.75,-.97,1.01],[0,-.97,1.01],[-.72,-.95,1.01],[-1.43,-.98,1.01]],.038,C.vein,"Blood vessels",layers.dermis,90);
+  const superficialY=x=>.72+.025*Math.sin(x*2.4);
+  const plexusX=[-1.43,-1.05,-.65,-.2,.3,.8,1.43];
+  tube(plexusX.map(x=>[x,superficialY(x),.57]),.018,C.artery,"Blood vessels",layers.dermis,100);
+  tube(plexusX.map(x=>[x,superficialY(x)-.065,.56]),.019,C.vein,"Blood vessels",layers.dermis,100);
+  for(const x of [-1.20,-.38,.43,1.24]){
+    tube([[x-.11,-.79,1.01],[x-.16,-.40,.65],[x+.05,.02,.62],[x-.04,.43,.59],[x,superficialY(x),.57]],.017,C.artery,"Blood vessels",layers.dermis,65);
+    tube([[x+.07,superficialY(x+.07)-.065,.56],[x+.16,.38,.59],[x+.12,-.12,.62],[x+.20,-.57,.73],[x+.11,-.97,1.01]],.020,C.vein,"Blood vessels",layers.dermis,65);
+  }
+  for(const x of [-1.149,-.766,-.383,0,.383,.766,1.149]){
+    const y=junction(x,.52)-.029;
+    tube([[x-.055,superficialY(x-.055),.57],[x-.058,.90,.54],[x-.035,y-.025,.52],[x,y,.52]],.008,C.artery,"Blood vessels",layers.dermis,42);
+    tube([[x,y,.52],[x+.035,y-.025,.52],[x+.055,.88,.54],[x+.055,superficialY(x+.055)-.065,.56]],.009,C.vein,"Blood vessels",layers.dermis,42);
   }
 
   const nerveTrunk=tube([[-1.42,-1.09,.72],[-.8,-1.02,.72],[0,-1.04,.72],[.8,-1.04,.72],[1.42,-1.07,.72]],.023,C.nerve,"Nerves",layers.dermis,75);
@@ -205,10 +269,21 @@ export function createSkinModel() {
   tube([[1.05,-.86,.75],[1.05,-.68,.77],[1.05,-.53,.77]],.012,C.nerve,"Pressure receptor",layers.dermis,25);
   tube([[1.05,-1.04,.72],[1.05,-.95,.74],[1.05,-.86,.75]],.012,C.nerve,"Nerves",layers.dermis,18);
 
-  // Fine fibers on the cut face give the dermis a connective, non-plastic surface.
-  for(let i=0;i<65;i++) {
-    const x=-1.40+((i*1.618)%2.45),y=-.48+((i*.217)%1.39),tilt=.075*Math.sin(i*2.4);
-    tube([[x,y,.474],[x+.14,y+tilt,.478],[x+.31,y+.035,.476],[x+.44,y+tilt*.8,.474]],.0021,0xe3b1a0,"Dermis",layers.dermis,15);
+  // Interlacing collagen bundles occupy the cut face AND the side of the block.
+  // Fine elastic strands cross these broader, pale connective fibers.
+  for(let i=0;i<105;i++){
+    const x=-1.43+((i*.693)%2.25),y=-.48+((i*.137)%1.18),rise=.12*Math.sin(i*1.7);
+    const color=i%3?0xe6e0cb:0xa9b5b1;
+    tube([[x,y,.479],[x+.21,y+rise,.486],[x+.47,y-rise*.35+.035,.482],[Math.min(1.48,x+.69),y+rise*.6,.477]],i%3?.006:.003,color,"Dermis",layers.dermis,18);
+  }
+  const hash=n=>{const value=Math.sin(n*127.1+311.7)*43758.5453;return value-Math.floor(value);};
+  for(let i=0;i<110;i++){
+    const z=-.88+hash(i+7)*.96,y=-.49+hash(i+83)*1.27,rise=(hash(i+219)-.5)*.42;
+    tube([[1.506,y,z],[1.512,y+rise*.45,z+.12],[1.510,y+rise*.7,z+.26],[1.506,Math.max(-.55,Math.min(.94,y+rise)),Math.min(.45,z+.43)]],i%3?.0045:.0025,i%3?0xe0ddcb:0xb3bcba,"Dermis",layers.dermis,18);
+  }
+  for(let i=0;i<9;i++){
+    const z=-.83+i*.16;
+    tube([[-1.48,surface(-1.48,z)+.004,z],[-.70,surface(-.7,z+.04)+.004,z+.04],[.18,surface(.18,z-.03)+.004,z-.03],[1.48,surface(1.48,z)+.004,z]],.0018,0xc7b798,"Epidermis",layers.epidermis,42);
   }
   // Batch equal tissue materials while retaining one identifiable structure per mesh.
   // This reduces draw calls on mobile without replacing anatomical geometry.
@@ -231,7 +306,7 @@ export function createSkinModel() {
   return {
     group,meshes,layers,textures,
     paths:{sweat:sweatPath,touch:touchPath,blood:artery.curve,returnBlood:vein.curve},
-    anatomy:{epidermisAvascular:true,junctionRange:[1.031,1.129],capillaryTips:1.102,follicleBulb:[-.55,-.69,.63],sebaceousDuctToFollicle:true,eccrineDuctToSurface:true,sweatPore:[.55,1.29,.60],fatBelowDermis:true,pressureReceptor:[1.05,-.57,.71]},
+    anatomy:{epidermisAvascular:true,junctionRange:[.988,1.162],follicleBulb:[-.55,-.69,.63],sebaceousDuctToFollicle:true,eccrineDuctToSurface:true,sweatPore:[.55,1.29,.60],fatBelowDermis:true,pressureReceptor:[1.05,-.57,.71],epidermalStrata:4,follicularWallLayers:4,cellularRelief:true,adiposeDepthRows:8},
     setSeparation(value){layers.epidermis.position.y=value*.62;layers.fat.position.y=-value*.44;group.updateMatrixWorld(true);},
     dispose(){meshes.forEach(m=>{m.geometry.dispose();m.material.dispose();});textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());}
   };

@@ -65,20 +65,26 @@ try:
         check(len(set(state(page)['structures'])) == 11, 'eleven anatomical structures available')
         check(page.locator('[data-skin-mode]').count() == 4, 'four anatomy views')
         check(state(page)['drawCalls'] < 120, 'batched anatomy stays below 120 draw calls')
+        check(state(page)['triangles'] < 900000, 'detailed anatomy stays within the rendering budget')
 
         # Inspect the actual generated geometry, not the descriptive metadata.
         anatomy = page.evaluate("""async () => {
-            const {createSkinModel}=await import('./skin-model.js?v=skin-studio-2');
+            const {createSkinModel,skinJunction}=await import('./skin-model.js?v=skin-detail-3');
             const THREE=await import('./assets/three/three.module.js');
             const m=createSkinModel();m.group.updateMatrixWorld(true);
             const box=name=>{const b=new THREE.Box3();m.meshes.filter(x=>x.userData.structure===name).forEach(x=>b.expandByObject(x));return {min:b.min.toArray(),max:b.max.toArray(),size:b.getSize(new THREE.Vector3()).toArray()};};
-            let vascularBreaches=0,finite=true;
+            let vascularBreaches=0,finite=true,cellVertices=0,sideFiberVertices=0;
+            const follicleColors=new Set();
             for(const mesh of m.meshes){const a=mesh.geometry.getAttribute('position');for(let i=0;i<a.count;i++){
                 const v=new THREE.Vector3().fromBufferAttribute(a,i).applyMatrix4(mesh.matrixWorld);
                 finite=finite&&Number.isFinite(v.x)&&Number.isFinite(v.y)&&Number.isFinite(v.z);
-                if(mesh.userData.structure==='Blood vessels'&&v.y>=1.08+.035*Math.sin(v.x*16)+.014*Math.cos(v.z*14+v.x*3))vascularBreaches++;
+                if(mesh.userData.structure==='Blood vessels'&&v.y>=skinJunction(v.x,v.z))vascularBreaches++;
+                if(mesh.userData.structure==='Epidermis'&&!mesh.material.map)cellVertices++;
+                if(mesh.userData.structure==='Dermis'&&v.x>1.501)sideFiberVertices++;
             }}
+            m.meshes.filter(x=>x.userData.structure==='Hair follicle').forEach(x=>follicleColors.add(x.material.color.getHex()));
             const result={epidermis:box('Epidermis'),dermis:box('Dermis'),fat:box('Subcutaneous layer'),follicle:box('Hair follicle'),sweat:box('Sweat gland'),pressure:box('Pressure receptor'),vascularBreaches,finite,
+              cellVertices,sideFiberVertices,follicleColors:follicleColors.size,
               sweatStart:m.paths.sweat.getPoint(0).toArray(),sweatEnd:m.paths.sweat.getPoint(1).toArray(),touchStart:m.paths.touch.getPoint(0).toArray(),touchEnd:m.paths.touch.getPoint(1).toArray()};
             m.dispose();return result;
         }""")
@@ -90,6 +96,10 @@ try:
         check(anatomy['sweatStart'][1] < 0 and anatomy['sweatEnd'][1] > 1.25, 'continuous eccrine route runs from deep coil to surface')
         check(anatomy['touchStart'][1] > 0 and anatomy['touchEnd'][1] < -.9, 'sensory route runs from the follicular plexus into a deeper nerve')
         check(anatomy['pressure']['min'][1] < -.8, 'lamellated pressure receptor lies deep in the tissue')
+        check(anatomy['cellVertices'] > 30000, 'epidermal cell relief uses real inspectable geometry')
+        check(anatomy['fat']['size'][2] > 1.8, 'adipose cells fill the depth of the stepped cutaway')
+        check(anatomy['sideFiberVertices'] > 1000, 'collagen geometry continues onto the side cut face')
+        check(anatomy['follicleColors'] >= 8, 'follicle includes distinct sheath, cell, shaft and bulb surfaces')
 
         for mode, count in [('cutaway',11),('layers',3),('glands',4),('sensation',4)]:
             page.locator(f'[data-skin-mode="{mode}"]').click()
@@ -110,6 +120,17 @@ try:
         page.locator('[data-skin-action="clear"]').click()
         restored=alpha(page)
         check(abs(restored['opaque']/before['opaque']-1)<.08, 'show all restores opaque anatomy')
+
+        for lens, part in [('cells','Epidermis'),('collagen','Dermis'),('follicle','Hair follicle'),('fat','Subcutaneous layer')]:
+            page.locator(f'[data-skin-detail="{lens}"]').click();settled(page)
+            s=state(page)
+            check(s['detail']==lens and s['selection']==part, lens+': detail lens isolates the correct tissue')
+            check(math.dist(s['camera'],s['target']) < 3.6, lens+': detail lens magnifies a small anatomical region')
+            check('Detail lens' in page.locator('.skin-view-name').text_content(), lens+': visible close-up indicator')
+            if lens in ['cells','fat','follicle']:
+                page.locator('.body-atlas-stage').screenshot(path='/tmp/inneru-skin-detail-'+lens+'.png')
+            page.locator('[data-skin-action="clear"]').click();settled(page)
+            check(not state(page)['detail'] and not state(page)['selection'], lens+': show all restores the full context')
 
         page.locator('[data-skin-action="labels"]').click()
         check(page.locator('.skin-hotspot').count()==0, 'on-model labels can be hidden')
@@ -179,6 +200,9 @@ try:
             mobile.locator('.body-atlas-parts [data-part]:visible').first.click()
             check(bool(state(mobile)['selection']), 'mobile '+mode+': structure controls work')
         reset(mobile)
+        mobile.locator('[data-skin-detail="cells"]').click();settled(mobile)
+        check(state(mobile)['detail']=='cells', 'mobile cellular close-up works')
+        reset(mobile)
         mobile.locator('.skin-explorer').screenshot(path='/tmp/inneru-skin-mobile.png')
         mobile.close()
 
@@ -197,6 +221,7 @@ try:
         fallback.locator('[data-part="Sweat gland"]').click()
         check('Evaporation' in fallback.locator('.body-atlas-info').inner_text(), 'non-WebGL fallback retains scientific explanations')
         check(fallback.locator('[data-skin-action="focus"]').is_disabled(), 'fallback disables unavailable 3D controls')
+        check(fallback.locator('[data-skin-detail="cells"]').is_disabled(), 'fallback disables unavailable detail zoom')
         fallback.locator('[data-skin-process="touch"]').click()
         check('sensory fiber' in fallback.locator('.body-atlas-info').inner_text(), 'fallback explains the function routes')
         fallback_context.close()

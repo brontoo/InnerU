@@ -44,6 +44,11 @@
 .skin-find b{display:block;margin-bottom:5px;color:#e7c2ac;font-size:.7rem;font-weight:600}
 .skin-explorer .skin-find p{font-size:.75rem;color:#bad4d5}
 .skin-lesson-link{display:block;color:#9fc7c8;font-size:.68rem;margin-top:15px}
+.skin-detail-lenses{padding:16px;border:1px solid #c7d7d13b;background:#c1ddd207;border-radius:13px}
+.skin-detail-lenses p{font-size:.74rem;color:#bdcfd1;margin:7px 0 12px}
+.skin-detail-lenses>div{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.skin-explorer .skin-detail-lenses button{background:#ffffff08;border-color:#a4bcb260;min-height:38px;font-size:.70rem;font-weight:500;text-align:left;padding:8px 10px}
+.skin-explorer .skin-detail-lenses button[aria-pressed=true]{background:#d8eee3;color:#20554b;outline:0;border-color:#b4dcc7}
 .skin-function-lab{padding:18px;border-radius:14px;background:#faf3e509;border:1px solid #c2b6a641}
 .skin-function-lab h3{color:#f1eee6;font-size:1.05rem;font-weight:550;margin:8px 0 15px}
 .skin-function-lab>div{display:grid;grid-template-columns:1fr 1fr;gap:8px}

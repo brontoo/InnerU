@@ -1,6 +1,6 @@
 import * as THREE from "./assets/three/three.module.js";
 import { OrbitControls } from "./assets/three/OrbitControls.js";
-import { createSkinModel, SKIN_STRUCTURES } from "./skin-model.js?v=skin-studio-2";
+import { createSkinModel, SKIN_STRUCTURES } from "./skin-model.js?v=skin-detail-3";
 
 const MODES = {
   cutaway: { parts:SKIN_STRUCTURES.map(p=>p.name), title:"Connected skin cutaway", tip:"The front is opened to expose structures in their tissue layers. Choose a label or tap the anatomy." },
@@ -9,6 +9,12 @@ const MODES = {
   sensation: { parts:["Nerves","Touch receptors","Pressure receptor","Blood vessels"], title:"Sensation & supply", tip:"Compare touch-sensitive endings around a hair follicle with the deeper pressure receptor, then follow a sensory nerve." },
 };
 const ANCHORS={"Epidermis":[-1.22,1.23,.65],"Dermis":[-1.28,.42,.48],"Subcutaneous layer":[-.98,-1.00,.59],"Hair follicle":[-.75,.55,.76],"Sweat gland":[.49,-.30,.76],"Touch receptors":[-.74,.43,.77],"Pressure receptor":[1.05,-.57,.77],"Nerves":[.14,.36,.64],"Blood vessels":[-.17,-.80,.74],"Sebaceous gland":[-.43,.65,.73],"Arrector pili":[-.29,.63,.71]};
+const DETAIL_LENSES={
+  cells:{title:"Epidermal cells",part:"Epidermis",center:[.05,1.16,.65],size:[.87,.43,.48]},
+  collagen:{title:"Collagen bundles",part:"Dermis",center:[.50,.20,.48],size:[.9,.82,.55]},
+  follicle:{title:"Follicle sheaths",part:"Hair follicle",center:[-.73,.33,.65],size:[.52,.98,.48]},
+  fat:{title:"Adipose cells",part:"Subcutaneous layer",center:[-.12,-.94,.84],size:[.87,.62,.52]},
+};
 let disposeCurrent=()=>{};
 
 export function mountSkinExplorer(root) {
@@ -18,7 +24,7 @@ export function mountSkinExplorer(root) {
   const labelLayer=root.querySelector(".skin-hotspots"), selectionBadge=root.querySelector(".skin-selection-badge"), fallbackImage=root.querySelector(".skin-fallback");
   const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
   let renderer,scene,camera,controls,model,resize,mutation,intersection,frame,environment,ground;
-  let selection=null,mode="cutaway",process=null,separation=.55,spin=false,labels=true,playing=!reduced,disposed=false,visible=true,cameraGoal=null,lastTime=0,elapsed=0;
+  let selection=null,mode="cutaway",process=null,detail=null,separation=.55,spin=false,labels=true,playing=!reduced,disposed=false,visible=true,cameraGoal=null,lastTime=0,elapsed=0;
   let particles=[],outlines=[],labelButtons=[],needsRender=true;
   const ghostMaterial=new THREE.MeshBasicMaterial({color:0x8c8680,transparent:true,opacity:.045,depthWrite:false,side:THREE.FrontSide});
   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -42,6 +48,7 @@ export function mountSkinExplorer(root) {
   }
   function selectedBounds(){const box=new THREE.Box3();model?.meshes.filter(m=>m.userData.structure===selection).forEach(m=>box.expandByObject(m));return box;}
   function allBounds(){const box=new THREE.Box3();model.meshes.filter(m=>m.visible).forEach(m=>box.expandByObject(m));return box;}
+  function viewBounds(){const lens=DETAIL_LENSES[detail];return lens?new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...lens.center),new THREE.Vector3(...lens.size)):selection?selectedBounds():allBounds();}
 
   function applyVisual(){
     if(!model)return;
@@ -57,7 +64,7 @@ export function mountSkinExplorer(root) {
       mesh.material=active?mesh.userData.originalMaterial:ghostMaterial;
       if(active){mesh.material.emissive.setHex(selection?0x174f49:0);mesh.material.emissiveIntensity=selection?.12:0;}
       mesh.castShadow=active;mesh.receiveShadow=active;mesh.renderOrder=active?2:0;
-      if(selection&&active&&mesh.visible){const outline=new THREE.Mesh(mesh.geometry,outlineMaterial);outline.position.copy(mesh.position);outline.quaternion.copy(mesh.quaternion);outline.scale.copy(mesh.scale);mesh.parent.add(outline);outlines.push(outline);}
+      if(selection&&active&&mesh.visible&&!detail){const outline=new THREE.Mesh(mesh.geometry,outlineMaterial);outline.position.copy(mesh.position);outline.quaternion.copy(mesh.quaternion);outline.scale.copy(mesh.scale);mesh.parent.add(outline);outlines.push(outline);}
     });
     if(ground)ground.position.y=mode==="layers"?-1.31-separation*.44:-1.31;
     updateLabels();
@@ -75,12 +82,17 @@ export function mountSkinExplorer(root) {
     else info.innerHTML=`<span class="skin-info-kicker">${MODES[mode].title}</span><h3>Choose a structure</h3><p>${MODES[mode].tip}</p><div class="skin-find"><b>Try the function lab</b><p>Trace the route of sweat or follow a sensory signal, then examine the structures that make it possible.</p></div>`;
   }
   function select(part){
+    const previousDetail=detail;detail=null;
     if(part&&!MODES[mode].parts.includes(part))setMode("cutaway");
     selection=part;process=null;clearParticles();updateProcessButtons();applyVisual();explain();
+    root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));
+    root.querySelector(".skin-view-name").textContent=MODES[mode].title;
+    if(previousDetail&&!part&&model)frameBounds(allBounds());
     status.textContent=part?`${part} isolated. Choose Focus structure for a closer view, or Show all to compare.`:"Drag to rotate · scroll or pinch to zoom · tap a structure";
   }
   function setMode(next){
-    mode=next;selection=null;process=null;clearParticles();updateProcessButtons();
+    mode=next;selection=null;process=null;detail=null;clearParticles();updateProcessButtons();
+    root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));
     root.querySelectorAll("[data-skin-mode]").forEach(b=>{const active=b.dataset.skinMode===next;b.setAttribute("aria-selected",String(active));b.tabIndex=active?0:-1;});
     root.querySelector(".skin-model-panel").setAttribute("aria-labelledby","skin-tab-"+next);
     root.querySelectorAll("[data-part]").forEach(b=>b.hidden=!MODES[next].parts.includes(b.dataset.part));
@@ -103,7 +115,7 @@ export function mountSkinExplorer(root) {
   function updateLabels(){
     needsRender=true;
     labelLayer.replaceChildren();labelButtons=[];
-    if(!labels)return;
+    if(!labels||detail)return;
     const names=selection?[selection]:process==="cooling"?["Sweat gland","Blood vessels"]:process==="touch"?["Touch receptors","Nerves"]:mode==="cutaway"?["Epidermis","Hair follicle","Sweat gland","Subcutaneous layer"]:MODES[mode].parts;
     names.forEach(name=>{const b=document.createElement("button");b.type="button";b.className="skin-hotspot";b.textContent=name;b.setAttribute("aria-label","Examine "+name);b.onclick=()=>select(name);labelLayer.append(b);labelButtons.push({button:b,name});});
   }
@@ -127,6 +139,13 @@ export function mountSkinExplorer(root) {
     b.onkeydown=e=>{let next;if(e.key==="ArrowRight")next=(i+1)%all.length;else if(e.key==="ArrowLeft")next=(i+all.length-1)%all.length;else if(e.key==="Home")next=0;else if(e.key==="End")next=all.length-1;else return;e.preventDefault();all[next].focus();setMode(all[next].dataset.skinMode);};
   });
   root.querySelectorAll("[data-skin-process]").forEach(b=>b.onclick=()=>startProcess(b.dataset.skinProcess));
+  root.querySelectorAll("[data-skin-detail]").forEach(b=>b.onclick=()=>{
+    const lens=DETAIL_LENSES[b.dataset.skinDetail];setMode("cutaway");select(lens.part);detail=b.dataset.skinDetail;
+    b.setAttribute("aria-pressed","true");applyVisual();
+    root.querySelector(".skin-view-name").textContent="Detail lens · "+lens.title;
+    if(model)frameBounds(new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...lens.center),new THREE.Vector3(...lens.size)),"three-quarter",true);
+    status.textContent="Detail lens · "+lens.title+". Drag to turn the detail; Show all returns to the full cutaway.";
+  });
   root.querySelector("#skin-separation").oninput=e=>{separation=+e.target.value/100;root.querySelector("#skin-separation-value").textContent=e.target.value+"%";applyVisual();if(model)frameBounds(allBounds());};
   root.querySelectorAll("[data-skin-action]").forEach(b=>b.onclick=()=>{
     const action=b.dataset.skinAction;
@@ -134,9 +153,9 @@ export function mountSkinExplorer(root) {
     else if(action==="labels"){labels=!labels;b.setAttribute("aria-pressed",String(labels));updateLabels();}
     else if(action==="clear")select(null);
     else if(action==="play"){playing=!playing;b.setAttribute("aria-pressed",String(playing));b.textContent=playing?"Pause route":"Play route";}
-    else if(action==="focus"&&selection&&model)frameBounds(selectedBounds(),"three-quarter",true);
+    else if(action==="focus"&&selection&&model){detail=null;applyVisual();root.querySelector(".skin-view-name").textContent=MODES[mode].title;root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));frameBounds(selectedBounds(),"three-quarter",true);}
     else if(action==="reset"){spin=false;labels=true;separation=.55;root.querySelector("#skin-separation").value="55";root.querySelector("#skin-separation-value").textContent="55%";root.querySelector('[data-skin-action="labels"]').setAttribute("aria-pressed","true");if(controls)controls.autoRotate=false;root.querySelector('[data-skin-action="spin"]').setAttribute("aria-pressed","false");setMode("cutaway");status.textContent="Full connected cutaway restored.";}
-    else if(camera&&model){if(action==="in"||action==="out"){cameraGoal=null;camera.position.copy(controls.target.clone().add(camera.position.clone().sub(controls.target).multiplyScalar(action==="in"?.85:1.18)));controls.update();}else frameBounds(selection?selectedBounds():allBounds(),action==="front"?"front":"back",!!selection);}
+    else if(camera&&model){if(action==="in"||action==="out"){cameraGoal=null;camera.position.copy(controls.target.clone().add(camera.position.clone().sub(controls.target).multiplyScalar(action==="in"?.85:1.18)));controls.update();}else frameBounds(viewBounds(),action==="front"?"front":"back",!!selection);}
   });
 
   const cleanup=()=>{
@@ -144,7 +163,7 @@ export function mountSkinExplorer(root) {
     if(window.inneruSkinExplorerState===report){delete window.inneruSkinExplorerState;delete window.inneruSkinExplorerDrawFrame;}
   };
   disposeCurrent=cleanup;
-  function report(){return {mode,selection,process,separation,labels,spin,playing,canvas:!!renderer,structures:model?.meshes.map(m=>m.userData.structure),anatomy:model?.anatomy,camera:camera?.position.toArray(),target:controls?.target.toArray(),transitioning:!!cameraGoal,layerPositions:model?Object.fromEntries(Object.entries(model.layers).map(([name,layer])=>[name,layer.position.y])):null,frames:renderer?.info.render.frame,drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,particles:particles.length,particlePositions:particles.map(p=>p.mesh.position.toArray()),opacity:model?.meshes.map(m=>({part:m.userData.structure,opacity:m.material.opacity,visible:m.visible})),disposed};}
+  function report(){return {mode,selection,process,detail,separation,labels,spin,playing,canvas:!!renderer,structures:model?.meshes.map(m=>m.userData.structure),anatomy:model?.anatomy,camera:camera?.position.toArray(),target:controls?.target.toArray(),transitioning:!!cameraGoal,layerPositions:model?Object.fromEntries(Object.entries(model.layers).map(([name,layer])=>[name,layer.position.y])):null,frames:renderer?.info.render.frame,drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,particles:particles.length,particlePositions:particles.map(p=>p.mesh.position.toArray()),opacity:model?.meshes.map(m=>({part:m.userData.structure,opacity:m.material.opacity,visible:m.visible})),disposed};}
   window.inneruSkinExplorerState=report;
   root.querySelector('[data-skin-action="play"]').setAttribute("aria-pressed",String(playing));
   root.querySelector('[data-skin-action="play"]').textContent=playing?"Pause route":"Play route";
@@ -154,6 +173,7 @@ export function mountSkinExplorer(root) {
     root.querySelector(".body-atlas-loading").hidden=true;root.querySelector(".skin-fallback-note").hidden=false;
     root.querySelectorAll("[data-skin-action]").forEach(b=>{if(b.dataset.skinAction!=="clear")b.disabled=true;});
     root.querySelector("#skin-separation").disabled=true;
+    root.querySelectorAll("[data-skin-detail]").forEach(b=>b.disabled=true);
     status.textContent="Use the scientific illustration and structure buttons to continue exploring.";
   }
   setMode("cutaway");
@@ -175,7 +195,7 @@ export function mountSkinExplorer(root) {
     const pmrem=new THREE.PMREMGenerator(renderer);environment=pmrem.fromEquirectangular(envTexture);scene.environment=environment.texture;scene.environmentIntensity=.6;envTexture.dispose();pmrem.dispose();
     model=createSkinModel();scene.add(model.group);
     ground=new THREE.Mesh(new THREE.PlaneGeometry(12,12),new THREE.ShadowMaterial({opacity:.09}));ground.rotation.x=-Math.PI/2;ground.position.y=-1.31;ground.receiveShadow=true;scene.add(ground);
-    const size=()=>{if(!stage.isConnected)return;needsRender=true;camera.aspect=stage.clientWidth/stage.clientHeight;camera.updateProjectionMatrix();renderer.setSize(stage.clientWidth,stage.clientHeight);if(model)frameBounds(selection?selectedBounds():allBounds(),"three-quarter",!!selection);};
+    const size=()=>{if(!stage.isConnected)return;needsRender=true;camera.aspect=stage.clientWidth/stage.clientHeight;camera.updateProjectionMatrix();renderer.setSize(stage.clientWidth,stage.clientHeight);if(model)frameBounds(viewBounds(),"three-quarter",!!selection);};
     resize=new ResizeObserver(size);resize.observe(stage);size();applyVisual();explain();
     // Set the first view immediately; later changes ease into place.
     if(cameraGoal){controls.target.copy(cameraGoal.target);camera.position.copy(cameraGoal.position);cameraGoal=null;controls.update();}
