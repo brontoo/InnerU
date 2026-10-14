@@ -352,6 +352,7 @@
 }
 .exc-explorer {
   scroll-margin-top: 20px;
+  margin-bottom: 40px;
   border: 1px solid #d4dfd8;
   border-radius: 24px;
   background: #f5f6ef;
