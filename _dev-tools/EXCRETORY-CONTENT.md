@@ -79,3 +79,16 @@ cava/aorta placement, vessel attachment, hilar vessel order, posterior ureter
 entry and the focus control, alongside the existing activity and preview checks.
 Versioned module URLs and a bumped offline-cache version avoid reusing an earlier
 model after this revision is deployed.
+
+## Selection contrast
+
+A selected structure keeps its natural opaque surface, with a teal silhouette
+outline and a named badge on the stage. Other anatomical structures use 4%
+opacity with no depth writing or clearcoat reflections. Switching transparency
+refreshes the physical-material shader, so its `OPAQUE` define cannot override
+the requested alpha. Reset restores the original materials and removes outlines.
+
+The regression runner reads the actual WebGL framebuffer. It checks that
+selecting a structure reduces opaque pixels, creates faint transparent pixels,
+and that reset returns full visibility in all four views. These checks cover
+the rendering failure that a material-property assertion would miss.

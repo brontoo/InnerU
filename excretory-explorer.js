@@ -27,6 +27,44 @@ export function mountExcretoryExplorer(root) {
     flow = true,
     particles = [];
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const originalStageLabel = stage.getAttribute("aria-label");
+  const selectionLabel = document.createElement("div");
+  selectionLabel.className = "exc-selection-label";
+  selectionLabel.hidden = true;
+  selectionLabel.setAttribute("aria-hidden", "true");
+  stage.append(selectionLabel);
+  let selectionOutlines = [];
+  const outlineMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      outlineColor: { value: new THREE.Color(0x188c86) },
+      outlineWidth: { value: 0.02 },
+    },
+    vertexShader: `
+      uniform float outlineWidth;
+      void main() {
+        vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
+        viewPosition.xyz += normalize(normalMatrix * normal) * outlineWidth;
+        gl_Position = projectionMatrix * viewPosition;
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 outlineColor;
+      void main() {
+        gl_FragColor = vec4(outlineColor, 0.96);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }
+    `,
+    side: THREE.BackSide,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+  });
+  function clearSelectionOutlines() {
+    // Outline shells share the anatomical geometry; only their material is owned here.
+    selectionOutlines.forEach((outline) => outline.removeFromParent());
+    selectionOutlines = [];
+  }
   const matches = (mesh, name) =>
     mesh.userData.structure === name ||
     mesh.userData.structures?.includes(name);
@@ -47,6 +85,15 @@ export function mountExcretoryExplorer(root) {
   }
   function highlight(name) {
     selection = name;
+    clearSelectionOutlines();
+    selectionLabel.hidden = !name;
+    selectionLabel.textContent = name ? "Selected · " + name : "";
+    stage.setAttribute(
+      "aria-label",
+      name
+        ? `${name} selected. ${model ? "Other structures are transparent. " : ""}Drag or use arrow keys to rotate.`
+        : originalStageLabel,
+    );
     list
       .querySelectorAll("button")
       .forEach((b) =>
@@ -66,17 +113,60 @@ export function mountExcretoryExplorer(root) {
     root.querySelector('[data-model-action="focus"]').disabled =
       !name || !renderer || disposed;
     if (!model) return;
+    status.textContent = name
+      ? `Selected: ${name}. Other parts are transparent. Reset view shows all structures.`
+      : "Drag to rotate · scroll to zoom · choose a structure";
     model.meshes.forEach((m) => {
-      const on = !name || matches(m, name);
-      m.material.transparent = !on;
-      m.material.opacity = on ? 1 : 0.14;
-      m.material.depthWrite = on;
-      m.material.emissive.set(on && name ? 0x4b2119 : 0);
-      m.renderOrder = on ? 2 : 0;
+      const selected = !!name && matches(m, name);
+      const ghost = !!name && !selected;
+      const material = m.material;
+      const base = (m.userData.selectionBase ||= {
+        transparent: material.transparent,
+        opacity: material.opacity,
+        depthWrite: material.depthWrite,
+        side: material.side,
+        clearcoat: material.clearcoat,
+        emissive: material.emissive.clone(),
+        emissiveIntensity: material.emissiveIntensity,
+        renderOrder: m.renderOrder,
+      });
+      const transparent = ghost || base.transparent;
+      const clearcoat = ghost ? 0 : base.clearcoat;
+      const side = selected ? THREE.DoubleSide : base.side;
+      const shaderChanged =
+        material.transparent !== transparent ||
+        material.clearcoat > 0 !== clearcoat > 0 ||
+        material.side !== side;
+      material.transparent = transparent;
+      material.opacity = ghost ? 0.04 : base.opacity;
+      material.depthWrite = ghost ? false : base.depthWrite;
+      material.clearcoat = clearcoat;
+      material.side = side;
+      material.emissive.copy(base.emissive);
+      material.emissiveIntensity = base.emissiveIntensity;
+      if (selected) {
+        material.emissive.setRGB(0.06, 0.04, 0.025);
+        material.emissiveIntensity = 0.25;
+      }
+      // Physical-material shaders contain an OPAQUE define. Changing opacity alone
+      // does not remove it; crossing the transparency boundary must refresh the program.
+      if (shaderChanged) material.needsUpdate = true;
+      m.renderOrder = selected ? 2 : base.renderOrder;
+      if (selected) {
+        const outline = new THREE.Mesh(m.geometry, outlineMaterial);
+        outline.renderOrder = 3;
+        outline.raycast = () => {};
+        m.add(outline);
+        selectionOutlines.push(outline);
+      }
+    });
+    particles.forEach((particle) => {
+      particle.mesh.visible = !name;
     });
   }
   function clearModel() {
     if (!model) return;
+    clearSelectionOutlines();
     scene.remove(model.group);
     model.group.traverse((o) => {
       o.geometry?.dispose();
@@ -200,6 +290,8 @@ export function mountExcretoryExplorer(root) {
     clearModel();
     renderer?.dispose();
     renderer?.domElement.remove();
+    outlineMaterial.dispose();
+    selectionLabel.remove();
   };
   disposeCurrent = cleanup;
   const fallback = () => {
@@ -308,6 +400,11 @@ export function mountExcretoryExplorer(root) {
       if (flow && !reduced) flowTime += Math.min(time - lastTime, 64);
       lastTime = time;
       controls.update();
+      outlineMaterial.uniforms.outlineWidth.value =
+        (camera.position.distanceTo(controls.target) *
+          Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) *
+          4) /
+        stage.clientHeight;
       particles.forEach((p) =>
         p.mesh.position.copy(
           p.curve.getPointAt((flowTime * 0.00015 + p.offset) % 1),

@@ -7,15 +7,15 @@
      * large immutable assets (3D models, images, fonts): stale-while-revalidate
    Bump VERSION when the shell changes so old caches are dropped.
    ========================================================================== */
-const VERSION = 'inneru-v7';
+const VERSION = 'inneru-v8';
 const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './muscle.css', './muscle-learning.css',
-  './body-atlas.css', './respiratory.css', './resp-map-art.css', './integumentary.css', './integ-map-art.css', './excretory.css', './exc-map-art.css',
+  './body-atlas.css', './respiratory.css', './resp-map-art.css', './integumentary.css', './integ-map-art.css', './excretory.css?v=renal-selection-3', './exc-map-art.css',
   './circulatory.css', './circ-map-art.css', './capstone.css', './teacher.css', './review.css', './habit.css', './glossary.css',
   './content-skeletal.js', './app.js', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circulatory.js', './circ-map-art.js',
   './rich-pages.js', './muscle-visuals.js', './muscle-learning.js', './muscle.js',
-  './circulatory-integration.js', './respiratory.js', './resp-map-art.js', './integumentary.js', './integ-map-art.js', './excretory.js?v=renal-anatomy-2', './excretory-explorer.js?v=renal-anatomy-2', './excretory-model.js?v=renal-anatomy-2', './exc-map-art.js',
+  './circulatory-integration.js', './respiratory.js', './resp-map-art.js', './integumentary.js', './integ-map-art.js', './excretory.js?v=renal-selection-3', './excretory-explorer.js?v=renal-selection-3', './excretory-model.js?v=renal-anatomy-2', './exc-map-art.js',
   './capstone.js', './a11y.js', './teacher.js', './pwa.js', './review.js', './habit.js', './muscle-force.js', './glossary.js', './speech.js', './content-skeletal.js',
   './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg'
 ];

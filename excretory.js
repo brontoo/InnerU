@@ -304,7 +304,7 @@
   function mountExplorer() {
     const root = document.getElementById("exc-explorer");
     if (root)
-      import("./excretory-explorer.js?v=renal-anatomy-2")
+      import("./excretory-explorer.js?v=renal-selection-3")
         .then((m) => {
           if (root.isConnected) m.mountExcretoryExplorer(root);
         })

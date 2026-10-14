@@ -52,6 +52,22 @@ def answer_checks(page, final=False):
             button.click()
         check(item.locator('.resp-correct').count() == 1, 'knowledge check responds to a correct answer')
 
+def rendered_alpha(page):
+    # Read the rendered framebuffer, not material properties: opaque shader defines
+    # can leave pixels opaque even when the material's opacity field is low.
+    return page.evaluate("""() => new Promise(resolve => requestAnimationFrame(() => {
+        const canvas = document.querySelector('.exc-explorer-stage canvas');
+        const gl = canvas.getContext('webgl2');
+        const pixels = new Uint8Array(canvas.width * canvas.height * 4);
+        gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+        let opaque=0,faint=0;
+        for(let i=3;i<pixels.length;i+=4){
+            if(pixels[i]>=242)opaque++;
+            if(pixels[i]>0 && pixels[i]<=40)faint++;
+        }
+        resolve({opaque,faint});
+    }))""")
+
 def solve_lab(page, n):
     if n in (1, 3, 4):
         for chip in page.locator('[data-exc-item]').all():
@@ -191,11 +207,22 @@ try:
             live = page.evaluate('window.inneruExcretoryExplorerState()')
             check(live['view'] == view and live['rotatable'], f'{view}: 3D view is rendered and rotatable')
             check(page.locator('[data-structure]').count() == expected, f'{view}: all {expected} structures listed')
-            for button in page.locator('[data-structure]').all():
+            before_selection = rendered_alpha(page)
+            for index, button in enumerate(page.locator('[data-structure]').all()):
                 name = button.get_attribute('data-structure')
                 button.click()
                 live = page.evaluate('window.inneruExcretoryExplorerState()')
                 check(name in live['structures'] and live['selection'] == name, f'{view}: {name} has an actual selectable mesh')
+                if name == ('Renal pelvis' if view == 'kidney' else 'Glomerulus' if view == 'nephron' else 'Right kidney'):
+                    isolated = rendered_alpha(page)
+                    check(isolated['opaque'] > 100 and isolated['opaque'] < before_selection['opaque'] * .80, f'{view}: only the selected structure stays opaque on the rendered canvas')
+                    check(isolated['faint'] > 200, f'{view}: other anatomical structures render transparently')
+                    check(page.locator('.exc-selection-label').inner_text() == 'Selected · ' + name, f'{view}: selected structure is visibly named on the model')
+            page.locator('[data-model-action="reset"]').click()
+            restored = rendered_alpha(page)
+            check(restored['opaque'] >= before_selection['opaque'] * .95, f'{view}: reset restores all anatomical structures to full visibility')
+            check(page.locator('.exc-selection-label').is_hidden(), f'{view}: reset clears the model selection label')
+
         check(page.evaluate('window.inneruExcretoryExplorerState().particleCount') > 0, 'urine-flow view has moving markers on the ureters and urethra')
         page.locator('[data-explorer-tab="organs"]').click()
         initial_frame = page.evaluate('window.inneruExcretoryExplorerState().camera')

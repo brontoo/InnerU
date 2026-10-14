@@ -1373,3 +1373,20 @@ button.exc-hero-secondary {
   padding: 0;
   text-align: left;
 }
+.exc-selection-label {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  max-width: calc(100% - 28px);
+  padding: 8px 12px;
+  border: 1px solid #78b7ad;
+  border-radius: 9px;
+  background: #f7fcf5ee;
+  color: #246f6b;
+  box-shadow: 0 3px 12px #2a615014;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+  pointer-events: none;
+}
