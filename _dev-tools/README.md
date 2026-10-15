@@ -44,3 +44,11 @@ It checks the generated anatomical geometry, rendered selection transparency,
 all structure/view controls, animated function routes, keyboard access, mobile
 layout, reduced motion and the scientific fallback. See
 [SKIN-ANATOMY.md](SKIN-ANATOMY.md) for anatomical choices and rendering behavior.
+
+## Muscular anatomy studio
+
+Run `python3 _dev-tools/verify-muscle-studio.py` for the current muscular studio.
+It checks actual geometry, all 23 selections, garment coverage, rotation, mesh
+picking, anatomy descriptions, learner-progress preservation, route cleanup,
+mobile layout, reduced motion and fallback behavior. See
+[MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md) for anatomical and rendering choices.

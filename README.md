@@ -3,12 +3,13 @@
 Interactive, gamified human-body learning for **Grade 10 Science** at **Um Al-Emarat School**.
 Plain HTML / CSS / JavaScript: **no build step, no framework, no dependencies, no server**.
 
-All five anatomy labs work the same way: a **rotatable 3D model** with a translucent body, a list of
-regions, hotspots on the model itself, and a selection that fades everything else. The muscular lab
-adds one thing the others did not need: choosing a muscle also **turns the model to the side that
-muscle is on** and frames it, so a back muscle such as latissimus dorsi is never selected while the
-student looks at an empty front view. A supplied front-view illustration stands in when WebGL is
-unavailable.
+The muscular landing page has a **real-time rotatable 3D studio immediately below
+its hero**, with six region tabs and 23 selectable anatomical structures. Choosing
+a muscle turns toward it, highlights it in teal and fades surrounding anatomy.
+The mannequin has a smooth neutral head, hands and feet; opaque shorts cover the
+hips and upper thighs in every view, including covered-region selection. A render
+of the same mannequin and all anatomy descriptions remain available without
+WebGL. See [_dev-tools/MUSCULAR-STUDIO.md](_dev-tools/MUSCULAR-STUDIO.md).
 
 Six worlds (one per body system) + a final mission that ties them together, a
 spaced-practice review system, classroom tools for the teacher, and an offline copy
@@ -144,9 +145,9 @@ the home card, the dashboard and the capstone gate.
   and usable without wifi: **network-first** for the shell and code so a push is picked
   up immediately, **stale-while-revalidate** for large immutable assets.
 * `/?nosw=1` skips the service worker — use it if a stale offline copy ever gets in the way.
-* Selection contrast in the muscular lab: unselected muscles fade to 7 %, the body shell to 5 %, and
+* Selection contrast in the muscular lab: unselected muscles fade to 5.5 %, the body support to 2.5 %, and
   the selected muscle is drawn last so the translucent shell cannot wash it out.
-* 3D payload per route: skeleton 2.2 MB, muscular 4.7 MB, skin 1.1 MB, heart 0.6 MB.
+* 3D payload per route: skeleton 2.2 MB, muscular 3.1 MB, skin 1.1 MB, heart 0.6 MB.
   These `.glb` files ship uncompressed; compressing them (Draco/meshopt) is the main
   remaining performance win.
 
