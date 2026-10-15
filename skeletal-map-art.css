@@ -1,0 +1,40 @@
+/* Scientific mission illustrations, scoped to the skeletal mission board. */
+.world-exhibit.skeletal-map .missiongrid{align-items:stretch}
+.world-exhibit.skeletal-map .missioncard{padding:0 22px 22px;min-height:445px;background:#fffefa;border:1px solid #c8dcd5;border-radius:19px;box-shadow:0 7px 24px #1c4b5509;overflow:hidden}
+.skeletal-card-art{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr) 52px}
+.skeletal-map .missioncard .skeletal-card-art{position:relative;display:grid;flex:0 0 auto;height:clamp(282px,calc(18vw + 52px),352px);padding:0;margin:0 -22px 21px;width:calc(100% + 44px);max-width:none;border-bottom:1px solid #dce6d7;background:#f5f6ed;overflow:hidden;isolation:isolate}
+.skeletal-card-picture{grid-area:1 / 1 / 2 / -1;position:relative;min-width:0;min-height:0;justify-self:stretch;align-self:stretch;overflow:hidden;border-bottom:1px solid #dce6d7;background:#f5f6ed}
+.skeletal-card-picture>img{display:block;width:100%;height:100%;object-fit:contain;transition:transform .45s ease}
+.skeletal-card-art>figcaption{grid-area:2 / 1 / 3 / 2;position:static;align-self:center;justify-self:start;max-width:100%;min-width:0;padding:7px 10px;border:0;border-radius:0;background:transparent;color:#346467;font-size:.5rem;font-weight:700;letter-spacing:.08em;line-height:1.4;pointer-events:none}
+.skeletal-map .missioncard .missionnum{font-size:.69rem;letter-spacing:.06em;margin:0 0 11px;color:#24716f}
+.skeletal-map .missioncard h3{font-size:1.2rem;color:#214757;margin:0 0 12px;line-height:1.4}
+.skeletal-map .missioncard p{font-size:.9rem;line-height:1.65;color:#57727c;margin:0 0 21px;flex:1}
+.skeletal-map .missioncard>.btn{margin-top:auto;min-height:47px;font-size:.8rem;white-space:normal}
+.skeletal-map .missioncard.locked{opacity:1;background:#fcfdf8}
+.skeletal-map .missioncard.locked .mission-card-art{filter:none}
+.skeletal-map .missioncard>.btn:disabled{opacity:1;background:#f5f8f1;color:#5f7a7e;border-color:#d5e1d8}
+.skeletal-study-open{grid-area:2 / 2 / 3 / 3;position:static;align-self:center;justify-self:end;margin:4px 8px 4px 0;display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:9px 12px;border:1px solid #b2cbc1;border-radius:9px;background:#fffdf2f2;color:#245b5e;font:inherit;font-size:.68rem;font-weight:650;box-shadow:0 2px 8px #46685512;cursor:pointer}
+.skeletal-study-open>span{font-size:1.2rem;line-height:1}.skeletal-study-open:hover{background:#e6f1e5}
+.skeletal-card-cues{position:absolute;inset:0;pointer-events:none}
+.skeletal-card-cues i{position:absolute;width:7px;height:7px;transform:translate(-50%,-50%);background:#187e78;border:1px solid #fff9d6;border-radius:50%;box-shadow:0 0 0 3px #fbf7e48c}
+.skeletal-card-cues i::after{content:"";position:absolute;inset:-7px;border:1px solid #2f8d80;border-radius:50%;opacity:.35}
+.skeletal-map[data-card-motion=on] .skeletal-card-art.is-in-view .skeletal-card-cues i::after{animation:skeletal-cue 3.2s ease-out infinite;animation-delay:var(--cue-delay)}
+.skeletal-map[data-card-motion=on] .skeletal-card-art:is([data-skeletal-art="6"],[data-skeletal-art="7"]).is-in-view .skeletal-card-cues i::after{animation-duration:6s}
+.skeletal-map[data-card-motion=on] .missioncard:hover .skeletal-card-picture>img,.skeletal-map[data-card-motion=on] .missioncard:focus-within .skeletal-card-picture>img{transform:translateY(-3px)}
+.skeletal-map.skeletal-page-hidden .skeletal-card-cues i::after{animation-play-state:paused!important}
+.skeletal-gallery-tools{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:-4px 0 18px;color:#567980;font-size:.75rem}
+.skeletal-gallery-tools>span{letter-spacing:.025em}.skeletal-gallery-tools button{font:inherit;min-height:44px;padding:9px 12px;background:#eff5eb;color:#396b68;border:1px solid #bfd3c7;border-radius:9px;cursor:pointer}.skeletal-gallery-tools button:disabled{cursor:default;opacity:.75}
+.skeletal-map>.skeletal-finale{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,1fr);grid-template-areas:'art copy' 'art action';gap:0 28px;padding:0 28px 0 0;border:1px solid #c5d7c5;border-radius:19px;background:linear-gradient(115deg,#edf3e5,#fbf9eb);overflow:hidden}
+.skeletal-finale>.skeletal-card-art{grid-area:art;position:relative;display:grid;width:100%;height:100%;min-height:312px;max-height:412px;margin:0;padding:0;background:#f5f6ed;border-right:1px solid #d7e2d2}
+.skeletal-finale .skeletal-card-picture>img{position:absolute;inset:0;object-fit:contain}
+.skeletal-finale>div:not(.skeletal-card-art){grid-area:copy;padding:27px 0 16px}.skeletal-finale>.btn{grid-area:action;justify-self:start;align-self:start;margin:0 0 27px;font-size:.82rem;min-height:46px}.skeletal-finale h3{font-size:1.5rem;color:#284e56;line-height:1.3}.skeletal-finale p{color:#56756e;line-height:1.7;font-size:.88rem}
+.skeletal-study-dialog{width:min(1080px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 32px);padding:0;border:1px solid #cbd9c6;border-radius:20px;background:#f9faf1;color:#264e58;box-shadow:0 24px 100px #112d4470;overflow:auto}
+.skeletal-study-dialog::backdrop{background:#122c3ad9;backdrop-filter:blur(5px)}
+.skeletal-study-close{position:sticky;top:12px;z-index:1;display:flex;align-items:center;gap:15px;margin:12px 12px 0 auto;min-height:44px;padding:10px 16px;border:1px solid #afc9bc;border-radius:10px;background:#fffef4;color:#245d5c;font:inherit;font-size:.85rem;font-weight:650;cursor:pointer}
+.skeletal-study-close>span{font-size:1.5rem;line-height:1}.skeletal-study-dialog figure{margin:0}.skeletal-study-dialog figure>img{display:block;width:100%;height:auto;max-height:64dvh;object-fit:contain}
+.skeletal-study-dialog figcaption{padding:20px clamp(20px,4vw,40px) 28px;border-top:1px solid #d5dfce}.skeletal-study-dialog .eyebrow{color:#64806c;font-size:.63rem;letter-spacing:.1em}.skeletal-study-dialog h2{font-size:clamp(1.4rem,3vw,1.9rem);color:#284e58;margin:10px 0 12px}.skeletal-study-dialog p{font-size:.94rem;line-height:1.75;color:#4b6d71;margin:0 0 17px}.skeletal-study-dialog small{font-size:.72rem;line-height:1.5;color:#63796e}
+.skeletal-study-key{display:flex;flex-wrap:wrap;gap:7px;padding:0;list-style:none;margin:0 0 18px}.skeletal-study-key li{font-size:.73rem;line-height:1.5;padding:7px 10px;background:#e9f1df;border:1px solid #cddcc0;border-radius:7px;color:#486947}
+.skeletal-study-open:focus-visible,.skeletal-gallery-tools button:focus-visible,.skeletal-study-close:focus-visible{outline:3px solid #2e9483;outline-offset:3px}
+@keyframes skeletal-cue{0%{opacity:.75;transform:scale(.65)}65%,100%{opacity:0;transform:scale(1.8)}}
+@media(max-width:760px){.world-exhibit.skeletal-map .missioncard{padding:0 20px 20px;min-height:420px}.skeletal-map .missioncard .skeletal-card-art{margin:0 -20px 19px;width:calc(100% + 40px);height:240px}.skeletal-map .missioncard h3{font-size:1.15rem}.skeletal-gallery-tools{align-items:flex-start;font-size:.68rem;gap:9px}.skeletal-gallery-tools>span{padding-top:11px}.skeletal-gallery-tools button{font-size:.65rem;flex-shrink:0}.skeletal-map>.skeletal-finale{grid-template-columns:1fr;grid-template-areas:'art' 'copy' 'action';padding:0;gap:0}.skeletal-finale>.skeletal-card-art{height:312px;min-height:0;border:0;border-bottom:1px solid #d7e2d2}.skeletal-finale>div:not(.skeletal-card-art){padding:22px 22px 16px}.skeletal-finale>.btn{margin:0 22px 22px}.skeletal-study-dialog p{font-size:.88rem}.skeletal-study-key li{font-size:.68rem}.skeletal-study-open{font-size:.67rem;padding:8px 10px}}
+@media(prefers-reduced-motion:reduce){.skeletal-card-picture>img{transition:none!important}.skeletal-map .missioncard .skeletal-card-picture>img{transform:none!important}.skeletal-card-cues i::after{animation:none!important}}
