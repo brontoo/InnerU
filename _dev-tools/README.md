@@ -68,3 +68,10 @@ investigations and 24 science checks, verify rewards and prerequisites, exercise
 every activity in preview without saving progress, and check keyboard access,
 mobile layouts, reduced motion, shared routes and offline shell files. See
 [SKELETAL-COURSE.md](SKELETAL-COURSE.md) for the learning sequence and anatomy.
+
+## Respiratory card anatomy studies
+
+Run `python3 _dev-tools/verify-respiratory-cards.py` to exercise the seven anatomy
+guides, structure selection, motion controls, mobile layouts and existing mission
+gates and rewards. See [RESPIRATORY-CARD-ART.md](RESPIRATORY-CARD-ART.md) for the
+anatomical subjects and presentation behavior.
