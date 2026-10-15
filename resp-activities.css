@@ -1,5 +1,5 @@
-/* Respiratory mission interiors. Anatomy and process channels stay separate so
-   motion represents the science without stretching illustrated tissues. */
+/* Respiratory mission interiors and scientific process channels.
+   The ventilation scene additionally animates the anatomical tissue mesh. */
 .resp-learning{--ra-ink:#284e59;--ra-teal:#2c786f;--ra-paper:#fffcf3;--ra-line:#c9d9c6;--ra-gold:#bc944b;color:var(--ra-ink)}
 .resp-learning .resp-columns{grid-template-columns:minmax(0,1fr) 250px;gap:24px}.resp-learning .resp-aside{background:linear-gradient(145deg,#edf4e7,#fbf5e3);border-color:#c7d9bf;border-radius:17px}.resp-learning .resp-aside p{font-size:.84rem;line-height:1.75}.resp-learning .resp-lesson{background:#fffcf3;border-color:#d1ddc6}.resp-learning .resp-lesson .hint{background:#edf4e5}.resp-learning .resp-mission-header h1{font-size:clamp(2.2rem,4vw,3.5rem);color:#2e5961}.resp-learning .resp-mission-header p{color:#55727a;line-height:1.7}
 .resp-preview-bar{display:flex;justify-content:space-between;align-items:center;gap:22px;padding:19px 23px;border:1px solid #c5d9c7;border-radius:14px;background:#eff6ea;margin:0 0 26px;color:#305d5d}.resp-preview-bar p{font-size:.85rem;line-height:1.7;margin:6px 0 0}.resp-preview-bar b{font-size:.96rem}.resp-preview-bar .btn{font-size:.8rem;flex:0 0 auto;white-space:normal}.resp-preview-bar.is-preview{background:#e3f2ec;border-color:#a8d0c0}.resp-free-preview{font-size:.76rem;text-align:center;color:#4b7a6a;margin:13px 0 0;text-underline-offset:3px}.resp-map .resp-card .resp-free-preview{margin-top:14px}.resp-gallery-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:25px 0}.resp-gallery-nav>a,.resp-gallery-nav>span{display:flex;align-items:center;gap:9px;min-height:59px;padding:11px 12px;border:1px solid #cbdac2;border-radius:9px;background:#f5f8ed;color:#4f7166;font-size:.74rem;line-height:1.5;text-decoration:none}.resp-gallery-nav b{font-size:.76rem}.resp-gallery-nav>a[aria-current=page]{background:#2f756c;color:#fff9e8;border-color:#2f756c}.resp-gallery-nav>span{background:#eff2e8;color:#7c8a73}
@@ -20,3 +20,45 @@
 @media(prefers-reduced-motion:reduce){.resp-activity-game *{animation:none!important;transition:none!important}}.motionoff .resp-activity-game *{animation:none!important;transition:none!important}
 .resp-activity-game[data-ra-complete=true] .ra-lab-reward{background:#e2efcf;border-color:#a9c48a;color:#567447}.resp-activity-game[data-ra-motion=on][data-ra-complete=true] .ra-lab-reward{animation:ra-discovery .65s ease-out}.ra-question-art{transition:box-shadow .25s}.resp-learning .resp-question.is-solved .ra-question-art{box-shadow:0 0 0 3px #c4dca84d}@keyframes ra-discovery{0%{transform:scale(.94)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .ra-condition-picture{position:relative}.ra-condition-marker{position:absolute;width:24px;height:24px;border:2px solid #247c70;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 3px #fff6d59c;pointer-events:none}.ra-condition-marker::after{content:'';position:absolute;inset:-8px;border:1px solid #2c9584;border-radius:50%;opacity:.4}.resp-activity-game[data-ra-motion=on] .ra-condition-marker::after{animation:ra-tissue-focus 2.6s ease-out infinite}@keyframes ra-tissue-focus{0%{transform:scale(.65);opacity:.8}80%,100%{transform:scale(1.5);opacity:0}}
+/* Premium ventilation study: the textured anatomy, dome trace and flow share one pose. */
+.ra-ventilation{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:stretch}
+.ra-ventilation>figure{align-self:center;background:#f8efdf}
+.ra-ventilation-art{position:relative;isolation:isolate;overflow:hidden}
+.ra-ventilation-art>.ra-anatomy{max-height:none;width:100%;height:auto}
+.ra-ventilation-art>canvas,.ra-ventilation-overlay{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ra-ventilation-art>canvas{opacity:0}
+.ra-ventilation.is-rendered canvas{opacity:1}
+.ra-ventilation.is-rendered .ra-anatomy{visibility:hidden}
+.ra-ventilation-overlay{pointer-events:none}
+.ra-ventilation-overlay .ra-vent-rest-dome{fill:none;stroke:#618776;stroke-width:4;stroke-dasharray:12 12;opacity:.45}
+.ra-ventilation-overlay .ra-vent-dome{fill:none;stroke:#278479;stroke-width:7;stroke-linecap:round;opacity:.85}
+.ra-vent-dia-arrow,.ra-vent-air{fill:none;stroke:#278479;stroke-width:7}
+.ra-vent-air{stroke-dasharray:12 9;opacity:.9}
+.ra-ventilation[data-vent-phase=hold] .ra-vent-air,.ra-ventilation[data-vent-phase=hold] .ra-vent-dia-arrow,.ra-ventilation[data-vent-depth="0.000"] .ra-vent-dia-arrow{visibility:hidden}
+.ra-ventilation-overlay g>path{fill:none;stroke:#396f68;stroke-width:3}
+.ra-ventilation-overlay g>circle{fill:#f9f5e5;stroke:#278479;stroke-width:4}
+.ra-ventilation-overlay g>rect{fill:#fffaf0ed;stroke:#b3c9b6;stroke-width:2}
+.ra-ventilation-overlay text{font:600 32px system-ui,sans-serif;fill:#35635d}
+.ra-vent-phase{position:absolute;top:15px;left:15px;background:#f8f9e8ed;border:1px solid #b8cbb2;color:#497764;font-size:.56rem;font-weight:750;letter-spacing:.07em;padding:8px 10px;border-radius:7px;max-width:calc(100% - 30px)}
+.ra-ventilation .ra-scene-copy{padding:25px 23px;background:#f5f5e7}
+.ra-ventilation .ra-scene-copy>p{margin:12px 0 20px}
+.ra-vent-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 21px}
+.ra-vent-buttons button{font:inherit;font-size:.76rem;line-height:1.5;min-height:46px;padding:11px 15px;border:1px solid #93b69b;border-radius:9px;background:#fcfbed;color:#416c59;cursor:pointer}
+.ra-vent-buttons button:first-child{background:#2f786c;color:#fffce9;border-color:#2f786c}
+.ra-vent-buttons button:disabled{opacity:.6;cursor:default}
+.ra-vent-buttons [data-vent-play]{flex:1 0 100%;background:#e9efdb;font-size:.72rem}
+.ra-vent-slider-label{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px;color:#4d705a;font-size:.77rem;line-height:1.6}
+.ra-vent-slider-label output{font-weight:750;font-variant-numeric:tabular-nums}
+.ra-ventilation input{width:100%;accent-color:#327c6d;min-height:32px;margin:5px 0 0;cursor:pointer}
+.ra-vent-scale{display:flex;justify-content:space-between;font-size:.62rem;color:#728468}
+.ra-vent-readings{margin:19px 0 0;display:grid;gap:10px}
+.ra-vent-readings>div{padding:11px 12px;border:1px solid #cad8bb;border-radius:8px;background:#ecf1dd}
+.ra-vent-readings dt{font-size:.64rem;color:#718263;margin-bottom:4px}
+.ra-vent-readings dd{margin:0;color:#426e59;font-size:.75rem;font-weight:650;line-height:1.6}
+.ra-ventilation .ra-scene-copy>.ra-vent-status{font-size:.72rem;line-height:1.8;color:#617a60;border-top:1px solid #d2dcc3;padding-top:14px;margin-bottom:0;min-height:5.4em}
+.ra-ventilation-flow>p{font-size:.72rem;line-height:1.7;color:#728265;margin:-10px 3px 21px}
+.ra-ventilation-flow[data-flow=hold] .ra-moving-packet,.ra-ventilation-flow[data-flow=hold] .ra-direction{display:none}
+.resp-activity-game[data-ra-motion=on] .ra-ventilation-flow .ra-moving-packet{animation-duration:1.2s}
+.ra-ventilation.is-static canvas,.ra-ventilation.is-static .ra-ventilation-overlay{display:none}
+@media(max-width:1400px) and (min-width:1001px){.ra-ventilation{grid-template-columns:1fr}.ra-ventilation>figure{align-self:stretch}.ra-ventilation-art{max-width:680px;margin:auto}.ra-vent-buttons [data-vent-play]{flex:0 1 auto}.ra-vent-readings{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.ra-ventilation{grid-template-columns:1fr}.ra-ventilation .ra-scene-copy{padding:20px 17px}.ra-vent-buttons{gap:7px}.ra-vent-buttons button{font-size:.73rem}.ra-vent-buttons [data-vent-play]{flex:1 0 100%}.ra-vent-phase{font-size:.48rem;top:8px;left:8px;padding:6px 8px}.ra-ventilation .ra-scene-copy>.ra-vent-status{min-height:0}.ra-ventilation-overlay text{font-size:38px}}

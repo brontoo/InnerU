@@ -1,6 +1,7 @@
 # Illustrated respiratory activities
 
-`resp-activities.js` and `resp-activities.css` provide the six mission interiors.
+`resp-activities.js` and `resp-activities.css` provide the six mission interiors;
+`resp-ventilation.js` renders the interactive textured breathing study in Mission 1.
 The existing detailed mission studies are reused at full resolution, with new
 original muscle/mitochondrion and mucociliary-epithelium studies in
 `assets/respiratory-activities/`. SVG viewports clip individual anatomical regions
@@ -11,7 +12,9 @@ The investigations now require small science decisions instead of awarding the
 lab merely for opening each tab:
 
 - Mission 1: distinguish ventilation, external exchange and cellular respiration
-  through three different illustrations and process channels.
+  through three different illustrations and process channels. In the ventilation
+  scene, Inhale, Exhale, a keyboard-accessible position slider and Play one breath
+  control the premium anatomical illustration itself.
 - Mission 2: arrange seven airway landmarks with drag or arrow controls, then
   connect mucus trapping with ciliary clearance toward the throat.
 - Mission 3: select the higher partial-pressure side for each gas and release it
@@ -23,8 +26,18 @@ lab merely for opening each tab:
 - Mission 6: match four affected tissues to location and functional consequence.
 
 Process animations are labeled schematic channels outside the anatomical images.
-They do not stretch tissue or imply measured molecular speeds. Oxygen and carbon
-dioxide have explicit labels and opposite directions; assistive descriptions use
+They do not imply measured molecular speeds. The ventilation study additionally
+deforms a texture mesh of the original lung artwork: the upper airway is anchored,
+both lungs widen, and the diaphragm dome descends and flattens during inhalation.
+The reverse movement illustrates quiet exhalation by diaphragm relaxation and
+elastic recoil. An overlaid dome trace and anatomical labels follow the tissue.
+WebGL renders the texture efficiently, with a Canvas 2D fallback. This is a teaching
+animation with enlarged movement, not a patient-specific biomechanical simulation.
+The position controls select immediate poses when reduced motion or pause is active.
+Air arrows and packets reverse on exhalation and disappear at held positions.
+Playback stops on pause, reduced motion, hiding, scrolling out of view, changing
+stations and navigation; each scene releases its animation and graphics resources.
+Oxygen and carbon dioxide have explicit labels and opposite directions; assistive descriptions use
 the same direction as the visible arrows. The breathing illustration moves the
 diaphragm dome and lung silhouette together. Transient negative pressure accompanies
 increasing volume, positive pressure accompanies decreasing volume, and a held pose
@@ -54,3 +67,7 @@ gas direction, barrier effect, breathing pressure/hold behavior, keyboard/motion
 controls, 768/390/320px layouts, cleanup, neighboring worlds and offline shell URLs.
 Run `python3 _dev-tools/verify-respiratory-cards.py` for the existing gallery
 regression. Both use isolated Chromium profiles and stop their own servers.
+Run `python3 _dev-tools/verify-ventilation.py` for rendered lung expansion, anchored
+airway pixels, diaphragm movement, reversible flow, held positions, playback,
+keyboard and motion preferences, preview persistence, mobile layouts, lifecycle
+cleanup and the Canvas 2D fallback.

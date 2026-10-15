@@ -56,7 +56,8 @@
       ][station],challenge=task(data[6],data[7],data[8]);
       // The event-specific illustration replaces the old shared airway strip.
       const illustration=picture(data[0]);
-      stage.innerHTML=`<div class="ra-scene ra-event-scene" data-event="${station}"><figure>${illustration}<figcaption>${data[1]} · anatomical teaching study</figcaption></figure><div class="ra-scene-copy"><span class="eyebrow">${['WHOLE ORGAN','AIR–BLOOD BARRIER','WITHIN BODY CELLS'][station]}</span><h3>${data[1]}</h3><p>${data[2]}</p></div></div>${transport(data[3],data[4],data[5])}${station===1?transport('Alveolar air','Capillary blood','CO₂','backward','is-co2'):''}${challenge.html}`;challenge.wire();
+      const scene=station===0?window.InneruRespVentilation.markup(picture,transport):`<div class="ra-scene ra-event-scene" data-event="${station}"><figure>${illustration}<figcaption>${data[1]} · anatomical teaching study</figcaption></figure><div class="ra-scene-copy"><span class="eyebrow">${['WHOLE ORGAN','AIR–BLOOD BARRIER','WITHIN BODY CELLS'][station]}</span><h3>${data[1]}</h3><p>${data[2]}</p></div></div>${transport(data[3],data[4],data[5])}${station===1?transport('Alveolar air','Capillary blood','CO₂','backward','is-co2'):''}`;
+      stage.innerHTML=scene+challenge.html;if(station===0)breathCleanup=window.InneruRespVentilation.mount(stage,r);challenge.wire();
     }
     let airwayOrder=[3,0,5,1,6,2,4],airwaySequence=false,defense=false;
     function airway(){
