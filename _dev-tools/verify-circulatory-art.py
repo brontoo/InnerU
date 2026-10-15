@@ -73,6 +73,7 @@ try:
   check(p.evaluate('document.activeElement.dataset.caOpen')=='1','closing the guide restores focus to its card control')
   p.locator('button[data-ca-motion-toggle]').click();check(p.locator('#main').get_attribute('data-ca-motion')=='off','card animation has a manual pause control')
   p.locator('button[data-ca-motion-toggle]').click();p.emulate_media(reduced_motion='reduce')
+  p.wait_for_function('document.querySelector("button[data-ca-motion-toggle]").disabled && document.querySelector("#main").dataset.caMotion==="off"')
   check(p.locator('button[data-ca-motion-toggle]').is_disabled() and p.locator('#main').get_attribute('data-ca-motion')=='off','system reduced-motion preference stops anatomical cues')
   p.emulate_media(reduced_motion='no-preference');p.evaluate("location.hash='circulatory/2'");p.wait_for_selector('.circ-path');check(p.locator('#circ-lab').count()==0,'art exploration does not bypass the mission route guard')
   for n in range(1,8):

@@ -1,0 +1,87 @@
+/* Detailed cardiac studio; all selectors are limited to this anatomy lab. */
+.heart-lab { padding:26px!important; border-color:#789c9d; background:radial-gradient(ellipse at 25% 40%,#254f5d,#102f43 70%); }
+.heart-lab-heading { display:flex; justify-content:space-between; gap:25px; align-items:center; margin-bottom:25px; }
+.heart-lab-heading h2 { margin:9px 0; font-size:clamp(1.8rem,3vw,2.6rem); color:#fff4e7; letter-spacing:-.035em; }
+.heart-lab-heading p { margin:0; font-size:.88rem; color:#c4dcdf!important; }
+.heart-lab-tag { border:1px solid #779fa4; border-radius:9px; font-size:.62rem; color:#aee2dc; letter-spacing:.09em; padding:12px; white-space:nowrap; }
+.heart-lab-modes { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; padding-bottom:16px; border-bottom:1px solid #739fa15c; margin-bottom:20px; }
+.heart-lab-modes button { text-align:left; color:#bdd7dc; background:#ffffff06; border:1px solid #739fa15c; border-radius:11px; padding:13px 15px; min-height:65px; font:inherit; font-size:.8rem; }
+.heart-lab-modes small { display:block; margin-bottom:6px; font-size:.6rem; color:#96b8b9; letter-spacing:.1em; }
+.heart-lab-modes button[aria-selected=true] { background:#e1eee6; color:#174f57; border-color:#bfded0; }
+.heart-lab-modes button[aria-selected=true] small { color:#457e79; }
+.heart-lab .circ-heart-layout { grid-template-columns:minmax(0,1.13fr) minmax(0,1fr); align-items:start; gap:24px; }
+.heart-lab-visual { min-width:0; position:sticky; top:16px; }
+.heart-lab .circ-heart-viewer { height:clamp(440px,43vw,620px); min-width:0; background:radial-gradient(ellipse at 50% 43%,#e2d8bc16,#092c3d66 75%); }
+.heart-lab .heart-webgl { width:100%; height:100%; }
+.heart-lab .circ-heart-platform { opacity:.4; height:5%; bottom:8%; }
+.heart-view-label { position:absolute; left:17px; top:17px; right:12px; z-index:4; display:flex; flex-direction:column; align-items:flex-start; gap:9px; pointer-events:none; }
+.heart-view-label>span { color:#a6c6cb; font-size:.58rem; letter-spacing:.11em; }
+.heart-view-label b { font-size:.76rem; color:white; background:#147d7b; border:1px solid #77c5b9; border-radius:8px; padding:9px 12px; box-shadow:0 5px 20px #07233355; }
+.heart-lab .circ-heart-hotspot { background:#fbf3db; color:#1a5963; max-width:65%; white-space:normal; border-color:#a5c6ba; }
+.heart-bench-labels { position:absolute; inset:0; z-index:5; pointer-events:none; }
+.heart-bench-labels button { position:absolute; transform:translate(-50%,65px); border:1px solid #7baaa4; border-radius:8px; background:#133d4be8; color:#ddede5; padding:7px 10px; min-height:42px; cursor:pointer; pointer-events:auto; font:inherit; white-space:nowrap; }
+.heart-bench-labels button:active { transform:translate(-50%,65px); }
+.heart-bench-labels button b { display:block; font-size:.65rem; }
+.heart-bench-labels button span { display:block; font-size:.55rem; color:#a9cdbd; margin-top:3px; }
+@media(max-width:420px) { .heart-bench-labels button { transform:translate(-50%,35px); padding:6px; } .heart-bench-labels button:active { transform:translate(-50%,35px); } .heart-bench-labels button b { font-size:.55rem; } }
+.heart-lab .circ-heart-presets { margin:12px 0 8px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.heart-lab .circ-heart-presets button { font-size:.68rem; min-height:42px; padding:8px 4px; }
+.heart-lab .circ-heart-controls { gap:6px; margin-top:0; }
+.heart-lab .circ-heart-controls button { font-size:.69rem; min-height:42px; padding:8px; }
+.heart-lab-orientation { font-size:.7rem!important; line-height:1.7!important; color:#91b6bf!important; margin:12px 0 0; }
+.heart-lab .circ-heart-options { display:block; }
+.heart-structure-heading { display:flex; justify-content:space-between; gap:8px; color:#aad8d2; font-size:.63rem; letter-spacing:.10em; margin:15px 0; }
+.heart-structure-heading>span:last-child { letter-spacing:0; color:#e0c997; white-space:nowrap; }
+.heart-structure-groups { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.heart-structure-groups button { min-height:40px; background:#234a5b; color:#c1dce1; border:1px solid #6c989e; border-radius:9px; padding:8px 11px; font:inherit; font-size:.7rem; }
+.heart-structure-groups button[aria-pressed=true] { background:#e0eee6; color:#1b6267; border-color:#b0d4c1; }
+.heart-lab .heart-structure-buttons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+.heart-lab .heart-structure-buttons button { min-height:46px; padding:10px; font-size:.76rem; font-weight:500; border:1px solid #5e8995; border-radius:10px; color:#d5e7e6; background:#153f50; line-height:1.5; }
+.heart-lab .heart-structure-buttons button[aria-pressed=true] { color:#123c43; background:#d4eee2; border-color:#a8d2b9; box-shadow:0 0 0 2px #a2dbc033; }
+.heart-lab .heart-structure-buttons .explored span { color:#83cec1; margin-left:6px; }
+.heart-lab .heart-structure-buttons button[aria-pressed=true] span { color:#267b72; }
+.heart-lab .circ-vessel-info { min-height:120px; max-height:none; padding:20px; background:#0c2c3ecc; border:1px solid #628c96; margin:15px 0; border-radius:15px; font-size:.83rem; line-height:1.7; }
+.heart-lab .circ-vessel-info>span { display:block; }
+.heart-info-kicker { color:#a8cbbd; letter-spacing:.09em; text-transform:uppercase; font-size:.58rem; }
+.heart-lab .circ-vessel-info h3 { color:#fbefda; font-size:1.2rem; margin:8px 0 12px; }
+.heart-lab .circ-vessel-info p { color:#c0d9dd; font-size:.81rem; line-height:1.8; }
+.heart-look { padding-top:14px; border-top:1px solid #7ba4a13b; }
+.heart-look b { font-size:.7rem; color:#e8c49e; }
+.heart-look p { margin:5px 0 0; font-size:.73rem!important; }
+.heart-valve-controls,.heart-flow-controls { background:#f2f2e5; border:1px solid #c3d5c2; border-radius:14px; padding:17px; margin-top:15px; color:#315d60; }
+.heart-lab [hidden] { display:none!important; }
+.heart-valve-controls>.eyebrow,.heart-flow-controls .eyebrow { font-size:.57rem; color:#3b7d79!important; letter-spacing:.10em; }
+.heart-valve-controls>div,.heart-route-actions,.heart-investigation-tools { display:flex; gap:7px; flex-wrap:wrap; margin:13px 0; }
+.heart-valve-controls button,.heart-flow-controls button { background:#fffdf5; color:#2f6970; border:1px solid #a3c1b6; border-radius:9px; padding:10px; min-height:42px; font:inherit; font-size:.72rem; }
+.heart-valve-controls button[aria-pressed=true] { background:#277c79; color:white; }
+.heart-valve-controls label { display:block; font-size:.72rem; margin:15px 0 8px; }
+.heart-valve-controls label span { display:block; font-size:.67rem; color:#788775; margin-top:5px; }
+.heart-valve-controls input { width:100%; min-height:30px; accent-color:#2b8680; }
+.heart-valve-controls p { font-size:.73rem!important; line-height:1.7; color:#4b6d65!important; }
+.heart-valve-controls #heart-beat { width:100%; }
+.heart-cycle-scale { display:block; color:#71806d; font-size:.62rem; line-height:1.7; margin:9px 0 12px; }
+.heart-investigation-tools { margin:0 0 16px; }
+.heart-investigation-tools button { min-height:42px; background:#173d4b; color:#bfd8d6; border:1px solid #7da8a0; border-radius:9px; padding:9px 11px; font:inherit; font-size:.69rem; }
+.heart-investigation-tools button[aria-pressed=true] { background:#d4e9dd; color:#296769; }
+.heart-flow-heading { display:flex; justify-content:space-between; gap:10px; }
+.heart-flow-heading>b { font-size:.7rem; }
+#heart-route-note { font-size:.78rem!important; color:#355d5c!important; }
+#heart-route-note span { display:block; font-size:.75rem; margin-top:7px; }
+.heart-route-actions button { flex:1; }
+.heart-flow-controls label { font-size:.7rem; }
+.heart-flow-controls select { padding:6px; border-radius:6px; border:1px solid #adc5b7; background:#fffdf4; color:#2e6261; margin-left:8px; }
+.heart-flow-key { font-size:.62rem!important; color:#57736a!important; }
+.heart-flow-key i { display:inline-block; width:8px; height:8px; background:#8c344d; border-radius:50%; margin-right:4px; }
+.heart-flow-key i:nth-of-type(2) { background:#e56b69; margin-left:10px; }
+.heart-discovery-note { border-top:1px solid #8bb2aa36; margin-top:18px; padding-top:15px; }
+.heart-discovery-note>span { display:block; color:#afd9cb; font-size:.72rem; }
+.heart-discovery-note small { display:block; margin-top:6px; font-size:.65rem; color:#8bafb4; line-height:1.7; }
+.heart-motion-note { font-size:.7rem!important; color:#e6d1a4!important; }
+.heart-lab-scale { color:#a3bdbd!important; font-size:.72rem!important; line-height:1.8; padding-top:15px; margin-top:15px; border-top:1px solid #7da7a336; }
+.heart-lab-credit { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; border-top:1px solid #7da7a336; padding-top:15px; margin-top:15px; }
+.heart-lab-credit>a,.heart-lab-credit>span { color:#96bbb9; font-size:.62rem; line-height:1.7; }
+.heart-lab-fallback { position:absolute; width:100%; height:100%; object-fit:contain; background:#f9f4e9; border-radius:16px; z-index:2; }
+.heart-lab button:focus-visible,.heart-lab input:focus-visible { outline:3px solid #e5bf79; outline-offset:3px; }
+@media(max-width:1050px) { .heart-lab .circ-heart-layout { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; } .heart-lab-tag { display:none; } .heart-lab .circ-heart-viewer { height:490px; } .heart-lab .circ-heart-presets { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:760px) { .heart-lab { padding:18px!important; } .heart-lab .circ-heart-layout { grid-template-columns:minmax(0,1fr); } .heart-lab-visual { position:static; } .heart-lab .circ-heart-viewer { height:clamp(370px,70vw,520px); } .heart-lab-heading { margin-bottom:18px; } .heart-lab-heading h2 { font-size:1.7rem; } .heart-lab-heading p { font-size:.8rem; } .heart-lab-modes { gap:5px; } .heart-lab-modes button { font-size:.68rem; padding:10px 7px; min-height:70px; } .heart-lab .circ-heart-presets { grid-template-columns:repeat(4,minmax(0,1fr)); } .heart-lab .circ-heart-presets button { font-size:.61rem; } }
+@media(max-width:420px) { .heart-lab { padding:13px!important; } .heart-lab-modes { grid-template-columns:repeat(2,minmax(0,1fr)); } .heart-lab-modes button { min-height:55px; } .heart-lab-modes small { display:inline-block; margin:0 8px 0 0; } .heart-lab .circ-heart-viewer { height:365px; } .heart-lab .circ-heart-presets { grid-template-columns:repeat(2,minmax(0,1fr)); } .heart-lab .circ-vessel-info { padding:15px; } .heart-structure-heading { font-size:.54rem; letter-spacing:.04em; } .heart-lab .heart-structure-buttons button { font-size:.7rem; padding:9px; } body:has(.heart-lab) .topbar { flex-wrap:wrap; height:auto; min-height:80px; padding:12px 18px; } body:has(.heart-lab) .reader-tools { flex-basis:100%; justify-content:flex-end; margin:0; } }
