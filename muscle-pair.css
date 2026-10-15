@@ -1,0 +1,100 @@
+.arm-lab{--arm-ink:#244650;--arm-teal:#227c77;--arm-coral:#b56e64;--arm-line:#d1ded5;--arm-muted:#607c82;border:1px solid #d2ded6;border-radius:25px;padding:clamp(20px,3vw,32px);background:#fbfaf2;color:var(--arm-ink);overflow:clip;scroll-margin-top:24px}
+.arm-lab-heading{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:23px}
+.arm-lab-heading .eyebrow{font-size:10px;letter-spacing:.15em;color:#9f665c}
+.arm-lab .arm-lab-heading h2{font-size:clamp(27px,3vw,36px);letter-spacing:-.035em;line-height:1.15;margin:10px 0 11px;color:#244650}
+.arm-lab-heading p{font-size:13px;line-height:1.7;margin:0;color:#607c82;max-width:630px}
+.arm-lab-medal{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:112px;height:94px;border:1px solid #d8c691;border-radius:18px;background:radial-gradient(circle,#fff8de,#f1ead2);color:#8c7748;font-size:8px;font-weight:700;letter-spacing:.07em;box-shadow:inset 0 0 0 5px #fff9e180}
+.arm-lab-medal b{font-size:28px;letter-spacing:-.02em;color:#8b7139;margin-bottom:4px}
+.arm-lab-missions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:22px}
+.arm-lab-missions button{border:1px solid #ccdcd2;border-radius:11px;padding:12px 13px;text-align:left;background:#f3f5ed;color:#46666c;font-size:12px;line-height:1.45;min-height:69px}
+.arm-lab-missions button span{display:block;font-size:9px;letter-spacing:.08em;color:#789085;margin-bottom:7px}
+.arm-lab-missions button i{font-style:normal;color:#ac8c43;font-size:15px;line-height:1}
+.arm-lab .arm-lab-missions button[aria-pressed=true]{border-color:#428c7f;background:#e1eee3;color:#235d55;box-shadow:inset 0 -3px #448b7e}
+.arm-lab .arm-lab-missions button[aria-pressed=true] span{color:#417969}
+.arm-lab-layout{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(0,1fr);gap:24px;align-items:start}
+.arm-lab-visual{min-width:0;position:sticky;top:18px}
+.arm-lab-stage{position:relative;height:550px;overflow:hidden;border:1px solid #dce2d4;border-radius:19px;background:radial-gradient(ellipse at 53% 42%,#fffef7,#f0eee1 78%);isolation:isolate;outline-offset:4px}
+.arm-lab-stage canvas{position:absolute;inset:0;z-index:1;display:block;touch-action:none;cursor:grab}
+.arm-lab-stage canvas:active{cursor:grabbing}
+.arm-lab-svg{position:absolute;inset:0;width:100%;height:100%;display:grid;place-items:center}
+.arm-lab-svg svg{width:100%;height:100%;display:block;max-height:none}
+.arm-lab-stage-title{position:absolute;z-index:2;top:15px;left:17px;font-size:8px;letter-spacing:.08em;color:#6e8177;pointer-events:none}
+.arm-lab-phase{position:absolute;z-index:2;left:16px;top:37px;display:flex;align-items:center;gap:6px;background:#fffdf1e8;border:1px solid #d3dcca;border-radius:7px;font-size:10px;padding:7px 10px;color:#617d75;pointer-events:none}
+.arm-lab-phase i{width:5px;height:5px;display:block;background:#8fa89b;border-radius:50%}
+.arm-lab-phase[data-phase=flex]{background:#f4ded0;color:#955c4e;border-color:#d7b69f}
+.arm-lab-phase[data-phase=flex] i{background:#ba7562}
+.arm-lab-phase[data-phase=extend]{background:#dcece2;color:#337a6c;border-color:#9bbfae}
+.arm-lab-phase[data-phase=extend] i{background:#398d7a}
+.arm-lab-3d{position:absolute;z-index:2;right:14px;top:17px;font-size:8px;color:#759085;letter-spacing:.04em;pointer-events:none}
+.arm-lab-angle{position:absolute;z-index:2;bottom:20px;left:19px;display:flex;align-items:baseline;gap:9px;pointer-events:none}
+.arm-lab-angle b{color:#386c68;font-size:33px;font-weight:700;letter-spacing:-.04em}
+.arm-lab-angle span{color:#7f9185;font-size:8px;letter-spacing:.08em}
+.arm-lab-cue{position:absolute;z-index:2;right:15px;bottom:24px;color:#9e864a;font-size:7px;letter-spacing:.04em;pointer-events:none;max-width:123px;text-align:right;line-height:1.5}
+.arm-lab-render-note{font-size:10px;color:#7a8b80;margin:10px 0 0;line-height:1.6}
+.arm-lab-console{min-width:0}
+.arm-lab-task{border:1px solid #d0ddcf;border-radius:13px;background:#f1f5e9;padding:18px;margin-bottom:18px}
+.arm-lab-kicker{display:block;color:#64897a;font-size:8px;letter-spacing:.13em;font-weight:700}
+.arm-lab .arm-lab-task h3{font-size:21px;line-height:1.25;letter-spacing:-.025em;margin:9px 0 8px;color:#2c5457}
+.arm-lab-task p{font-size:11px;line-height:1.8;color:#5a7a79;margin:0}
+.arm-lab-question{border:0;border-top:1px solid #d2decc;padding:12px 0 0;margin:14px 0 0;display:flex;gap:7px;flex-wrap:wrap}
+.arm-lab-question legend{font-size:10px;padding:0 4px 0 0;line-height:1.6;color:#53736b}
+.arm-lab-question button{border:1px solid #b9cdbf;border-radius:7px;background:#fffdf4;padding:8px 11px;color:#476a65;font-size:11px;min-height:36px}
+.arm-lab .arm-lab-question button[aria-pressed=true]{background:#368272;color:white;border-color:#368272}
+.arm-lab-angle-label{display:flex;align-items:baseline;justify-content:space-between;gap:10px;color:#4b6e72;font-size:12px}
+.arm-lab-angle-label output{font-size:17px;color:#397a70;font-weight:700}
+.arm-lab .arm-lab-range{display:block;width:100%;height:44px;min-height:44px;margin:3px 0 0;background:transparent;border:0;padding:0;border-radius:0;appearance:none;accent-color:#af6e65;cursor:ew-resize}
+.arm-lab-range::-webkit-slider-runnable-track{height:7px;border-radius:99px;background:var(--arm-track,#d9e0d2)}
+.arm-lab-range::-moz-range-track{height:7px;border-radius:99px;background:var(--arm-track,#d9e0d2)}
+.arm-lab-range::-webkit-slider-thumb{appearance:none;width:18px;height:18px;margin-top:-5.5px;border-radius:50%;border:3px solid #fff5e8;background:#af7566;box-shadow:0 0 0 1px #bc9b84;cursor:ew-resize}
+.arm-lab-range::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:3px solid #fff5e8;background:#af7566;box-shadow:0 0 0 1px #bc9b84;cursor:ew-resize}
+.arm-lab-target{display:flex;gap:7px;align-items:center;background:#e7efdf;border:1px dashed #adc4a9;border-radius:7px;padding:9px 11px;margin:-4px 0 14px;color:#688263;font-size:11px}
+.arm-lab-target i{width:7px;height:7px;border:2px solid #83ac86;background:#f4f9e9;border-radius:50%}
+.arm-lab-target.is-in-zone{color:#4e7a52;background:#e1edcf;border-style:solid}
+.arm-lab-target.is-in-zone i{background:#cfb15f;border-color:#bba556}
+.arm-lab-range-labels{display:flex;justify-content:space-between;color:#82958c;font-size:9px;margin:2px 0 17px}
+.arm-lab-actions{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 37px;gap:7px;margin-bottom:17px}
+.arm-lab-actions button{border:1px solid #c7b1a5;border-radius:9px;padding:12px 9px;min-height:42px;display:flex;align-items:center;justify-content:space-between;gap:4px;background:#f5e7da;color:#8d5c50;font-size:11px;font-weight:700}
+.arm-lab-actions button[data-arm-move=extend]{background:#e7eee2;border-color:#bbcfc1;color:#4b7b69}
+.arm-lab-actions button[data-arm-pause]{justify-content:center;background:#fffdf4;color:#6b8176;border-color:#d1dacb;font-size:16px;padding:8px}
+.arm-lab-actions button:disabled{opacity:.4;cursor:default}
+.arm-lab .arm-lab-actions svg{width:14px;height:14px;max-height:14px;flex-shrink:0}
+.arm-lab .arm-lab-actions button[aria-pressed=true]{border-color:#a96d5f;background:#ae7766;color:#fff8e8}
+.arm-lab .arm-lab-actions button[data-arm-move=extend][aria-pressed=true]{background:#3b8779;border-color:#3b8779;color:white}
+.arm-lab-muscle-states{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:19px}
+.arm-lab-muscle-states>div{padding:12px 11px;border:1px solid #d6ddd0;border-radius:10px;background:#f7f6ed;display:flex;flex-direction:column;gap:6px;color:#7a8c80;min-height:95px}
+.arm-lab-muscle-states span{font-size:8px;letter-spacing:.05em;line-height:1.5}
+.arm-lab-muscle-states b{font-size:12px;line-height:1.35;color:#56756e}
+.arm-lab-muscle-states small{font-size:9px;line-height:1.4;color:#83958a}
+.arm-lab-muscle-states .is-active{border-color:#d3a889;background:#f2e1ce;color:#956b51;box-shadow:inset 0 2px #c48d6d}
+.arm-lab-muscle-states .is-active b{color:#9e644d}
+.arm-lab-muscle-states [data-arm-state=triceps].is-active{border-color:#94b9a6;background:#deeddf;box-shadow:inset 0 2px #6b9e85}
+.arm-lab-muscle-states [data-arm-state=triceps].is-active b{color:#3a7e69}
+.arm-lab-select-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:9px}
+.arm-lab-select-heading>span{font-size:8px;letter-spacing:.10em;color:#6d8a7b;font-weight:700}
+.arm-lab-select-heading button{padding:6px 0;border:0;background:none;color:#507f73;font-size:10px;text-decoration:underline;text-underline-offset:3px}
+.arm-lab-parts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}
+.arm-lab-parts button{flex:1 0 auto;border:1px solid #cad8cb;border-radius:7px;background:#fffdf4;color:#53736d;padding:8px 9px;font-size:10px;min-height:35px}
+.arm-lab .arm-lab-parts button[aria-pressed=true]{background:#447b70;color:#fff;border-color:#447b70}
+.arm-lab-anatomy{border:1px solid #d6dfd1;border-radius:11px;padding:15px;background:#fffdf6}
+.arm-lab .arm-lab-anatomy h4{font-size:13px;color:#3e6765;margin:0 0 8px;line-height:1.4}
+.arm-lab-anatomy p{font-size:11px;color:#66817b;line-height:1.8;margin:0}
+.arm-lab-feedback{font-size:11px;line-height:1.7;color:#668375;margin:13px 0 0;min-height:35px}
+.arm-lab-science{border-top:1px solid #d6dfd1;padding-top:16px;margin-top:23px;color:#71887c}
+.arm-lab-science summary{font-size:11px;cursor:pointer;color:#4b7a6e}
+.arm-lab-science p{font-size:11px;line-height:1.8;margin:12px 0 0;max-width:850px}
+.arm-lab-science a{color:#4d7d73;text-underline-offset:3px}
+.arm-lab-master .arm-lab-medal{border-color:#9db997;background:#e3efdc}
+.arm-lab button:hover:not(:disabled){filter:brightness(.985);border-color:#86aa98}
+.arm-lab button:focus-visible,.arm-lab input:focus-visible,.arm-lab-stage:focus-visible,.arm-lab summary:focus-visible{outline:3px solid #4f9e8c;outline-offset:3px}
+.arm-lab [hidden]{display:none!important}
+.arm-lab[data-arm-part=biceps] [data-arm-svg-part=triceps],.arm-lab[data-arm-part=triceps] [data-arm-svg-part=biceps]{opacity:.15}
+.arm-lab[data-arm-part=bones] [data-arm-svg-part=biceps],.arm-lab[data-arm-part=bones] [data-arm-svg-part=triceps],.arm-lab[data-arm-part=tendons] [data-arm-svg-part=biceps],.arm-lab[data-arm-part=tendons] [data-arm-svg-part=triceps]{opacity:.14}
+.arm-lab[data-arm-part=tendons] [data-arm-svg-part=tendons]{stroke:#cfaa4a}
+.arm-lab .arm-lab-task p,.arm-lab .arm-lab-anatomy p{font-size:13px}
+.arm-lab .arm-lab-anatomy h4{font-size:14px}
+.arm-lab .arm-lab-feedback,.arm-lab .arm-lab-angle-label,.arm-lab .arm-lab-question legend{font-size:12px}
+.arm-lab .arm-lab-parts button{font-size:12px}
+@media(max-width:1000px){.arm-lab-layout{gap:18px}.arm-lab-stage{height:510px}.arm-lab-missions button{font-size:11px;padding:10px}.arm-lab-task{padding:15px}.arm-lab-actions button{font-size:10px}.arm-lab-heading p{font-size:12px}}
+@media(max-width:760px){.arm-lab{padding:21px 15px;border-radius:20px}.arm-lab-heading{gap:14px;align-items:start}.arm-lab .arm-lab-heading h2{font-size:28px}.arm-lab-medal{width:76px;height:77px;font-size:6px;border-radius:13px}.arm-lab-medal b{font-size:22px}.arm-lab-missions{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.arm-lab-missions button{font-size:12px;min-height:65px}.arm-lab-layout{grid-template-columns:1fr;gap:22px}.arm-lab-visual{position:static}.arm-lab-stage{height:480px}.arm-lab-3d{top:19px;right:12px;font-size:7px;max-width:73px;text-align:right;line-height:1.5}.arm-lab-stage-title{font-size:7px;left:13px}.arm-lab-phase{left:12px;font-size:9px}.arm-lab .arm-lab-task h3{font-size:23px}.arm-lab-task p,.arm-lab-anatomy p{font-size:12px}.arm-lab-question button,.arm-lab-parts button{min-height:43px;font-size:12px}.arm-lab-actions button{min-height:45px;font-size:11px}.arm-lab-muscle-states b{font-size:13px}.arm-lab-muscle-states span{font-size:9px}.arm-lab-feedback{font-size:12px}.arm-lab-angle b{font-size:30px}.arm-lab-science p{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.arm-lab *{animation:none!important;transition:none!important}}
+@media(max-width:760px){.arm-lab-visual{position:sticky;top:8px;z-index:5;background:#fbfaf2;padding-bottom:8px}.arm-lab-stage{height:320px}.arm-lab-angle{bottom:13px;left:14px}.arm-lab-angle b{font-size:26px}.arm-lab-angle span{font-size:7px}.arm-lab-cue{font-size:6px;bottom:18px;max-width:96px}}

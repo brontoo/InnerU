@@ -52,3 +52,11 @@ It checks actual geometry, all 23 selections, garment coverage, rotation, mesh
 picking, anatomy descriptions, learner-progress preservation, route cleanup,
 mobile layout, reduced motion and fallback behavior. See
 [MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md) for anatomical and rendering choices.
+
+## Antagonistic elbow movement activity
+
+Run `python3 _dev-tools/verify-arm-lab.py` for the anatomical elbow animation and
+three discovery challenges. It verifies rigid bones, tendon lengths and physical
+attachments, direction-based activation, challenge rewards, saved-progress
+preservation, mobile layout, reduced motion and the interactive SVG fallback.
+See [ARM-LAB.md](ARM-LAB.md) for the rig and scientific assumptions.

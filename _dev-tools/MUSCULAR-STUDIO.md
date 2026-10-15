@@ -43,7 +43,7 @@ motion. Auto rotation starts off; it can be deliberately enabled. If WebGL or a
 model download fails, a render of the same covered mannequin replaces the canvas,
 and all six tabs, 23 anatomy descriptions and attachment notes remain usable.
 The matching HTML entry points and offline worker reference versioned modules;
-service worker v18 refreshes the shell.
+offline shell versions advance with each release.
 
 Run `python3 _dev-tools/verify-muscle-studio.py` for functional, geometry, garment
 coverage, progress preservation, mobile, reduced-motion and fallback checks.

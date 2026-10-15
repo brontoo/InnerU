@@ -17,3 +17,13 @@ reconstructions. See `muscle-model.js` and `_dev-tools/MUSCULAR-STUDIO.md`.
 
 These adapted model assets and `classroom-model.webp` (rendered from the same 3D
 model) are distributed under CC BY-SA 2.1 Japan. Changes are described above.
+
+## Elbow movement activity
+
+`movement-arm.glb` extracts the left clavicle, scapula, humerus, radius and ulna,
+two biceps-brachii heads and three triceps-brachii heads from the same existing
+BodyParts3D atlas assets. Transforms are baked into a local elbow coordinate
+system, and distal muscle tips are trimmed for reconstructed tendon routes.
+Procedural skinning, tendons, movement cues and the interactive SVG are original
+teaching adaptations. These adapted anatomy assets remain under CC BY-SA 2.1
+Japan. The reproducible extraction script is `_dev-tools/build-arm-asset.py`.

@@ -11,6 +11,12 @@ hips and upper thighs in every view, including covered-region selection. A rende
 of the same mannequin and all anatomy descriptions remain available without
 WebGL. See [_dev-tools/MUSCULAR-STUDIO.md](_dev-tools/MUSCULAR-STUDIO.md).
 
+The muscular foundation also includes a detailed **animated elbow lab**: real arm
+bones, two biceps heads, three triceps heads, fixed-length tendon routes, and three
+open discovery challenges. Bend or straighten with a slider, pause the movement,
+and examine the attachments. Its discovery stars do not alter saved lesson XP.
+See [_dev-tools/ARM-LAB.md](_dev-tools/ARM-LAB.md).
+
 Six worlds (one per body system) + a final mission that ties them together, a
 spaced-practice review system, classroom tools for the teacher, and an offline copy
 for weak wifi.
