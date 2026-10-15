@@ -120,7 +120,7 @@ try:
   for i,text in enumerate(boss):p.locator(f'[data-q="boss-{i}"] [data-answer]').filter(has_text=re.compile('^'+re.escape(text)+'$')).click()
   check(p.evaluate('state.circ.boss&&state.xp===905'),'transport crisis retains all rewards and the 905 XP world maximum')
   go(p,'circulatory/5');solve_lab(p,5);check(p.evaluate('state.xp')==905,'replaying an illustrated lab never duplicates XP')
-  p.reload();p.wait_for_selector('#circ-lab');check(p.evaluate('state.circ.mastery&&state.circ.boss&&state.xp===905'),'reload preserves all mission, mastery and crisis progress')
+  p.reload(wait_until='domcontentloaded');p.wait_for_selector('#circ-lab');check(p.evaluate('state.circ.mastery&&state.circ.boss&&state.xp===905'),'reload preserves all mission, mastery and crisis progress')
   for width in [768,390,320]:
    p.set_viewport_size({'width':width,'height':844});go(p,'circulatory');p.wait_for_selector('.ca-card-art')
    check(p.evaluate('document.documentElement.scrollWidth<=innerWidth'),f'mission cards fit a {width}px viewport')

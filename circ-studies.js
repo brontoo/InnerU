@@ -66,7 +66,8 @@
     dialog.addEventListener('click',ev=>{if(ev.target!==dialog)return;const r=dialog.getBoundingClientRect();if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)dialog.close();},{signal});
     const visible=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('ca-in-view',e.isIntersecting)),{rootMargin:'70px'});root.querySelectorAll('.ca-card-art,.ca-study,.ca-process').forEach(el=>visible.observe(el));
     document.addEventListener('visibilitychange',()=>root.classList.toggle('ca-hidden',document.hidden),{signal});const removal=new MutationObserver(()=>{if(!root.isConnected)dispose();});removal.observe(document.getElementById('app'),{childList:true});
-    function dispose(){if(dead)return;dead=true;controller.abort();preferences.disconnect();visible.disconnect();removal.disconnect();if(dialog.open)dialog.close();}
+    const routeCleanup=window.InneruCircRoute.mount(root);
+    function dispose(){if(dead)return;dead=true;routeCleanup();controller.abort();preferences.disconnect();visible.disconnect();removal.disconnect();if(dialog.open)dialog.close();}
     disposeCurrent=dispose;
     return {select:index=>select(root.querySelector('.circ-lab .ca-study'),index),dispose,signal};
   }

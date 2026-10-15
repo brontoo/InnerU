@@ -72,3 +72,46 @@ final challenges, motion settings, 768/390/320px layouts, timer/route cleanup,
 neighboring worlds and every offline shell URL. The server shuts down on success
 or failure. `verify-respiratory-activities.py` covers the neighboring respiratory
 world and its previous interactive ventilation update.
+
+## Animated science overview
+
+`circ-route-quest.js` and `circ-route-quest.css` replace the former text-box
+`circMap()` in every mission's **Trace the science** panel and both final pages.
+The overview reuses the original anatomical lung and muscle studies from plate 4
+and the detailed four-chamber heart from plate 3. SVG viewports crop the original
+images without changing their files. Wide and portrait layouts preserve each
+specimen's proportions and locate the four chamber controls on the same landmarks.
+
+Eight directed paths form one continuous closed physiological route: systemic
+veins/venae cavae → right atrium/right ventricle → pulmonary arteries → lung
+capillaries → pulmonary veins → left atrium/left ventricle → aorta/body arteries
+→ body capillaries → systemic veins. The pulmonary outflow follows the ventricular
+outflow tract, separating it from venous return. Paths have no crossings that
+would suggest a shortcut or shunt. Pulmonary and systemic focus controls fade the
+other loop; selecting its anatomy reveals the full view again.
+
+The red-cell courier and ambient cells remain red in both circuits. The courier's
+oxygen load increases at lung capillaries and decreases at tissue capillaries;
+explicit O2/CO2 exchange labels show the opposite directions at the two sites.
+Four chamber controls, four vessel controls, two capillary-bed controls and a
+keyboard-accessible select menu synchronize the highlighted structure, courier
+position and explanation. Labels use the patient's right/left in an anterior view.
+Routes, size, speed and cargo icons are labeled schematic rather than clinical
+measurements or molecular-scale anatomy.
+
+Follow a red cell plays one full eight-checkpoint practice journey. Pause holds
+the courier, next/checkpoint controls support manual exploration, and reset/replay
+only change local practice state. Matching play/pause and next controls beside the
+diagram keep the animation usable on phones without scrolling to the coach.
+A local discovery badge never writes XP, lab
+credit, question credit or mission progress. Map motion follows its own pause,
+the existing illustration pause, site motion settings, reduced-motion preferences,
+viewport visibility and document visibility. Leaving the page cancels animation
+frames and disconnects observers and listeners.
+
+Run `python3 _dev-tools/verify-circulation-route.py` for route continuity and
+non-crossing geometry in wide/portrait views, all selections, gas exchange and
+oxygen loading, full clock-controlled playback, pause/replay, motion preferences,
+keyboard access, mobile hit targets, storage preservation and route cleanup.
+`verify-circulatory-art.py` still checks the complete seven-mission and final
+learning flows, original rewards, all galleries and all offline shell assets.
