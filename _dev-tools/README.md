@@ -75,3 +75,10 @@ Run `python3 _dev-tools/verify-respiratory-cards.py` to exercise the seven anato
 guides, structure selection, motion controls, mobile layouts and existing mission
 gates and rewards. See [RESPIRATORY-CARD-ART.md](RESPIRATORY-CARD-ART.md) for the
 anatomical subjects and presentation behavior.
+
+## Respiratory illustrated activities
+
+Run `python3 _dev-tools/verify-respiratory-activities.py` to complete all six labs,
+18 science checks and eight final stages, verify scientific process directions,
+breathing behavior, rewards, isolated preview mode, mobile layouts and cleanup.
+See [RESPIRATORY-ACTIVITIES.md](RESPIRATORY-ACTIVITIES.md) for the activity coverage.

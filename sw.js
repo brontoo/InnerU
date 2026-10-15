@@ -7,16 +7,16 @@
      * large immutable assets (3D models, images, fonts): stale-while-revalidate
    Bump VERSION when the shell changes so old caches are dropped.
    ========================================================================== */
-const VERSION = 'inneru-v21';
+const VERSION = 'inneru-v22';
 const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './muscle.css?v=arm-team-1', './muscle-learning.css', './muscle-pair.css?v=arm-team-1', './muscle-studio.css?v=muscle-studio-1',
-  './body-atlas.css', './respiratory.css', './resp-map-art.css?v=resp-anatomy-1', './integumentary.css?v=dermis-anatomy-4', './integ-map-art.css?v=skin-card-art-5', './integ-activities.css?v=skin-quests-6', './excretory.css?v=renal-layout-4', './exc-map-art.css',
+  './body-atlas.css', './respiratory.css', './resp-activities.css?v=resp-quests-2', './resp-map-art.css?v=resp-anatomy-1', './integumentary.css?v=dermis-anatomy-4', './integ-map-art.css?v=skin-card-art-5', './integ-activities.css?v=skin-quests-6', './excretory.css?v=renal-layout-4', './exc-map-art.css',
   './circulatory.css', './circ-map-art.css', './capstone.css', './skeletal-map-art.css?v=skeletal-studies-1', './skeletal-course.css?v=framework-path-1', './teacher.css', './review.css', './habit.css', './glossary.css',
   './content-skeletal.js', './app.js?v=framework-path-1', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circulatory.js', './circ-map-art.js',
   './skeletal-map-art.js?v=framework-path-1', './skeletal-activities.js?v=framework-path-1', './skeletal-course.js?v=framework-path-1', './rich-pages.js?v=skeletal-studies-1', './muscle-visuals.js', './muscle-pair.js?v=arm-team-1', './muscle-pair-view.js?v=arm-team-1', './muscle-pair-model.js?v=arm-team-1', './muscle-learning.js?v=arm-team-1', './muscle-atlas-ui.js?v=muscle-studio-1', './muscle.js?v=muscle-studio-1', './muscle-explorer.js?v=muscle-studio-1', './muscle-model.js?v=muscle-studio-1',
-  './circulatory-integration.js', './respiratory.js', './resp-map-art.js?v=resp-anatomy-1', './integ-activities.js?v=skin-quests-6', './integumentary.js?v=skin-quests-6', './skin-explorer.js?v=dermis-anatomy-4', './skin-model.js?v=dermis-anatomy-4', './integ-map-art.js?v=skin-card-art-5', './excretory.js?v=renal-cutaway-5', './excretory-explorer.js?v=renal-cutaway-5', './excretory-model.js?v=renal-anatomy-2', './exc-map-art.js',
-  './capstone.js', './a11y.js', './teacher.js', './pwa.js', './review.js', './habit.js?v=framework-path-1', './muscle-force.js', './glossary.js', './speech.js', './content-skeletal.js',
+  './circulatory-integration.js', './resp-activities.js?v=resp-quests-2', './respiratory.js?v=resp-quests-2', './resp-map-art.js?v=resp-anatomy-1', './integ-activities.js?v=skin-quests-6', './integumentary.js?v=skin-quests-6', './skin-explorer.js?v=dermis-anatomy-4', './skin-model.js?v=dermis-anatomy-4', './integ-map-art.js?v=skin-card-art-5', './excretory.js?v=renal-cutaway-5', './excretory-explorer.js?v=renal-cutaway-5', './excretory-model.js?v=renal-anatomy-2', './exc-map-art.js',
+  './capstone.js', './a11y.js', './teacher.js', './pwa.js', './review.js', './habit.js?v=resp-quests-2', './muscle-force.js', './glossary.js', './speech.js', './content-skeletal.js',
   './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg'
 ];
 const ASSET_RE = /\.(glb|webp|png|jpg|jpeg|svg|woff2?|ttf)$/i;

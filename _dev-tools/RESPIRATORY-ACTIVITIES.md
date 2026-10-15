@@ -1,0 +1,56 @@
+# Illustrated respiratory activities
+
+`resp-activities.js` and `resp-activities.css` provide the six mission interiors.
+The existing detailed mission studies are reused at full resolution, with new
+original muscle/mitochondrion and mucociliary-epithelium studies in
+`assets/respiratory-activities/`. SVG viewports clip individual anatomical regions
+without changing the source pictures. Every one of the 18 mission questions and
+eight final challenge stages has its own matching anatomical clue.
+
+The investigations now require small science decisions instead of awarding the
+lab merely for opening each tab:
+
+- Mission 1: distinguish ventilation, external exchange and cellular respiration
+  through three different illustrations and process channels.
+- Mission 2: arrange seven airway landmarks with drag or arrow controls, then
+  connect mucus trapping with ciliary clearance toward the throat.
+- Mission 3: select the higher partial-pressure side for each gas and release it
+  in the correct direction. A thicker barrier slows the qualitative animation.
+- Mission 4: compare inhalation/exhalation anatomy, control a moving diaphragm
+  schematic and predict pressure changes. The original two bonus goals remain.
+- Mission 5: connect both gases at pulmonary and tissue capillaries. Rest/exercise
+  controls illustrate changing transport demand.
+- Mission 6: match four affected tissues to location and functional consequence.
+
+Process animations are labeled schematic channels outside the anatomical images.
+They do not stretch tissue or imply measured molecular speeds. Oxygen and carbon
+dioxide have explicit labels and opposite directions; assistive descriptions use
+the same direction as the visible arrows. The breathing illustration moves the
+diaphragm dome and lung silhouette together. Transient negative pressure accompanies
+increasing volume, positive pressure accompanies decreasing volume, and a held pose
+returns to zero alveolar–atmospheric pressure difference with no airflow. Numerical
+values are illustrative, not physiological measurements. Breathing depth/rate and
+the two existing bonus reward IDs remain available. Automatic playback stops on
+pause, reduced motion, document hiding and route removal.
+
+The underlying mission IDs, checks, review IDs, reward IDs and System Key retain
+their meanings. Previously earned lab credit is preserved. Six missions award 396
+XP, two optional breathing bonuses award 20, and the final eight stages plus key
+award 114: 530 XP maximum for this world. New station ticks do not add extra XP.
+The lesson now uses partial-pressure wording and correctly identifies smoking as
+the leading preventable lung-cancer cause, without claiming vaping is an established
+main lung-cancer cause.
+
+All content can be browsed through `#respiratory?preview=1`, mission preview URLs
+and `#respiratory/mastery?preview=1`. Preview steps, weak concepts and completions
+live in a separate in-memory object. Persistence and reward wrappers skip writes;
+the habit layer also recognizes respiratory preview URLs. Completion links retain
+preview mode and never claim a real System Key. Expedition prerequisites still
+apply outside preview.
+
+Run `python3 _dev-tools/verify-respiratory-activities.py` for the complete mission
+and final-stage learning flow, reward/reload behavior, all preview interactions,
+gas direction, barrier effect, breathing pressure/hold behavior, keyboard/motion
+controls, 768/390/320px layouts, cleanup, neighboring worlds and offline shell URLs.
+Run `python3 _dev-tools/verify-respiratory-cards.py` for the existing gallery
+regression. Both use isolated Chromium profiles and stop their own servers.

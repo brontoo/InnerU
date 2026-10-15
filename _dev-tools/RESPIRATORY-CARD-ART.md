@@ -23,7 +23,9 @@ The airway route, diffusion directions, partial-pressure gradients, hemoglobin
 carriage and quiet breathing are explained outside the images. The patient’s right
 is on the viewer’s left in anterior organ views. The affected-tissue studies
 describe mechanisms and do not diagnose an individual. Existing lessons, questions,
-rewards, progression gates and the respiratory 3D studio are unchanged.
+rewards, progression gates and the respiratory 3D studio retain their original
+IDs. Mission interiors are now illustrated separately; see
+[RESPIRATORY-ACTIVITIES.md](RESPIRATORY-ACTIVITIES.md).
 
 `resp-map-art.js` injects artwork only on the respiratory landing board. CSS is
 scoped to `.resp-map`, since other worlds reuse `.resp-card`. Every card, including

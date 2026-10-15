@@ -79,7 +79,8 @@ try:
         page.locator('[data-resp-study="2"]').click();route(page,'respiratory/mission/1');page.wait_for_selector('.resp-lab')
         check(page.locator('.resp-study-dialog,.resp-art-tools').count()==0,'gallery and modal are disposed when entering a lesson')
         check(page.locator('.resp-question').count()==3 and page.locator('[data-lab]').count()==3,'first mission retains its interactive lab and three checks')
-        for button in page.locator('[data-lab]').all():button.click()
+        for index,button in enumerate(page.locator('[data-lab]').all()):
+            button.click();page.locator(f'[data-ra-predict="{index}"]').click()
         for question in page.locator('.resp-question').all():
             for button in question.locator('[data-choice]').all():
                 button.click()
@@ -87,7 +88,7 @@ try:
         check(page.evaluate('state.respiratory.done.includes(1)') and page.evaluate('state.xp')==66,'existing investigation, quiz rewards and mission completion still work')
         route(page,'respiratory');gallery(page)
         check(page.locator('.resp-art-tools').count()==1 and page.locator('.resp-card-art').count()==7,'returning to the board never duplicates gallery controls or artwork')
-        check(page.locator('.resp-card').nth(1).locator(':scope > a').get_attribute('href')=='#respiratory/mission/2','completion unlocks the next mission through its original link')
+        check(page.locator('.resp-card').nth(1).locator(':scope > a.btn').get_attribute('href')=='#respiratory/mission/2','completion unlocks the next mission through its original link')
         snapshot=stored(page);page.locator('[data-resp-study="5"]').click();page.keyboard.press('Escape')
         check(stored(page)==snapshot,'studying anatomy also preserves existing earned progress')
         # Verify the final challenge gate/link with fully earned prerequisite flags.
@@ -103,7 +104,7 @@ try:
         assets=sorted((ROOT/'assets/respiratory-missions').glob('*.webp'))
         check(len(assets)==7 and all(Image.open(f).size==(1536,1024) for f in assets),'all seven deployed illustrations retain full 1536 × 1024 resolution')
         check(sum(f.stat().st_size for f in assets)<2_000_000,'seven optimized illustrations total less than 2 MB')
-        shell=page.evaluate("async()=>{const t=await(await fetch('sw.js')).text();return [...t.match(/const SHELL = \[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map(x=>x[1]);}")
+        shell=page.evaluate(r"async()=>{const t=await(await fetch('sw.js')).text();return [...t.match(/const SHELL = \[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map(x=>x[1]);}")
         for path in shell:
             assert page.request.get(BASE.split('?')[0]+path.removeprefix('./')).status==200,path
         check(True,f'all {len(shell)} offline shell URLs resolve after the cache update')
