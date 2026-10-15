@@ -222,7 +222,7 @@ try:
         page.locator('.skin-explorer').screenshot(path='/tmp/inneru-skin-desktop.png')
 
         page.goto(BASE+'#integumentary/mission/1')
-        page.wait_for_selector('.integ-lab-visual')
+        page.wait_for_selector('[data-quest]')
         check(page.locator('.resp-question').count()==3, 'integumentary lesson and checks still render')
         page.wait_for_function('!window.inneruSkinExplorerState')
         check(True, 'leaving the studio disposes its renderer and animation loop')

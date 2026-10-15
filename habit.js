@@ -11,6 +11,10 @@
   const DAY = 86400000;
   const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   const yesterday = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 - DAY).toISOString().slice(0, 10);
+  const isWorldPreview = () => {
+    const [path, query = ''] = location.hash.slice(1).split('?');
+    return ['excretory', 'integumentary'].includes(path.split('/')[0]) && new URLSearchParams(query).get('preview') === '1';
+  };
 
   function data() {
     if (!state.habit || typeof state.habit !== 'object') state.habit = {};
@@ -116,7 +120,7 @@
     renderChip();
     const hash = (location.hash.slice(1) || 'home').split('/')[0];
     if (hash === 'review' || hash === 'teacher') return;
-    if (location.hash.startsWith('#excretory') && new URLSearchParams(location.hash.split('?')[1] || '').get('preview') === '1') return;
+    if (isWorldPreview()) return;
     const main = document.getElementById('main');
     if (!main) return;
     const html = banner();
@@ -136,7 +140,7 @@
   route = function () {
     const hash = location.hash.slice(1);
     /* opening a learning page counts as a day of work, and must be persisted */
-    const preview = hash.startsWith('excretory') && new URLSearchParams(hash.split('?')[1] || '').get('preview') === '1';
+    const preview = isWorldPreview();
     if (!preview && (hash.startsWith('mission/') || hash.includes('mission/') || hash === 'review' || hash === 'daily')) save();
     previousRoute();
   };
