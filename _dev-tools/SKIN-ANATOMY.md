@@ -50,6 +50,28 @@ hair/glands and sensation/supply. Eleven structures can be selected by name,
 on-model label or actual mesh picking. Selection retains opaque natural color
 and a teal outline while other anatomy becomes transparent. Focus, front/back,
 zoom, rotation, label visibility and reset controls operate on the live model.
+Selecting **Dermis** opens an anatomical assembly: appendages, vascular routes,
+nerves and receptors retain their natural opaque materials while the two
+connective-tissue regions become translucent. Epidermis and subcutis fade.
+The tissue-matrix slider adjusts this transparency without changing the
+embedded anatomy. Selecting other primary structures retains ordinary isolation.
+
+The dermis inventory independently inspects papillary and reticular tissue,
+collagen bundles, elastic fibers, fibroblasts, mast cells, macrophages,
+capillary loops, vascular plexuses, lymphatic vessels and free nerve endings.
+Collagen bundles now occupy the interior volume and both cut faces. A finer
+branching elastic network crosses them. Fibroblasts have elongated bodies,
+processes and nuclei; mast cells include illustrative granules, and macrophages
+have irregular outlines. A representative-cell close-up uses actual model
+coordinates for each cell family.
+
+Lymphatic routes are green, begin blindly in the dermis and converge on a
+collector with illustrative valve leaflets. The deep vascular network lies near
+the dermis–subcutis junction, with connecting branches and a side-face network.
+The existing follicle, glands, arrector pili and hair-root/pressure sensory
+examples remain part of the assembly. The inventory represents the main
+structures of a hairy-skin teaching specimen; glabrous-skin-specific structures
+are not inserted into it.
 Four detail lenses magnify epidermal cells, collagen, follicle sheaths and
 adipose cells. These remain rotatable and retain structure isolation. Lens
 views use natural materials without outlining every microscopic cell.
@@ -74,8 +96,27 @@ relative layer thickness, fat placement and connected physiological routes.
 Geometry checks also cover cellular relief, adipose depth, side-face collagen
 and distinct follicular surfaces; close-up controls are exercised on desktop
 and mobile.
+Additional checks require real geometry for every dermal component, a shared
+papillary/reticular boundary, collagen within the volume and lymphatics contained
+inside the dermal compartment. They exercise the inventory, cell close-ups,
+matrix transparency, retained embedded anatomy, keyboard operation and fallback.
 It reads the WebGL framebuffer to check visible selection transparency, then
 exercises all structures, all views, mesh picking, camera controls, separation,
 animations, reduced motion, mobile layout, fallback, cleanup and progress
 isolation. Screenshots are written to `/tmp/inneru-skin-desktop.png` and
 `/tmp/inneru-skin-mobile.png`.
+
+## Mission illustrations
+
+Seven original medical illustrations in `assets/integ-missions/` replace the
+small schematic card drawings. Each image supports its own lesson: integrated
+skin tissues, epidermal renewal, appendages, thermoregulation, sensory anatomy,
+healing, and the final synthesis. Image generation creates the artwork; WebP
+encoding preserves the full original composition for delivery. No third-party
+reference illustration is reproduced.
+
+Card artwork stays in full color at every progression state. A keyboard-accessible
+native dialog opens a larger version with a scientific explanation, independently
+of mission locks. Art uses `object-fit: contain` to keep anatomy inside the frame,
+with meaningful alternative text and lazy loading. Relative dimensions and the
+magnified cellular/receptor details are teaching reconstructions, not to scale.

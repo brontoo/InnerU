@@ -44,6 +44,19 @@
 .skin-find b{display:block;margin-bottom:5px;color:#e7c2ac;font-size:.7rem;font-weight:600}
 .skin-explorer .skin-find p{font-size:.75rem;color:#bad4d5}
 .skin-lesson-link{display:block;color:#9fc7c8;font-size:.68rem;margin-top:15px}
+.skin-dermis-explorer{padding:17px;border:1px solid #c2d5c957;background:#f3eee309;border-radius:14px}
+.skin-dermis-heading{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.skin-dermis-explorer>p{font-size:.73rem;line-height:1.65;color:#c6d6d5;margin:12px 0}
+.skin-dermis-explorer fieldset{border:0;padding:0;margin:14px 0}
+.skin-dermis-explorer legend{font-size:.65rem;letter-spacing:.035em;color:#e4c4ac;margin-bottom:7px;padding:0}
+.skin-dermis-explorer fieldset>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.skin-explorer .skin-dermis-explorer button{font-size:.69rem;line-height:1.35;font-weight:500;min-height:37px;padding:8px;background:#ffffff08;border-color:#91b6ac65}
+.skin-explorer .skin-dermis-explorer button[aria-pressed=true]{background:#d9ece2;color:#21544d;outline:0;border-color:#c4e5d3}
+.skin-explorer .skin-dermis-heading button{min-height:32px;padding:6px 10px;font-size:.66rem}
+.skin-matrix-label{display:flex;justify-content:space-between;gap:12px;font-size:.73rem;color:#e3e4d9;border-top:1px solid #ffffff20;padding-top:13px}
+.skin-matrix-label output{color:#e9c6a6;font-variant-numeric:tabular-nums}
+.skin-dermis-explorer input{width:100%;margin:15px 0 8px;accent-color:#b4d7c8;cursor:pointer}
+.skin-matrix-scale{display:flex;justify-content:space-between;font-size:.60rem;color:#b9cfcd}
 .skin-detail-lenses{padding:16px;border:1px solid #c7d7d13b;background:#c1ddd207;border-radius:13px}
 .skin-detail-lenses p{font-size:.74rem;color:#bdcfd1;margin:7px 0 12px}
 .skin-detail-lenses>div{display:grid;grid-template-columns:1fr 1fr;gap:7px}
@@ -58,7 +71,7 @@
 .skin-legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:.64rem;color:#bbcdd1;line-height:1.5}
 .skin-legend span{display:inline-flex;align-items:center;gap:6px}
 .skin-legend i{display:inline-block;width:7px;height:7px;border-radius:50%}
-.skin-key-artery{background:#da7e80}.skin-key-vein{background:#7aaac3}.skin-key-nerve{background:#dfc783}
+.skin-key-artery{background:#da7e80}.skin-key-vein{background:#7aaac3}.skin-key-nerve{background:#dfc783}.skin-key-lymph{background:#a3ba91}
 .skin-source-note{font-size:.68rem;color:#bdced1;line-height:1.65;border-top:1px solid #ffffff20;padding-top:17px;margin:22px 0 0;max-width:1050px}
 .skin-layer-control{margin-top:16px;padding:15px;border-radius:12px;background:#ffffff09;border:1px solid #ffffff22}
 .skin-layer-control label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.77rem;color:#e1eae6}

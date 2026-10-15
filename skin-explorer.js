@@ -1,6 +1,6 @@
 import * as THREE from "./assets/three/three.module.js";
 import { OrbitControls } from "./assets/three/OrbitControls.js";
-import { createSkinModel, SKIN_STRUCTURES } from "./skin-model.js?v=skin-detail-3";
+import { createSkinModel, SKIN_STRUCTURES, DERMIS_PARTS, DERMIS_EMBEDDED } from "./skin-model.js?v=dermis-anatomy-4";
 
 const MODES = {
   cutaway: { parts:SKIN_STRUCTURES.map(p=>p.name), title:"Connected skin cutaway", tip:"The front is opened to expose structures in their tissue layers. Choose a label or tap the anatomy." },
@@ -9,6 +9,7 @@ const MODES = {
   sensation: { parts:["Nerves","Touch receptors","Pressure receptor","Blood vessels"], title:"Sensation & supply", tip:"Compare touch-sensitive endings around a hair follicle with the deeper pressure receptor, then follow a sensory nerve." },
 };
 const ANCHORS={"Epidermis":[-1.22,1.23,.65],"Dermis":[-1.28,.42,.48],"Subcutaneous layer":[-.98,-1.00,.59],"Hair follicle":[-.75,.55,.76],"Sweat gland":[.49,-.30,.76],"Touch receptors":[-.74,.43,.77],"Pressure receptor":[1.05,-.57,.77],"Nerves":[.14,.36,.64],"Blood vessels":[-.17,-.80,.74],"Sebaceous gland":[-.43,.65,.73],"Arrector pili":[-.29,.63,.71]};
+Object.assign(ANCHORS,{"Papillary dermis":[-1.11,.94,.51],"Reticular dermis":[1.13,.1,.51],"Collagen bundles":[-.5,.30,.53],"Elastic fibers":[.3,.40,.56],"Fibroblasts":[.3,.2,.6],"Mast cells":[-.2,.4,.62],"Macrophages":[.6,.2,.63],"Capillary loops":[.77,1.07,.52],"Vascular plexuses":[.9,.70,.57],"Lymphatic vessels":[1.08,.15,.62],"Free nerve endings":[.37,.90,.59]});
 const DETAIL_LENSES={
   cells:{title:"Epidermal cells",part:"Epidermis",center:[.05,1.16,.65],size:[.87,.43,.48]},
   collagen:{title:"Collagen bundles",part:"Dermis",center:[.50,.20,.48],size:[.9,.82,.55]},
@@ -24,7 +25,7 @@ export function mountSkinExplorer(root) {
   const labelLayer=root.querySelector(".skin-hotspots"), selectionBadge=root.querySelector(".skin-selection-badge"), fallbackImage=root.querySelector(".skin-fallback");
   const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
   let renderer,scene,camera,controls,model,resize,mutation,intersection,frame,environment,ground;
-  let selection=null,mode="cutaway",process=null,detail=null,separation=.55,spin=false,labels=true,playing=!reduced,disposed=false,visible=true,cameraGoal=null,lastTime=0,elapsed=0;
+  let selection=null,mode="cutaway",process=null,detail=null,dermisPart=null,matrixOpacity=.24,separation=.55,spin=false,labels=true,playing=!reduced,disposed=false,visible=true,cameraGoal=null,lastTime=0,elapsed=0;
   let particles=[],outlines=[],labelButtons=[],needsRender=true;
   const ghostMaterial=new THREE.MeshBasicMaterial({color:0x8c8680,transparent:true,opacity:.045,depthWrite:false,side:THREE.FrontSide});
   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -43,12 +44,14 @@ export function mountSkinExplorer(root) {
     const tan=Math.tan(THREE.MathUtils.degToRad(camera.fov)/2);
     const distance=Math.max(size.y/(2*tan),size.x/(2*tan*camera.aspect))*1.20+size.z*.55;
     const dir=orientation==="front"?new THREE.Vector3(.05,.04,1):orientation==="back"?new THREE.Vector3(-.35,.16,-1):new THREE.Vector3(.48,.20,1);
-    cameraGoal={target:center,position:center.clone().add(dir.normalize().multiplyScalar(Math.max(close?1.1:3,distance)))};
+    cameraGoal={target:center,position:center.clone().add(dir.normalize().multiplyScalar(Math.max(close?.8:3,distance)))};
     if(reduced){controls.target.copy(cameraGoal.target);camera.position.copy(cameraGoal.position);cameraGoal=null;controls.update();}
   }
-  function selectedBounds(){const box=new THREE.Box3();model?.meshes.filter(m=>m.userData.structure===selection).forEach(m=>box.expandByObject(m));return box;}
+  function isDermal(mesh){return mesh.userData.structure==="Dermis"||DERMIS_EMBEDDED.includes(mesh.userData.structure);}
+  function matchesDermis(mesh,name){if(!name)return isDermal(mesh);if(name==="Papillary dermis")return mesh.userData.dermisRegion==="papillary";if(name==="Reticular dermis")return isDermal(mesh)&&(mesh.userData.dermisRegion||"reticular")==="reticular";return mesh.userData.dermisPart===name;}
+  function selectedBounds(){const box=new THREE.Box3();model?.meshes.filter(m=>selection==="Dermis"?matchesDermis(m,dermisPart):m.userData.structure===selection).forEach(m=>box.expandByObject(m));return box;}
   function allBounds(){const box=new THREE.Box3();model.meshes.filter(m=>m.visible).forEach(m=>box.expandByObject(m));return box;}
-  function viewBounds(){const lens=DETAIL_LENSES[detail];return lens?new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...lens.center),new THREE.Vector3(...lens.size)):selection?selectedBounds():allBounds();}
+  function viewBounds(){if(detail==="dermis-cell"&&model?.componentFocus[dermisPart])return new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...model.componentFocus[dermisPart]),new THREE.Vector3(.34,.27,.30));const lens=DETAIL_LENSES[detail];return lens?new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...lens.center),new THREE.Vector3(...lens.size)):selection?selectedBounds():allBounds();}
 
   function applyVisual(){
     if(!model)return;
@@ -58,40 +61,56 @@ export function mountSkinExplorer(root) {
     model.setSeparation(mode==="layers"?separation:0);
     model.meshes.forEach(mesh=>{
       const part=mesh.userData.structure;
-      mesh.visible=mode!=="layers"||["Epidermis","Dermis","Subcutaneous layer"].includes(part);
-      const active=selection?part===selection:primary.includes(part);
+      mesh.visible=mode!=="layers"||selection==="Dermis"||["Epidermis","Dermis","Subcutaneous layer"].includes(part);
+      const active=selection==="Dermis"?matchesDermis(mesh,dermisPart):selection?part===selection:primary.includes(part);
       if(!mesh.userData.originalMaterial)mesh.userData.originalMaterial=mesh.material;
       mesh.material=active?mesh.userData.originalMaterial:ghostMaterial;
+      if(selection==="Dermis"&&active&&mesh.userData.tissueShell){
+        if(!mesh.userData.matrixMaterial){const m=mesh.userData.originalMaterial.clone();m.transparent=true;m.depthWrite=false;m.side=THREE.FrontSide;m.color.setHex(mesh.userData.dermisRegion==="papillary"?0xf1c5b8:0xf0d7bd);mesh.userData.matrixMaterial=m;}
+        mesh.material=mesh.userData.matrixMaterial;mesh.material.opacity=matrixOpacity;
+      }
       if(active){mesh.material.emissive.setHex(selection?0x174f49:0);mesh.material.emissiveIntensity=selection?.12:0;}
-      mesh.castShadow=active;mesh.receiveShadow=active;mesh.renderOrder=active?2:0;
-      if(selection&&active&&mesh.visible&&!detail){const outline=new THREE.Mesh(mesh.geometry,outlineMaterial);outline.position.copy(mesh.position);outline.quaternion.copy(mesh.quaternion);outline.scale.copy(mesh.scale);mesh.parent.add(outline);outlines.push(outline);}
+      mesh.castShadow=active&&mesh.material.opacity>=.95;mesh.receiveShadow=active;mesh.renderOrder=active?2:0;
+      if(selection&&selection!=="Dermis"&&active&&mesh.visible&&!detail){const outline=new THREE.Mesh(mesh.geometry,outlineMaterial);outline.position.copy(mesh.position);outline.quaternion.copy(mesh.quaternion);outline.scale.copy(mesh.scale);mesh.parent.add(outline);outlines.push(outline);}
     });
     if(ground)ground.position.y=mode==="layers"?-1.31-separation*.44:-1.31;
     updateLabels();
   }
   function explain(){
-    const part=SKIN_STRUCTURES.find(p=>p.name===selection);
+    const part=selection==="Dermis"&&dermisPart?DERMIS_PARTS.find(p=>p.name===dermisPart):SKIN_STRUCTURES.find(p=>p.name===selection);
     selectionBadge.hidden=!selection&&!process;
-    selectionBadge.textContent=selection?"Selected · "+selection:process==="cooling"?"Cooling · sweat & circulation":"Touch · sensory signal";
-    stage.setAttribute("aria-label",selection?`${selection} selected. Other structures are transparent. Arrow keys rotate; plus and minus zoom.`:"Rotatable skin cutaway. Arrow keys rotate; plus and minus zoom. Choose a structure to examine it.");
+    selectionBadge.textContent=selection==="Dermis"?dermisPart?"Dermis · "+dermisPart:"Dermis · embedded anatomy":selection?"Selected · "+selection:process==="cooling"?"Cooling · sweat & circulation":"Touch · sensory signal";
+    stage.setAttribute("aria-label",selection==="Dermis"?`${dermisPart||"Whole dermis with embedded structures"} selected. Tissue matrix is translucent. Arrow keys rotate; plus and minus zoom.`:selection?`${selection} selected. Other structures are transparent. Arrow keys rotate; plus and minus zoom.`:"Rotatable skin cutaway. Arrow keys rotate; plus and minus zoom. Choose a structure to examine it.");
+    root.querySelector(".skin-dermis-explorer").hidden=selection!=="Dermis";
+    const cellButton=root.querySelector("[data-dermis-cell-focus]");cellButton.hidden=!["Fibroblasts","Mast cells","Macrophages"].includes(dermisPart);cellButton.disabled=!renderer;
+    root.querySelectorAll("[data-dermis-part]").forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.dermisPart||null)===dermisPart)));
     root.querySelectorAll("[data-part]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.part===selection)));
     root.querySelector('[data-skin-action="focus"]').disabled=!selection||!renderer;
     root.querySelector('[data-skin-action="clear"]').disabled=!selection&&!process;
-    if(part){info.innerHTML=`<span class="skin-info-kicker">${part.location}</span><h3>${part.name}</h3><p>${part.job}</p><div class="skin-find"><b>Look closely</b><p>${part.find}</p></div><span class="skin-lesson-link">Lesson connection · Mission 0${part.lesson}</span>`;}
+    if(part){info.innerHTML=`<span class="skin-info-kicker">${part.location}</span><h3>${part.name}</h3><p>${part.job}</p><div class="skin-find"><b>Look closely</b><p>${part.find}</p></div><span class="skin-lesson-link">${part.lesson?"Lesson connection · Mission 0"+part.lesson:"DERMIS ANATOMY · enlarged for inspection"}</span>`;}
     else if(process){info.innerHTML=process==="cooling"?'<span class="skin-info-kicker">FUNCTION LAB · COOLING</span><h3>From gland to surface</h3><p>The moving cyan markers trace secretion through an eccrine coil and its duct to the surface pore. Evaporation removes heat; increased skin blood flow helps bring heat toward the surface.</p><div class="skin-find"><b>Observe</b><p>The sweat duct opens on the surface, independently of the hair follicle. Markers show a route, not its real speed.</p></div>':'<span class="skin-info-kicker">FUNCTION LAB · LIGHT TOUCH</span><h3>From receptor to nerve</h3><p>A nerve plexus around the hair root detects movement of the hair. Moving golden markers follow a sensory fiber away from the follicle toward a deeper nerve.</p><div class="skin-find"><b>Observe</b><p>The hair-root receptor and nerve are in the dermis. The signal continues toward the central nervous system beyond this cutaway.</p></div>';}
     else info.innerHTML=`<span class="skin-info-kicker">${MODES[mode].title}</span><h3>Choose a structure</h3><p>${MODES[mode].tip}</p><div class="skin-find"><b>Try the function lab</b><p>Trace the route of sweat or follow a sensory signal, then examine the structures that make it possible.</p></div>`;
   }
   function select(part){
-    const previousDetail=detail;detail=null;
+    const previousDetail=detail;detail=null;dermisPart=null;
     if(part&&!MODES[mode].parts.includes(part))setMode("cutaway");
     selection=part;process=null;clearParticles();updateProcessButtons();applyVisual();explain();
     root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));
     root.querySelector(".skin-view-name").textContent=MODES[mode].title;
-    if(previousDetail&&!part&&model)frameBounds(allBounds());
-    status.textContent=part?`${part} isolated. Choose Focus structure for a closer view, or Show all to compare.`:"Drag to rotate · scroll or pinch to zoom · tap a structure";
+    if(previousDetail&&model)frameBounds(part?selectedBounds():allBounds(),"three-quarter",!!part);
+    status.textContent=part==="Dermis"?"Dermis anatomy: follicles, glands, vessels and nerves stay visible. Choose a dermal component below to isolate it.":part?`${part} isolated. Choose Focus structure for a closer view, or Show all to compare.`:"Drag to rotate · scroll or pinch to zoom · tap a structure";
+  }
+  function selectDermal(name){
+    const wasDetail=!!detail;
+    if(selection!=="Dermis")select("Dermis");
+    dermisPart=name||null;detail=null;process=null;clearParticles();updateProcessButtons();applyVisual();explain();
+    root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));
+    root.querySelector(".skin-view-name").textContent=dermisPart||"Complete dermis anatomy";
+    if(wasDetail&&model)frameBounds(selectedBounds(),"three-quarter",true);
+    status.textContent=dermisPart?`${dermisPart} isolated within the dermis. Whole dermis restores its embedded anatomy.`:"Complete dermis anatomy restored; adjust Tissue matrix to see inside.";
   }
   function setMode(next){
-    mode=next;selection=null;process=null;detail=null;clearParticles();updateProcessButtons();
+    mode=next;selection=null;process=null;detail=null;dermisPart=null;clearParticles();updateProcessButtons();
     root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));
     root.querySelectorAll("[data-skin-mode]").forEach(b=>{const active=b.dataset.skinMode===next;b.setAttribute("aria-selected",String(active));b.tabIndex=active?0:-1;});
     root.querySelector(".skin-model-panel").setAttribute("aria-labelledby","skin-tab-"+next);
@@ -116,8 +135,8 @@ export function mountSkinExplorer(root) {
     needsRender=true;
     labelLayer.replaceChildren();labelButtons=[];
     if(!labels||detail)return;
-    const names=selection?[selection]:process==="cooling"?["Sweat gland","Blood vessels"]:process==="touch"?["Touch receptors","Nerves"]:mode==="cutaway"?["Epidermis","Hair follicle","Sweat gland","Subcutaneous layer"]:MODES[mode].parts;
-    names.forEach(name=>{const b=document.createElement("button");b.type="button";b.className="skin-hotspot";b.textContent=name;b.setAttribute("aria-label","Examine "+name);b.onclick=()=>select(name);labelLayer.append(b);labelButtons.push({button:b,name});});
+    const names=selection==="Dermis"?dermisPart?[dermisPart]:["Papillary dermis","Reticular dermis","Sweat gland","Lymphatic vessels"]:selection?[selection]:process==="cooling"?["Sweat gland","Blood vessels"]:process==="touch"?["Touch receptors","Nerves"]:mode==="cutaway"?["Epidermis","Hair follicle","Sweat gland","Subcutaneous layer"]:MODES[mode].parts;
+    names.forEach(name=>{const b=document.createElement("button");b.type="button";b.className="skin-hotspot";b.textContent=name;b.setAttribute("aria-label","Examine "+name);b.onclick=()=>DERMIS_PARTS.some(p=>p.name===name)?selectDermal(name):select(name);labelLayer.append(b);labelButtons.push({button:b,name});});
   }
   function positionLabels(){
     if(!camera)return;
@@ -134,14 +153,17 @@ export function mountSkinExplorer(root) {
   }
 
   root.querySelectorAll("[data-part]").forEach(b=>b.onclick=()=>select(b.dataset.part));
+  root.querySelectorAll("[data-dermis-part]").forEach(b=>b.onclick=()=>selectDermal(b.dataset.dermisPart));
+  root.querySelector("[data-dermis-cell-focus]").onclick=()=>{if(!model?.componentFocus[dermisPart])return;detail="dermis-cell";applyVisual();frameBounds(viewBounds(),"three-quarter",true);root.querySelector(".skin-view-name").textContent="Cell detail · "+dermisPart;status.textContent="Enlarged representative cell. Rotate or zoom to examine its body and nucleus.";};
+  root.querySelector("#skin-matrix-opacity").oninput=e=>{matrixOpacity=+e.target.value/100;root.querySelector("#skin-matrix-value").textContent=e.target.value+"%";applyVisual();};
   root.querySelectorAll("[data-skin-mode]").forEach((b,i,all)=>{
     b.onclick=()=>setMode(b.dataset.skinMode);
     b.onkeydown=e=>{let next;if(e.key==="ArrowRight")next=(i+1)%all.length;else if(e.key==="ArrowLeft")next=(i+all.length-1)%all.length;else if(e.key==="Home")next=0;else if(e.key==="End")next=all.length-1;else return;e.preventDefault();all[next].focus();setMode(all[next].dataset.skinMode);};
   });
   root.querySelectorAll("[data-skin-process]").forEach(b=>b.onclick=()=>startProcess(b.dataset.skinProcess));
   root.querySelectorAll("[data-skin-detail]").forEach(b=>b.onclick=()=>{
-    const lens=DETAIL_LENSES[b.dataset.skinDetail];setMode("cutaway");select(lens.part);detail=b.dataset.skinDetail;
-    b.setAttribute("aria-pressed","true");applyVisual();
+    const lens=DETAIL_LENSES[b.dataset.skinDetail];setMode("cutaway");select(lens.part);detail=b.dataset.skinDetail;if(detail==="collagen")dermisPart="Collagen bundles";
+    b.setAttribute("aria-pressed","true");applyVisual();explain();
     root.querySelector(".skin-view-name").textContent="Detail lens · "+lens.title;
     if(model)frameBounds(new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(...lens.center),new THREE.Vector3(...lens.size)),"three-quarter",true);
     status.textContent="Detail lens · "+lens.title+". Drag to turn the detail; Show all returns to the full cutaway.";
@@ -154,16 +176,16 @@ export function mountSkinExplorer(root) {
     else if(action==="clear")select(null);
     else if(action==="play"){playing=!playing;b.setAttribute("aria-pressed",String(playing));b.textContent=playing?"Pause route":"Play route";}
     else if(action==="focus"&&selection&&model){detail=null;applyVisual();root.querySelector(".skin-view-name").textContent=MODES[mode].title;root.querySelectorAll("[data-skin-detail]").forEach(b=>b.setAttribute("aria-pressed","false"));frameBounds(selectedBounds(),"three-quarter",true);}
-    else if(action==="reset"){spin=false;labels=true;separation=.55;root.querySelector("#skin-separation").value="55";root.querySelector("#skin-separation-value").textContent="55%";root.querySelector('[data-skin-action="labels"]').setAttribute("aria-pressed","true");if(controls)controls.autoRotate=false;root.querySelector('[data-skin-action="spin"]').setAttribute("aria-pressed","false");setMode("cutaway");status.textContent="Full connected cutaway restored.";}
+    else if(action==="reset"){spin=false;labels=true;separation=.55;matrixOpacity=.24;root.querySelector("#skin-matrix-opacity").value="24";root.querySelector("#skin-matrix-value").textContent="24%";root.querySelector("#skin-separation").value="55";root.querySelector("#skin-separation-value").textContent="55%";root.querySelector('[data-skin-action="labels"]').setAttribute("aria-pressed","true");if(controls)controls.autoRotate=false;root.querySelector('[data-skin-action="spin"]').setAttribute("aria-pressed","false");setMode("cutaway");status.textContent="Full connected cutaway restored.";}
     else if(camera&&model){if(action==="in"||action==="out"){cameraGoal=null;camera.position.copy(controls.target.clone().add(camera.position.clone().sub(controls.target).multiplyScalar(action==="in"?.85:1.18)));controls.update();}else frameBounds(viewBounds(),action==="front"?"front":"back",!!selection);}
   });
 
   const cleanup=()=>{
-    if(disposed)return;disposed=true;cancelAnimationFrame(frame);resize?.disconnect();mutation?.disconnect();intersection?.disconnect();controls?.dispose();clearOutlines();clearParticles();model?.meshes.forEach(m=>{if(m.userData.originalMaterial)m.material=m.userData.originalMaterial;});model?.dispose();environment?.dispose();ground?.geometry.dispose();ground?.material.dispose();outlineMaterial.dispose();ghostMaterial.dispose();renderer?.dispose();renderer?.domElement.remove();
+    if(disposed)return;disposed=true;cancelAnimationFrame(frame);resize?.disconnect();mutation?.disconnect();intersection?.disconnect();controls?.dispose();clearOutlines();clearParticles();model?.meshes.forEach(m=>{m.userData.matrixMaterial?.dispose();if(m.userData.originalMaterial)m.material=m.userData.originalMaterial;});model?.dispose();environment?.dispose();ground?.geometry.dispose();ground?.material.dispose();outlineMaterial.dispose();ghostMaterial.dispose();renderer?.dispose();renderer?.domElement.remove();
     if(window.inneruSkinExplorerState===report){delete window.inneruSkinExplorerState;delete window.inneruSkinExplorerDrawFrame;}
   };
   disposeCurrent=cleanup;
-  function report(){return {mode,selection,process,detail,separation,labels,spin,playing,canvas:!!renderer,structures:model?.meshes.map(m=>m.userData.structure),anatomy:model?.anatomy,camera:camera?.position.toArray(),target:controls?.target.toArray(),transitioning:!!cameraGoal,layerPositions:model?Object.fromEntries(Object.entries(model.layers).map(([name,layer])=>[name,layer.position.y])):null,frames:renderer?.info.render.frame,drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,particles:particles.length,particlePositions:particles.map(p=>p.mesh.position.toArray()),opacity:model?.meshes.map(m=>({part:m.userData.structure,opacity:m.material.opacity,visible:m.visible})),disposed};}
+  function report(){return {mode,selection,process,detail,dermisPart,matrixOpacity,separation,labels,spin,playing,canvas:!!renderer,structures:model?.meshes.map(m=>m.userData.structure),anatomy:model?.anatomy,camera:camera?.position.toArray(),target:controls?.target.toArray(),transitioning:!!cameraGoal,layerPositions:model?Object.fromEntries(Object.entries(model.layers).map(([name,layer])=>[name,layer.position.y])):null,frames:renderer?.info.render.frame,drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,particles:particles.length,particlePositions:particles.map(p=>p.mesh.position.toArray()),opacity:model?.meshes.map(m=>({part:m.userData.structure,component:m.userData.dermisPart||null,region:m.userData.dermisRegion||null,shell:!!m.userData.tissueShell,opacity:m.material.opacity,visible:m.visible})),disposed};}
   window.inneruSkinExplorerState=report;
   root.querySelector('[data-skin-action="play"]').setAttribute("aria-pressed",String(playing));
   root.querySelector('[data-skin-action="play"]').textContent=playing?"Pause route":"Play route";
@@ -173,6 +195,7 @@ export function mountSkinExplorer(root) {
     root.querySelector(".body-atlas-loading").hidden=true;root.querySelector(".skin-fallback-note").hidden=false;
     root.querySelectorAll("[data-skin-action]").forEach(b=>{if(b.dataset.skinAction!=="clear")b.disabled=true;});
     root.querySelector("#skin-separation").disabled=true;
+    root.querySelector("#skin-matrix-opacity").disabled=true;
     root.querySelectorAll("[data-skin-detail]").forEach(b=>b.disabled=true);
     status.textContent="Use the scientific illustration and structure buttons to continue exploring.";
   }
@@ -204,7 +227,7 @@ export function mountSkinExplorer(root) {
     let start;
     function hitAt(e){const rect=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2);ray.setFromCamera(pointer,camera);return ray.intersectObjects(model.meshes,false).find(h=>h.object.visible&&h.object.material.opacity>.2);}
     renderer.domElement.onpointerdown=e=>{start=[e.clientX,e.clientY];cameraGoal=null;};
-    renderer.domElement.onpointerup=e=>{if(!start)return;const moved=Math.hypot(e.clientX-start[0],e.clientY-start[1])>6;start=null;if(moved)return;const hit=hitAt(e);if(hit)select(hit.object.userData.structure);};
+    renderer.domElement.onpointerup=e=>{if(!start)return;const moved=Math.hypot(e.clientX-start[0],e.clientY-start[1])>6;start=null;if(moved)return;const hit=hitAt(e);if(hit){const data=hit.object.userData;if(data.dermisPart&&!data.tissueShell)selectDermal(data.dermisPart);else select(data.structure);}};
     renderer.domElement.onpointermove=e=>{if(start)return;renderer.domElement.style.cursor=hitAt(e)?"pointer":"grab";};
     renderer.domElement.onwheel=()=>{cameraGoal=null;};
     stage.onkeydown=e=>{

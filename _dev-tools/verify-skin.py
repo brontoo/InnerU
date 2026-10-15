@@ -64,27 +64,27 @@ try:
         check(page.locator('.skin-explorer canvas').count() == 1, 'one live 3D canvas')
         check(len(set(state(page)['structures'])) == 11, 'eleven anatomical structures available')
         check(page.locator('[data-skin-mode]').count() == 4, 'four anatomy views')
-        check(state(page)['drawCalls'] < 120, 'batched anatomy stays below 120 draw calls')
+        check(state(page)['drawCalls'] < 120, 'complete dermal anatomy stays below 120 draw calls')
         check(state(page)['triangles'] < 900000, 'detailed anatomy stays within the rendering budget')
 
         # Inspect the actual generated geometry, not the descriptive metadata.
         anatomy = page.evaluate("""async () => {
-            const {createSkinModel,skinJunction}=await import('./skin-model.js?v=skin-detail-3');
+            const {createSkinModel,skinJunction}=await import('./skin-model.js?v=dermis-anatomy-4');
             const THREE=await import('./assets/three/three.module.js');
             const m=createSkinModel();m.group.updateMatrixWorld(true);
             const box=name=>{const b=new THREE.Box3();m.meshes.filter(x=>x.userData.structure===name).forEach(x=>b.expandByObject(x));return {min:b.min.toArray(),max:b.max.toArray(),size:b.getSize(new THREE.Vector3()).toArray()};};
             let vascularBreaches=0,finite=true,cellVertices=0,sideFiberVertices=0;
-            const follicleColors=new Set();
-            for(const mesh of m.meshes){const a=mesh.geometry.getAttribute('position');for(let i=0;i<a.count;i++){
+            const follicleColors=new Set(),dermalComponents=new Set();let collagenVolume=0,lymphOutside=0;const papillary=new THREE.Box3(),reticular=new THREE.Box3();
+            for(const mesh of m.meshes){if(mesh.userData.dermisPart)dermalComponents.add(mesh.userData.dermisPart);if(mesh.userData.tissueShell)(mesh.userData.dermisRegion==='papillary'?papillary:reticular).expandByObject(mesh);const a=mesh.geometry.getAttribute('position');for(let i=0;i<a.count;i++){
                 const v=new THREE.Vector3().fromBufferAttribute(a,i).applyMatrix4(mesh.matrixWorld);
                 finite=finite&&Number.isFinite(v.x)&&Number.isFinite(v.y)&&Number.isFinite(v.z);
                 if(mesh.userData.structure==='Blood vessels'&&v.y>=skinJunction(v.x,v.z))vascularBreaches++;
                 if(mesh.userData.structure==='Epidermis'&&!mesh.material.map)cellVertices++;
-                if(mesh.userData.structure==='Dermis'&&v.x>1.501)sideFiberVertices++;
+                if(mesh.userData.structure==='Dermis'&&v.x>1.501)sideFiberVertices++;if(mesh.userData.dermisPart==='Collagen bundles'&&Math.abs(v.x)<1.3&&v.z<.3&&v.z>-.7&&v.y<.77)collagenVolume++;if(mesh.userData.dermisPart==='Lymphatic vessels'&&(v.y<-.59||v.y>=skinJunction(v.x,v.z)))lymphOutside++;
             }}
             m.meshes.filter(x=>x.userData.structure==='Hair follicle').forEach(x=>follicleColors.add(x.material.color.getHex()));
             const result={epidermis:box('Epidermis'),dermis:box('Dermis'),fat:box('Subcutaneous layer'),follicle:box('Hair follicle'),sweat:box('Sweat gland'),pressure:box('Pressure receptor'),vascularBreaches,finite,
-              cellVertices,sideFiberVertices,follicleColors:follicleColors.size,
+              cellVertices,sideFiberVertices,follicleColors:follicleColors.size,dermalComponents:[...dermalComponents],collagenVolume,lymphOutside,papillaryBottom:papillary.min.y,reticularTop:reticular.max.y,
               sweatStart:m.paths.sweat.getPoint(0).toArray(),sweatEnd:m.paths.sweat.getPoint(1).toArray(),touchStart:m.paths.touch.getPoint(0).toArray(),touchEnd:m.paths.touch.getPoint(1).toArray()};
             m.dispose();return result;
         }""")
@@ -100,6 +100,10 @@ try:
         check(anatomy['fat']['size'][2] > 1.8, 'adipose cells fill the depth of the stepped cutaway')
         check(anatomy['sideFiberVertices'] > 1000, 'collagen geometry continues onto the side cut face')
         check(anatomy['follicleColors'] >= 8, 'follicle includes distinct sheath, cell, shaft and bulb surfaces')
+        check(set(anatomy['dermalComponents'])=={'Papillary dermis','Reticular dermis','Collagen bundles','Elastic fibers','Fibroblasts','Mast cells','Macrophages','Capillary loops','Vascular plexuses','Lymphatic vessels','Free nerve endings'}, 'all eleven dermal components have actual geometry')
+        check(abs(anatomy['papillaryBottom']-.77)<.0001 and abs(anatomy['reticularTop']-.77)<.0001, 'papillary and reticular tissue meet at a shared boundary')
+        check(anatomy['collagenVolume']>500, 'collagen occupies the tissue volume beyond the cut faces')
+        check(anatomy['lymphOutside']==0, 'lymphatic routes remain within the dermal compartment')
 
         for mode, count in [('cutaway',11),('layers',3),('glands',4),('sensation',4)]:
             page.locator(f'[data-skin-mode="{mode}"]').click()
@@ -108,9 +112,40 @@ try:
                 name=button.get_attribute('data-part');button.click();s=state(page)
                 visible=[x for x in s['opacity'] if x['visible']]
                 check(s['selection']==name and button.get_attribute('aria-pressed')=='true', mode + ': ' + name + ' selected')
-                check(all(x['opacity']==1 if x['part']==name else x['opacity']<=.05 for x in visible), name + ': selected anatomy opaque and context transparent')
+                if name == 'Dermis':
+                    check(all((0 < x['opacity'] < .6) if x['shell'] else x['opacity']<=.05 if x['part'] in ['Epidermis','Subcutaneous layer'] else x['opacity']==1 for x in visible), 'dermis selection retains embedded anatomy and a translucent matrix')
+                else:
+                    check(all(x['opacity']==1 if x['part']==name else x['opacity']<=.05 for x in visible), name + ': selected anatomy opaque and context transparent')
                 check(page.locator('.skin-selection-badge').is_visible() and name in page.locator('.body-atlas-info h3').inner_text(), name + ': badge and science explanation agree')
 
+        reset(page)
+        page.locator('[data-part="Dermis"]').click()
+        check(page.locator('.skin-dermis-explorer').is_visible(), 'dermis anatomy inventory opens with layer selection')
+        page.locator('.body-atlas-stage').scroll_into_view_if_needed()
+        page.locator('.body-atlas-stage').screenshot(path='/tmp/inneru-dermis-complete.png')
+        components=page.locator('[data-dermis-part]').all()
+        check(len(components)==12, 'whole dermis plus eleven component controls are available')
+        for button in components:
+            name=button.get_attribute('data-dermis-part');button.click();current=state(page)
+            check(current['selection']=='Dermis' and current['dermisPart']==(name or None), 'dermal component selection: '+(name or 'Whole dermis'))
+            check(button.get_attribute('aria-pressed')=='true', 'dermal component announces selection: '+(name or 'Whole dermis'))
+            if name:
+                check(name in page.locator('.body-atlas-info h3').inner_text(), name+': specific scientific explanation')
+                check(any(x['visible'] and x['component']==name and x['opacity']>0 for x in current['opacity']), name+': real geometry is visible')
+        for name in ['Fibroblasts','Mast cells','Macrophages']:
+            page.locator(f'[data-dermis-part="{name}"]').click()
+            page.locator('[data-dermis-cell-focus]').click();settled(page)
+            check(state(page)['detail']=='dermis-cell' and math.dist(state(page)['camera'],state(page)['target'])<1.4, name+': representative cell can be magnified')
+            if name=='Fibroblasts': page.locator('.body-atlas-stage').screenshot(path='/tmp/inneru-dermis-fibroblast-cell.png')
+        page.locator('[data-dermis-part=""]').click()
+        for name in ['Hair follicle','Sweat gland','Sebaceous gland','Arrector pili','Blood vessels','Nerves','Touch receptors','Pressure receptor']:
+            check(any(x['part']==name and x['visible'] and x['opacity']==1 for x in state(page)['opacity']), 'whole dermis retains '+name)
+        page.locator('#skin-matrix-opacity').fill('0')
+        check(all(x['opacity']==0 for x in state(page)['opacity'] if x['shell']), 'matrix control removes the shell to expose internal anatomy')
+        page.locator('#skin-matrix-opacity').fill('45')
+        check(all(abs(x['opacity']-.45)<.001 for x in state(page)['opacity'] if x['shell']), 'matrix control restores translucent tissue')
+        page.locator('[data-dermis-part="Fibroblasts"]').focus();page.keyboard.press('Enter')
+        check(state(page)['dermisPart']=='Fibroblasts', 'dermal component controls work with the keyboard')
         reset(page)
         before=alpha(page)
         page.locator('[data-part="Sweat gland"]').click()
@@ -200,6 +235,11 @@ try:
             mobile.locator('.body-atlas-parts [data-part]:visible').first.click()
             check(bool(state(mobile)['selection']), 'mobile '+mode+': structure controls work')
         reset(mobile)
+        mobile.locator('[data-part="Dermis"]').click()
+        mobile.locator('[data-dermis-part="Lymphatic vessels"]').click()
+        check(state(mobile)['dermisPart']=='Lymphatic vessels', 'mobile dermis component inspection works')
+        check(mobile.locator('.skin-dermis-explorer').evaluate('(e)=>e.scrollWidth<=e.clientWidth'), 'mobile dermis controls fit their container')
+        reset(mobile)
         mobile.locator('[data-skin-detail="cells"]').click();settled(mobile)
         check(state(mobile)['detail']=='cells', 'mobile cellular close-up works')
         reset(mobile)
@@ -224,6 +264,11 @@ try:
         check(fallback.locator('[data-skin-detail="cells"]').is_disabled(), 'fallback disables unavailable detail zoom')
         fallback.locator('[data-skin-process="touch"]').click()
         check('sensory fiber' in fallback.locator('.body-atlas-info').inner_text(), 'fallback explains the function routes')
+        fallback.locator('[data-skin-mode="cutaway"]').click()
+        fallback.locator('[data-part="Dermis"]').click()
+        fallback.locator('[data-dermis-part="Lymphatic vessels"]').click()
+        check('Blind-ended' in fallback.locator('.body-atlas-info').inner_text(), 'fallback retains dermal component explanations')
+        check(fallback.locator('#skin-matrix-opacity').is_disabled(), 'fallback disables unavailable matrix rendering control')
         fallback_context.close()
         check(not errors, 'no JavaScript or shader errors: '+json.dumps(errors))
         browser.close()
