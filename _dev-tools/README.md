@@ -60,3 +60,11 @@ three discovery challenges. It verifies rigid bones, tendon lengths and physical
 attachments, direction-based activation, challenge rewards, saved-progress
 preservation, mobile layout, reduced motion and the interactive SVG fallback.
 See [ARM-LAB.md](ARM-LAB.md) for the rig and scientific assumptions.
+
+## Skeletal mission pathway
+
+Run `python3 _dev-tools/verify-skeletal-course.py` to complete all eight skeletal
+investigations and 24 science checks, verify rewards and prerequisites, exercise
+every activity in preview without saving progress, and check keyboard access,
+mobile layouts, reduced motion, shared routes and offline shell files. See
+[SKELETAL-COURSE.md](SKELETAL-COURSE.md) for the learning sequence and anatomy.

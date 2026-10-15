@@ -41,9 +41,9 @@
     },
     {
       file:'07-body-detective', title:'Body Detective', tag:'FOUR ANATOMICAL CLUES',
-      alt:'Four joint studies showing knee cartilage wear, inflamed finger-joint synovium, a shoulder bursa and a strained ankle ligament.',
+      alt:'Four joint studies showing knee cartilage wear, inflamed synovial joint tissue, a shoulder bursa and a strained ankle ligament.',
       text:'The fictional cases distinguish four structures: articular cartilage in osteoarthritis, synovial joint tissue in rheumatoid arthritis, a cushioning bursa in bursitis, and a ligament in a sprain. Similar pain can have different anatomical causes; each case supplies its own evidence.',
-      key:['Knee · articular cartilage','Finger joints · synovium','Shoulder · bursa','Ankle · ligament'], points:[[26,24],[76,19],[24,59],[73,66]]
+      key:['Knee · articular cartilage','Joint lining · synovium','Shoulder · bursa','Ankle · ligament'], points:[[26,24],[76,19],[24,59],[73,66]]
     },
     {
       file:'08-athlete-case', title:'The athlete case', tag:'FINAL CASE · ANKLE STABILITY',
