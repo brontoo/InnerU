@@ -1,4 +1,4 @@
-"""Check the standalone Discovery Centre against the real browser and app routes."""
+"""Check the illustrated adventure entry against the real browser and app routes."""
 import copy
 import functools
 import http.server
@@ -70,14 +70,15 @@ try:
         visit(page, SEED)
         original = stored(page)
         check(page.title().startswith('InnerU · Body Quest'), 'entry uses InnerU branding and an independent document')
-        check(page.locator('[data-select-role]').count() == 2 and page.locator('[data-exhibit]').count() == 6, 'both roles and all six scientific exhibits are present')
+        check(page.locator('[data-select-role]').count() == 2 and page.locator('.gate-role-visual img').count() == 2, 'both roles use separate high-quality character illustrations')
+        check(not re.search(r'Integumentary|Skeletal|Muscular|Respiratory|Circulatory|Excretory|Urinary|six systems|/ 6|System Keys',page.locator('body').inner_text(),re.I), 'entry names no systems and promises no fixed curriculum size')
         check(page.locator('input[type=password],input[type=email]').count() == 0, 'browser entry adds no pretend account credentials')
         check(page.locator('[data-select-role="teacher"]').is_enabled(), 'entrance animation never blocks early interaction')
         page.locator('[data-select-role="student"]').focus()
         page.keyboard.press('Enter')
         page.wait_for_selector('#entry-nickname')
         check(page.locator('#gate-panel-title').evaluate('(el)=>el===document.activeElement'), 'keyboard selection focuses the entry heading')
-        check('730 XP' in page.locator('[data-profile-summary]').inner_text() and '4 / 6' in page.locator('[data-profile-summary]').inner_text(), 'saved summary reads XP and actual mastery flags across all systems')
+        check('730 XP' in page.locator('[data-profile-summary]').inner_text() and '/ 6' not in page.locator('[data-profile-summary]').inner_text(), 'saved summary reads actual XP without a fixed system count')
         check(page.locator('#entry-nickname').input_value() == 'Amina', 'student entry restores the current nickname')
         page.locator('#entry-nickname').fill('Draft explorer')
         page.keyboard.press('Escape')
@@ -89,19 +90,28 @@ try:
         check(page.locator('#entry-nickname').input_value() == 'Draft explorer' and stored(page) == original, 'switching roles keeps the unsaved draft and leaves all learning data unchanged')
         page.locator('[data-back-roles]').click()
 
-        # Every exhibit must be clickable at the actual responsive wall positions.
+        # Flexible discovery tips replace the previous fixed system exhibits.
         for width, height in [(1920,1080),(1680,1000),(1440,900),(1280,720),(1152,800)]:
             page.set_viewport_size({'width':width,'height':height})
-            page.wait_for_timeout(450)
-            for i in range(6):
-                opener = page.locator(f'[data-exhibit="{i}"]')
+            page.wait_for_timeout(400)
+            for name in ['explore','learn','grow','help']:
+                opener = page.locator(f'[data-discovery="{name}"]')
                 opener.click(timeout=3000)
                 page.wait_for_selector('dialog[open]')
-                check(page.locator('dialog h2').inner_text() in opener.inner_text(), f'{width}px exhibit {i+1} opens its matching anatomy study')
+                assert page.locator('dialog h2').inner_text() and page.locator('dialog p').count() == 2
                 page.keyboard.press('Escape')
                 assert opener.evaluate('(el)=>el===document.activeElement'), 'dialog focus return'
-            check(page.evaluate('document.documentElement.scrollWidth<=innerWidth'), f'{width}px wall layout has no horizontal overflow')
-        check(stored(page) == original, 'exploring the anatomy gallery awards no points and changes no progress')
+            check(page.evaluate('document.documentElement.scrollWidth<=innerWidth'), f'{width}px illustration and all discovery tips remain accessible without overflow')
+        check(stored(page) == original, 'exploring discovery tips awards no points and changes no progress')
+        page.set_viewport_size({'width':1680,'height':1000})
+        before_greeting = page.locator('[data-companion-message]').inner_text()
+        page.locator('[data-companion]').click()
+        check(page.locator('[data-companion-message]').inner_text() != before_greeting and stored(page) == original, 'the companion reacts with an accessible greeting without modifying progress')
+        art = page.locator('[data-card="student"] .gate-role-visual img').bounding_box()
+        page.mouse.click(art['x'] + art['width']/2,art['y'] + art['height']/2)
+        page.wait_for_selector('#entry-nickname')
+        check(page.locator('#entry-nickname').is_visible(), 'the illustrated area of a role card also opens the correct workspace entry')
+        page.locator('[data-back-roles]').click()
 
         page.set_viewport_size({'width':1680,'height':1000})
         page.mouse.move(100,100)
@@ -111,7 +121,9 @@ try:
         check(page.locator('.iu-gate').evaluate('(el)=>el.style.getPropertyValue("--scene-x")') not in ['', '0px','0.00px'], 'desktop pointer movement creates restrained scene parallax')
         page.locator('[data-action-motion]').click()
         check(page.locator('.iu-gate').get_attribute('data-visual-motion') == 'off' and page.locator('[data-action-motion]').get_attribute('aria-pressed') == 'true', 'Pause motion stops ambient animation and resets parallax')
-        check(page.locator('.gate-arch-light').evaluate('(el)=>getComputedStyle(el).animationName') == 'none', 'paused lighting is static in the rendered page')
+        check(page.locator('.gate-sunlight').evaluate('(el)=>getComputedStyle(el).animationName') == 'none', 'paused sunlight is static in the rendered page')
+        page.locator('[data-companion]').click()
+        check(page.evaluate('document.getAnimations().every(a=>a.playState!=="running")'), 'reduced motion also stops the companion reaction, switch and button sheen')
         page.locator('[data-action-motion]').click()
         page.emulate_media(reduced_motion='reduce')
         page.wait_for_function('document.querySelector("[data-action-motion]").disabled')
@@ -204,17 +216,16 @@ try:
 
         for width in [1024,768,640,390,320]:
             page.set_viewport_size({'width':width,'height':844}); page.goto(ENTRY)
-            check(page.locator('#gate-exhibits').is_hidden() and page.locator('[data-action-gallery]').is_visible(), f'{width}px layout keeps exhibits in an optional gallery')
+            check(page.locator('[data-discovery]').count() == 4, f'{width}px layout keeps generic discovery and help controls available')
             if width <= 640:
                 student = page.locator('[data-card="student"]').bounding_box()
                 teacher = page.locator('[data-card="teacher"]').bounding_box()
                 check(teacher['y'] >= student['y'] + student['height'] and student['width'] > min(width * .8,400), f'{width}px role cards stack at a readable full width')
-            page.locator('[data-action-gallery]').click()
-            for i in range(6):
-                page.locator(f'[data-exhibit="{i}"]').click(); page.wait_for_selector('dialog[open]')
+            for name in ['explore','learn','grow','help']:
+                page.locator(f'[data-discovery="{name}"]').click(); page.wait_for_selector('dialog[open]')
                 assert page.locator('dialog').evaluate('(el)=>el.scrollWidth<=el.clientWidth'), 'dialog horizontal overflow'
                 page.keyboard.press('Escape')
-            check(page.evaluate('document.documentElement.scrollWidth<=innerWidth'), f'{width}px gallery and dialogs fit without horizontal scrolling')
+            check(page.evaluate('document.documentElement.scrollWidth<=innerWidth'), f'{width}px cards and tip dialogs fit without horizontal scrolling')
             select(page,'student')
             check(page.locator('#entry-nickname').is_visible() and page.evaluate('document.documentElement.scrollWidth<=innerWidth'), f'{width}px student entry remains readable and usable')
 
@@ -225,9 +236,9 @@ try:
 
         fallback_context = browser.new_context(service_workers='block')
         fallback = fallback_context.new_page()
-        fallback.route('**/assets/login/discovery-tunnel.webp', lambda r:r.abort())
+        fallback.route('**/assets/login/adventure-landscape.webp', lambda r:r.abort())
         fallback.goto(ENTRY); fallback.wait_for_selector('.gate-art-fallback')
-        check(fallback.locator('.gate-fallback-rings').is_visible() and fallback.locator('[data-select-role="student"]').is_enabled(), 'a missing background leaves a styled accessible entry with architectural fallback')
+        check(fallback.locator('.gate-sunlight').is_visible() and fallback.locator('[data-select-role="student"]').is_enabled(), 'a missing background leaves a styled accessible entry with light scenic fallback')
         nojs = browser.new_context(java_script_enabled=False)
         nojs_page = nojs.new_page(); nojs_page.goto(ENTRY)
         check(nojs_page.locator('.gate-noscript a').count() == 2 and nojs_page.locator('.gate-noscript').is_visible(), 'without JavaScript both real workspace links remain accessible')
@@ -238,13 +249,14 @@ try:
         offline_page = offline.new_page(); offline_page.goto(ORIGIN + '/login.html')
         offline_page.evaluate('navigator.serviceWorker.ready')
         offline_page.wait_for_function('navigator.serviceWorker.controller!==null')
-        cached = offline_page.evaluate('(async()=>{const c=await caches.open("inneru-v34");return (await c.keys()).map(r=>new URL(r.url).pathname)})()')
-        check('/login.html' in cached and '/assets/login/discovery-tunnel.webp' in cached and len(cached) >= 100, 'the new worker actually precaches the entry and existing app shell')
+        cached = offline_page.evaluate('(async()=>{const c=await caches.open("inneru-v36");return (await c.keys()).map(r=>new URL(r.url).pathname)})()')
+        check('/login.html' in cached and '/assets/login/adventure-landscape.webp' in cached and len(cached) >= 100, 'the new worker actually precaches the entry and existing app shell')
         offline.set_offline(True); offline_page.reload(wait_until='domcontentloaded')
-        check(offline_page.locator('[data-select-role="student"]').is_visible() and offline_page.locator('.gate-scene').evaluate('(el)=>el.complete&&el.naturalWidth>0'), 'offline entry loads its controls and optimized tunnel artwork')
-        offline_page.locator('[data-exhibit="4"]').click()
+        check(offline_page.locator('[data-select-role="student"]').is_visible() and offline_page.locator('.gate-scene').evaluate('(el)=>el.complete&&el.naturalWidth>0'), 'offline entry loads its controls and optimized landscape artwork')
+        check(offline_page.locator('.gate-role-visual img').evaluate_all('(els)=>els.every(el=>el.complete&&el.naturalWidth>0)'), 'both character illustrations remain available offline')
+        offline_page.locator('[data-discovery="learn"]').click()
         offline_page.wait_for_function('document.querySelector("dialog img")?.complete')
-        check(offline_page.locator('dialog img').evaluate('(el)=>el.complete&&el.naturalWidth>0'), 'anatomy exhibit imagery remains available offline')
+        check(offline_page.locator('dialog img').evaluate('(el)=>el.complete&&el.naturalWidth>0'), 'the illustrated companion and discovery tips remain available offline')
         offline.close()
 
         source = (ROOT/'sw.js').read_text()
@@ -256,6 +268,6 @@ try:
         check({'source':'/login','destination':'/login.html'} in config['rewrites'], 'Vercel exposes the entry at /login while preserving the homepage route')
         check(not errors, 'no browser JavaScript errors in entry, role changes or existing workspaces: ' + str(errors))
         browser.close()
-    print(f'PASS: {checks} Discovery Centre checks')
+    print(f'PASS: {checks} adventure entry checks')
 finally:
     server.shutdown()

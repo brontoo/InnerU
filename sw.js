@@ -7,7 +7,7 @@
      * large immutable assets (3D models, images, fonts): stale-while-revalidate
    Bump VERSION when the shell changes so old caches are dropped.
    ========================================================================== */
-const VERSION = 'inneru-v35';
+const VERSION = 'inneru-v36';
 const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './home-expedition.css?v=discovery-gallery-1', './connection-art.css?v=everyday-anatomy-1', './body-team.css?v=body-team-1', './detective.css?v=field-lab-1', './student-dashboard.css?v=student-space-1', './muscle.css?v=arm-team-1', './muscle-learning.css', './muscle-pair.css?v=arm-team-1', './muscle-studio.css?v=muscle-studio-1',
@@ -18,8 +18,9 @@ const SHELL = [
   './circulatory-integration.js', './resp-ventilation.js?v=ventilation-1', './resp-activities.js?v=ventilation-1', './respiratory.js?v=resp-quests-2', './resp-map-art.js?v=resp-anatomy-1', './integ-activities.js?v=skin-quests-6', './integumentary.js?v=skin-quests-6', './skin-explorer.js?v=dermis-anatomy-4', './skin-model.js?v=dermis-anatomy-4', './integ-map-art.js?v=skin-card-art-5', './excretory-art.js?v=renal-studies-1', './excretory.js?v=renal-studies-1', './excretory-explorer.js?v=renal-cutaway-5', './excretory-model.js?v=renal-anatomy-2', './exc-map-art.js',
   './capstone.js?v=student-space-1', './home-expedition.js?v=discovery-gallery-1', './connection-art.js?v=everyday-anatomy-1', './body-team.js?v=body-team-1', './detective-data.js?v=field-lab-1', './detective-tools.js?v=field-lab-1', './detective.js?v=field-lab-1', './a11y.js', './teacher.js?v=student-space-1', './learning-progress.js?v=student-space-1', './student-dashboard.js?v=student-space-1', './pwa.js', './review.js?v=recall-studio-1', './habit.js?v=field-lab-1', './muscle-force.js', './glossary.js', './speech.js',
   './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg',
-  './login.html', './login.css?v=discovery-entry-1', './login.js?v=discovery-entry-1',
-  './assets/login/discovery-tunnel.webp',
+  './login.html', './login.css?v=adventure-entry-2', './login.js?v=adventure-entry-2',
+  './assets/login/adventure-landscape.webp', './assets/login/student-explorer.webp',
+  './assets/login/teacher-guide.webp', './assets/login/quest-companion.webp',
   './assets/home-expedition/01-shield.webp', './assets/home-expedition/02-framework.webp',
   './assets/home-expedition/03-power.webp', './assets/home-expedition/04-oxygen.webp',
   './assets/home-expedition/05-transport.webp', './assets/home-expedition/06-balance.webp'

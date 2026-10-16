@@ -6,24 +6,22 @@
   const panel = root.querySelector('#gate-entry-panel');
   const dialog = root.querySelector('dialog');
   const support = root.querySelector('.gate-welcome > p');
-  const gallery = root.querySelector('#gate-exhibits');
-  const galleryButton = root.querySelector('[data-action-gallery]');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const narrow = matchMedia('(max-width: 1150px)');
+  const narrow = matchMedia('(max-width: 1100px)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const arrows = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>';
-  const exhibits = [
-    {name:'Integumentary System',tag:'01 / BODY SHIELD',image:'01-shield',href:'index.html#integumentary',text:'The epidermis forms the outer barrier. The dermis supports vessels, sensory structures, hair follicles and glands. Together, skin protects, senses and helps regulate temperature.'},
-    {name:'Skeletal System',tag:'02 / FRAMEWORK',image:'02-framework',href:'index.html#world',text:'Living bone supports and protects the body. Marrow produces blood cells, joints allow movement, and bone tissue adapts through ongoing formation and resorption.'},
-    {name:'Muscular System',tag:'03 / POWER',image:'03-power',href:'index.html#muscle',text:'Skeletal muscle pulls through tendons to move bones. Actin and myosin slide past one another inside muscle fibres, using ATP to produce force.'},
-    {name:'Respiratory System',tag:'04 / OXYGEN',image:'04-oxygen',href:'index.html#respiratory',text:'Air travels through branching airways to the alveoli. Oxygen and carbon dioxide diffuse across thin exchange surfaces, while the diaphragm helps change chest volume during breathing.'},
-    {name:'Circulatory System',tag:'05 / TRANSPORT',image:'05-transport',href:'index.html#circulatory',text:'The heart pumps blood through pulmonary and systemic circuits. Valves support one-way flow, and thin-walled capillaries allow exchange with tissues.'},
-    {name:'Excretory System',tag:'06 / BALANCE',image:'06-balance',href:'index.html#excretory',text:'Kidney nephrons filter blood, reabsorb useful substances and help regulate water and salts. Urine passes through the renal pelvis and ureter to the bladder.'}
-  ];
+  const discoveries = {
+    explore:{title:'Follow your curiosity.',text:'Choose Student to open your learning dashboard. Explore at your own pace and return to the discoveries you want to understand more deeply.',tip:'A good adventure starts with a question. What will you discover today?'},
+    learn:{title:'Look closer. Make connections.',text:'Investigate, experiment and use the evidence. Your next discovery can begin with a new question or a familiar idea seen in a different way.',tip:'Take your time. Explaining why something happens is part of the discovery.'},
+    grow:{title:'Every discovery is a step forward.',text:'Completed tasks earn the points and achievements shown in your dashboard. Exploring this welcome page does not change your learning record.',tip:'Your progress belongs to you. Continue on this browser whenever you are ready.'},
+    help:{title:'Your adventure starts here.',text:'Students can continue to their learning dashboard and optionally choose a nickname. Teachers can open classroom tools and use progress codes. Everything uses the existing browser-based entry.',tip:'Saved progress stays in this browser. Your teacher can help you use a progress code on another device.'}
+  };
+  const greetings = ['Your next discovery starts with a question!','Big discoveries begin with little steps.','Stay curious. You’ve got this!','Ready when you are, explorer!'];
+  let greetingIndex = 0;
+  let companionAnimation = null;
   let role = null;
   let draftName = null;
   let paused = false;
-  let galleryOpen = false;
   let switching = false;
   let opening = false;
   let timer = 0;
@@ -31,7 +29,7 @@
   let pointer = {x:0,y:0};
   let focusedCard = null;
   let cardBounds = null;
-  let exhibitOpener = null;
+  let discoveryOpener = null;
 
   function readProfile() {
     try {
@@ -63,24 +61,13 @@
     const button = root.querySelector('[data-action-motion]');
     button.disabled = forced;
     button.setAttribute('aria-pressed', String(paused || forced));
-    button.querySelector('[data-motion-label]').textContent = forced ? 'Reduced motion' : paused ? 'Play motion' : 'Pause motion';
-    button.querySelector('[aria-hidden]').innerHTML = paused || forced ? '<path d="m5 3 8 5-8 5z"/>' : '<path d="M4 3h2v10H4zm6 0h2v10h-2z"/>';
-    if (!canMove()) resetPointer();
-  }
-  function galleryState() {
-    const show = !narrow.matches || galleryOpen;
-    gallery.hidden = !show;
-    galleryButton.setAttribute('aria-expanded',String(show));
-    galleryButton.firstChild.textContent = galleryOpen ? 'Close the exhibit gallery ' : 'Explore the six exhibits ';
-    galleryButton.querySelector('span').textContent = galleryOpen ? '−' : '+';
-    if (narrow.matches) resetPointer();
+    button.querySelector('[data-motion-label]').textContent = forced ? 'Reduced motion' : paused ? 'Play animations' : 'Reduce motion';
+    if (!canMove()) { resetPointer(); companionAnimation?.cancel(); }
   }
   function progressLabel(value) {
     if (!value) return 'A fresh journey is waiting for you.';
-    const slice = key => value[key] && typeof value[key] === 'object' ? value[key] : {};
-    const keys = Number(value.done.includes(8)) + Number((Array.isArray(slice('muscle').done) ? slice('muscle').done : []).includes(8)) + ['integumentary','respiratory','circ','excretory'].filter(id => slice(id).mastery).length;
     const xp = Number.isFinite(Number(value.xp)) ? Math.max(0,Number(value.xp)) : 0;
-    return new Intl.NumberFormat('en').format(xp) + ' XP saved here · ' + keys + ' / 6 System Keys';
+    return new Intl.NumberFormat('en').format(xp) + ' XP saved here · Your next discovery awaits';
   }
   function rememberDraft() {
     const input = panel.querySelector('#entry-nickname');
@@ -96,7 +83,7 @@
     panel.hidden = true;
     grid.hidden = false;
     grid.querySelectorAll('[data-card]').forEach(card => card.classList.remove('is-selected','is-unselected'));
-    support.textContent = 'Choose your role to begin your journey.';
+    support.textContent = 'Choose your mission role and let’s explore!';
     if (previous) grid.querySelector('[data-select-role="'+previous+'"]').focus({preventScroll:true});
     resetPointer();
   }
@@ -115,7 +102,7 @@
       switching = false;
       const current = readProfile();
       const student = selected === 'student';
-      panel.innerHTML = `<button type="button" class="gate-back" data-back-roles>← Choose another role</button><span class="gate-panel-label">${student?'STUDENT / BODY EXPLORER':'TEACHER / MISSION COMMANDER'}</span><h2 id="gate-panel-title" tabindex="-1">${student?'Your next discovery awaits.':'Welcome to your Teacher Lab.'}</h2><p class="gate-panel-intro">${student?'Continue your InnerU adventure with the learning profile saved on this browser.':'Open your classroom tools to collect progress codes, view class summaries and prepare a shared device.'}</p><div class="gate-entry-facts">${student?`<span class="gate-saved-indicator" aria-hidden="true"></span><p data-profile-summary></p>`:'<span>PROGRESS CODES</span><i aria-hidden="true"></i><span>CLASS SUMMARIES</span><i aria-hidden="true"></i><span>SHARED-DEVICE TOOLS</span>'}</div><form id="gate-entry-form" novalidate>${student?'<div class="gate-field"><label for="entry-nickname">Your first name or nickname <small>optional</small></label><input id="entry-nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" aria-describedby="entry-name-help entry-error" placeholder="What should we call you?"><span id="entry-name-help">Keep your existing name, or choose a nickname for this device.</span></div>':''}<p id="entry-error" class="gate-entry-error" role="alert"></p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${student?'OPEN MY DASHBOARD':'OPEN TEACHER TOOLS'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button><button type="button" class="gate-continue-unchanged" data-continue-unchanged hidden>Open the dashboard without changing my name ${arrows}</button></form><p class="gate-panel-local">${student?'Your progress, XP and achievements stay on this device.':'Teacher tools use this browser’s class list and shared-device progress.'}</p>`;
+      panel.innerHTML = `<button type="button" class="gate-back" data-back-roles>← Choose another role</button><span class="gate-panel-label">${student?'STUDENT / BODY EXPLORER':'TEACHER / MISSION GUIDE'}</span><h2 id="gate-panel-title" tabindex="-1">${student?'Your next discovery awaits.':'Welcome to your Teacher Area.'}</h2><p class="gate-panel-intro">${student?'Continue your InnerU adventure with the learning profile saved on this browser.':'Open your classroom tools to collect progress codes, view class summaries and prepare a shared device.'}</p><div class="gate-entry-facts">${student?`<span class="gate-saved-indicator" aria-hidden="true"></span><p data-profile-summary></p>`:'<span>PROGRESS CODES</span><i aria-hidden="true"></i><span>CLASS SUMMARIES</span><i aria-hidden="true"></i><span>SHARED-DEVICE TOOLS</span>'}</div><form id="gate-entry-form" novalidate>${student?'<div class="gate-field"><label for="entry-nickname">Your first name or nickname <small>optional</small></label><input id="entry-nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" aria-describedby="entry-name-help entry-error" placeholder="What should we call you?"><span id="entry-name-help">Keep your existing name, or choose a nickname for this device.</span></div>':''}<p id="entry-error" class="gate-entry-error" role="alert"></p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${student?'OPEN MY DASHBOARD':'OPEN TEACHER TOOLS'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button><button type="button" class="gate-continue-unchanged" data-continue-unchanged hidden>Open the dashboard without changing my name ${arrows}</button></form><p class="gate-panel-local">${student?'Your progress, XP and achievements stay on this device.':'Teacher tools use this browser’s class list and shared-device progress.'}</p>`;
       if (student) {
         panel.querySelector('[data-profile-summary]').textContent = progressLabel(current.value);
         panel.querySelector('#entry-nickname').value = draftName ?? (typeof current.value?.name === 'string' && current.value.name !== 'Explorer' ? current.value.name.slice(0,24) : '');
@@ -123,7 +110,7 @@
         if (current.unavailable) panel.querySelector('#entry-error').textContent = 'Browser saving is unavailable. You can still open your dashboard.';
         if (current.invalid || current.unavailable) panel.querySelector('[data-continue-unchanged]').hidden = false;
       }
-      support.textContent = student ? 'Keep exploring the extraordinary world inside you.' : 'Inspire the next generation of body explorers.';
+      support.textContent = student ? 'Keep exploring the extraordinary world inside you.' : 'Inspire your explorers. Celebrate every discovery.';
       grid.hidden = true;
       panel.hidden = false;
       root.dataset.view = 'entry';
@@ -169,13 +156,22 @@
     await new Promise(resolve => setTimeout(resolve,canMove() ? 180 : 0));
     location.assign(student ? 'index.html#dashboard' : 'index.html#teacher');
   }
-  function exhibit(index) {
-    const item = exhibits[index];
+  function discovery(id,opener) {
+    const item = discoveries[id];
     if (!item) return;
-    exhibitOpener = gallery.querySelector('[data-exhibit="'+index+'"]');
-    const content = dialog.querySelector('[data-exhibit-detail]');
-    content.innerHTML = `<span class="gate-panel-label">${item.tag} / SCIENCE EXHIBIT</span><h2 id="gate-exhibit-title">${item.name}</h2><figure><img src="assets/home-expedition/${item.image}.webp" alt="${item.name} anatomical teaching study." width="880" height="587"><figcaption>ANATOMICAL TEACHING ILLUSTRATION · ENLARGED FOR CLARITY</figcaption></figure><p>${item.text}</p><a class="gate-exhibit-world" href="${item.href}">Explore this world ${arrows}</a>`;
+    discoveryOpener = opener;
+    dialog.querySelector('[data-discovery-detail]').innerHTML = `<img src="assets/login/quest-companion.webp" alt="" width="520" height="347"><span class="gate-panel-label">A LITTLE ADVENTURE INSPIRATION</span><h2 id="gate-help-title">${item.title}</h2><p>${item.text}</p><p class="gate-help-tip">${item.tip}</p>`;
     dialog.showModal();
+  }
+  function greet() {
+    root.querySelector('[data-companion-message]').textContent = greetings[greetingIndex++ % greetings.length];
+    companionAnimation?.cancel();
+    if (canMove()) companionAnimation = root.querySelector('[data-companion] img').animate([
+      {transform:'translateX(-10px) rotate(0deg)'},
+      {transform:'translateX(-10px) translateY(-6px) rotate(-9deg)'},
+      {transform:'translateX(-10px) rotate(7deg)'},
+      {transform:'translateX(-10px) rotate(0deg)'}
+    ],{duration:650,easing:'ease-in-out'});
   }
   root.addEventListener('click',event => {
     const button = event.target.closest('button');
@@ -183,9 +179,9 @@
     if (button.hasAttribute('data-select-role')) entry(button.dataset.selectRole);
     else if (button.hasAttribute('data-back-roles')) roles();
     else if (button.hasAttribute('data-action-motion')) { paused = !paused; motion(); }
-    else if (button.hasAttribute('data-action-gallery')) { galleryOpen = !galleryOpen; galleryState(); }
-    else if (button.hasAttribute('data-exhibit')) exhibit(+button.dataset.exhibit);
-    else if (button.hasAttribute('data-close-exhibit')) dialog.close();
+    else if (button.hasAttribute('data-discovery')) discovery(button.dataset.discovery,button);
+    else if (button.hasAttribute('data-close-discovery')) dialog.close();
+    else if (button.hasAttribute('data-companion')) greet();
     else if (button.hasAttribute('data-continue-unchanged')) openWorkspace(true);
   });
   panel.addEventListener('submit',event => { event.preventDefault(); openWorkspace(); });
@@ -199,7 +195,7 @@
   root.addEventListener('keydown',event => {
     if (event.key === 'Escape' && !dialog.open && role && !opening) { event.preventDefault(); roles(); }
   });
-  dialog.addEventListener('close',() => { if (exhibitOpener?.isConnected && !exhibitOpener.closest('[hidden]')) exhibitOpener.focus({preventScroll:true}); });
+  dialog.addEventListener('close',() => { if (discoveryOpener?.isConnected && !discoveryOpener.closest('[hidden]')) discoveryOpener.focus({preventScroll:true}); });
   dialog.addEventListener('click',event => {
     if (event.target !== dialog) return;
     const rect = dialog.getBoundingClientRect();
@@ -232,7 +228,7 @@
   });
   root.addEventListener('pointerleave',resetPointer);
   reduced.addEventListener('change',motion);
-  narrow.addEventListener('change',galleryState);
+  narrow.addEventListener('change',resetPointer);
   fine.addEventListener('change',resetPointer);
   document.addEventListener('visibilitychange',motion);
   window.addEventListener('storage',event => { if (event.key === 'bodyquest-v1') { browserReduced = readProfile().value?.motion === true; motion(); } });
@@ -240,9 +236,9 @@
   const fallback = () => { backdrop.hidden = true; root.classList.add('gate-art-fallback'); };
   backdrop.addEventListener('error',fallback);
   if (backdrop.complete && backdrop.naturalWidth === 0) fallback();
-  window.addEventListener('pagehide',() => { clearTimeout(timer); resetPointer(); });
+  window.addEventListener('pagehide',() => { clearTimeout(timer); resetPointer(); companionAnimation?.cancel(); });
   window.addEventListener('pageshow',event => { if (event.persisted) { if (opening) setBusy(false); if (switching) roles(); motion(); } });
-  motion(); galleryState();
+  motion();
   /* The entry page must not reload in the middle of typing when a new worker
      takes control. Existing app pages keep their original PWA behavior. */
   if ('serviceWorker' in navigator && !new URLSearchParams(location.search).has('nosw') && (location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname))) {
