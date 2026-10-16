@@ -13,7 +13,7 @@
   const yesterday = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 - DAY).toISOString().slice(0, 10);
   const isWorldPreview = () => {
     const [path, query = ''] = location.hash.slice(1).split('?');
-    return ['excretory', 'integumentary', 'world', 'mission', 'respiratory'].includes(path.split('/')[0]) && new URLSearchParams(query).get('preview') === '1';
+    return ['excretory', 'integumentary', 'world', 'mission', 'respiratory', 'detective'].includes(path.split('/')[0]) && new URLSearchParams(query).get('preview') === '1';
   };
 
   function data() {

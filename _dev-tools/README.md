@@ -105,3 +105,11 @@ Run `python3 _dev-tools/verify-body-team.py` to exercise the six-system anatomy
 lab, running/weather scenarios, science predictions, tap/drag/menu matching,
 guided writing, original reward gates, responsive layouts and motion settings.
 See [BODY-TEAM.md](BODY-TEAM.md) for learning behavior and integration details.
+
+## Six-system Body Detective
+
+Run `python3 _dev-tools/verify-detective.py` to complete the six distinct evidence
+benches, validate claims and their limits, verify once-only XP, isolated practice,
+teacher-code restore, keyboard access, motion settings, responsive layouts and
+offline shell URLs. See [DETECTIVE-LAB.md](DETECTIVE-LAB.md) for the activity audit,
+scientific assumptions and progress rules.

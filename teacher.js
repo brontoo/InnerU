@@ -55,7 +55,8 @@
       x: Math.max(0, Math.round(Number(s.xp) || 0)),
       k: keys.join(''),
       w: worlds.join(''),
-      c: s.capstone && s.capstone.done ? 1 : 0
+      c: s.capstone && s.capstone.done ? 1 : 0,
+      d: ['touch','spine','wave','air','signal','sample'].map(id => Array.isArray(s.rewards) && s.rewards.includes('detective2-' + id) ? '1' : '0').join('')
     };
   }
 
@@ -117,6 +118,11 @@
     if (keys[4] === '1') rewards.push('circ-mastery');
     if (keys[5] === '1') rewards.push('muscle-complete');
     if (p.c) rewards.push('capstone');
+    if (typeof p.d === 'string' && /^[01]{6}$/.test(p.d)) {
+      ['touch','spine','wave','air','signal','sample'].forEach((id, i) => {
+        if (p.d[i] === '1') rewards.push('detective2-' + id);
+      });
+    }
     state = next;
     save();
   }
