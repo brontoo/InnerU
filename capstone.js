@@ -237,7 +237,7 @@
           const box = card.querySelector('.cap-feedback');
           if (good) {
             c.stations['s' + i] = true;
-            if (!state.rewards.includes('cap-station-' + i)) { state.rewards.push('cap-station-' + i); state.xp += XP_STATION; }
+            reward('cap-station-' + i, XP_STATION);
             save();
             box.innerHTML = '\u2713 ' + esc(stations[i].why);
             card.classList.add('is-done');
@@ -291,9 +291,10 @@
     if (finish) finish.onclick = () => {
       const c = data();
       if (!c.done) {
+        if (stationsDone() !== stations.length || c.response.trim().length < 80 || c.rubric.length < 3) return;
         c.done = true;
         c.date = new Date().toISOString().slice(0, 10);
-        if (!state.rewards.includes('capstone')) { state.rewards.push('capstone'); state.xp += XP_SYNTHESIS; }
+        reward('capstone', XP_SYNTHESIS);
         save();
         toast('+' + XP_SYNTHESIS + ' XP \u00b7 Final challenge complete');
       }

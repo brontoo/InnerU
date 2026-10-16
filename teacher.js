@@ -56,7 +56,17 @@
       k: keys.join(''),
       w: worlds.join(''),
       c: s.capstone && s.capstone.done ? 1 : 0,
-      d: ['touch','spine','wave','air','signal','sample'].map(id => Array.isArray(s.rewards) && s.rewards.includes('detective2-' + id) ? '1' : '0').join('')
+      d: ['touch','spine','wave','air','signal','sample'].map(id => Array.isArray(s.rewards) && s.rewards.includes('detective2-' + id) ? '1' : '0').join(''),
+      r: Array.isArray(s.rewards) ? [...new Set(s.rewards.filter(id => typeof id === 'string' && id.length <= 100))] : [],
+      l: s.learning?.version === 1 ? s.learning : undefined,
+      t: {
+        skeletal: { done: s.done },
+        ...Object.fromEntries(['integumentary','muscle','respiratory','circ','excretory'].map(id => {
+          const p = sc(id);
+          return [id, { done: p.done, steps: p.steps, tasks: p.tasks, xp: p.xp, boss: p.boss }];
+        })),
+        capstone: s.capstone ? { stations: s.capstone.stations, response: s.capstone.response, rubric: s.capstone.rubric, date: s.capstone.date } : undefined
+      }
     };
   }
 
@@ -89,7 +99,7 @@
     const rewards = [];
     const next = {
       name: p.n || 'Explorer',
-      xp: p.x,
+      xp: Number.isFinite(Number(p.x)) ? Math.max(0, Math.round(Number(p.x))) : 0,
       done: range(w[1]),
       rewards,
       weak: [],
@@ -110,18 +120,64 @@
     for (let i = 1; i <= w[3]; i++) rewards.push('resp-mission-' + i);
     for (let i = 1; i <= w[5]; i++) rewards.push('exc-mission-' + i);
     for (let i = 1; i <= w[4]; i++) rewards.push('circ-mission-' + i);
-    for (let i = 1; i <= w[2]; i++) rewards.push('complete-' + i);
+    for (let i = 1; i <= w[2]; i++) rewards.push('muscle:complete-' + i);
     if (keys[0] === '1') rewards.push('boss');
     if (keys[1] === '1') rewards.push('integ-key');
     if (keys[2] === '1') rewards.push('resp-key');
     if (keys[3] === '1') rewards.push('exc-key');
     if (keys[4] === '1') rewards.push('circ-mastery');
-    if (keys[5] === '1') rewards.push('muscle-complete');
+    if (keys[5] === '1') rewards.push('muscle:complete-8');
     if (p.c) rewards.push('capstone');
     if (typeof p.d === 'string' && /^[01]{6}$/.test(p.d)) {
       ['touch','spine','wave','air','signal','sample'].forEach((id, i) => {
         if (p.d[i] === '1') rewards.push('detective2-' + id);
       });
+    }
+    if (Array.isArray(p.r) && p.r.length <= 10000 && p.r.every(id => typeof id === 'string' && id.length <= 100)) {
+      rewards.splice(0, rewards.length, ...new Set(p.r));
+    } else {
+      /* Older codes only described mission counts. Prevent those completed
+         missions from paying out again when their missing steps are replayed. */
+      next.learning = { version: 1, entries: [], completed: {}, legacyCompleted: {
+        skeletal: [...next.done], integumentary: [...next.integumentary.done],
+        muscle: [...next.muscle.done], respiratory: [...next.respiratory.done],
+        circ: [...next.circ.done], excretory: [...next.excretory.done]
+      }, legacyFinals: { skeletal: keys[0] === '1', integumentary: keys[1] === '1', respiratory: keys[2] === '1', excretory: keys[3] === '1', circ: keys[4] === '1', muscle: keys[5] === '1', extra: !!p.c } };
+    }
+    if (p.l?.version === 1 && Array.isArray(p.l.entries) && p.l.entries.length <= 10000) {
+      const entries = p.l.entries.filter(row => row && rewards.includes(row.id) && Number.isFinite(row.xp) && row.xp >= 0 && typeof row.at === 'string' && Number.isFinite(Date.parse(row.at)));
+      const unique = entries.filter((row, i) => entries.findIndex(r => r.id === row.id) === i).map(({id, xp, at}) => ({id, xp, at}));
+      if (unique.reduce((sum, row) => sum + row.xp, 0) <= next.xp) {
+        const completed = Object.fromEntries(Object.entries(p.l.completed || {}).filter(([id, at]) => id.length <= 100 && typeof at === 'string' && Number.isFinite(Date.parse(at))));
+        next.learning = { ...(next.learning || {}), version: 1, entries: unique, completed };
+        if (p.l.legacyCompleted && typeof p.l.legacyCompleted === 'object') next.learning.legacyCompleted = Object.fromEntries(['skeletal','integumentary','muscle','respiratory','circ','excretory'].map(id => [id, Array.isArray(p.l.legacyCompleted[id]) ? p.l.legacyCompleted[id].filter(n => Number.isInteger(n) && n >= 1 && n <= 8) : []]));
+        if (p.l.legacyFinals && typeof p.l.legacyFinals === 'object') next.learning.legacyFinals = Object.fromEntries(['skeletal','integumentary','muscle','respiratory','circ','excretory','extra'].map(id => [id, p.l.legacyFinals[id] === true]));
+      }
+    }
+    if (p.t && typeof p.t === 'object') {
+      const numbers = (values, max) => Array.isArray(values) ? [...new Set(values.filter(n => Number.isInteger(n) && n >= 1 && n <= max))] : null;
+      const bits = value => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).filter(([id, flag]) => id.length <= 100 && flag === true)) : {};
+      const skeletal = numbers(p.t.skeletal?.done, 8);
+      if (skeletal) next.done = skeletal;
+      for (const [id, max] of [['integumentary',6],['muscle',8],['respiratory',6],['circ',7],['excretory',6]]) {
+        const saved = p.t[id];
+        if (!saved || typeof saved !== 'object') continue;
+        const done = numbers(saved.done, max);
+        if (done) next[id].done = done;
+        if (id === 'muscle') {
+          next.muscle.tasks = bits(saved.tasks);
+          next.muscle.xp = Number.isFinite(saved.xp) ? Math.max(0, Math.min(next.xp, saved.xp)) : 0;
+        } else if (id === 'circ') {
+          next.circ.steps = Array.isArray(saved.steps) ? [...new Set(saved.steps.filter(id => typeof id === 'string' && id.length <= 100))] : [];
+          next.circ.boss = !!saved.boss;
+        } else next[id].steps = bits(saved.steps);
+      }
+      if (p.t.capstone && typeof p.t.capstone === 'object') {
+        next.capstone.stations = Object.fromEntries(Object.entries(bits(p.t.capstone.stations)).filter(([id]) => /^s[0-5]$/.test(id)));
+        next.capstone.response = typeof p.t.capstone.response === 'string' ? p.t.capstone.response.slice(0, 20000) : '';
+        next.capstone.rubric = Array.isArray(p.t.capstone.rubric) ? [...new Set(p.t.capstone.rubric.filter(n => Number.isInteger(n) && n >= 0 && n < 5))] : [];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(p.t.capstone.date || '')) next.capstone.date = p.t.capstone.date;
+      }
     }
     state = next;
     save();

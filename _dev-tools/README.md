@@ -113,3 +113,11 @@ benches, validate claims and their limits, verify once-only XP, isolated practic
 teacher-code restore, keyboard access, motion settings, responsive layouts and
 offline shell URLs. See [DETECTIVE-LAB.md](DETECTIVE-LAB.md) for the activity audit,
 scientific assumptions and progress rules.
+
+## Student dashboard and achievements
+
+Run `python3 _dev-tools/verify-dashboard.py` to exercise real task completions,
+shared XP and badge requirements, six-system progress, live updates, current and
+legacy progress-code restores, final certificates, profile/reset behavior,
+keyboard/dialog access, preview isolation and phone layouts. See
+[STUDENT-DASHBOARD.md](STUDENT-DASHBOARD.md) for the ledger and completion rules.

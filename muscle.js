@@ -4,7 +4,7 @@ const V=MuscleVisuals,by=id=>document.getElementById(id),titles=['Meet the three
 const goals=['Compare muscle tissues by their structure, location and control.','Use tendons and opposing muscles to turn contraction into movement.','Travel from a whole muscle to its contractile machinery.','Move actin. Bring Z lines closer. Keep filament lengths fixed.','Investigate how ATP, calcium and oxygen support movement.','Connect fiber structure with endurance and short bursts of power.','Bring structure, function and movement together.'];
 function data(){if(!state.muscle||typeof state.muscle!=='object')state.muscle={};const m=state.muscle;m.done||=[];m.tasks||={};m.weak||=[];m.xp||=0;return m}data();
 const pctM=()=>Math.round(data().done.length/8*100),next=()=>Array.from({length:8},(_,i)=>i+1).find(i=>!data().done.includes(i))||8;
-function award(id,xp){const key='muscle:'+id;if(!state.rewards.includes(key)){data().xp+=xp;reward(key,xp)}else save()}
+function award(id,xp){const key='muscle:'+id;if(!state.rewards.includes(key)){const before=state.xp;reward(key,xp);data().xp+=Math.max(0,state.xp-before)}save()}
 let required=[],mounts=[],missionNo=0;
 const done=id=>!!data().tasks[id];
 function mark(id,xp=5){data().tasks[id]=true;data().weak=data().weak.filter(x=>x!==id);award(id,xp);save();updateGate();document.querySelectorAll(`[data-status="${id}"]`).forEach(x=>{x.textContent='✓ Discovery saved';x.classList.add('complete')})}
