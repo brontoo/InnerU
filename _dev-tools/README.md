@@ -98,3 +98,10 @@ action/anatomy scenes and their 18 structure explanations, verify magnification,
 keyboard and modal behavior, motion preferences, responsive layouts and saved
 progress, and complete the original connection challenge with its 35 XP reward.
 See [CONNECTION-SCENES.md](CONNECTION-SCENES.md) for anatomical choices and artwork.
+
+## Interactive body-team challenge
+
+Run `python3 _dev-tools/verify-body-team.py` to exercise the six-system anatomy
+lab, running/weather scenarios, science predictions, tap/drag/menu matching,
+guided writing, original reward gates, responsive layouts and motion settings.
+See [BODY-TEAM.md](BODY-TEAM.md) for learning behavior and integration details.
