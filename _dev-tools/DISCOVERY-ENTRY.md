@@ -1,10 +1,13 @@
 # InnerU Discovery Centre
 
-The standalone entry is `login.html`, also exposed at `/login` by Vercel.
+The Discovery Centre is `login.html`, also exposed at `/login` by Vercel.
+Opening the main portal URL `/` or `/index.html` without a hash automatically
+replaces the URL with `login.html` (keeping any query string). Explicit workspace
+bookmarks such as `/#dashboard`, `index.html#teacher` and `index.html#home`
+remain available, as do links from the Discovery Centre to those destinations.
 Serve the repository with its existing static server; no build, package install,
-authentication provider or environment secrets are required. The approved
-homepage remains at `index.html#home` and the installed app keeps its original
-start URL.
+authentication provider or environment secrets are required. The PWA retains
+its existing start URL (`./`), which now opens the Discovery Centre.
 
 The museum tunnel uses the existing InnerU mark, DM Sans and Manrope typography,
 six existing scientific illustrations, and the brief's navy, teal, cyan, violet,
