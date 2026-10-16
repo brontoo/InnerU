@@ -1,5 +1,10 @@
 # Verification harnesses
 
+For the standalone InnerU Discovery Centre at `/login.html`, run
+`python _dev-tools/verify-login.py`. It verifies both browser entry flows, saved
+progress, interactive anatomy exhibits, responsive layouts, motion preferences,
+fallbacks and offline access. See [DISCOVERY-ENTRY.md](DISCOVERY-ENTRY.md).
+
 These are the headless harnesses used while building the site. Each one serves this
 project read-only on a local port, loads the real pages inside same-origin iframes,
 drives the DOM (clicks, sliders, typed answers) and prints a PASS/FAIL report.

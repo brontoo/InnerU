@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#081B32">
+  <meta name="description" content="Enter the InnerU Body Quest discovery centre. Choose your student or teacher workspace and explore six connected human-body systems.">
+  <title>InnerU · Body Quest | Discovery Centre</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/login/discovery-tunnel.webp">
+  <link rel="stylesheet" href="login.css?v=discovery-entry-1">
+  <script src="login.js?v=discovery-entry-1" defer></script>
+</head>
+<body>
+  <a href="#entry-main" class="gate-skip">Skip to role selection</a>
+  <div class="iu-gate" data-visual-motion="on" data-view="roles">
+    <div class="gate-environment" aria-hidden="true">
+      <img class="gate-scene" src="assets/login/discovery-tunnel.webp" width="1536" height="1024" alt="" fetchpriority="high">
+      <div class="gate-scene-shade"></div>
+      <div class="gate-ambient gate-ambient-student"></div>
+      <div class="gate-ambient gate-ambient-teacher"></div>
+      <div class="gate-arch-light"></div>
+      <div class="gate-floor-reflection"></div>
+      <div class="gate-dust"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="gate-fallback-rings"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <header class="gate-header">
+      <a class="gate-home" href="index.html#home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m10 5-7 7 7 7M3 12h18"/></svg>Home</a>
+      <a href="index.html#home" class="gate-brand" aria-label="InnerU homepage"><img src="inneru-mark-light.svg?v=2" alt="" width="44" height="44"><span>Inner<span>U</span><small>BODY QUEST</small></span></a>
+      <button class="gate-motion" type="button" data-action-motion aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 3h2v10H4zm6 0h2v10h-2z"/></svg><span data-motion-label>Pause motion</span></button>
+    </header>
+    <main id="entry-main" class="gate-main" tabindex="-1">
+      <div class="gate-welcome">
+        <span class="gate-eyebrow"><i aria-hidden="true"></i> WELCOME TO INNERU <i aria-hidden="true"></i></span>
+        <h1>Your Body. Your Universe.<br><em>Your Adventure.</em></h1>
+        <p>Choose your role to begin your journey.</p>
+      </div>
+      <div class="gate-workspace">
+        <section class="gate-role-grid" aria-label="Choose your InnerU role">
+          <article class="gate-role gate-role-student" data-card="student">
+            <div class="gate-card-number"><span>01 / EXPLORE</span><i aria-hidden="true"></i></div>
+            <div class="gate-role-visual" aria-hidden="true">
+              <svg viewBox="0 0 140 108"><defs><linearGradient id="student-glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#69cdd5" stop-opacity=".35"/><stop offset="1" stop-color="#237e91" stop-opacity=".02"/></linearGradient><linearGradient id="student-edge"><stop stop-color="#a8e6e6"/><stop offset="1" stop-color="#237e91"/></linearGradient></defs><ellipse cx="70" cy="98" rx="43" ry="5" fill="#69cdd5" opacity=".1"/><circle cx="70" cy="47" r="40" fill="url(#student-glass)" stroke="#69cdd5" stroke-opacity=".4"/><circle cx="70" cy="47" r="31" fill="none" stroke="#c4e6e6" stroke-opacity=".35" stroke-dasharray="1 5"/><path d="M70 14v6m0 54v6M37 47h6m54 0h6" stroke="#c3e9e6" stroke-width="1.2"/><circle cx="70" cy="31" r="6" fill="none" stroke="url(#student-edge)" stroke-width="1.5"/><path d="M70 39v26m-11-20 22 0m-13-3-10 9 1 13m14-22 9 9-1 13M70 65l-8 12m8-12 8 12M61 45q9 10 18 0m-19 5q10 10 20 0m-18 6q8 6 16 0" fill="none" stroke="url(#student-edge)" stroke-width="1.5" stroke-linecap="round"/><path d="m106 77 16 14" stroke="#d4bc89" stroke-width="4" stroke-linecap="round"/><path d="m102 73 5 5" stroke="#9fbbbd" stroke-width="7" stroke-linecap="round"/><circle cx="32" cy="23" r="2" fill="#d4bc89"/><circle cx="111" cy="27" r="1.5" fill="#69cdd5"/></svg>
+            </div>
+            <h2>STUDENT</h2><span class="gate-role-name">Body Explorer</span>
+            <p>Explore the human body, complete exciting challenges, and unlock new discoveries.</p>
+            <button type="button" class="gate-enter" data-select-role="student" aria-controls="gate-entry-panel">START EXPLORING<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          </article>
+          <article class="gate-role gate-role-teacher" data-card="teacher">
+            <div class="gate-card-number"><span>02 / GUIDE</span><i aria-hidden="true"></i></div>
+            <div class="gate-role-visual" aria-hidden="true">
+              <svg viewBox="0 0 140 108"><defs><linearGradient id="teacher-glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8175ad" stop-opacity=".4"/><stop offset="1" stop-color="#d4bc89" stop-opacity=".04"/></linearGradient></defs><ellipse cx="70" cy="98" rx="43" ry="5" fill="#b1a5d4" opacity=".1"/><rect x="25" y="10" width="90" height="72" rx="12" fill="url(#teacher-glass)" stroke="#b4a4d4" stroke-opacity=".5"/><path d="M34 21h20m-20 5h12m50 43h10" stroke="#d4bc89" stroke-opacity=".6" stroke-linecap="round"/><path d="M70 25 92 37 92 59 70 71 48 59 48 37Z" fill="none" stroke="#b8afd7" stroke-opacity=".5"/><path d="m70 25 0 46M48 37l44 22M48 59l44-22" stroke="#d4bc89" stroke-opacity=".35"/><circle cx="70" cy="48" r="10" fill="#102b46" stroke="#d4bc89"/><path d="m66 48 3 3 6-7" fill="none" stroke="#e0cda4" stroke-width="1.5"/>
+              <g fill="#b7aed4" stroke="#d9c89f" stroke-width=".6"><circle cx="70" cy="25" r="3"/><circle cx="92" cy="37" r="3"/><circle cx="92" cy="59" r="3"/><circle cx="70" cy="71" r="3"/><circle cx="48" cy="59" r="3"/><circle cx="48" cy="37" r="3"/></g><path d="M59 87h22m-11-5v5" stroke="#c9bea8" stroke-opacity=".6" stroke-linecap="round"/></svg>
+            </div>
+            <h2>TEACHER</h2><span class="gate-role-name">Mission Commander</span>
+            <p>Guide your explorers, manage learning missions, and track their progress.</p>
+            <button type="button" class="gate-enter" data-select-role="teacher" aria-controls="gate-entry-panel">ENTER TEACHER LAB<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+          </article>
+        </section>
+        <section id="gate-entry-panel" class="gate-entry-panel" aria-labelledby="gate-panel-title" hidden></section>
+      </div>
+      <p class="gate-device-note">A browser-based learning adventure. Continue with your saved progress on this device.</p>
+      <button type="button" class="gate-gallery-toggle" data-action-gallery aria-expanded="false" aria-controls="gate-exhibits">Explore the six exhibits <span aria-hidden="true">+</span></button>
+    </main>
+    <section id="gate-exhibits" class="gate-exhibits" aria-label="Six human-body exhibits">
+      <button type="button" class="gate-exhibit exhibit-left exhibit-near" data-exhibit="0"><span class="gate-exhibit-index">01 / BODY SHIELD</span><img src="assets/home-expedition/01-shield.webp" alt="Skin cutaway with hair follicles, glands and connective tissue." width="440" height="294"><strong>Integumentary System</strong><small>Epidermis · dermis · receptors</small></button>
+      <button type="button" class="gate-exhibit exhibit-left exhibit-middle" data-exhibit="1"><span class="gate-exhibit-index">02 / FRAMEWORK</span><img src="assets/home-expedition/02-framework.webp" alt="Skeleton and rib cage anatomical study." width="440" height="294"><strong>Skeletal System</strong><small>Living bone · marrow · joints</small></button>
+      <button type="button" class="gate-exhibit exhibit-left exhibit-far" data-exhibit="2"><span class="gate-exhibit-index">03 / POWER</span><img src="assets/home-expedition/03-power.webp" alt="Muscle bellies and tendons of a flexed arm." width="440" height="294"><strong>Muscular System</strong><small>Muscle fibres · tendons · movement</small></button>
+      <button type="button" class="gate-exhibit exhibit-right exhibit-far" data-exhibit="3"><span class="gate-exhibit-index">04 / OXYGEN</span><img src="assets/home-expedition/04-oxygen.webp" alt="Lungs, airways and diaphragm anatomical study." width="440" height="294"><strong>Respiratory System</strong><small>Bronchi · alveoli · diaphragm</small></button>
+      <button type="button" class="gate-exhibit exhibit-right exhibit-middle" data-exhibit="4"><span class="gate-exhibit-index">05 / TRANSPORT</span><img src="assets/home-expedition/05-transport.webp" alt="Heart cutaway showing chambers, valves and major vessels." width="440" height="294"><strong>Circulatory System</strong><small>Chambers · valves · circulation</small></button>
+      <button type="button" class="gate-exhibit exhibit-right exhibit-near" data-exhibit="5"><span class="gate-exhibit-index">06 / BALANCE</span><img src="assets/home-expedition/06-balance.webp" alt="Kidney cutaway showing cortex, medulla, pelvis and ureter." width="440" height="294"><strong>Excretory System</strong><small>Cortex · medulla · renal pelvis</small></button>
+    </section>
+    <footer class="gate-footer"><span>UM AL-EMARAT SCHOOL</span><span>SCIENCE · CURIOSITY · DISCOVERY</span><a href="index.html#privacy">Your privacy<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 17 17 7H8m9 0v9"/></svg></a></footer>
+    <dialog class="gate-exhibit-dialog" aria-labelledby="gate-exhibit-title"><button type="button" class="gate-dialog-close" data-close-exhibit aria-label="Close exhibit">Close ×</button><div data-exhibit-detail></div></dialog>
+  </div>
+  <noscript><div class="gate-noscript"><h1>Welcome to InnerU</h1><p>Open your existing workspace:</p><a href="index.html#dashboard">Student dashboard</a><a href="index.html#teacher">Teacher tools</a></div></noscript>
+</body>
+</html>

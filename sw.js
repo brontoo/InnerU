@@ -7,7 +7,7 @@
      * large immutable assets (3D models, images, fonts): stale-while-revalidate
    Bump VERSION when the shell changes so old caches are dropped.
    ========================================================================== */
-const VERSION = 'inneru-v33';
+const VERSION = 'inneru-v34';
 const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './home-expedition.css?v=discovery-gallery-1', './connection-art.css?v=everyday-anatomy-1', './body-team.css?v=body-team-1', './detective.css?v=field-lab-1', './student-dashboard.css?v=student-space-1', './muscle.css?v=arm-team-1', './muscle-learning.css', './muscle-pair.css?v=arm-team-1', './muscle-studio.css?v=muscle-studio-1',
@@ -16,8 +16,13 @@ const SHELL = [
   './content-skeletal.js', './app.js?v=framework-path-1', './anatomy.js', './visuals.js', './body-atlas-ui.js', './circ-studies.js?v=circ-route-1', './circ-route-quest.js?v=circ-route-1', './circ-activities.js?v=circ-atlas-1', './heart-lab-ui.js?v=heart-studio-1', './heart-explorer.js?v=heart-studio-1', './heart-anatomy.js?v=heart-studio-1', './circulatory.js?v=heart-studio-1', './circ-map-art.js?v=circ-atlas-1',
   './skeletal-map-art.js?v=framework-path-1', './skeletal-activities.js?v=framework-path-1', './skeletal-course.js?v=framework-path-1', './rich-pages.js?v=skeletal-studies-1', './muscle-visuals.js', './muscle-pair.js?v=arm-team-1', './muscle-pair-view.js?v=arm-team-1', './muscle-pair-model.js?v=arm-team-1', './muscle-learning.js?v=arm-team-1', './muscle-atlas-ui.js?v=muscle-studio-1', './muscle.js?v=student-space-1', './muscle-explorer.js?v=muscle-studio-1', './muscle-model.js?v=muscle-studio-1',
   './circulatory-integration.js', './resp-ventilation.js?v=ventilation-1', './resp-activities.js?v=ventilation-1', './respiratory.js?v=resp-quests-2', './resp-map-art.js?v=resp-anatomy-1', './integ-activities.js?v=skin-quests-6', './integumentary.js?v=skin-quests-6', './skin-explorer.js?v=dermis-anatomy-4', './skin-model.js?v=dermis-anatomy-4', './integ-map-art.js?v=skin-card-art-5', './excretory-art.js?v=renal-studies-1', './excretory.js?v=renal-studies-1', './excretory-explorer.js?v=renal-cutaway-5', './excretory-model.js?v=renal-anatomy-2', './exc-map-art.js',
-  './capstone.js?v=student-space-1', './home-expedition.js?v=discovery-gallery-1', './connection-art.js?v=everyday-anatomy-1', './body-team.js?v=body-team-1', './detective-data.js?v=field-lab-1', './detective-tools.js?v=field-lab-1', './detective.js?v=field-lab-1', './a11y.js', './teacher.js?v=student-space-1', './learning-progress.js?v=student-space-1', './student-dashboard.js?v=student-space-1', './pwa.js', './review.js?v=recall-studio-1', './habit.js?v=field-lab-1', './muscle-force.js', './glossary.js', './speech.js', './content-skeletal.js',
-  './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg'
+  './capstone.js?v=student-space-1', './home-expedition.js?v=discovery-gallery-1', './connection-art.js?v=everyday-anatomy-1', './body-team.js?v=body-team-1', './detective-data.js?v=field-lab-1', './detective-tools.js?v=field-lab-1', './detective.js?v=field-lab-1', './a11y.js', './teacher.js?v=student-space-1', './learning-progress.js?v=student-space-1', './student-dashboard.js?v=student-space-1', './pwa.js', './review.js?v=recall-studio-1', './habit.js?v=field-lab-1', './muscle-force.js', './glossary.js', './speech.js',
+  './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg',
+  './login.html', './login.css?v=discovery-entry-1', './login.js?v=discovery-entry-1',
+  './assets/login/discovery-tunnel.webp',
+  './assets/home-expedition/01-shield.webp', './assets/home-expedition/02-framework.webp',
+  './assets/home-expedition/03-power.webp', './assets/home-expedition/04-oxygen.webp',
+  './assets/home-expedition/05-transport.webp', './assets/home-expedition/06-balance.webp'
 ];
 const ASSET_RE = /\.(glb|webp|png|jpg|jpeg|svg|woff2?|ttf)$/i;
 
