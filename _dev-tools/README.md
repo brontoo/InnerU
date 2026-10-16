@@ -90,3 +90,11 @@ world previews, real route navigation and resume links, saved-state preservation
 System Key collection and final gates, keyboard access, responsive layouts and
 motion preferences. See [HOME-EXPEDITION.md](HOME-EXPEDITION.md) for progress rules
 and artwork sources.
+
+## Everyday connection scenes
+
+Run `python3 _dev-tools/verify-connection-scenes.py` to explore all six original
+action/anatomy scenes and their 18 structure explanations, verify magnification,
+keyboard and modal behavior, motion preferences, responsive layouts and saved
+progress, and complete the original connection challenge with its 35 XP reward.
+See [CONNECTION-SCENES.md](CONNECTION-SCENES.md) for anatomical choices and artwork.
