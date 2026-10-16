@@ -1,25 +1,12 @@
-/* ============================================================================
-   Review — retrieval practice with spacing (a Leitner box system)
-   ----------------------------------------------------------------------------
-   Why this page exists: re-reading feels productive but remembering improves most
-   when you *retrieve* an answer after a delay. Every item lives in a box; a right
-   answer moves it to the next box (1, 3, 7 then 16 days), a wrong answer sends it
-   back to box 0, so weak material returns sooner.
-   Everything is stored in the same browser-only state as the rest of the site.
-   ========================================================================== */
+/* InnerU Recall Studio: stable question IDs, spaced retrieval and six-system sessions. */
 (() => {
   'use strict';
-
-  const DAY = 86400000;
-  const INTERVALS = [0, 1, 3, 7, 16];
-  const SESSION_SIZE = 10;
-
   const POOL = [ ['integ','Which layer of the skin faces the outside world?',['Epidermis','Dermis','Subcutaneous layer'],0,'The epidermis is the outer covering; the dermis underneath holds follicles, glands and nerves.'],
  ['integ','Where are hair follicles and sweat glands found?',['Dermis','Epidermis','Subcutaneous layer'],0,'The dermis houses the follicles, glands, nerves and blood vessels.'],
  ['integ','Which protein strengthens hair, nails and the skin surface?',['Keratin','Melanin','Collagen'],0,'Keratin is the tough structural protein; melanin is the pigment.'],
  ['integ','How does sweating cool the body?',['Evaporation removes heat from the skin','Sweat blocks heat from reaching the body','Sweat cools blood inside the vessels'],0,'Cooling comes from evaporation, which takes heat from the skin surface.'],
  ['integ','What is the main job of melanin?',['It reduces UV damage to skin cells','It waterproofs the skin','It stores energy as fat'],0,'Melanin absorbs UV radiation, so it protects DNA in skin cells.'],
- ['integ','Which structures detect touch and pressure?',['Nerve endings in the dermis','Sebaceous glands','Arrector pili muscles'],0,'Sensory receptors in the dermis send information to the nervous system.'],
+ ['integ','Which skin structures detect touch and pressure?',['Sensory nerve endings and receptors','Sebaceous glands','Arrector pili muscles'],0,'Mechanoreceptors in the skin respond to mechanical stimuli and send signals through sensory nerves.'],
  ['integ','What do sebaceous glands secrete?',['Oil that lubricates skin and hair','Sweat that cools the body','Melanin that colours the skin'],0,'Sebaceous glands release sebum, an oil that keeps skin and hair supple.'],
  ['integ','Which layer insulates the body and cushions it?',['Subcutaneous fat','Epidermis','The keratin layer'],0,'Fat and connective tissue under the dermis insulate and cushion.'],
  ['integ','What happens first when the skin is cut?',['A clot and scab form','New hair follicles grow','Melanin production increases'],0,'Blood clots seal the wound before new tissue is built.'],
@@ -36,7 +23,7 @@
  ['muscle','Which muscle type is under voluntary control?',['Skeletal muscle','Smooth muscle','Cardiac muscle'],0,'Skeletal muscle is usually voluntary; smooth and cardiac muscle are involuntary.'],
  ['muscle','Where is smooth muscle found?',['In the walls of internal organs and blood vessels','Only in the heart','Attached to the skeleton'],0,'Smooth muscle lines hollow organs and vessels; cardiac muscle is only in the heart.'],
  ['muscle','What happens inside a sarcomere during contraction?',['Actin and myosin filaments slide past each other','The filaments themselves shorten','The bone shortens'],0,'The sliding filament model: filaments slide, the bands change, the sarcomere shortens.'],
- ['muscle','Why does a muscle fatigue during intense exercise?',['Anaerobic respiration builds up lactate','ATP becomes unlimited','Oxygen supply increases'],0,'When oxygen supply cannot keep up, anaerobic respiration contributes ATP and lactate accumulates.'],
+ ['muscle','Why can muscle force fall during intense exercise?',['Changes in energy supply and ion balance can limit force','ATP becomes unlimited','Bones stop acting as levers'],0,'Fatigue has several causes, including changes in energy supply, metabolites and ion balance. Lactate alone does not explain muscle fatigue.'],
  ['muscle','Which muscle fibre type resists fatigue best?',['Slow-twitch','Fast-twitch','Both resist equally'],0,'Slow-twitch fibres have more mitochondria and myoglobin, so they resist fatigue.'],
  ['muscle','What is ATP used for in a muscle cell?',['It powers the contraction','It carries oxygen in the blood','It stores calcium in the bone'],0,'ATP supplies the energy for the cross-bridge cycle.'],
  ['muscle','What does a tendon do?',['It transmits the muscle\'s pull to the bone','It reduces friction inside the joint','It connects bone to bone'],0,'Tendons attach muscle to bone; ligaments attach bone to bone.'],
@@ -47,7 +34,7 @@
  ['respiratory','What does the diaphragm do when you breathe in?',['It contracts and moves down','It relaxes and moves up','It stays completely still'],0,'Contraction flattens the diaphragm, enlarging the chest.'],
  ['respiratory','What happens to the pressure inside the chest during inhalation?',['It falls below atmospheric pressure','It rises above atmospheric pressure','It does not change'],0,'Air flows from higher to lower pressure, so a fall in pressure draws air in.'],
  ['respiratory','Which condition damages the alveolar walls?',['Emphysema','Bronchitis','Asthma'],0,'Emphysema destroys alveolar walls, reducing the exchange surface.'],
- ['respiratory','What is the main preventable cause of lung cancer?',['Smoking and vaping','Cold weather','Regular exercise'],0,'Most lung cancers are linked to inhaled smoke, including vaping aerosols.'],
+ ['respiratory','What is the main preventable cause of lung cancer?',['Tobacco smoking','Cold weather','Regular exercise'],0,'Tobacco smoke contains carcinogens that damage cells. Avoiding tobacco smoking greatly reduces lung-cancer risk.'],
  ['respiratory','Why does breathing rate rise during exercise?',['Energy demand and carbon dioxide production increase','The alveoli disappear','The heart stops working'],0,'More respiration means more oxygen needed and more carbon dioxide to remove.'],
  ['respiratory','What carries most of the oxygen in blood?',['Haemoglobin in red blood cells','Plasma on its own','Platelets'],0,'Haemoglobin binds oxygen; only a small amount dissolves in plasma.'],
  ['circ','Which vessel carries blood away from the heart?',['An artery','A vein','A capillary'],0,'Arteries carry blood away from the heart, whatever its oxygen content.'],
@@ -69,228 +56,53 @@
  ['excretory','What does small, concentrated urine suggest?',['The body is conserving water','The kidneys have stopped working','Too much water is being removed'],0,'More ADH means more water is reabsorbed, so less dilute urine is produced.'],
  ['excretory','What is dialysis used for?',['To filter blood when the kidneys cannot','To increase urine production','To store urine'],0,'Dialysis performs the filtering job of the kidneys artificially.']];
 
-  const WORLDS = {
-    integ: ['Body Shield', '#integumentary'],
-    world: ['Framework', '#world'],
-    muscle: ['Power', '#muscle'],
-    respiratory: ['Oxygen', '#respiratory'],
-    circ: ['Transport', '#circulatory'],
-    excretory: ['Filter', '#excretory']
-  };
-
-  const ITEMS = POOL.map((row, i) => ({ id: 'r' + i, world: row[0], q: row[1], options: row[2], answer: row[3], why: row[4] }));
-  const byId = id => ITEMS.find(i => i.id === id);
-
-  function data() {
-    if (!state.review || typeof state.review !== 'object') state.review = {};
-    const r = state.review;
-    r.items = r.items && typeof r.items === 'object' ? r.items : {};
-    r.answers = Number(r.answers) || 0;
-    r.correct = Number(r.correct) || 0;
-    r.sessions = Number(r.sessions) || 0;
-    return r;
+  const DAY=86400000,INTERVALS=[0,1,3,7,16],e=esc;
+  const WORLDS=[
+    {id:'integ',name:'Integumentary',specimen:'Skin',tag:'BODY SHIELD',image:'01-shield',href:'#integumentary',slice:'integumentary',note:'Protect. Sense. Repair.'},
+    {id:'world',name:'Skeletal',specimen:'Bones',tag:'FRAMEWORK',image:'02-framework',href:'#world',slice:null,note:'Support. Move. Rebuild.'},
+    {id:'muscle',name:'Muscular',specimen:'Muscles',tag:'POWER',image:'03-power',href:'#muscle',slice:'muscle',note:'Contract. Pull. Power.'},
+    {id:'respiratory',name:'Respiratory',specimen:'Lungs',tag:'OXYGEN',image:'04-oxygen',href:'#respiratory',slice:'respiratory',note:'Ventilate. Exchange. Deliver.'},
+    {id:'circ',name:'Circulatory',specimen:'Heart',tag:'TRANSPORT',image:'05-transport',href:'#circulatory',slice:'circ',note:'Pump. Carry. Connect.'},
+    {id:'excretory',name:'Excretory',specimen:'Kidneys',tag:'BALANCE',image:'06-balance',href:'#excretory',slice:'excretory',note:'Filter. Recover. Balance.'}
+  ];
+  const ITEMS=POOL.map((row,i)=>({id:'r'+i,world:row[0],q:row[1],options:row[2],answer:row[3],why:row[4]}));
+  const byId=id=>ITEMS.find(i=>i.id===id),world=id=>WORLDS.find(w=>w.id===id),image=w=>'assets/home-expedition/'+w.image+'.webp';
+  const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>';
+  const localDay=(time=Date.now())=>{const d=new Date(time);return new Date(time-d.getTimezoneOffset()*60000).toISOString().slice(0,10);};
+  function data(){const r=state.review||{};return {items:r.items&&typeof r.items==='object'?r.items:{},answers:Math.max(0,Number(r.answers)||0),correct:Math.max(0,Number(r.correct)||0),sessions:Math.max(0,Number(r.sessions)||0),days:r.days&&typeof r.days==='object'?r.days:{}};}
+  const entry=id=>{const v=data().items[id];return v&&typeof v==='object'?v:null;};
+  const boxOf=id=>entry(id)?Math.min(4,Math.max(0,Math.floor(Number(entry(id).b)||0))):0;
+  const dueAt=id=>{const v=entry(id);if(!v)return 0;const t=Number(v.d)||((Number(v.t)||0)+INTERVALS[boxOf(id)]*DAY);return Number.isFinite(t)?t:0;};
+  const isNew=id=>!entry(id),isDue=(id,now=Date.now())=>!isNew(id)&&dueAt(id)<=now;
+  const dueLabel=time=>time<=Date.now()?'Ready now':new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(new Date(time));
+  function stats(){const r=data(),now=Date.now(),future=ITEMS.map(i=>dueAt(i.id)).filter(t=>t>now).sort((a,b)=>a-b),days=future.length?Math.max(1,Math.ceil((future[0]-now)/DAY)):0;return {pool:ITEMS.length,due:ITEMS.filter(i=>isDue(i.id,now)).length,fresh:ITEMS.filter(i=>isNew(i.id)).length,seen:ITEMS.filter(i=>!isNew(i.id)).length,accuracy:r.answers?Math.round(r.correct/r.answers*100):null,next:days===1?'tomorrow':days?'in '+days+' days':'nothing scheduled yet',nextAt:future[0]||null,...r};}
+  function flagged(){const rows=[];for(const w of WORLDS){const weak=w.slice?state[w.slice]?.weak:state.weak;for(const id of Array.isArray(weak)?weak:[]){const m=String(id).match(/^(?:m)?([1-8])(?:-|$)/);if(!m)continue;const n=+m[1],href=w.id==='world'?'#mission/'+n:w.id==='muscle'?'#muscle/mission/'+n:w.href+'/'+(w.id==='circ'?'':'mission/')+n;rows.push({world:w.id,label:w.name+' · mission '+n,href});}}return rows.filter((r,i)=>rows.findIndex(x=>x.href===r.href)===i);}
+  let selection=new Set(WORLDS.map(w=>w.id)),size=10,mode='mix',stage='new',expanded=false,paused=false,active=null,dispose=()=>{};
+  function queue(n=size,which=mode,selected=selection){const now=Date.now(),weak=new Set(flagged().map(r=>r.world)),priority=i=>isDue(i.id,now)?0:isNew(i.id)?1:2,sort=(a,b)=>priority(a)-priority(b)||Number(weak.has(b.world))-Number(weak.has(a.world))||dueAt(a.id)-dueAt(b.id)||+a.id.slice(1)- +b.id.slice(1),pool=ITEMS.filter(i=>selected.has(i.world));if(which==='due')return pool.filter(i=>isDue(i.id,now)).sort(sort).slice(0,n);const ids=WORLDS.filter(w=>selected.has(w.id)).map(w=>w.id),rotation=data().sessions%Math.max(1,ids.length),order=ids.slice(rotation).concat(ids.slice(0,rotation)),bins=order.map(id=>pool.filter(i=>i.world===id).sort(sort)),out=[];while(out.length<Math.min(n,pool.length)){let added=false;for(const bin of bins){if(bin.length&&out.length<n){out.push(bin.shift());added=true;}}if(!added)break;}return out;}
+  function record(item,right){const r=data(),now=Date.now(),old=entry(item.id),early=old&&!isDue(item.id,now),b=right?(early?boxOf(item.id):Math.min(4,boxOf(item.id)+1)):0,d=right&&early?dueAt(item.id):now+INTERVALS[b]*DAY;r.items[item.id]={b,t:now,d};r.answers++;if(right)r.correct++;const key=localDay(now),day=r.days[key]||{answers:0,correct:0};r.days[key]={answers:(Number(day.answers)||0)+1,correct:(Number(day.correct)||0)+Number(right)};r.days=Object.fromEntries(Object.entries(r.days).sort(([a],[b])=>a.localeCompare(b)).slice(-90));state.review={...(state.review||{}),...r};save();return {b,d,early:!!early};}
+  const progress=(value,label)=>`<div class="rs-track" role="progressbar" aria-label="${e(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${value}"><i style="width:${value}%"></i></div>`;
+  const motionButton=()=>'<button type="button" class="rs-motion" data-rs-action-motion aria-pressed="false">Pause visual motion</button>';
+  function render(html,focus){dispose();layout(`<section class="review-world rs-studio" aria-label="InnerU Recall Studio">${html}</section>`,'dashboard');document.title='InnerU · Recall Studio';const crumb=document.querySelector('.topbar .crumb');if(crumb)crumb.textContent='Grade 10 Science / Recall Studio';const reviewLink=document.querySelector('.sidebar .navlink[href="#review"]');document.querySelectorAll('.sidebar .navlink.active').forEach(a=>a.classList.remove('active'));if(reviewLink){reviewLink.classList.add('active');reviewLink.setAttribute('aria-current','page');}const root=document.querySelector('.rs-studio'),controller=new AbortController(),events={signal:controller.signal},media=matchMedia('(prefers-reduced-motion: reduce)');let dead=false;function motion(){const reduced=media.matches||document.body.classList.contains('motionoff');root.dataset.rsMotion=paused||reduced?'off':'on';root.querySelectorAll('[data-rs-action-motion]').forEach(b=>{b.disabled=reduced;b.textContent=reduced?'Reduced motion':paused?'Play visual motion':'Pause visual motion';b.setAttribute('aria-pressed',String(paused||reduced));});}root.addEventListener('click',event=>{if(event.target.closest('[data-rs-action-motion]')){paused=!paused;motion();}},events);media.addEventListener('change',motion,events);document.addEventListener('visibilitychange',()=>root.classList.toggle('rs-hidden',document.hidden),events);const prefs=new MutationObserver(motion);prefs.observe(document.body,{attributes:true,attributeFilter:['class']});const visible=new IntersectionObserver(entries=>entries.forEach(item=>item.target.classList.toggle('rs-in-view',item.isIntersecting)));root.querySelectorAll('.rs-constellation,.rs-rhythm,.rs-question-art').forEach(el=>visible.observe(el));const removal=new MutationObserver(()=>{if(!root.isConnected)cleanup();});removal.observe(document.getElementById('app'),{childList:true});function cleanup(){if(dead)return;dead=true;controller.abort();prefs.disconnect();visible.disconnect();removal.disconnect();root.querySelectorAll('dialog[open]').forEach(d=>d.close());}dispose=cleanup;motion();if(focus){const el=root.querySelector(focus);if(el){el.tabIndex=-1;el.focus({preventScroll:true});el.scrollIntoView({block:'start',behavior:'instant'});}}return {root,events};}
+  function constellation(){return `<div class="rs-constellation"><svg viewBox="0 0 420 360" class="rs-orbit-lines" aria-hidden="true"><path d="M210 63 350 120 350 244 210 302 70 244 70 120Z"/><path d="m210 63 0 239M70 120l280 124M70 244l280-124"/></svg><div class="rs-orbit-core"><img src="inneru-mark-light.svg?v=2" alt="" width="45" height="50"><span>ONE BODY.<br>SIX CONNECTIONS.</span></div>${WORLDS.map((w,i)=>`<button type="button" data-rs-orbit="${w.id}" class="rs-orbit-node rs-node-${i}" aria-label="Focus your review on the ${w.name.toLowerCase()} system"><img src="${image(w)}" alt="" width="120" height="80"><span>${w.specimen}</span></button>`).join('')}</div>`;}
+  function stageMarkup(){const stages=[['new','Unseen','A fresh discovery'],['0','Rebuild','Ready to return'],['1','1 day','First return'],['2','3 days','Give it space'],['3','7 days','Keep connecting'],['4','16 days','A longer interval']];return `<div class="rs-stage-tabs" role="tablist" aria-label="Inspect your spaced review stages">${stages.map(([id,title,note])=>{const count=ITEMS.filter(i=>id==='new'?isNew(i.id):!isNew(i.id)&&boxOf(i.id)===+id).length;return `<button type="button" role="tab" data-rs-stage="${id}" id="rs-stage-${id}" aria-controls="rs-stage-panel" aria-selected="${stage===id}" tabindex="${stage===id?0:-1}"><b>${count}</b><strong>${title}</strong><small>${note}</small></button>`;}).join('')}</div><div id="rs-stage-panel" class="rs-stage-panel" role="tabpanel" aria-labelledby="rs-stage-${stage}"></div>`;}
+  function rhythmMarkup(){const r=data();return `<section class="rs-rhythm"><span class="rs-kicker">YOUR RECALL RHYTHM</span><h3>A little, then a little later.</h3><p>Answers recorded here over the last seven days.</p><div class="rs-week">${Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const key=localDay(d.getTime()),count=Math.max(0,Number(r.days[key]?.answers)||0),max=Math.max(5,...Object.values(r.days).map(v=>Number(v.answers)||0));return `<div><b>${count}</b><span class="rs-day-column"><i style="height:${count?Math.max(5,count/max*100):0}%"></i></span><small>${new Intl.DateTimeFormat(undefined,{weekday:'short'}).format(d)}</small></div>`;}).join('')}</div><small class="rs-note">Your rhythm starts with recorded answers. Earlier review totals stay in your statistics.</small></section>`;}
+  function homePage(){const s=stats(),weak=flagged();const {root,events}=render(`<header class="rs-page-heading"><div><span class="rs-kicker">THE INNERU RECALL STUDIO</span><h1>Bring your discoveries back.</h1></div><div>${motionButton()}<a href="#dashboard">My dashboard ${arrow}</a></div></header><section class="review-hero rs-hero"><div class="rs-hero-copy"><span class="rs-kicker">RECALL → CONNECT → REMEMBER</span><h2>Make it<br><em>stick.</em></h2><p>Build stronger recall, one connection at a time. Choose your systems, follow the clues and see your next review take shape.</p><button type="button" class="rs-button rs-light" data-rs-jump>Build my practice ${arrow}</button><span class="rs-hero-note">54 anatomical questions / six connected systems</span></div>${constellation()}</section><div class="review-stats rs-stats"><article><span class="rs-kicker">READY TO RETURN</span><b data-rs-due>${s.due}</b><p>${s.fresh} questions waiting for a first try</p></article><article><span class="rs-kicker">YOUR RECALL ACCURACY</span><b data-rs-accuracy>${s.accuracy===null?'—':s.accuracy+'%'}</b><p>${s.answers?s.correct+' / '+s.answers+' answers correct':'Your first answer starts your record'}</p></article><article><span class="rs-kicker">YOUR NEXT RETURN</span><b class="rs-next-date">${s.due?'Ready now':s.nextAt?dueLabel(s.nextAt):'A fresh start'}</b><p>${s.due?'Your due questions are ready':s.nextAt?'Next scheduled review '+s.next:s.sessions+' completed sessions · begin when you’re ready'}</p></article></div>${active&&!active.finished?`<section class="rs-resume"><div><span class="rs-kicker">YOUR SESSION IS PAUSED IN THIS TAB</span><h3>${active.results.length} / ${active.items.length} answered · ${active.practice?'retry practice':'review session'}</h3><p>Recorded answers are saved. Resume this session before starting a new one.</p></div><button type="button" class="rs-button" data-rs-resume>Resume my trail ${arrow}</button></section>`:''}<div class="rs-home-grid"><section class="rs-builder" id="rs-practice-builder" aria-labelledby="rs-builder-title"><header><span class="rs-kicker">01 / BUILD YOUR PRACTICE</span><h2 id="rs-builder-title">Where will your curiosity go?</h2><p>Choose one system for focus, or connect all six. Every card is selectable.</p></header><div class="rs-builder-toolbar"><div role="group" aria-label="Review selection mode"><button type="button" data-rs-mode="mix" aria-pressed="${mode==='mix'}">Balanced mix</button><button type="button" data-rs-mode="due" aria-pressed="${mode==='due'}">Due now</button></div><button type="button" class="rs-text-button" data-rs-all>Select all six</button></div><div class="rs-system-grid">${WORLDS.map(w=>{const items=ITEMS.filter(i=>i.world===w.id),seen=items.filter(i=>!isNew(i.id)).length,due=items.filter(i=>isDue(i.id)).length;return `<button type="button" class="rs-system" data-rs-system="${w.id}" aria-pressed="${selection.has(w.id)}"><span class="rs-system-art"><img src="${image(w)}" alt="" width="440" height="294"><b aria-hidden="true">${selection.has(w.id)?'✓':'+'}</b></span><span class="rs-kicker">${w.tag}</span><strong>${w.name}</strong><small>${w.note}</small>${progress(Math.round(seen/items.length*100),w.name+' review questions explored')}<span class="rs-system-status">${seen} / ${items.length} explored · ${due} due</span></button>`;}).join('')}</div><div class="rs-launch"><div><span class="rs-kicker">YOUR SESSION LENGTH</span><div class="rs-size" role="group" aria-label="Question count"><button type="button" id="review-quick" data-rs-size="5" aria-pressed="${size===5}">Quick 5</button><button type="button" data-rs-size="10" aria-pressed="${size===10}">Deep dive 10</button></div></div><div class="rs-launch-action"><p data-rs-session-description role="status"></p><button type="button" class="rs-button" id="review-start">Start my recall trail ${arrow}</button></div></div><p class="rs-note">Answers update your review plan. Your mission XP and badges stay linked to completed mission tasks.</p></section><aside class="rs-home-side"><section class="rs-how"><span class="rs-kicker">A SMARTER WAY TO REMEMBER</span><h3>Find it.<br>Retrieve it.<br>Return to it.</h3><ol><li><b>01</b><span>Think before you reveal<small>Choose your answer, then check your recall.</small></span></li><li><b>02</b><span>Connect the anatomy<small>See the structure and the science behind your choice.</small></span></li><li><b>03</b><span>Give memory some space<small>Correct, due answers move to a longer interval.</small></span></li></ol><details><summary>What do the review stages mean?</summary><p>Correct answers to new or due questions progress through 1, 3, 7 and 16-day intervals. Missed questions return to Rebuild and are due now. Correct early practice keeps the existing due date.</p></details></section>${rhythmMarkup()}</aside></div><section class="rs-spacing"><header><span class="rs-kicker">02 / YOUR MEMORY MAP</span><h2>Watch your review plan grow.</h2><p>Explore a stage to see which ideas are waiting there. Stages describe your practice schedule.</p></header>${stageMarkup()}</section>${weak.length?`<section class="rs-weak"><div><span class="rs-kicker">FROM YOUR MISSION CLUES</span><h2>Give these connections another look.</h2><p>Revisit a lesson you flagged, then return for a new retrieval challenge.</p></div><div class="review-weaklist">${weak.map(r=>`<a class="review-weak" href="${r.href}">${e(r.label)} ${arrow}</a>`).join('')}</div></section>`:''}<section class="rs-data"><details><summary>Manage my review history</summary><p>This resets only your review schedule, accuracy and session count. Your missions, XP, badges and System Keys are preserved.</p><button type="button" class="rs-text-button" id="review-reset">Reset my review history</button><div data-rs-reset-area></div></details></section><dialog class="rs-confirm" aria-labelledby="rs-confirm-title"><h2 id="rs-confirm-title">Start a new trail?</h2><p>Your answered questions are already saved. Starting a new session closes the paused trail in this tab.</p><button type="button" class="rs-button" data-rs-new>Start a new session</button><button type="button" class="rs-text-button" data-rs-keep>Keep my paused session</button></dialog>`);
+    function setup(){root.querySelectorAll('[data-rs-system]').forEach(b=>{const on=selection.has(b.dataset.rsSystem);b.setAttribute('aria-pressed',String(on));b.querySelector('.rs-system-art b').textContent=on?'✓':'+';});root.querySelectorAll('[data-rs-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rsMode===mode)));root.querySelectorAll('[data-rs-size]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.rsSize===size)));const items=queue(),description=root.querySelector('[data-rs-session-description]');description.textContent=selection.size===0?'Choose at least one system to begin.':items.length===0?'No selected questions are due. Choose Balanced mix to practise.':items.length+' questions · '+selection.size+' '+(selection.size===1?'system':'systems')+' · '+(mode==='due'?'due questions first':selection.size>1?'a balanced recall trail':'focused recall');root.querySelector('#review-start').disabled=items.length===0;}
+    function stagePanel(){const items=ITEMS.filter(i=>stage==='new'?isNew(i.id):!isNew(i.id)&&boxOf(i.id)===+stage),panel=root.querySelector('#rs-stage-panel');panel.setAttribute('aria-labelledby','rs-stage-'+stage);panel.innerHTML=`<div><span class="rs-kicker">${stage==='new'?'FIRST DISCOVERIES':stage==='0'?'READY TO REBUILD':'RETURN AFTER '+INTERVALS[+stage]+' '+(stage==='1'?'DAY':'DAYS')}</span><h3>${items.length} ${items.length===1?'question':'questions'} in this stage.</h3><p>${stage==='new'?'New questions join your schedule after your first answer.':stage==='0'?'A new attempt can help rebuild this connection.':'A longer interval gives you space to retrieve the idea again. Your stored due date decides when it returns.'}</p></div><div class="rs-stage-items">${items.length?items.slice(0,expanded?items.length:3).map(i=>`<article><span>${world(i.world).name} · ${isNew(i.id)?'Not explored yet':dueLabel(dueAt(i.id))}</span><strong>${e(i.q)}</strong></article>`).join(''):'<p>Your next completed review can add a question here.</p>'}${items.length>3?`<button type="button" class="rs-text-button" data-rs-expand>${expanded?'Show fewer':'Show all '+items.length+' questions'}</button>`:''}</div>`;root.querySelectorAll('[data-rs-stage]').forEach(b=>{const yes=b.dataset.rsStage===stage;b.setAttribute('aria-selected',String(yes));b.tabIndex=yes?0:-1;});}
+    const confirm=root.querySelector('dialog');let newSize=size;
+    root.addEventListener('click',event=>{const b=event.target.closest('button');if(!b)return;if(b.hasAttribute('data-rs-orbit')){selection=new Set([b.dataset.rsOrbit]);mode='mix';setup();root.querySelector('#rs-practice-builder').scrollIntoView({behavior:root.dataset.rsMotion==='off'?'instant':'smooth'});root.querySelector('[data-rs-system="'+b.dataset.rsOrbit+'"]').focus({preventScroll:true});}else if(b.hasAttribute('data-rs-jump')){root.querySelector('#rs-builder-title').tabIndex=-1;root.querySelector('#rs-builder-title').focus();root.querySelector('#rs-practice-builder').scrollIntoView({behavior:root.dataset.rsMotion==='off'?'instant':'smooth'});}else if(b.hasAttribute('data-rs-system')){const id=b.dataset.rsSystem;selection.has(id)?selection.delete(id):selection.add(id);setup();}else if(b.hasAttribute('data-rs-all')){selection=new Set(WORLDS.map(w=>w.id));setup();}else if(b.hasAttribute('data-rs-mode')){mode=b.dataset.rsMode;setup();}else if(b.hasAttribute('data-rs-size')){size=+b.dataset.rsSize;setup();}else if(b.id==='review-start'){newSize=size;if(active&&!active.finished)confirm.showModal();else start(newSize);}else if(b.hasAttribute('data-rs-new')){confirm.close();start(newSize);}else if(b.hasAttribute('data-rs-keep'))confirm.close();else if(b.hasAttribute('data-rs-resume')){questionPage();focusTrail();}else if(b.hasAttribute('data-rs-stage')){stage=b.dataset.rsStage;expanded=false;stagePanel();}else if(b.hasAttribute('data-rs-expand')){expanded=!expanded;stagePanel();root.querySelector('[data-rs-expand]')?.focus({preventScroll:true});}else if(b.id==='review-reset'){root.querySelector('[data-rs-reset-area]').innerHTML='<p>Clear your review schedule and statistics?</p><button type="button" class="rs-button" data-rs-reset-confirm>Confirm review reset</button><button type="button" class="rs-text-button" data-rs-reset-cancel>Keep my history</button>';}else if(b.hasAttribute('data-rs-reset-cancel'))root.querySelector('[data-rs-reset-area]').replaceChildren();else if(b.hasAttribute('data-rs-reset-confirm')){state.review={items:{},answers:0,correct:0,sessions:0,days:{}};active=null;save();stage='new';expanded=false;mode='mix';homePage();}},events);
+    root.querySelector('.rs-stage-tabs').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const keys=['new','0','1','2','3','4'],i=keys.indexOf(stage);stage=keys[event.key==='Home'?0:event.key==='End'?5:(i+(event.key==='ArrowRight'?1:5))%6];expanded=false;stagePanel();root.querySelector('[data-rs-stage="'+stage+'"]').focus();},events);setup();stagePanel();
   }
-  const entry = id => { const r = data(); const e = r.items[id]; return e && typeof e === 'object' ? e : null; };
-  const boxOf = id => (entry(id) ? Math.min(4, Math.max(0, Number(entry(id).b) || 0)) : 0);
-  /* the stored due date is authoritative; fall back to box + last seen */
-  const dueAt = id => { const e = entry(id); if (!e) return 0; return Number(e.d) || ((Number(e.t) || 0) + INTERVALS[boxOf(id)] * DAY); };
-  const isNew = id => !entry(id);
-  const isDue = (id, now) => !isNew(id) && dueAt(id) <= now;
-
-  function dueCount() { const now = Date.now(); return ITEMS.filter(i => isDue(i.id, now)).length; }
-
-  /* weak material first, then overdue items, then new ones */
-  function sessionItems(size) {
-    const now = Date.now();
-    const weak = weakIds();
-    const score = id => (weak.includes(id) ? 0 : isDue(id, now) ? 1 : isNew(id) ? 2 : 3);
-    return ITEMS.slice()
-      .sort((a, b) => score(a.id) - score(b.id) || dueAt(a.id) - dueAt(b.id))
-      .slice(0, size);
+  function focusTrail(){const heading=document.querySelector('.rs-session-top h1');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}window.scrollTo(0,0);}
+  function start(n=size,items=null,practice=false){const selected=items||queue(n);if(!selected.length)return;active={items:selected,index:0,results:[],mixed:[],practice,finished:false,started:Date.now()};questionPage();focusTrail();}
+  function questionPage(){if(!active||active.finished){homePage();return;}const s=active,index=s.index,item=s.items[index],w=world(item.world),result=s.results[index];if(!s.mixed[index]){const mixed=typeof mixQ==='function'?mixQ(['q',item.options,item.answer,'why']):[null,item.options,item.answer,null];s.mixed[index]={options:mixed[1],answer:mixed[2],fresh:isNew(item.id),due:isDue(item.id)};}const {options,answer}=s.mixed[index],correct=s.results.filter(r=>r?.right).length,previous=s.results.slice(0,index+(result?1:0)),streak=previous.reduce((n,r)=>r.right?n+1:0,0),total=s.items.length,early=!s.mixed[index].fresh&&!s.mixed[index].due,{root,events}=render(`<header class="rs-session-header"><button type="button" class="rs-text-button" data-rs-pause>← Pause & return to studio</button><span class="rs-session-type">${s.practice?'RETRY PRACTICE / SCHEDULE UNCHANGED':'YOUR PERSONAL RECALL TRAIL'}</span>${motionButton()}</header><section class="rs-session-top"><div><span class="rs-kicker">${s.practice?'PRACTISE THE MISSED CONNECTIONS':'RETRIEVE / REVEAL / RECONNECT'}</span><h1>One connection at a time.</h1></div><div class="rs-session-score"><b>${correct}<small> / ${total}</small></b><span>RECALL LIGHTS</span></div></section><div class="rs-session-track"><div><span>Question ${index+1} / ${total}</span><span>${s.practice?'Practice answers stay in this session':s.results.length+' '+(s.results.length===1?'answer':'answers')+' recorded'}</span></div>${progress(Math.round(s.results.length/total*100),'Review trail answers completed')}<ol class="rs-trail" aria-label="Recall trail">${s.items.map((i,n)=>`<li class="${n===index?'is-current':''} ${s.results[n]?s.results[n].right?'is-right':'is-rebuild':''}" aria-label="Question ${n+1}: ${n===index?'current, ':''}${s.results[n]?s.results[n].right?'correct':'rebuild':'waiting'}"><span>${s.results[n]?s.results[n].right?'✓':'↺':String(n+1).padStart(2,'0')}</span><small>${world(i.world).tag}</small></li>`).join('')}</ol></div><section class="rs-question-grid" data-review-card data-review-id="${item.id}" data-review-world="${item.world}" data-review-answered="${!!result}"><figure class="rs-question-art"><div class="rs-question-image"><img src="${image(w)}" alt="Anatomical teaching study of the ${w.name.toLowerCase()} system." width="880" height="587"><span class="rs-art-scan" aria-hidden="true"></span></div><figcaption><span>${w.tag} / ANATOMY STUDY</span><button type="button" class="rs-text-button" data-rs-lens>Look closer +</button></figcaption><div class="rs-art-note"><span class="rs-kicker">STRUCTURE CONNECTS TO FUNCTION</span><strong>${w.note}</strong><p>Look at the anatomy, then retrieve the idea in your own mind.</p><a href="${w.href}">Revisit this system ${arrow}</a></div></figure><div class="rs-question-copy"><header><span class="rs-kicker">${w.name.toUpperCase()} SYSTEM / ${s.practice?'RETRY PRACTICE':s.mixed[index].fresh?'A NEW CONNECTION':s.mixed[index].due?'READY TO RETURN':'EARLY PRACTICE'}</span><span class="rs-streak">${streak?streak+' correct in a row':'Every attempt builds a connection'}</span></header><h2 id="rs-question-title">${e(item.q)}</h2>${early&&!s.practice?'<p class="rs-early-note">This question is not due yet. A correct early answer keeps its scheduled return.</p>':''}<p class="rs-question-instruction">Choose your answer, then check your recall.</p><div class="review-options" role="group" aria-label="Answer choices">${options.map((option,j)=>`<button type="button" class="rs-choice ${result?(j===answer?'is-correct':result.choice===j?'is-missed':''):''}" data-review-choice="${j}" aria-pressed="${result?.choice===j}" ${result?'disabled':''}><b>${'ABC'[j]}</b><span>${e(option)}</span>${result&&j===answer?'<i aria-label="Correct answer">✓</i>':''}</button>`).join('')}</div>${result?`<div class="review-feedback rs-feedback ${result.right?'is-right':'is-rebuild'}" tabindex="-1" role="status"><span class="rs-kicker">${result.right?'A CONNECTION RECALLED':'A CONNECTION TO REBUILD'}</span><h3>${result.right?'You found it.':'Let’s reconnect the idea.'}</h3><p>${e(item.why)}</p><div class="rs-schedule-result">${s.practice?'Practice complete · your saved review plan is unchanged.':result.right?result.schedule.early?'Your existing return date stays '+dueLabel(result.schedule.d)+'.':'Next return: '+dueLabel(result.schedule.d)+' · '+INTERVALS[result.schedule.b]+' '+(result.schedule.b===1?'day':'days')+' interval.':'Moved to Rebuild · ready to return now.'}</div></div><button type="button" class="rs-button rs-next" id="review-next">${index+1<total?'Follow the next connection':'See my recall summary'} ${arrow}</button>`:`<button type="button" class="rs-button rs-check" data-rs-check disabled>Check my recall ${arrow}</button><span class="rs-choice-note" role="status">Select an answer to unlock the science connection.</span>`}</div></section><dialog class="rs-lens" aria-labelledby="rs-lens-title"><header><div><span class="rs-kicker">ANATOMY CLOSE-UP</span><h2 id="rs-lens-title">${w.name} system</h2></div><button type="button" class="rs-text-button" data-rs-close-lens>Close ×</button></header><div class="rs-lens-window"><img src="${image(w)}" alt="Enlarged ${w.name.toLowerCase()} anatomical teaching study." width="880" height="587"></div><label for="rs-lens-zoom">Magnification <output>1.0×</output></label><input id="rs-lens-zoom" type="range" min="1" max="2.5" step=".1" value="1"><p class="rs-note">Original teaching illustration. This close-up is an anatomical context view.</p></dialog>`);
+    let chosen=null;const dialog=root.querySelector('dialog');root.addEventListener('click',event=>{const b=event.target.closest('button');if(!b)return;if(b.hasAttribute('data-review-choice')&&!s.results[index]){chosen=+b.dataset.reviewChoice;root.querySelectorAll('[data-review-choice]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));root.querySelector('[data-rs-check]').disabled=false;root.querySelector('.rs-choice-note').textContent='Answer selected. Check your recall when you’re ready.';}else if(b.hasAttribute('data-rs-check')&&chosen!==null&&!s.results[index]){const right=chosen===answer,schedule=s.practice?null:record(item,right);s.results[index]={id:item.id,right,choice:chosen,schedule};questionPage();document.querySelector('.rs-feedback')?.focus({preventScroll:true});}else if(b.id==='review-next'){if(active!==s||!s.results[index]||s.index!==index)return;if(index+1<total){s.index++;questionPage();const title=document.querySelector('#rs-question-title');if(title){title.tabIndex=-1;title.focus({preventScroll:true});title.scrollIntoView({block:'center',behavior:'instant'});}}else summaryPage();}else if(b.hasAttribute('data-rs-pause'))homePage();else if(b.hasAttribute('data-rs-lens'))dialog.showModal();else if(b.hasAttribute('data-rs-close-lens'))dialog.close();},events);
+    root.addEventListener('keydown',event=>{if(dialog.open||result||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName)||event.altKey||event.ctrlKey||event.metaKey)return;if(['1','2','3'].includes(event.key)){event.preventDefault();root.querySelector('[data-review-choice="'+(+event.key-1)+'"]').click();}},events);dialog.addEventListener('close',()=>root.querySelector('[data-rs-lens]').focus({preventScroll:true}),events);root.querySelector('#rs-lens-zoom').addEventListener('input',event=>{root.querySelector('.rs-lens-window img').style.transform='scale('+event.target.value+')';root.querySelector('output').textContent=(+event.target.value).toFixed(1)+'×';},events);
   }
-
-  function weakIds() {
-    const out = [];
-    (state.weak || []).forEach(w => { const [n, i] = String(w).split('-').map(Number); if (n === 1) out.push('r0'); });
-    const slices = ['integumentary', 'respiratory', 'excretory'];
-    return out;
+  function summaryPage(){if(!active)return;const s=active;if(!s.finished&&!s.practice){state.review={...(state.review||{}),...data(),sessions:data().sessions+1};save();}s.finished=true;const score=s.results.filter(r=>r.right).length,total=s.items.length,missed=s.items.filter((item,i)=>!s.results[i]?.right),systems=[...new Set(s.items.map(i=>i.world))],{root,events}=render(`<header class="rs-page-heading"><div><span class="rs-kicker">${s.practice?'PRACTICE COMPLETE':'SESSION COMPLETE'}</span><h1>Your connections are growing.</h1></div>${motionButton()}</header><section class="review-hero rs-summary-hero"><div><span class="rs-kicker">${s.practice?'A SECOND LOOK / NO SCHEDULE CHANGES':'YOUR RECALL TRAIL / COMPLETE'}</span><h2>${score}<small> / ${total}</small><em>connections recalled.</em></h2><p>${score===total?'Every connection recalled. Give these ideas some space before returning.':score>=total*.5?'You’re building the picture. The missed connections are ready for a thoughtful second look.':'You have a clearer map of what to revisit. Use the anatomy and explanations to rebuild each connection.'}</p></div><div class="rs-summary-seal" aria-label="${score} correct answers out of ${total}"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="86" fill="none" stroke="#6b9081" stroke-width="2"/><circle cx="100" cy="100" r="86" fill="none" stroke="#d6c38e" stroke-width="5" stroke-dasharray="540.35" stroke-dashoffset="${540.35*(1-score/total)}" transform="rotate(-90 100 100)"/></svg><b>${Math.round(score/total*100)}<small>%</small></b><span>THIS ${s.practice?'PRACTICE':'SESSION'}</span></div></section><div class="rs-summary-systems">${systems.map(id=>{const w=world(id),results=s.results.filter(r=>byId(r.id).world===id),right=results.filter(r=>r.right).length;return `<article><img src="${image(w)}" alt="" width="220" height="147"><div><span class="rs-kicker">${w.name}</span><b>${right} / ${results.length}</b><small>connections recalled</small></div></article>`;}).join('')}</div><div class="rs-summary-grid"><section class="rs-return-plan"><span class="rs-kicker">YOUR NEXT CONNECTIONS</span><h2>${s.practice?'Bring the idea back later.':'Your review plan is ready.'}</h2><p>${s.practice?'This retry helped you revisit the explanation. Your original scheduled review record stays unchanged.':'Correct new or due questions return after more space. Missed questions remain due now. Correct early practice keeps its original return date.'}</p><div class="rs-result-list">${s.items.map((item,i)=>`<article class="${s.results[i]?.right?'is-right':'is-rebuild'}"><span aria-hidden="true">${s.results[i]?.right?'✓':'↺'}</span><div><strong>${e(item.q)}</strong><small>${world(item.world).name} · ${s.practice?'Saved schedule unchanged':dueLabel(dueAt(item.id))}</small></div></article>`).join('')}</div></section><aside class="rs-summary-actions"><span class="rs-kicker">KEEP THE CURIOSITY GOING</span><h3>A new connection starts with a return.</h3>${missed.length?`<button type="button" class="rs-button" data-rs-retry>Rebuild ${missed.length} missed ${missed.length===1?'connection':'connections'} ${arrow}</button><p class="rs-note">Retry practice does not change your saved schedule or accuracy.</p>`:'<p>You recalled every connection in this trail. Your next scheduled review is '+stats().next+'.</p>'}<button type="button" class="rs-button rs-outline" data-rs-home>Back to the studio ${arrow}</button><a href="#dashboard" class="rs-text-link">My learning dashboard ${arrow}</a><div class="rs-summary-note"><b>Recall is a practice, not a race.</b><p>Take your time. Use the evidence. Return when your ideas have had a little space.</p></div></aside></div>`,'h1');root.addEventListener('click',event=>{if(event.target.closest('[data-rs-home]'))homePage();if(event.target.closest('[data-rs-retry]'))start(missed.length,missed,true);},events);
   }
-
-  function weakLinks() {
-    const chips = [];
-    (state.weak || []).forEach(w => {
-      const [n, i] = String(w).split('-').map(Number);
-      if (!n || Number.isNaN(i)) return;
-      chips.push(`<a class="review-weak" href="#mission/${n}">Skeletal \u00b7 mission ${n} \u00b7 question ${i + 1}</a>`);
-    });
-    [['integumentary', '#integumentary/mission/', 'Body Shield'], ['respiratory', '#respiratory/mission/', 'Oxygen'], ['excretory', '#excretory/mission/', 'Filter']].forEach(([key, route, label]) => {
-      const slice = state[key];
-      (slice && Array.isArray(slice.weak) ? slice.weak : []).forEach(id => {
-        const [n, i] = String(id).split('-q').map(Number);
-        if (!n) return;
-        chips.push(`<a class="review-weak" href="${route}${n}">${label} \u00b7 mission ${n} \u00b7 question ${(i || 0) + 1}</a>`);
-      });
-    });
-    return chips;
-  }
-
-  function record(id, right) {
-    const r = data(), now = Date.now();
-    const box = right ? Math.min(4, boxOf(id) + 1) : 0;
-    r.items[id] = { b: box, t: now, d: now + INTERVALS[box] * DAY };
-    r.answers += 1;
-    if (right) r.correct += 1;
-    save();
-  }
-
-  function nextDueLabel() {
-    const next = ITEMS.map(i => dueAt(i.id)).filter(t => t > Date.now()).sort((a, b) => a - b)[0];
-    if (!next) return 'nothing scheduled yet';
-    const days = Math.max(1, Math.round((next - Date.now()) / DAY));
-    return days === 1 ? 'tomorrow' : 'in ' + days + ' days';
-  }
-
-  /* ---------------------------------------------------------------- pages */
-  function homePage() {
-    const r = data(), due = dueCount(), fresh = ITEMS.filter(i => isNew(i.id)).length;
-    const weak = weakLinks();
-    const accuracy = r.answers ? Math.round(r.correct / r.answers * 100) : 0;
-    layout(`<div class="review-world">
-      <div class="review-hero"><div class="eyebrow">RETRIEVAL PRACTICE</div><h1>Review</h1>
-      <p>Ten questions, drawn from all six systems. Right answers come back later, wrong ones come back sooner \u2014 that is how remembering is built.</p></div>
-      <div class="grid three review-stats">
-        <section class="panel"><div class="eyebrow">DUE NOW</div><h2>${due}</h2><p class="note">${fresh} item(s) never seen yet</p></section>
-        <section class="panel"><div class="eyebrow">YOUR ACCURACY</div><h2>${accuracy}%</h2><p class="note">${r.correct}/${r.answers} answers across ${r.sessions} session(s)</p></section>
-        <section class="panel"><div class="eyebrow">NEXT DUE</div><h2>${due ? 'now' : '\u2014'}</h2><p class="note">${due ? 'start a session below' : 'come back ' + nextDueLabel()}</p></section>
-      </div>
-      <section class="panel review-start">
-        <h2>Start reviewing</h2>
-        <p class="note">${ITEMS.length} items in the pool. A session takes about three minutes.</p>
-        <div class="teacher-actions">
-          <button class="btn" id="review-start">Start a 10-question session</button>
-          <button class="btn secondary" id="review-quick">Quick 5</button>
-          <button class="btn line" id="review-reset">Reset my review history</button>
-        </div>
-      </section>
-      ${weak.length ? `<section class="panel"><div class="eyebrow">FROM YOUR MISTAKES</div><h2>Concepts you flagged</h2><p class="note">These came from wrong answers in the worlds. Open one to revise it, then come back.</p><div class="review-weaklist">${weak.join('')}</div></section>` : ''}
-    </div>`, 'dashboard');
-  }
-
-  function questionPage(items, index, score, queue) {
-    const item = items[index];
-    const mixed = typeof mixQ === 'function' ? mixQ(['x', item.options, item.answer, 'y']) : [null, item.options, item.answer, null];
-    const options = mixed[1], answer = mixed[2];
-    const [name] = WORLDS[item.world] || ['InnerU'];
-    layout(`<div class="review-world">
-      <div class="review-bar"><a class="textlink" href="#review">\u2190 Review</a><span class="review-progress">Question ${index + 1} of ${items.length} \u00b7 ${score} correct</span></div>
-      <section class="panel review-card" data-review-card>
-        <div class="eyebrow">${name} \u00b7 BOX ${boxOf(item.id)}</div>
-        <h2>${esc(item.q)}</h2>
-        <div class="review-options">${options.map((o, j) => `<button type="button" class="choice" data-review-choice="${j}">${esc(o)}</button>`).join('')}</div>
-        <div class="review-feedback" role="status" aria-live="polite"></div>
-      </section>
-    </div>`, 'dashboard');
-    let done = false;
-    document.querySelectorAll('[data-review-choice]').forEach(btn => {
-      btn.onclick = () => {
-        if (done) return;
-        done = true;
-        const right = +btn.dataset.reviewChoice === answer;
-        record(item.id, right);
-        const card = document.querySelector('[data-review-card]');
-        card.querySelector('.review-feedback').innerHTML = `<div class="feedback ${right ? '' : 'wrong'}"><b>${right ? 'Correct.' : 'Not quite.'}</b> ${esc(item.why)}</div>`;
-        document.querySelectorAll('[data-review-choice]').forEach((b, j) => {
-          b.disabled = true;
-          if (j === answer) b.classList.add('resp-correct');
-          else if (b === btn) b.classList.add('resp-wrong');
-        });
-        const next = [...queue];
-        if (!right) next.push(item);
-        const btnRow = document.createElement('div');
-        btnRow.className = 'teacher-actions';
-        btnRow.innerHTML = `<button class="btn" id="review-next">${index + 1 < items.length ? 'Next question \u2192' : 'Finish session'}</button>`;
-        card.append(btnRow);
-        document.getElementById('review-next').onclick = () => {
-          if (index + 1 < items.length) questionPage(items, index + 1, score + (right ? 1 : 0), next);
-          else summaryPage(score + (right ? 1 : 0), items.length, next);
-        };
-      };
-    });
-  }
-
-  function summaryPage(score, total, leftovers) {
-    const r = data();
-    r.sessions += 1;
-    save();
-    const redo = leftovers.filter(i => i);
-    layout(`<div class="review-world">
-      <div class="review-hero"><div class="eyebrow">SESSION COMPLETE</div><h1>${score} / ${total}</h1>
-      <p>${score >= total * 0.8 ? 'Strong recall. These items move further apart.' : score >= total * 0.5 ? 'Good start \u2014 the ones you missed will come back sooner.' : 'That was hard. The missed items are scheduled to return first.'}</p></div>
-      ${redo.length ? `<section class="panel"><h2>Worth another look now</h2><div class="review-redo">${redo.map(i => `<div class="review-redo-item"><b>${esc(i.q)}</b><p class="note">${esc(i.why)}</p></div>`).join('')}</div></section>` : ''}
-      <section class="panel"><h2>What happens next</h2>
-        <p class="note">Items you answered correctly move to longer intervals (1, 3, 7 then 16 days). Items you missed return to the front of the queue. Next session is due <b>${nextDueLabel()}</b>.</p>
-        <div class="teacher-actions"><a class="btn" href="#review">Back to review</a><a class="btn secondary" href="#dashboard">My dashboard</a></div>
-      </section>
-    </div>`, 'dashboard');
-  }
-
-  function start(size) {
-    const items = sessionItems(size);
-    questionPage(items, 0, 0, []);
-  }
-
-  function wire() {
-    const s = document.getElementById('review-start');
-    if (s) s.onclick = () => start(SESSION_SIZE);
-    const q = document.getElementById('review-quick');
-    if (q) q.onclick = () => start(5);
-    const reset = document.getElementById('review-reset');
-    if (reset) reset.onclick = () => { const r = data(); r.items = {}; r.answers = 0; r.correct = 0; r.sessions = 0; save(); homePage(); };
-  }
-
-  /* ---------------------------------------------------------------- wrapping */
-  const previousRoute = route;
-  window.removeEventListener('hashchange', previousRoute);
-  route = function () {
-    if (location.hash.slice(1) === 'review') { homePage(); wire(); window.scrollTo(0, 0); document.title = 'InnerU \u00b7 Review'; return; }
-    previousRoute();
-  };
-  window.addEventListener('hashchange', route);
-
-  const previousDashboard = dashboard;
-  dashboard = function () {
-    previousDashboard();
-    const due = dueCount(), r = data();
-    const section = document.createElement('section');
-    section.className = 'panel spacer review-dashboard';
-    section.innerHTML = `<div class="eyebrow">RETRIEVAL PRACTICE</div><h2>Review</h2>
-      <p>${due ? due + ' item(s) are due now.' : r.answers ? 'Nothing due right now \u2014 next up ' + nextDueLabel() + '.' : ITEMS.length + ' questions across the six systems are waiting.'}</p>
-      <a class="btn ${due ? '' : 'line'}" href="#review">${due ? 'Start reviewing \u2192' : 'Open review \u2192'}</a>`;
-    const main = document.getElementById('main');
-    if (main) { const foot = main.querySelector('footer'); if (foot) main.insertBefore(section, foot); else main.append(section); }
-  };
-
-  /* "Reset progress" must clear the review history as well, like every world slice. */
-  const resetButton = document.getElementById('reset');
-  if (resetButton) {
-    const priorReset = resetButton.onclick;
-    resetButton.onclick = () => {
-      priorReset();
-      const yes = document.getElementById('confirm-reset');
-      if (yes) {
-        const confirmed = yes.onclick;
-        yes.onclick = () => {
-          const r = data();
-          r.items = {}; r.answers = 0; r.correct = 0; r.sessions = 0;
-          save();
-          confirmed();
-        };
-      }
-    };
-  }
-
-  /* Small public accessor so the habit layer can quote real numbers. */
-  window.inneruReviewStats = () => ({ pool: ITEMS.length, due: dueCount(), next: nextDueLabel() });
-
-  route();
+  const previousRoute=route;window.removeEventListener('hashchange',previousRoute);route=function(){if(location.hash.slice(1).split('?')[0]==='review'){homePage();window.scrollTo(0,0);return;}previousRoute();};window.addEventListener('hashchange',route);
+  window.inneruReviewStats=()=>{const s=stats();return {pool:s.pool,due:s.due,next:s.next};};
+  window.InneruRecall={stats,items:()=>ITEMS.map(i=>({...i,options:[...i.options]})),schedule:id=>({box:boxOf(id),due:dueAt(id),fresh:isNew(id)}),queue:()=>queue().map(i=>i.id)};
+  if(location.hash.slice(1).split('?')[0]==='review')homePage();
 })();

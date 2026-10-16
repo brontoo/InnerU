@@ -121,3 +121,11 @@ shared XP and badge requirements, six-system progress, live updates, current and
 legacy progress-code restores, final certificates, profile/reset behavior,
 keyboard/dialog access, preview isolation and phone layouts. See
 [STUDENT-DASHBOARD.md](STUDENT-DASHBOARD.md) for the ledger and completion rules.
+
+## Interactive Recall Studio
+
+Run `python3 _dev-tools/verify-recall-studio.py` to exercise anatomical selection,
+balanced/focused/due sessions, answer records, spaced intervals, early practice,
+pause/resume, isolated retry rounds, reset scope, motion settings, keyboard/lens
+controls and phone layouts. See [RECALL-STUDIO.md](RECALL-STUDIO.md) for the
+scheduling rules and scientific wording corrections.
