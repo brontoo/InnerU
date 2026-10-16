@@ -7,7 +7,7 @@
      * large immutable assets (3D models, images, fonts): stale-while-revalidate
    Bump VERSION when the shell changes so old caches are dropped.
    ========================================================================== */
-const VERSION = 'inneru-v34';
+const VERSION = 'inneru-v35';
 const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './home-expedition.css?v=discovery-gallery-1', './connection-art.css?v=everyday-anatomy-1', './body-team.css?v=body-team-1', './detective.css?v=field-lab-1', './student-dashboard.css?v=student-space-1', './muscle.css?v=arm-team-1', './muscle-learning.css', './muscle-pair.css?v=arm-team-1', './muscle-studio.css?v=muscle-studio-1',
