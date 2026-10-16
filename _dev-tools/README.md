@@ -82,3 +82,11 @@ Run `python3 _dev-tools/verify-respiratory-activities.py` to complete all six la
 18 science checks and eight final stages, verify scientific process directions,
 breathing behavior, rewards, isolated preview mode, mobile layouts and cleanup.
 See [RESPIRATORY-ACTIVITIES.md](RESPIRATORY-ACTIVITIES.md) for the activity coverage.
+
+## Home expedition gallery
+
+Run `python3 _dev-tools/verify-home-expedition.py` to exercise all six anatomical
+world previews, real route navigation and resume links, saved-state preservation,
+System Key collection and final gates, keyboard access, responsive layouts and
+motion preferences. See [HOME-EXPEDITION.md](HOME-EXPEDITION.md) for progress rules
+and artwork sources.
