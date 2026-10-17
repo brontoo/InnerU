@@ -118,17 +118,11 @@
     pop.innerHTML = `<b class="term-pop-word"></b><span class="term-pop-ar" lang="ar" dir="rtl"></span>
       <p class="term-pop-def"></p>
       <div class="term-pop-actions">
-        <button class="btn line" type="button" id="term-pop-audio">\u25b6 Listen</button>
         <a class="textlink" href="#glossary">All terms \u2192</a>
         <button class="btn line" type="button" id="term-pop-close">Close</button>
       </div>`;
     document.body.append(pop);
     pop.querySelector('#term-pop-close').onclick = close;
-    pop.querySelector('#term-pop-audio').onclick = () => {
-      const word = pop.querySelector('.term-pop-word').textContent;
-      const def = pop.querySelector('.term-pop-def').textContent;
-      if (window.inneruSpeech) window.inneruSpeech.speakText(word + '. ' + def);
-    };
     return pop;
   }
 
@@ -146,7 +140,6 @@
     card.querySelector('.term-pop-word').textContent = entry.label;
     card.querySelector('.term-pop-ar').textContent = entry.arabic;
     card.querySelector('.term-pop-def').textContent = entry.definition;
-    card.querySelector('#term-pop-audio').hidden = !window.inneruSpeech;
     card.hidden = false;
     const r = span.getBoundingClientRect();
     const width = Math.min(360, window.innerWidth - 24);
@@ -222,7 +215,6 @@
 
   function scan() {
     if (!data().on) return;
-    if (window.inneruSpeech && window.inneruSpeech.isSpeaking()) return;   /* offsets must stay stable */
     document.querySelectorAll(BLOCKS).forEach(el => {
       if (el.dataset.terms) return;
       if (el.closest('.term, .topbar, nav, footer, aside, .teacher-table, [data-no-terms]')) return;

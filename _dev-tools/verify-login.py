@@ -249,7 +249,7 @@ try:
         offline_page = offline.new_page(); offline_page.goto(ORIGIN + '/login.html')
         offline_page.evaluate('navigator.serviceWorker.ready')
         offline_page.wait_for_function('navigator.serviceWorker.controller!==null')
-        cached = offline_page.evaluate('(async()=>{const c=await caches.open("inneru-v38");return (await c.keys()).map(r=>new URL(r.url).pathname)})()')
+        cached = offline_page.evaluate('(async()=>{const c=await caches.open("inneru-v39");return (await c.keys()).map(r=>new URL(r.url).pathname)})()')
         check('/login.html' in cached and '/assets/login/adventure-landscape.webp' in cached and len(cached) >= 100, 'the new worker actually precaches the entry and existing app shell')
         offline.set_offline(True); offline_page.reload(wait_until='domcontentloaded')
         check(offline_page.locator('[data-select-role="student"]').is_visible() and offline_page.locator('.gate-scene').evaluate('(el)=>el.complete&&el.naturalWidth>0'), 'offline entry loads its controls and optimized landscape artwork')

@@ -1,0 +1,10 @@
+/* Structure pronunciation is local to the anatomy studio, never a page reader. */
+.structure-audio{display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px;margin:12px 0 18px;padding:13px 15px;border:1px solid #8dbbb847;border-radius:11px;background:#e8f4f214;color:#e3f4f1;min-width:0}
+.structure-audio .structure-audio-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;max-width:100%;padding:10px 13px;border:1px solid #8bbfbc;border-radius:8px;background:#e5f3f0;color:#164854;font:inherit;font-size:.77rem;font-weight:700;line-height:1.6;cursor:pointer;transition:background .2s,box-shadow .2s}
+.structure-audio-button svg{width:18px;height:18px;flex-shrink:0}.structure-audio .structure-audio-button:hover:not(:disabled){background:#fff;box-shadow:0 3px 12px #062d3a18}.structure-audio .structure-audio-button:focus-visible{outline:3px solid #e9c779;outline-offset:4px}.structure-audio .structure-audio-button:disabled{opacity:.62;cursor:default}.structure-audio .structure-audio-button[aria-pressed=true]{background:#beded7;border-color:#82beb3}
+.structure-audio-name{font:inherit;font-size:.72rem;line-height:1.8;overflow-wrap:anywhere;flex:1;min-width:90px;color:inherit}.structure-audio-status{display:block;width:100%;font-size:.7rem;line-height:1.8;color:inherit}.structure-audio-status:empty{display:none}
+.arm-lab .structure-audio,.exc-explorer .structure-audio,.body-atlas.skeletal .structure-audio{background:#f0f7f3;border-color:#c5dcd5;color:#285964}
+@media(max-width:640px){.structure-audio{padding:12px;gap:9px}.structure-audio .structure-audio-button{font-size:.74rem}.structure-audio-name{font-size:.69rem}}
+@media(prefers-reduced-motion:reduce){.structure-audio *{transition:none!important}}body.motionoff .structure-audio *{transition:none!important}
+@media print{.structure-audio{display:none!important}}
+@media(max-width:640px){body:has(.structure-audio) .main>footer nav{flex-wrap:wrap;row-gap:13px}}

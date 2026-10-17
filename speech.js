@@ -1,200 +1,98 @@
-/* ============================================================================
-   Read this page aloud, with word-level highlighting
-   ----------------------------------------------------------------------------
-   Uses the speech engine built into the browser: no audio files, no network, no
-   cost, and it works offline. One control reads the page in order and follows
-   along word by word, which is what actually helps a reader who is still
-   decoding English science vocabulary.
-   ========================================================================== */
+/* Audio is restricted to names selected in the anatomy models.
+   No page reader, glossary narration, text selection or arbitrary-text API. */
 (() => {
   'use strict';
-
-  if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
-
-  /* Headings and answer options are included: in a quiz, reading the question
-     and its choices aloud is the whole point. */
-  const BLOCKS = '#main p, #main h2, #main h3, #main blockquote, #main figcaption, #main .note, #main .choice';
-  let queue = [], index = 0, speaking = false, current = null, mark = null, lastLayoutAt = 0;
-
-  const prefs = () => {
-    if (!state.speech || typeof state.speech !== 'object') state.speech = {};
-    if (typeof state.speech.rate !== 'number') state.speech.rate = 1;
-    return state.speech;
-  };
-
-  function blocks() {
-    return [...document.querySelectorAll(BLOCKS)].filter(el => {
-      if (el.closest('nav, footer, aside, .topbar, .teacher-table, [data-no-tts]')) return false;
-      return el.textContent.trim().length >= 40;
-    });
+  const supported=!!window.speechSynthesis&&typeof window.SpeechSynthesisUtterance==='function';
+  const engine=window.speechSynthesis;
+  const roots=new Map();
+  let current=null,serial=0;
+  const text=element=>element?.textContent.trim().replace(/_/g,' ').replace(/\s+/g,' ')||'';
+  const pressed=(root,selector)=>root.querySelector(selector+'[aria-pressed="true"]');
+  const configs=[
+    {root:'[data-skin-explorer]',info:'.body-atlas-info',name(root,info){
+      const part=pressed(root,'[data-part]');if(!part)return '';
+      const dermal=pressed(root,'[data-dermis-part]');
+      const name=text(info.querySelector('h3'));
+      return name===(dermal?.dataset.dermisPart||part.dataset.part)?name:'';
+    }},
+    {root:'.arm-lab',info:'.arm-lab-anatomy',name(root){return {biceps:'Biceps brachii',triceps:'Triceps brachii',tendons:'Tendons',bones:'Humerus, radius, ulna'}[pressed(root,'[data-arm-part]')?.dataset.armPart]||'';}},
+    {root:'.muscle-studio',info:'.muscle-studio-info',name(root,info){return pressed(root,'[data-muscle-part]')?text(info.querySelector('h3')):'';}},
+    {root:'.exc-explorer',info:'.exc-structure-info',name(root,info){
+      const part=pressed(root,'[data-structure]'),name=text(info.querySelector('h3'));
+      return part&&name===part.dataset.structure?name:'';
+    }},
+    {root:'.heart-lab',info:'#circ-vessel-info',name(root,info){return root.querySelector('#heart-selected-label:not([hidden])')?text(info.querySelector('h3')):'';}},
+    {root:'.body-atlas[data-atlas]:not([data-skin-explorer])',info:'.body-atlas-info',name(root,info){
+      return pressed(root,'[data-part]')?text(info.querySelector(':scope > strong,:scope > h3')):'';
+    }}
+  ];
+  const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>';
+  function resetButton(entry){entry.button.setAttribute('aria-pressed','false');entry.button.querySelector('span').textContent='Pronounce structure';}
+  function stop(){
+    ++serial;
+    if(!current)return;
+    const entry=current;current=null;
+    try{engine.cancel();}catch{}
+    resetButton(entry);entry.status.textContent='';
   }
-
-  function clearMark() {
-    if (!mark) return;
-    const parent = mark.parentNode;
-    if (parent) { parent.replaceChild(document.createTextNode(mark.textContent), mark); parent.normalize(); }
-    mark = null;
+  function update(entry){
+    const name=entry.config.name(entry.root,entry.info);
+    if(name===entry.name)return;
+    if(current===entry)stop();
+    entry.name=name;
+    entry.button.disabled=!supported||!name;
+    entry.button.setAttribute('aria-label',name?'Pronounce '+name:'Select a structure to hear its name');
+    entry.label.textContent=name||'Choose a structure in this model.';
+    entry.status.textContent=supported?'':'Pronunciation is unavailable in this browser.';
   }
-
-  /* wrap the word that starts at charIndex inside block */
-  function highlight(block, charIndex) {
-    clearMark();
-    if (!block) return null;
-    const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
-    let acc = 0, node;
-    while ((node = walker.nextNode())) {
-      const text = node.nodeValue, len = text.length;
-      if (charIndex < acc + len) {
-        const local = charIndex - acc;
-        const rest = text.slice(local);
-        const word = /^\S+/.exec(rest);
-        if (!word) return null;
-        const range = document.createRange();
-        range.setStart(node, local);
-        range.setEnd(node, local + word[0].length);
-        const el = document.createElement('mark');
-        el.className = 'tts-word';
-        try { range.surroundContents(el); } catch (e) { return null; }
-        mark = el;
-        return el;
-      }
-      acc += len;
-    }
-    return null;
+  function speak(entry){
+    // Resolve from this model again at the instant of the click; never accept text.
+    update(entry);
+    if(!supported||!entry.name||!entry.root.isConnected)return;
+    if(current===entry){stop();return;}
+    stop();
+    const request=++serial,name=entry.name;
+    const utterance=new window.SpeechSynthesisUtterance(name);
+    utterance.lang='en-GB';utterance.rate=.85;
+    const voices=engine.getVoices?.()||[];
+    const voice=voices.find(v=>v.localService&&/^en[-_]GB/i.test(v.lang))||voices.find(v=>v.localService&&/^en\b/i.test(v.lang))||voices.find(v=>/^en[-_]GB/i.test(v.lang))||voices.find(v=>/^en\b/i.test(v.lang));
+    if(voice)utterance.voice=voice;
+    current=entry;entry.button.setAttribute('aria-pressed','true');entry.button.querySelector('span').textContent='Stop pronunciation';entry.status.textContent='Pronouncing: '+name;
+    utterance.onend=()=>{if(request!==serial)return;current=null;resetButton(entry);entry.status.textContent='Pronunciation finished.';};
+    utterance.onerror=event=>{if(request!==serial)return;current=null;resetButton(entry);entry.status.textContent=event.error==='not-allowed'?'Tap Pronounce structure to try again.':'Pronunciation is unavailable on this device.';};
+    try{engine.speak(utterance);}catch{if(request===serial){current=null;resetButton(entry);entry.status.textContent='Pronunciation is unavailable on this device.';}}
   }
-
-  function status(message) {
-    const el = document.getElementById('tts-status');
-    if (el) el.textContent = message;
+  function mount(root,config){
+    if(roots.has(root))return;
+    const info=root.querySelector(config.info);if(!info)return;
+    const box=document.createElement('div');box.className='structure-audio';box.dataset.noTerms='';
+    const button=document.createElement('button');button.type='button';button.className='structure-audio-button';button.setAttribute('aria-pressed','false');button.innerHTML=icon+'<span>Pronounce structure</span>';
+    const label=document.createElement('small');label.className='structure-audio-name';
+    const status=document.createElement('span');status.className='structure-audio-status';status.setAttribute('role','status');
+    box.append(button,label,status);info.after(box);
+    const entry={root,config,info,box,button,label,status,name:null,observer:null};
+    button.addEventListener('click',()=>speak(entry));
+    // Observe the information panel and semantic selection flags, not 3D frame styles.
+    const observer=new MutationObserver(()=>update(entry));
+    observer.observe(info,{subtree:true,childList:true,characterData:true});
+    observer.observe(root,{subtree:true,attributes:true,attributeFilter:['aria-pressed']});
+    entry.observer=observer;roots.set(root,entry);update(entry);
   }
-
-  /* A visible note, because a student who taps Listen and hears nothing needs to
-     be told why rather than left guessing. */
-  function fail(message) {
-    status(message);
-    const note = document.getElementById('tts-note');
-    if (note) { note.textContent = message; note.classList.add('is-visible'); }
+  function refresh(){
+    for(const [root,entry] of roots){if(!root.isConnected){if(current===entry)stop();entry.observer.disconnect();roots.delete(root);}}
+    for(const config of configs)document.querySelectorAll(config.root).forEach(root=>mount(root,config));
   }
-
-  function ui() {
-    const box = document.getElementById('reader-tools') || (() => {
-      const topbar = document.querySelector('.topbar');
-      if (!topbar) return null;
-      const b = document.createElement('div');
-      b.className = 'reader-tools';
-      b.id = 'reader-tools';
-      topbar.append(b);
-      return b;
-    })();
-    if (!box) return;
-    if (!box.querySelector('#tts-toggle')) {
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.id = 'tts-toggle';
-      toggle.className = 'reader-btn';
-      toggle.onclick = () => { speaking ? stop() : start(); };
-      const rate = document.createElement('button');
-      rate.type = 'button';
-      rate.id = 'tts-rate';
-      rate.className = 'reader-btn reader-btn-rate';
-      rate.onclick = () => {
-        const steps = [0.8, 1, 1.2, 1.5];
-        const p = prefs();
-        p.rate = steps[(steps.indexOf(p.rate) + 1) % steps.length] || 1;
-        save();
-        render();
-      };
-      const note = document.createElement('span');
-      note.id = 'tts-note';
-      note.className = 'reader-note';
-      note.setAttribute('role', 'status');
-      note.setAttribute('aria-live', 'polite');
-      const live = document.createElement('span');
-      live.id = 'tts-status';
-      live.className = 'sr-only';
-      live.setAttribute('role', 'status');
-      live.setAttribute('aria-live', 'polite');
-      box.append(toggle, rate, note, live);
-    }
-    render();
-  }
-
-  function render() {
-    const toggle = document.getElementById('tts-toggle');
-    const rate = document.getElementById('tts-rate');
-    if (!toggle || !rate) return;
-    toggle.textContent = speaking ? '\u25a0 Stop' : '\u25b6 Listen';
-    toggle.setAttribute('aria-pressed', String(speaking));
-    toggle.title = speaking ? 'Stop reading' : 'Read this page aloud';
-    rate.textContent = prefs().rate.toFixed(1).replace(/\.0$/, '') + '\u00d7';
-    rate.title = 'Reading speed';
-    rate.setAttribute('aria-label', 'Reading speed ' + prefs().rate + ' times normal');
-  }
-
-  function speak(index_) {
-    if (index_ >= queue.length) { stop(); return; }
-    index = index_;
-    current = queue[index_];
-    current.classList.add('is-reading');
-    const text = current.textContent.trim();
-    const u = new SpeechSynthesisUtterance(text);
-    const p = prefs();
-    u.lang = 'en-GB';
-    u.rate = p.rate;
-    u.onboundary = e => { if (e.name === 'word' || e.charIndex !== undefined) highlight(current, e.charIndex || 0); };
-    u.onend = () => {
-      clearMark();
-      if (current) current.classList.remove('is-reading');
-      if (speaking) speak(index_ + 1);
-    };
-    u.onerror = () => { fail('Reading aloud is not available on this device.'); stop(); };
-    window.speechSynthesis.speak(u);
-  }
-
-  function start() {
-    if (speaking) return;
-    const note = document.getElementById('tts-note');
-    if (note) { note.classList.remove('is-visible'); note.textContent = ''; }
-    queue = blocks();
-    if (!queue.length) { status('There is nothing to read on this page.'); return; }
-    speaking = true;
-    render();
-    status('Reading the page aloud. Press Stop to finish.');
-    speak(0);
-  }
-
-  function stop() {
-    speaking = false;
-    queue = []; index = 0;
-    try { window.speechSynthesis.cancel(); } catch (e) { /* nothing to cancel */ }
-    clearMark();
-    if (current) { current.classList.remove('is-reading'); current = null; }
-    render();
-    status('Stopped.');
-  }
-
-  const previousLayout = layout;
-  layout = function (...args) {
-    previousLayout(...args);
-    if (speaking) stop();
-    lastLayoutAt = Date.now();
-    ui();
-  };
-
-  window.inneruSpeech = {
-    start, stop, speakText: text => {
-      stop();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'en-GB';
-      u.rate = prefs().rate;
-      u.onend = () => status('Finished.');
-      window.speechSynthesis.speak(u);
-    },
-    isSpeaking: () => speaking,
-    rate: () => prefs().rate,
-    blocks,
-    _highlight: i => highlight(current || blocks()[0], i)
-  };
-
-  ui();
+  let queued=false;
+  function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;refresh();});}
+  const previousLayout=layout;
+  layout=function(...args){stop();previousLayout(...args);schedule();};
+  const app=document.getElementById('app');
+  if(app)new MutationObserver(changes=>{
+    if(changes.some(change=>change.target===app||[...change.addedNodes,...change.removedNodes].some(node=>node.nodeType===1&&(node.matches?.('.body-atlas,.muscle-studio,.arm-lab,.exc-explorer,.heart-lab')||node.querySelector?.('.body-atlas,.muscle-studio,.arm-lab,.exc-explorer,.heart-lab')))))schedule();
+  }).observe(app,{childList:true,subtree:true});
+  window.addEventListener('hashchange',stop);
+  window.addEventListener('pagehide',stop);
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&current)stop();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+  refresh();
 })();

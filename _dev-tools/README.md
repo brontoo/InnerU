@@ -30,7 +30,7 @@ be asserted before its scripts have run (which shows up as a mysteriously empty 
 | `verify-stage4.py` | the six excretory labs, and that the extracted skeletal content still drives its pages |
 | `verify-stage5.py` | the breathing simulator and the spaced-practice review system |
 | `verify-stage6.py` | the habit layer (streak, plan, banner) and the force-vs-load simulator |
-| `verify-stage7.py` | the tap-to-define glossary and the read-aloud control |
+| `verify-stage7.py` | legacy glossary and page-reader checks; audio is superseded by `verify-pronunciation.py` |
 
 Each harness pins its own port, so they can be run one at a time.
 
@@ -141,3 +141,14 @@ Run `python3 _dev-tools/verify-teacher-dashboard.py` for real submitted answers,
 student snapshot collection, individual progress and achievements, feedback,
 backups, legacy imports, reset/undo, and responsive records. See
 [TEACHER-DASHBOARD.md](TEACHER-DASHBOARD.md) for the browser classroom data model.
+
+## Anatomy pronunciation
+
+Run `python3 _dev-tools/verify-pronunciation.py` to verify structure-only audio in
+all six anatomy studios, detailed dermis and heart selections, cancellation,
+keyboard access, unsupported speech engines, and the absence of narration on
+other pages and glossary definitions. Speech requests are intercepted to check
+the exact utterance text without relying on installed voices or an audio device.
+See [STRUCTURE-AUDIO.md](STRUCTURE-AUDIO.md) for scope and device behavior.
+The former page reader and its arbitrary-text API have been removed. Native
+browser voices provide pronunciation; voice availability depends on the device.
