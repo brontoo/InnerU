@@ -7,7 +7,13 @@
   {id:'luna',name:'Luna',tag:'Curiosity looks good on you.',col:2,row:0},
   {id:'neo',name:'Neo',tag:'A little courage. A big grin.',col:0,row:1},
   {id:'pip',name:'Pip',tag:'Tiny robot. Giant questions.',col:1,row:1},
-  {id:'ember',name:'Ember',tag:'Clever paws. Curious mind.',col:2,row:1}
+  {id:'ember',name:'Ember',tag:'Clever paws. Curious mind.',col:2,row:1},
+  {id:'amira',name:'Amira',tag:'Guiding curious minds.',col:0,row:0,sheet:2},
+  {id:'sami',name:'Sami',tag:'Every question matters.',col:1,row:0,sheet:2},
+  {id:'noor',name:'Noor',tag:'A bright new discovery.',col:2,row:0,sheet:2},
+  {id:'finn',name:'Finn',tag:'Ready, set, explore!',col:0,row:1,sheet:2},
+  {id:'pebble',name:'Pebble',tag:'Small wings. Big ideas.',col:1,row:1,sheet:2},
+  {id:'sage',name:'Sage',tag:'Wonder is your superpower.',col:2,row:1,sheet:2}
  ];
  const avatar=id=>avatars.find(a=>a.id===id);
  const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -35,8 +41,9 @@
   localStorage.setItem(PROFILE,JSON.stringify(next));return next;
  }
  function clearActive(userId){const current=readProfile();if(current?.authUserId&&current.authUserId!==userId)throw new Error('The active account changed in another tab. Please refresh.');archive(current);localStorage.setItem(PROFILE,JSON.stringify({name:'Explorer',xp:0,done:[],rewards:[],weak:[],level:current?.level||'Explorer',motion:!!current?.motion}));localStorage.removeItem(UNDO);}
- function portrait(id,extra=''){const a=avatar(id);return a?`<span class="iu-avatar-art ${extra}" style="--avatar-col:${a.col};--avatar-row:${a.row}" aria-hidden="true"></span>`:'';}
+ function portrait(id,extra=''){const a=avatar(id);return a?`<span class="iu-avatar-art ${a.sheet===2?'iu-avatar-sheet-2 ':''}${extra}" style="--avatar-col:${a.col};--avatar-row:${a.row}" aria-hidden="true"></span>`:'';}
  function markup(id,name='Explorer'){const a=avatar(id);return a?`<span class="avatar iu-profile-avatar" role="img" aria-label="${e(a.name)} avatar">${portrait(id)}</span>`:`<span class="avatar">${e(String(name).slice(0,1).toUpperCase())}</span>`;}
  function identityFields(profile){return {...(profile?.authUserId?{authUserId:profile.authUserId}:{}),...(avatar(profile?.avatarId)?{avatarId:profile.avatarId}:{})};}
- window.InneruAccount={avatars,avatar,portrait,markup,identityFields,api,readProfile,bindUser,clearActive};
+ const destination=user=>['teacher','admin'].includes(user?.role)?'teacher':'dashboard';
+ window.InneruAccount={avatars,avatar,portrait,markup,identityFields,api,readProfile,bindUser,clearActive,destination};
 })();

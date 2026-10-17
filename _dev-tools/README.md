@@ -2,7 +2,7 @@
 
 For the standalone InnerU adventure entry at `/login.html`, run
 `python3 _dev-tools/verify-login.py`. It verifies signup, returning sign-in,
-animated avatars, direct Home redirects, session cookies, separate learner
+animated avatars, role-specific dashboard redirects, session cookies, separate learner
 archives, confirmation/recovery, responsive layouts, motion preferences and
 offline account behavior. It uses the real API adapter against an isolated local
 provider fixture. See [DISCOVERY-ENTRY.md](DISCOVERY-ENTRY.md) and
@@ -169,3 +169,12 @@ production account/learning handlers against an isolated Auth fixture. It covers
 missing script assets, CSP, disabled JavaScript, stalled API timeouts and retries,
 configuration and schema errors, healthy results and phone layouts. No production
 credentials or database container are needed for this diagnostics harness.
+
+## Account-bound dashboard access
+
+Run `python3 _dev-tools/verify-roles.py` after `prepare-db-tests.py` to verify
+database roles, teacher approval, role-specific dashboard routes, identity
+binding, isolated browser registers and the expanded avatar collection. See
+[ACCOUNT-ROLES.md](ACCOUNT-ROLES.md). The original public-dashboard harnesses
+contain cross-role/anonymous workflows that the new access policy supersedes.
+Use the role, account, database and cloud-learning suites for current behavior.

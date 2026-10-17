@@ -118,18 +118,23 @@
   function validatePassword(confirm=false){const input=panel.querySelector('#entry-password'),value=input.value;if(value.length<(authMode==='login'?1:8)||value.length>128){input.focus();throw new Error(authMode==='login'?'Enter your password.':'Use a password between 8 and 128 characters.');}if(confirm&&value!==panel.querySelector('#entry-confirm').value){panel.querySelector('#entry-confirm').focus();throw new Error('The passwords do not match yet. Please try again.');}return value;}
   function avatarPicker(){
     authMode='avatar';selectedAvatar=authUser?.avatarId||selectedAvatar||null;
-    shell('Meet your explorer.','Choose the character that feels like you. A little personality makes every discovery more fun.',`
+    shell(role==='teacher'?'Choose your mission guide.':'Meet your explorer.','Choose the character that feels like you. A little personality makes every discovery more fun.',`
       <div class="gate-signup-steps" aria-label="Signup progress"><span>✓ Your account details</span><b>02 / Choose your avatar</b></div><form id="gate-avatar-form"><fieldset class="gate-avatar-fieldset"><legend>Choose one avatar</legend><div class="gate-avatar-grid">${A.avatars.map((a,i)=>`<label class="gate-avatar-card" style="--avatar-delay:${i*45}ms"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar===a.id?'checked':''} required><span class="gate-avatar-portrait">${A.portrait(a.id)}<span class="gate-avatar-tick" aria-hidden="true">✓</span></span><b>${a.name}</b><small>${a.tag}</small></label>`).join('')}</div></fieldset><p class="gate-avatar-cheer" data-avatar-cheer role="status">Your explorer is waiting to meet you.</p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button>${credentials?'<button type="button" class="gate-auth-link gate-avatar-back" data-avatar-back>← Back to account details</button>':''}</form>`);
     if(selectedAvatar)cheer(selectedAvatar);
   }
   function cheer(id){selectedAvatar=id;const a=A.avatar(id);const note=panel.querySelector('[data-avatar-cheer]');note.textContent=a.name+' is ready. Let’s make a discovery!';panel.querySelectorAll('.gate-avatar-card').forEach(card=>card.classList.toggle('is-picked',card.querySelector('input').value===id));}
   async function finish(user){
     authUser=user;
+    if(!['student','teacher','admin'].includes(user?.role))throw new Error('Your account role could not be verified. Please try signing in again.');
     if(!A.avatar(user?.avatarId)){clearPassword();setBusy(false);avatarPicker();return;}
+    if(user.role==='student'&&(role==='teacher'||user.requestedRole==='teacher')){clearPassword();setBusy(false);teacherPending();return;}
     A.bindUser(user,{keepLocal:carryLocal});clearPassword();setBusy(true);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent='LET’S EXPLORE…';
-    await new Promise(resolve=>setTimeout(resolve,canMove()?220:0));location.assign('index.html#home');
+    await new Promise(resolve=>setTimeout(resolve,canMove()?220:0));location.assign('index.html#'+A.destination(user));
   }
-  function confirmation(){clearPassword();authMode='confirm';shell('A little check. A big adventure.','Check your email to confirm your account. Your avatar is saved with your signup.',`<div class="gate-confirm-art">${A.portrait(selectedAvatar)}</div><p class="gate-confirm-copy">Open the confirmation link in your inbox. Once confirmed, you’ll go straight to the InnerU home page.</p><button type="button" class="gate-enter" data-auth-mode="login">BACK TO SIGN IN ${arrows}</button>`);}
+  function teacherPending(){
+    authMode='teacher-pending';shell('Your teacher workspace. Your verified account.','This account is currently saved as a student in the database. Teacher access needs the school owner’s approval.',`<div class="gate-role-status"><p>Your teacher selection is a request, not a change to your account permissions. Once your teacher role is approved, return here and check again.</p><button type="button" class="gate-enter" data-teacher-request>REQUEST TEACHER ACCESS ${arrows}</button><button type="button" class="gate-auth-link" data-role-refresh>Check my approved role</button><button type="button" class="gate-auth-link" data-student-continue>Continue as a student</button><button type="button" class="gate-auth-link" data-entry-logout>Sign out</button><p role="status" data-role-request-status></p></div>`);
+  }
+  function confirmation(){clearPassword();authMode='confirm';shell('A little check. A big adventure.','Check your email to confirm your account. Your avatar is saved with your signup.',`<div class="gate-confirm-art">${A.portrait(selectedAvatar)}</div><p class="gate-confirm-copy">Open the confirmation link in your inbox. Once confirmed, you’ll go straight to your account’s dashboard.</p><button type="button" class="gate-enter" data-auth-mode="login">BACK TO SIGN IN ${arrows}</button>`);}
   function recovery(reset=false){clearPassword();authMode=reset?'reset':'recover';shell(reset?'A fresh password. A fresh start.':'Let’s get you exploring again.',reset?'Choose a new password for your account.':'Enter your email. If an account exists, you’ll receive a password reset link.',`<form id="gate-recovery-form" novalidate>${reset?passwordField('entry-password','New password','new-password')+passwordField('entry-confirm','Confirm password','new-password')+'<p id="entry-password-help" class="gate-password-help">Use at least 8 characters.</p>':'<div class="gate-field"><label for="entry-email">Email address</label><input id="entry-email" type="email" autocomplete="email" required maxlength="254"></div>'}<button class="gate-enter gate-submit" type="submit"><span data-submit-label>${reset?'SAVE PASSWORD & EXPLORE':'SEND RESET LINK'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button><button type="button" class="gate-auth-link" data-auth-mode="login">Back to sign in</button></form>`);}
   async function openWorkspace(){
     if(opening||!role)return;
@@ -137,8 +142,8 @@
     try{
       if(authMode==='avatar'){
         const id=panel.querySelector('input[name=avatar]:checked')?.value;if(!A.avatar(id))throw new Error('Choose an avatar to continue.');selectedAvatar=id;setBusy(true);
-        if(credentials){const result=await A.api('signup',{...credentials,avatarId:id});if(result.authenticated)await finish(result.user);else{setBusy(false);confirmation();}}
-        else{const result=await A.api('avatar',{avatarId:id,name:authUser?.name||'Explorer'});await finish(result.user);}return;
+        if(credentials){const result=await A.api('signup',{...credentials,avatarId:id,requestedRole:role});if(result.authenticated)await finish(result.user);else{setBusy(false);confirmation();}}
+        else{const local=A.readProfile();const result=await A.api('avatar',{avatarId:id,name:local?.authUserId===authUser?.id?local.name:authUser?.name||'Explorer'});await finish(result.user);}return;
       }
       if(authMode==='reset'){const pass=validatePassword(true);setBusy(true);const result=await A.api('password',{password:pass});await finish(result.user);return;}
       const email=validateEmail();
@@ -153,12 +158,18 @@
     if(button.dataset.authMode){const email=panel.querySelector('#entry-email')?.value||'';if(button.dataset.authMode==='recover')recovery();else accountForm(button.dataset.authMode,email);}
     if(button.hasAttribute('data-avatar-back')){const email=credentials?.email||'';accountForm('signup',email);}
     if(button.dataset.passwordToggle){const input=panel.querySelector('#'+button.dataset.passwordToggle),visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'Hide':'Show';button.setAttribute('aria-pressed',String(visible));button.setAttribute('aria-label',(visible?'Hide':'Show')+' password');}
+    if(button.hasAttribute('data-teacher-request')){button.disabled=true;fetch('/api/learning?action=request-teacher',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:'{}'}).then(async r=>{const data=await r.json();if(!r.ok)throw new Error(data.error);panel.querySelector('[data-role-request-status]').textContent='Teacher access requested. Your school owner can now approve this account.';}).catch(error=>{panel.querySelector('[data-role-request-status]').textContent=error.message||'The request could not be saved.';button.disabled=false;});}
+    if(button.hasAttribute('data-role-refresh'))A.api('session').then(s=>finish(s.user)).catch(showError);
+    if(button.hasAttribute('data-student-continue')){role='student';finish({...authUser,requestedRole:'student'}).catch(showError);}
+    if(button.hasAttribute('data-entry-logout'))A.api('logout',{}).then(()=>location.assign('login.html')).catch(showError);
   });
   panel.addEventListener('change',event=>{if(event.target.name==='avatar')cheer(event.target.value);if(event.target.id==='entry-keep-progress')carryLocal=event.target.checked;});
   panel.addEventListener('keydown',event=>{
     if(event.target.name!=='avatar'||!['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
     event.preventDefault();const inputs=[...panel.querySelectorAll('input[name=avatar]')],i=inputs.indexOf(event.target),delta=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:event.key==='ArrowDown'?3:-3;
-    const n=event.key==='Home'?0:event.key==='End'?inputs.length-1:(i+delta+inputs.length)%inputs.length;inputs[n].checked=true;inputs[n].focus();cheer(inputs[n].value);
+    const columns=getComputedStyle(panel.querySelector('.gate-avatar-grid')).gridTemplateColumns.split(' ').length;
+    const step=event.key==='ArrowDown'?columns:event.key==='ArrowUp'?-columns:delta;
+    const n=event.key==='Home'?0:event.key==='End'?inputs.length-1:(i+step+inputs.length)%inputs.length;inputs[n].checked=true;inputs[n].focus();inputs[n].scrollIntoView({block:'nearest'});cheer(inputs[n].value);
   });
   window.addEventListener('pagehide',clearPassword);
   async function callback(){
@@ -170,6 +181,7 @@
       try{if(hash.get('error'))throw new Error('This account link has expired. Request a new link and try again.');const result=await A.api('verify',tokenHash?{tokenHash,type:type||'email'}:{accessToken,refreshToken});authUser=result.user;carryLocal=!!(readProfile().value&&!readProfile().value.authUserId);if(type==='recovery')recovery(true);else await finish(result.user);}catch(error){accountForm('login');showError(error);}return;
     }
     const session=await service;
+    if(!session.authenticated&&['student','teacher'].includes(url.searchParams.get('role')))entry(url.searchParams.get('role'));
     if(session.authenticated){authUser=session.user;role='student';carryLocal=!!(readProfile().value&&!readProfile().value.authUserId);if(url.searchParams.get('avatar')==='1')avatarPicker();else try{await finish(session.user);}catch(error){accountForm('login');showError(error);}}
   }
   callback();

@@ -10,9 +10,9 @@ def check(v,m):
  assert v,m
  checks+=1;print('PASS',m,flush=True)
 def signup(p,email,name):
- p.goto(ORIGIN+'/login.html?nosw=1');p.locator('[data-select-role=student]').click();p.locator('[data-auth-mode=signup]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-password').fill('Fixture-Only-Password-123');p.locator('#entry-confirm').fill('Fixture-Only-Password-123');p.locator('#gate-entry-form [type=submit]').click();p.locator('input[value=luna]').check();p.locator('#gate-avatar-form [type=submit]').click();p.wait_for_url('**/index.html#home')
+ p.goto(ORIGIN+'/login.html?nosw=1');p.locator('[data-select-role=student]').click();p.locator('[data-auth-mode=signup]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-password').fill('Fixture-Only-Password-123');p.locator('#entry-confirm').fill('Fixture-Only-Password-123');p.locator('#gate-entry-form [type=submit]').click();p.locator('input[value=luna]').check();p.locator('#gate-avatar-form [type=submit]').click();p.wait_for_url('**/index.html#dashboard')
 def sync(p):
- try:p.wait_for_function('window.InneruCloud&&InneruCloud.status()==="Saved to your account"',timeout=25000)
+ try:p.wait_for_function('window.InneruCloud&&["Saved to your account","Teacher classroom connected"].includes(InneruCloud.status())',timeout=25000)
  except Exception:
   print('SYNC DEBUG',p.evaluate('({status:window.InneruCloud?.status(),panels:[...document.querySelectorAll("[data-cloud-panel]")].map(e=>e.textContent),meta:Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith("inneru-cloud"))),user:window.InneruAccount.currentUser,state:JSON.stringify(state)})'),errors,flush=True)
   raise

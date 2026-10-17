@@ -85,14 +85,14 @@ Role metadata from signup and the entry role cards never approve teacher access.
 After the teacher has signed up, the **project owner** can run this query in the
 SQL Editor, substituting the verified teacher's email (not their password):
 
+For existing projects, first apply `migrations/004_roles_avatars.sql`.
+Then approve the verified teacher account with the owner-only helper:
+
 ```sql
-update public.profiles p
-set role = 'teacher'
-from auth.users u
-where p.id = u.id and lower(u.email) = lower('teacher@example.com');
+select public.inneru_approve_teacher('teacher@example.com');
 ```
 
-The teacher refreshes the portal, opens Teacher Dashboard → **Open cloud
+The teacher signs in again and opens Teacher Dashboard → **Open cloud
 classroom**, creates a named class and shares its generated class code. A signed-in
 student joins from Student Dashboard. Only then does their synced work appear
 for that teacher. The existing imported browser register stays separate from the
@@ -127,7 +127,7 @@ Preparing a shared device should use **Sign out**; account learning is not reset
 ## Development and migration changes
 
 The ordered sources are `migrations/001_schema.sql`, `002_catalog.sql` and
-`003_functions.sql`. `setup.sql` is their combined installer. Curriculum names
+`003_functions.sql` and `004_roles_avatars.sql`. `setup.sql` is their combined installer. Curriculum names
 are captured in `catalog.json` from the actual learning model. After changing
 course content, review `_dev-tools/build-db-catalog.py`, regenerate the catalog
 seeds and combined installer, and apply the reviewed database update.
@@ -148,3 +148,6 @@ python3 _dev-tools/verify-cloud-learning.py
 
 The container exposes no database port. Stop this task's test service afterward
 with `docker stop inneru-db-check`; retain it only for future local verification.
+
+See [ACCOUNT-ROLES.md](../_dev-tools/ACCOUNT-ROLES.md) for the role-specific
+dashboard rules, requested teacher access and account-specific local registers.

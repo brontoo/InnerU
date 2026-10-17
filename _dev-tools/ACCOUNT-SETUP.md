@@ -1,8 +1,9 @@
 # InnerU account setup
 
-The entry supports email/password signup, six original animated avatar choices,
+The entry supports email/password signup, twelve original animated avatar choices,
 returning-user sign-in, email confirmation, password recovery and avatar changes.
-Successful sign-in and completed signup open `index.html#home`.
+Verified students open `index.html#dashboard`; approved teachers/admins open
+`index.html#teacher`. See [ACCOUNT-ROLES.md](ACCOUNT-ROLES.md) for approval and access.
 
 ## Connect production accounts
 
@@ -28,8 +29,8 @@ public Home link available. Accounts require a Supabase project connected in Ver
    `https://inneru-gamma.vercel.app/login.html`.
 4. Keep email confirmation enabled for verified accounts. Configure the project's
    email delivery service for its intended classroom use. The interface waits for
-   confirmation when required, then opens Home from the confirmation link. If the
-   project's email confirmation policy is disabled, signup opens Home immediately.
+   confirmation when required, then opens the account’s dashboard from the confirmation link. If the
+   project's email confirmation policy is disabled, signup opens its verified dashboard (or teacher approval screen) immediately.
 5. Redeploy Vercel so its Node function receives these environment settings. For a
    preview deployment, use that deployment's own origin and allowed redirect URLs.
 6. Test a real signup, delivered confirmation email, sign-out, returning sign-in

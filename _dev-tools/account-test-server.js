@@ -17,7 +17,7 @@ const provider=http.createServer(async(req,res)=>{try{
   if(data.email==='limited@example.com')return send(res,429,{code:'over_request_rate_limit'});
   if(users.has(data.email))return send(res,400,{code:'user_already_exists'});
   const next={id:crypto.randomUUID(),email:data.email,password:data.password,data:data.data,confirmed:data.email!=='confirm@example.com'};users.set(next.email,next);
-  if(dbContainer)sql('insert into auth.users(id,email,raw_user_meta_data) values('+quote(next.id)+','+quote(next.email)+','+quote(JSON.stringify(next.data))+'::jsonb);');
+  if(dbContainer)sql('insert into auth.users(id,email,raw_user_meta_data,email_confirmed_at) values('+quote(next.id)+','+quote(next.email)+','+quote(JSON.stringify(next.data))+'::jsonb,'+(next.confirmed?'now()':'null')+');');
   return send(res,200,next.confirmed?grant(next):publicUser(next));
  }
  if(url.pathname==='/auth/v1/token'){
@@ -30,16 +30,22 @@ const provider=http.createServer(async(req,res)=>{try{
   if(req.method==='PUT'){if(data.data)u.data={...u.data,...data.data};if(data.password)u.password=data.password;}
   return send(res,200,publicUser(u));
  }
+ if(url.pathname==='/rest/v1/profiles'){
+  if(!u)return send(res,401,{code:'bad_jwt'});
+  if(url.searchParams.get('id')!=='eq.'+u.id)return send(res,200,[]);
+  if(dbContainer)return send(res,200,JSON.parse(sql('select coalesce(jsonb_agg(to_jsonb(p)),\'[]\') from (select id,display_name,avatar_id,role from public.profiles where id='+quote(u.id)+') p;')));
+  return send(res,200,[{id:u.id,display_name:u.data.display_name,avatar_id:u.data.avatar_id,role:u.role||'student'}]);
+ }
  if(url.pathname==='/auth/v1/verify'){
   const next=users.get(data.token_hash==='confirm-test'?'confirm@example.com':'amina@example.com');if(!next||!['confirm-test','recovery-test'].includes(data.token_hash))return send(res,400,{code:'otp_expired'});
-  next.confirmed=true;return send(res,200,grant(next));
+  next.confirmed=true;if(dbContainer)sql('update auth.users set email_confirmed_at=now() where id='+quote(next.id));return send(res,200,grant(next));
  }
  if(url.pathname==='/auth/v1/recover')return send(res,200,{});
  if(url.pathname==='/auth/v1/logout'){access.delete((req.headers.authorization||'').replace('Bearer ',''));return send(res,200,{});}
  if(url.pathname.startsWith('/rest/v1/rpc/')){
   if(!u)return send(res,401,{code:'bad_jwt'});
   if(!dbContainer)return send(res,404,{code:'PGRST202'});
-  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback'].includes(name))return send(res,404,{});
+  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access'].includes(name))return send(res,404,{});
   const params=Object.entries(data).map(([k,v])=>{if(!/^p_[a-z_]+$/.test(k))throw Error('Bad fixture parameter');return k+'=>'+(v===null?'null':typeof v==='object'?quote(JSON.stringify(v))+'::jsonb':typeof v==='number'||typeof v==='boolean'?String(v):quote(v));});
   try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');return send(res,200,JSON.parse(result));}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:details.includes('revision_conflict')?'revision_conflict':'fixture_database_error'});}
  }
@@ -48,7 +54,7 @@ const provider=http.createServer(async(req,res)=>{try{
 const site=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://local');
  if(url.pathname==='/api/auth'){const previous=process.env.SUPABASE_URL;if(!configured)delete process.env.SUPABASE_URL;await handler(req,res);if(previous)process.env.SUPABASE_URL=previous;return;}
  if(url.pathname==='/api/learning'){await learningHandler(req,res);return;}
- if(url.pathname==='/__test/approve-teacher'&&dbContainer){const data=await input(req);sql("update public.profiles set role='teacher' where id="+quote(data.id));return send(res,200,{approved:true});}
+ if(url.pathname==='/__test/approve-teacher'){const data=await input(req);if(dbContainer)sql("update public.profiles set role='teacher' where id="+quote(data.id));else for(const u of users.values())if(u.id===data.id)u.role='teacher';return send(res,200,{approved:true});}
  if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured});
  if(url.pathname==='/__test/config'){configured=(await input(req)).enabled;return send(res,200,{configured});}
  if(url.pathname==='/__test/expire'){access.clear();return send(res,200,{expired:true});}

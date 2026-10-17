@@ -4,8 +4,8 @@ Interactive, gamified human-body learning for **Grade 10 Science** at **Um Al-Em
 The learning portal uses plain HTML / CSS / JavaScript with no build step or framework.
 Email/password accounts use the Vercel Node function in `api/auth.js` and Supabase Auth.
 Connect the account service using [_dev-tools/ACCOUNT-SETUP.md](_dev-tools/ACCOUNT-SETUP.md).
-The illustrated entry includes six animated avatar choices and redirects authenticated
-learners directly to Home. Without the external configuration, account creation is unavailable.
+The illustrated entry includes twelve animated avatar choices and redirects authenticated
+accounts to their verified Student or Teacher Dashboard. Without the external configuration, account creation is unavailable.
 
 The muscular landing page has a **real-time rotatable 3D studio immediately below
 its hero**, with six region tabs and 23 selectable anatomical structures. Choosing

@@ -200,12 +200,15 @@
   try{classroomChannel=new BroadcastChannel('inneru-classroom-updates');classroomChannel.onmessage=()=>document.dispatchEvent(new CustomEvent('inneru-classroom',{detail:{remote:true}}));}catch{}
   function changed(id){document.dispatchEvent(new CustomEvent('inneru-classroom',{detail:{id}}));classroomChannel?.postMessage({changed:true});}
 
-  let connection=null,migration=null;
+  let connection=null,migration=null,connectionOwner=null;
   function database(){
+    if(window.InneruAccess&&!InneruAccess.teacher(InneruAccess.user))return Promise.reject(new Error('Teacher account required to open classroom records.'));
+    const owner=window.InneruAccess?.user?.id||'legacy';
+    if(connectionOwner!==owner){connection=null;migration=null;connectionOwner=owner;}
     if(connection)return connection;
     connection=new Promise((resolve,reject)=>{
       if(!window.indexedDB){reject(new Error('Classroom storage is unavailable in this browser.'));return;}
-      const r=indexedDB.open(DB_NAME,1);
+      const r=indexedDB.open(owner==='legacy'?DB_NAME:DB_NAME+':'+owner,1);
       r.onupgradeneeded=()=>{const db=r.result;db.createObjectStore('students',{keyPath:'id'});db.createObjectStore('settings',{keyPath:'id'});};
       r.onsuccess=()=>{r.result.onversionchange=()=>{r.result.close();connection=null;};resolve(r.result);};
       r.onerror=()=>{connection=null;reject(new Error('Classroom storage could not open. Existing learner progress is unchanged.'));};
@@ -229,7 +232,7 @@
     if(migration)return migration;
     migration=(async()=>{
       if(await request('settings','readonly',s=>s.get('legacy-v1')))return;
-      let old=[];try{const raw=JSON.parse(localStorage.getItem(CLASS_KEY)||'[]');if(Array.isArray(raw))old=raw;}catch{}
+      let old=[];try{const raw=JSON.parse(localStorage.getItem(window.InneruAccess?.user?CLASS_KEY+':'+InneruAccess.user.id:CLASS_KEY)||'[]');if(Array.isArray(raw))old=raw;}catch{}
       for(const [i,row] of old.entries()){
         if(!row||typeof row.name!=='string'||!/^[01]{6}$/.test(row.k||'')||!/^\d{6}$/.test(row.w||''))continue;
         const id='legacy-'+checksum(JSON.stringify(row))+'-'+i;

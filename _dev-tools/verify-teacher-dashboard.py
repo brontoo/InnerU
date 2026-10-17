@@ -224,7 +224,7 @@ try:
   off=context.new_page();off.goto(ORIGIN+'/index.html#teacher/student/'+student_id+'?view=answers',wait_until='load')
   off.evaluate('navigator.serviceWorker.ready');off.wait_for_function('navigator.serviceWorker.controller!==null')
   off.wait_for_selector('.td-answer-list')
-  cached=off.evaluate('(async()=>{const c=await caches.open("inneru-v41");return !!(await c.match("teacher-dashboard.js?v=cloud-learning-1"))&&!!(await c.match("learning-evidence.js?v=teacher-desk-1"));})()')
+  cached=off.evaluate('(async()=>{const c=await caches.open("inneru-v42");return !!(await c.match("teacher-dashboard.js?v=roles-avatars-2"))&&!!(await c.match("learning-evidence.js?v=teacher-desk-1"));})()')
   check(cached,'the current worker precaches both the submitted-work journal and teacher dashboard')
   context.set_offline(True);off.reload(wait_until='domcontentloaded');off.wait_for_selector('.td-answer-list')
   check('A new example is a heartbeat' in off.locator('.td-answer-list').inner_text() and len(classes(off))==5,'saved classroom answers and records remain usable offline')
