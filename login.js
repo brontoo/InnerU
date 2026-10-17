@@ -71,25 +71,28 @@
     return new Intl.NumberFormat('en').format(xp) + ' XP saved here · Your next discovery awaits';
   }
   const A=window.InneruAccount;
-  let authMode='login',credentials=null,selectedAvatar=null,authUser=null,carryLocal=true,continueAsStudent=false;
+  let authMode='login',credentials=null,selectedAvatar=null,authUser=null,carryLocal=true,continueAsStudent=false,accountEmail='';
+  let cooldownTimer=0;
+  const retryUntil={signup:0,login:0,resend:0,recover:0};
   let accountConfigured=null;
-  const service=A.api('session').then(result=>{accountConfigured=result.configured!==false;return result;}).catch(()=>{accountConfigured=false;return {configured:false,authenticated:false};});
+  const service=A.api('session').then(result=>{accountConfigured=result.configured!==false;return result;}).catch(error=>{accountConfigured=null;return {configured:null,authenticated:false,error};});
   const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const hasLearning=p=>!!(p&&(p.xp||p.done?.length||p.rewards?.length));
   function rememberDraft(){const input=panel.querySelector('#entry-nickname');if(input)draftName=input.value;const choice=panel.querySelector('#entry-class');if(choice)draftClass=choice.value;}
   function clearPassword(){if(credentials)credentials.password='';credentials=null;panel.querySelectorAll('input[type=password],input[data-password]').forEach(el=>el.value='');}
   function roles(){
-    if(opening)return;clearTimeout(timer);switching=false;rememberDraft();clearPassword();
+    if(opening)return;clearTimeout(timer);clearTimeout(cooldownTimer);switching=false;rememberDraft();clearPassword();
     const previous=role;role=null;root.dataset.view='roles';delete root.dataset.role;panel.hidden=true;grid.hidden=false;
     grid.querySelectorAll('[data-card]').forEach(card=>card.classList.remove('is-selected','is-unselected'));
     support.textContent='Choose your mission role and let’s explore!';if(previous)grid.querySelector('[data-select-role="'+previous+'"]').focus({preventScroll:true});resetPointer();
   }
   function shell(title,intro,html){
     grid.hidden=true;panel.hidden=false;root.dataset.view='entry';root.dataset.role=role||'student';
-    panel.innerHTML=`<button type="button" class="gate-back" data-back-roles>← Choose another role</button><span class="gate-panel-label">${role==='teacher'?'MISSION GUIDE':'BODY EXPLORER'} / YOUR INNERU ACCOUNT</span><h2 id="gate-panel-title" tabindex="-1">${title}</h2><p class="gate-panel-intro">${intro}</p><div data-account-availability role="status"></div>${html}<p id="entry-error" class="gate-entry-error" role="alert"></p><p class="gate-panel-local">Your chosen avatar follows you into InnerU. Learning progress is saved on this device.</p>`;
+    panel.innerHTML=`<button type="button" class="gate-back" data-back-roles>← Choose another role</button><span class="gate-panel-label">${role==='teacher'?'MISSION GUIDE':'BODY EXPLORER'} / YOUR INNERU ACCOUNT</span><h2 id="gate-panel-title" tabindex="-1">${title}</h2><p class="gate-panel-intro">${intro}</p><div data-account-availability role="status"></div>${html}<p id="entry-error" class="gate-entry-error" role="alert"></p><div data-auth-error-actions hidden></div><p data-auth-retry-status class="gate-retry-status" role="status"></p><p class="gate-panel-local">Your chosen avatar follows you into InnerU. Learning progress is saved on this device.</p>`;
     support.textContent='Your next adventure begins with you.';
     panel.querySelector('#gate-panel-title').focus({preventScroll:true});
-    service.then(()=>{const status=panel.querySelector('[data-account-availability]');if(status&&accountConfigured===false)status.innerHTML='<p class="gate-account-unavailable">Account sign-in is not available yet. You can still explore the portal from Home.</p>';});
+    service.then(result=>{const status=panel.querySelector('[data-account-availability]');if(status&&accountConfigured===false)status.innerHTML='<p class="gate-account-unavailable">Account sign-in is not available yet. You can still explore the portal from Home.</p>';else if(status&&result.error)status.innerHTML='<p class="gate-account-unavailable">'+safe(result.error.message)+'</p>';});
+    paintCooldown();
   }
   function localChoice(){const p=readProfile().value;return p&&!p.authUserId&&hasLearning(p)?`<label class="gate-keep-progress"><input type="checkbox" id="entry-keep-progress" ${carryLocal?'checked':''}> Keep my saved learning on this device <small>${new Intl.NumberFormat('en').format(Number(p.xp)||0)} XP · mission progress and badges</small></label>`:'';}
   function passwordField(id,label,kind='current-password'){
@@ -101,7 +104,8 @@
   function validateClass(){
     const input=panel.querySelector('#entry-class');if(!A.studentClasses.includes(input?.value)){input?.setAttribute('aria-invalid','true');input?.focus();throw new Error('Select your school class to continue.');}draftClass=input.value;return input.value;
   }
-  function accountForm(mode='login',email=''){
+  function accountForm(mode='login',email=accountEmail){
+    accountEmail=email;
     authMode=mode;rememberDraft();clearPassword();
     const signup=mode==='signup';
     shell(signup?'Your adventure. Your account.':'Welcome back, explorer.',signup?'Create your account, choose your explorer and make yourself at home.':'Sign in with your email and password. Your next discovery is waiting.',`
@@ -120,14 +124,31 @@
     grid.querySelectorAll('[data-card]').forEach(card=>{card.classList.toggle('is-selected',card.dataset.card===selected);card.classList.toggle('is-unselected',card.dataset.card!==selected);});resetPointer();
     timer=setTimeout(()=>{switching=false;accountForm('login');},canMove()?260:0);
   }
-  function setBusy(busy){opening=busy;root.classList.toggle('is-opening',busy);const form=panel.querySelector('form');form?.setAttribute('aria-busy',String(busy));panel.querySelectorAll('button,input,select').forEach(el=>el.disabled=busy);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent=busy?'ONE MOMENT…':authMode==='class'?'SAVE CLASS & EXPLORE':authMode==='avatar'?(credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'):authMode==='signup'?'CHOOSE MY AVATAR':authMode==='recover'?'SEND RESET LINK':authMode==='reset'?'SAVE PASSWORD & EXPLORE':'SIGN IN & EXPLORE';}
-  function showError(error){setBusy(false);const node=panel.querySelector('#entry-error');node.textContent=error.message||String(error);node.scrollIntoView({block:'nearest'});}
-  function validateEmail(){const input=panel.querySelector('#entry-email');if(!input.value.trim()||!input.checkValidity()){input.setAttribute('aria-invalid','true');input.focus();throw new Error('Enter a valid email address.');}return input.value.trim();}
+  function submitLabel(){return authMode==='class'?'SAVE CLASS & EXPLORE':authMode==='avatar'?(credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'):authMode==='signup'?'CHOOSE MY AVATAR':authMode==='recover'?'SEND RESET LINK':authMode==='reset'?'SAVE PASSWORD & EXPLORE':'SIGN IN & EXPLORE';}
+  function requestAction(){return authMode==='avatar'?(credentials?'signup':'avatar'):['login','recover'].includes(authMode)?authMode:null;}
+  function paintCooldown(){
+    clearTimeout(cooldownTimer);const action=requestAction(),seconds=Math.max(0,Math.ceil(((retryUntil[action]||0)-Date.now())/1000)),resendSeconds=Math.max(0,Math.ceil((retryUntil.resend-Date.now())/1000));
+    const time=n=>n>=60?Math.floor(n/60)+'m '+n%60+'s':n+'s';
+    const button=panel.querySelector('[type=submit]'),label=panel.querySelector('[data-submit-label]');
+    if(button)button.disabled=opening||seconds>0;if(label)label.textContent=opening?'ONE MOMENT…':seconds?'PAUSED · '+time(seconds):submitLabel();
+    const resend=panel.querySelector('[data-auth-resend]');if(resend){resend.disabled=opening||resendSeconds>0;resend.querySelector('[data-resend-label]').textContent=resendSeconds?'Send again in '+time(resendSeconds):'Send a new confirmation email';}
+    const status=panel.querySelector('[data-auth-retry-status]'),message=seconds||resend&&resendSeconds?(action==='login'?'Sign-in is paused before another attempt. Please wait, then try again.':'Requests are paused before another attempt. Email delivery limits may last longer; check your inbox or ask your teacher about missing account emails.'):'';
+    if(status&&status.textContent!==message)status.textContent=message;
+    if(seconds||resend&&resendSeconds)cooldownTimer=setTimeout(paintCooldown,1000);
+  }
+  function setBusy(busy){opening=busy;root.classList.toggle('is-opening',busy);const form=panel.querySelector('form');form?.setAttribute('aria-busy',String(busy));panel.querySelectorAll('button,input,select').forEach(el=>el.disabled=busy);paintCooldown();}
+  function showError(error){
+    if(error.status===429){const until=Date.now()+(error.retryAfter||60)*1000;const actions=error.code==='over_email_send_rate_limit'?['signup','recover','resend']:[error.action||requestAction()];for(const action of actions)if(action)retryUntil[action]=Math.max(retryUntil[action]||0,until);}
+    setBusy(false);const node=panel.querySelector('#entry-error');node.classList.remove('is-success');node.textContent=error.message||String(error);
+    const actions=panel.querySelector('[data-auth-error-actions]');if(actions){actions.hidden=true;actions.innerHTML='';if(error.code==='email_not_confirmed'&&accountEmail){actions.hidden=false;actions.innerHTML='<button type="button" class="gate-auth-link" data-confirmation-help>Help me confirm my email</button>';}}
+    node.scrollIntoView({block:'nearest'});
+  }
+  function validateEmail(){const input=panel.querySelector('#entry-email');if(!input.value.trim()||!input.checkValidity()){input.setAttribute('aria-invalid','true');input.focus();throw new Error('Enter a valid email address.');}accountEmail=input.value.trim();return accountEmail;}
   function validatePassword(confirm=false){const input=panel.querySelector('#entry-password'),value=input.value;if(value.length<(authMode==='login'?1:8)||value.length>128){input.focus();throw new Error(authMode==='login'?'Enter your password.':'Use a password between 8 and 128 characters.');}if(confirm&&value!==panel.querySelector('#entry-confirm').value){panel.querySelector('#entry-confirm').focus();throw new Error('The passwords do not match yet. Please try again.');}return value;}
   function avatarPicker(){
     authMode='avatar';selectedAvatar=authUser?.avatarId||selectedAvatar||null;
     shell(role==='teacher'?'Choose your mission guide.':'Meet your explorer.','Choose the character that feels like you. A little personality makes every discovery more fun.',`
-      <div class="gate-signup-steps" aria-label="Signup progress"><span>✓ Your account details</span><b>02 / Choose your avatar</b></div><form id="gate-avatar-form"><fieldset class="gate-avatar-fieldset"><legend>Choose one avatar</legend><div class="gate-avatar-grid">${A.avatars.map((a,i)=>`<label class="gate-avatar-card" style="--avatar-delay:${i*45}ms"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar===a.id?'checked':''} required><span class="gate-avatar-portrait">${A.portrait(a.id)}<span class="gate-avatar-tick" aria-hidden="true">✓</span></span><b>${a.name}</b><small>${a.tag}</small></label>`).join('')}</div></fieldset><p class="gate-avatar-cheer" data-avatar-cheer role="status">Your explorer is waiting to meet you.</p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button>${credentials?'<button type="button" class="gate-auth-link gate-avatar-back" data-avatar-back>← Back to account details</button>':''}</form>`);
+      <div class="gate-signup-steps" aria-label="Signup progress"><span>✓ Your account details</span><b>02 / Choose your avatar</b></div><form id="gate-avatar-form"><fieldset class="gate-avatar-fieldset"><legend>Choose one avatar</legend><div class="gate-avatar-grid">${A.avatars.map((a,i)=>`<label class="gate-avatar-card" style="--avatar-delay:${i*45}ms"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar===a.id?'checked':''} required><span class="gate-avatar-portrait">${A.portrait(a.id)}<span class="gate-avatar-tick" aria-hidden="true">✓</span></span><b>${a.name}</b><small>${a.tag}</small></label>`).join('')}</div></fieldset><p class="gate-avatar-cheer" data-avatar-cheer role="status">Your explorer is waiting to meet you.</p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button>${credentials?'<p class="gate-auth-switch">Already registered? <button type="button" class="gate-auth-link" data-auth-mode="login">Sign in to your account</button></p><button type="button" class="gate-auth-link gate-avatar-back" data-avatar-back>← Back to account details</button>':''}</form>`);
     if(selectedAvatar)cheer(selectedAvatar);
   }
   function cheer(id){selectedAvatar=id;const a=A.avatar(id);const note=panel.querySelector('[data-avatar-cheer]');note.textContent=a.name+' is ready. Let’s make a discovery!';panel.querySelectorAll('.gate-avatar-card').forEach(card=>card.classList.toggle('is-picked',card.querySelector('input').value===id));}
@@ -147,10 +168,11 @@
   function teacherPending(){
     authMode='teacher-pending';shell('Your teacher workspace. Your verified account.','This account is currently saved as a student in the database. Teacher access needs the school owner’s approval.',`<div class="gate-role-status"><p>Your teacher selection is a request, not a change to your account permissions. Once your teacher role is approved, return here and check again.</p><button type="button" class="gate-enter" data-teacher-request>REQUEST TEACHER ACCESS ${arrows}</button><button type="button" class="gate-auth-link" data-role-refresh>Check my approved role</button><button type="button" class="gate-auth-link" data-student-continue>Continue as a student</button><button type="button" class="gate-auth-link" data-entry-logout>Sign out</button><p role="status" data-role-request-status></p></div>`);
   }
-  function confirmation(){clearPassword();authMode='confirm';shell('A little check. A big adventure.','Check your email to confirm your account. Your avatar is saved with your signup.',`<div class="gate-confirm-art">${A.portrait(selectedAvatar)}</div><p class="gate-confirm-copy">Open the confirmation link in your inbox. Once confirmed, you’ll go straight to your account’s dashboard.</p><button type="button" class="gate-enter" data-auth-mode="login">BACK TO SIGN IN ${arrows}</button>`);}
+  function confirmation(){clearPassword();authMode='confirm';shell('Check your inbox. Continue your quest.','Your email needs confirmation before you can sign in.',`<div class="gate-confirm-art">${A.portrait(selectedAvatar)}</div><p class="gate-confirm-copy">Check your inbox and spam folder for the latest confirmation link. If you already confirmed this email, use Sign in.</p><button type="button" class="gate-enter" data-auth-mode="login">BACK TO SIGN IN ${arrows}</button><button type="button" class="gate-auth-link" data-auth-resend><span data-resend-label>Send a new confirmation email</span></button><p data-confirmation-status role="status"></p><p class="gate-confirm-help">No email arriving? Ask your teacher to check account email delivery before trying signup again.</p>`);}
   function recovery(reset=false){clearPassword();authMode=reset?'reset':'recover';shell(reset?'A fresh password. A fresh start.':'Let’s get you exploring again.',reset?'Choose a new password for your account.':'Enter your email. If an account exists, you’ll receive a password reset link.',`<form id="gate-recovery-form" novalidate>${reset?passwordField('entry-password','New password','new-password')+passwordField('entry-confirm','Confirm password','new-password')+'<p id="entry-password-help" class="gate-password-help">Use at least 8 characters.</p>':'<div class="gate-field"><label for="entry-email">Email address</label><input id="entry-email" type="email" autocomplete="email" required maxlength="254"></div>'}<button class="gate-enter gate-submit" type="submit"><span data-submit-label>${reset?'SAVE PASSWORD & EXPLORE':'SEND RESET LINK'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button><button type="button" class="gate-auth-link" data-auth-mode="login">Back to sign in</button></form>`);}
   async function openWorkspace(){
     if(opening||!role)return;
+    if((retryUntil[requestAction()]||0)>Date.now()){paintCooldown();return;}
     panel.querySelector('#entry-error').textContent='';
     try{
       if(authMode==='class'){
@@ -174,13 +196,19 @@
   }
   root.addEventListener('click',event=>{
     const button=event.target.closest('button');if(!button||opening)return;
-    if(button.dataset.authMode){const email=panel.querySelector('#entry-email')?.value||'';if(button.dataset.authMode==='recover')recovery();else accountForm(button.dataset.authMode,email);}
+    if(button.dataset.authMode){const email=panel.querySelector('#entry-email')?.value||credentials?.email||accountEmail;if(button.dataset.authMode==='recover'){accountEmail=email;recovery();}else accountForm(button.dataset.authMode,email);}
     if(button.hasAttribute('data-avatar-back')){const email=credentials?.email||'';accountForm('signup',email);}
     if(button.dataset.passwordToggle){const input=panel.querySelector('#'+button.dataset.passwordToggle),visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'Hide':'Show';button.setAttribute('aria-pressed',String(visible));button.setAttribute('aria-label',(visible?'Hide':'Show')+' password');}
     if(button.hasAttribute('data-teacher-request')){button.disabled=true;fetch('/api/learning?action=request-teacher',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:'{}'}).then(async r=>{const data=await r.json();if(!r.ok)throw new Error(data.error);panel.querySelector('[data-role-request-status]').textContent='Teacher access requested. Your school owner can now approve this account.';}).catch(error=>{panel.querySelector('[data-role-request-status]').textContent=error.message||'The request could not be saved.';button.disabled=false;});}
     if(button.hasAttribute('data-role-refresh'))A.api('session').then(s=>finish(s.user)).catch(showError);
     if(button.hasAttribute('data-student-continue')){role='student';continueAsStudent=true;finish({...authUser,requestedRole:'student'}).catch(showError);}
     if(button.hasAttribute('data-entry-logout'))A.api('logout',{}).then(()=>location.assign('login.html')).catch(showError);
+    if(button.hasAttribute('data-confirmation-help'))confirmation();
+    if(button.hasAttribute('data-auth-resend')){
+      if(retryUntil.resend>Date.now()){paintCooldown();return;}
+      if(!accountEmail){accountForm('login');showError(new Error('Enter your email, then sign in to check whether confirmation is needed.'));return;}
+      setBusy(true);A.api('resend',{email:accountEmail}).then(()=>{retryUntil.resend=Date.now()+60000;setBusy(false);panel.querySelector('[data-confirmation-status]').textContent='Confirmation requested. Check your inbox and spam folder. Delivery depends on the school’s account email settings.';}).catch(showError);
+    }
   });
   panel.addEventListener('change',event=>{if(event.target.name==='avatar')cheer(event.target.value);if(event.target.id==='entry-keep-progress')carryLocal=event.target.checked;if(event.target.id==='entry-class'){draftClass=event.target.value;event.target.removeAttribute('aria-invalid');panel.querySelector('#entry-error').textContent='';}});
   panel.addEventListener('keydown',event=>{
@@ -190,7 +218,7 @@
     const step=event.key==='ArrowDown'?columns:event.key==='ArrowUp'?-columns:delta;
     const n=event.key==='Home'?0:event.key==='End'?inputs.length-1:(i+step+inputs.length)%inputs.length;inputs[n].checked=true;inputs[n].focus();inputs[n].scrollIntoView({block:'nearest'});cheer(inputs[n].value);
   });
-  window.addEventListener('pagehide',clearPassword);
+  window.addEventListener('pagehide',()=>{clearTimeout(cooldownTimer);clearPassword();});
   async function callback(){
     const url=new URL(location.href),hash=new URLSearchParams(url.hash.slice(1));
     const accessToken=hash.get('access_token'),refreshToken=hash.get('refresh_token'),tokenHash=url.searchParams.get('token_hash'),type=url.searchParams.get('type')||hash.get('type');

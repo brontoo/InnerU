@@ -7,6 +7,7 @@ const dbName=process.env.INNERU_DB_TEST_DATABASE||'postgres';
 function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-d',dbName,'-v','ON_ERROR_STOP=1','-qAt'],{input:query,encoding:'utf8'}).trim();}
 const quote=value=>"'"+String(value).replace(/'/g,"''")+"'";
 const users=new Map(),access=new Map(),refresh=new Map();let configured=true,legacySchema=false;
+const limits=new Map(),authCounts={};
 function profileRows(rows){return legacySchema?rows.map(p=>Object.fromEntries(Object.entries(p).filter(([k])=>!['class_code','assigned_teacher_email','assigned_teacher_id'].includes(k)))):rows;}
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
 async function input(req){let s='';for await(const c of req)s+=c;return JSON.parse(s||'{}');}
@@ -14,6 +15,8 @@ function publicUser(u){return {id:u.id,email:u.email,user_metadata:u.data};}
 function grant(u){const a='access-'+crypto.randomUUID(),r='refresh-'+crypto.randomUUID();access.set(a,u);refresh.set(r,u);return {access_token:a,refresh_token:r,expires_in:3600,user:publicUser(u)};}
 const provider=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://local'),data=req.method==='GET'?{}:await input(req),u=access.get((req.headers.authorization||'').replace('Bearer ',''));
+ const authAction=url.pathname==='/auth/v1/token'?(url.searchParams.get('grant_type')==='refresh_token'?'refresh':'login'):url.pathname==='/auth/v1/user'?(req.method==='PUT'?'avatar':'session'):url.pathname.startsWith('/auth/v1/')?url.pathname.slice(9):null;
+ if(authAction){authCounts[authAction]=(authCounts[authAction]||0)+1;const limit=limits.get(authAction);if(limit?.remaining>0){limit.remaining--;if(limit.retryAfter!==undefined)res.setHeader('Retry-After',String(limit.retryAfter));return send(res,limit.status||429,{code:limit.code||'over_request_rate_limit',message:limit.message||'Fixture limit'});}}
  if(url.pathname==='/auth/v1/settings')return send(res,200,{external:{email:true}});
  if(url.pathname==='/auth/v1/signup'){
   if(data.email==='limited@example.com')return send(res,429,{code:'over_request_rate_limit'});
@@ -43,6 +46,7 @@ const provider=http.createServer(async(req,res)=>{try{
   next.confirmed=true;if(dbContainer)sql('update auth.users set email_confirmed_at=now() where id='+quote(next.id));return send(res,200,grant(next));
  }
  if(url.pathname==='/auth/v1/recover')return send(res,200,{});
+ if(url.pathname==='/auth/v1/resend')return send(res,200,{});
  if(url.pathname==='/auth/v1/logout'){access.delete((req.headers.authorization||'').replace('Bearer ',''));return send(res,200,{});}
  if(url.pathname.startsWith('/rest/v1/rpc/')){
   if(!u)return send(res,401,{code:'bad_jwt'});
@@ -60,6 +64,8 @@ const site=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://
  if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured});
  if(url.pathname==='/__test/config'){configured=(await input(req)).enabled;return send(res,200,{configured});}
  if(url.pathname==='/__test/legacy-schema'){legacySchema=(await input(req)).enabled;return send(res,200,{legacySchema});}
+ if(url.pathname==='/__test/auth-limit'){const data=await input(req);if(!['signup','login','session','refresh','resend','recover'].includes(data.action))return send(res,400,{});limits.set(data.action,{...data,remaining:data.remaining??1});return send(res,200,{configured:true});}
+ if(url.pathname==='/__test/auth-counts')return send(res,200,authCounts);
  if(url.pathname==='/__test/expire'){access.clear();return send(res,200,{expired:true});}
  if(url.pathname==='/__test/clear-avatar'){const data=await input(req),u=users.get(data.email);if(u)delete u.data.avatar_id;return send(res,200,{cleared:!!u});}
  const relative=url.pathname==='/'?'/index.html':url.pathname==='/login'?'/login.html':url.pathname;const file=path.resolve(root,'.'+relative);

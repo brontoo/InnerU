@@ -43,6 +43,46 @@ Custom confirmation templates can instead use
 `{{ .SiteURL }}/login?token_hash={{ .TokenHash }}&type=email`. A custom recovery
 template must use `type=recovery`. Both forms are supported.
 
+## Missing confirmation emails or signup limits
+
+The production Auth settings checked during this update require email confirmation.
+A reachable account service does not prove that its emails are being delivered.
+Creating another account or repeatedly pressing Create account cannot confirm an
+existing email, and can hit the provider's request/email quotas.
+
+For the school/project owner:
+
+1. Open Supabase → **Authentication → Users** to check whether the student's
+   signup was actually recorded and whether their email is confirmed.
+2. Open **Authentication → Logs** and inspect signup/email errors. In the email
+   settings, check SMTP configuration, allowed recipients, sender verification
+   and delivery logs. Supabase's built-in mail sender has restrictions; configure
+   a production SMTP provider for classroom addresses as needed. See the
+   [Supabase SMTP guide](https://supabase.com/docs/guides/auth/auth-smtp).
+3. Review **Authentication → Rate Limits** for email and request limits. Respect
+   the retry interval; configure sending capacity for classroom use rather than
+   repeatedly retrying signup. SMTP credentials belong in Supabase settings, not
+   the portal's browser code or this repository.
+4. After email delivery is working and the sending limit has cleared, the student
+   can choose **Help me confirm my email → Send a new confirmation email**, open
+   the latest link from their inbox/spam folder, and sign in normally. If no Auth
+   account was created, finish Create account once after delivery is configured.
+
+The entry now exposes a direct **Sign in to your account** action on the avatar
+signup step and retains the email while clearing the password. Email/request
+limits carry a retry interval and pause repeat submissions locally; email limits
+also pause resend/recovery, while existing confirmed accounts can still sign in.
+Resend is explicit and does not submit signup again. The interface does not claim
+an email has been delivered, and it does not grant a session before confirmation.
+Temporary throttling of a session check or token refresh preserves the HttpOnly
+cookies for a later retry instead of treating the account as signed out.
+
+Available publishable-key access can read public Auth settings and perform user
+entry actions. It cannot inspect/change project SMTP configuration or provider
+quotas. This update does not change those live administrator settings or disable
+email confirmation. It requires no new SQL migration; the separate school-class
+feature still requires [migration 005](../supabase/migrations/005_student_classes.sql).
+
 ## Session and learning behavior
 
 `api/auth.js` calls Supabase Auth over HTTPS. Session tokens use HttpOnly,
@@ -68,11 +108,15 @@ Authentication → Users independently of the public learning tables.
 
 ## Verification
 
-Run `python3 _dev-tools/verify-login.py` (or `verify-accounts.py`) with Node,
+Run `python3 _dev-tools/verify-accounts.py` and
+`python3 _dev-tools/verify-auth-recovery.py` with Node,
 Python Playwright and Chromium at `/usr/bin/chromium`. The runner starts an
 isolated in-memory provider fixture and exercises the actual production adapter,
 HTTP cookies, browser UI and redirects. The fixture is excluded from deployment
 with the rest of `_dev-tools/`; production never substitutes fake accounts.
 
-Run `verify-dashboard.py` and `verify-teacher-dashboard.py` for the learner
-rewards, submitted answers, teacher records and offline regressions.
+The recovery suite uses the isolated local PostgreSQL database and fake Auth
+provider. It covers missing mail, manual resend, email/request quotas, retry
+intervals, existing-student sign-in, cookie preservation and mobile layouts. It
+never sends email or uses live account credentials. Run `verify-roles.py` and
+`verify-student-classes.py` for the current role and teacher-assignment rules.

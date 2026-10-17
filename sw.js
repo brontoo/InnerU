@@ -7,7 +7,7 @@
      * large immutable assets (3D models, images, fonts): stale-while-revalidate
    Bump VERSION when the shell changes so old caches are dropped.
    ========================================================================== */
-const VERSION = 'inneru-v43';
+const VERSION = 'inneru-v44';
 const SHELL = [
   './', './index.html', './404.html', './manifest.webmanifest',
   './style.css', './exhibit.css', './welcome.css', './home-expedition.css?v=discovery-gallery-1', './connection-art.css?v=everyday-anatomy-1', './body-team.css?v=body-team-1', './detective.css?v=field-lab-1', './student-dashboard.css?v=classroom-theme-2', './muscle.css?v=arm-team-1', './muscle-learning.css', './muscle-pair.css?v=arm-team-1', './muscle-studio.css?v=muscle-studio-1',
@@ -19,8 +19,8 @@ const SHELL = [
   './capstone.js?v=teacher-desk-1', './home-expedition.js?v=discovery-gallery-1', './connection-art.js?v=everyday-anatomy-1', './body-team.js?v=teacher-desk-1', './detective-data.js?v=field-lab-1', './detective-tools.js?v=field-lab-1', './detective.js?v=teacher-desk-1', './a11y.js?v=classroom-theme-2', './teacher.js?v=roles-avatars-2', './learning-progress.js?v=teacher-desk-1', './student-dashboard.js?v=roles-avatars-2', './pwa.js', './review.js?v=teacher-desk-1', './habit.js?v=cloud-learning-1', './muscle-force.js', './glossary.js?v=names-only-1', './speech.js?v=names-only-1',
   './learning-evidence.js?v=teacher-desk-1', './teacher-dashboard.js?v=student-classes-1',
   './favicon.svg', './inneru-mark.svg', './inneru-mark-light.svg',
-  './login.html', './login.css?v=student-classes-1', './login.js?v=student-classes-1',
-  './access.js?v=student-classes-1', './access.css?v=roles-avatars-2', './assets/avatars/guides-and-friends.webp', './account.js?v=student-classes-1', './account-session.js?v=student-classes-1', './account.css?v=roles-avatars-2', './cloud-learning.js?v=student-classes-1', './cloud-learning.css?v=student-classes-1', './assets/avatars/explorers.png',
+  './login.html', './login.css?v=auth-recovery-1', './login.js?v=auth-recovery-1',
+  './access.js?v=student-classes-1', './access.css?v=roles-avatars-2', './assets/avatars/guides-and-friends.webp', './account.js?v=auth-recovery-1', './account-session.js?v=student-classes-1', './account.css?v=roles-avatars-2', './cloud-learning.js?v=student-classes-1', './cloud-learning.css?v=student-classes-1', './assets/avatars/explorers.png',
   './assets/login/adventure-landscape.webp', './assets/login/student-explorer.webp',
   './assets/login/teacher-guide-hijab.webp', './assets/login/quest-companion.webp',
   './assets/home-expedition/01-shield.webp', './assets/home-expedition/02-framework.webp',
