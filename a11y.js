@@ -13,7 +13,7 @@
 
   const TITLES = {
     home: 'Explore Worlds', world: 'The Framework \u00b7 Skeletal System', mission: 'Mission',
-    dashboard: 'My Dashboard', detective: 'Body Detective', connect: 'System Connections',
+    dashboard: 'Student Dashboard', detective: 'Body Detective', connect: 'System Connections',
     badges: 'My Achievements', daily: 'Daily Discovery', sources: 'Science references',
     about: 'About', privacy: 'Privacy', attribution: 'Attribution',
     integumentary: 'The Living Shield', respiratory: 'The Oxygen Mission',

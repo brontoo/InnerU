@@ -113,6 +113,7 @@ try:
   go(p,'teacher','#t-code');p.locator('#t-code').click();code=p.locator('#t-code-text').input_value();saved_xp=model(p)['xp']
   p.evaluate('state={name:"Blank",xp:0,done:[],rewards:[],weak:[],level:"Explorer",motion:false};save()');p.locator('#t-import').fill(code);p.locator('#t-load').click()
   check(p.evaluate('JSON.stringify({muscle:state.muscle.tasks,circ:state.circ.steps})')==task_flags and model(p)['xp']==saved_xp,'current progress codes restore exact muscular and circulatory task flags as well as paid credits')
+  go(p,'dashboard','.sd-hero')
   # Every system uses its own completion flags, including muscular mission 7.
   p.evaluate('state={name:"Amina",xp:1000,done:[1,2,3,4,5,6,7,8],rewards:[],weak:[],level:"Challenger",motion:false,integumentary:{done:[1,2,3,4,5,6],mastery:true},muscle:{done:[1,2,3,4,5,6,7,8],tasks:{},weak:[],xp:0},respiratory:{done:[1,2,3,4,5,6],mastery:true},circ:{done:[1,2,3,4,5,6,7],mastery:true,steps:[]},excretory:{done:[1,2,3,4,5,6],mastery:true}};save();dashboard()');p.wait_for_selector('.sd-page')
   check(model(p)['missions']==39 and model(p)['keys']==6 and model(p)['percent']==100,'all six systems produce 39 completed missions, six keys and 100 percent expedition progress')
