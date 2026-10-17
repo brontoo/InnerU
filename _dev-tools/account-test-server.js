@@ -3,9 +3,11 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),
 const handler=require('../api/auth.js'),root=path.resolve(__dirname,'..');
 const learningHandler=require('../api/learning.js'),{execFileSync}=require('node:child_process');
 const dbContainer=process.env.INNERU_DB_TEST_CONTAINER;
-function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-v','ON_ERROR_STOP=1','-qAt'],{input:query,encoding:'utf8'}).trim();}
+const dbName=process.env.INNERU_DB_TEST_DATABASE||'postgres';
+function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-d',dbName,'-v','ON_ERROR_STOP=1','-qAt'],{input:query,encoding:'utf8'}).trim();}
 const quote=value=>"'"+String(value).replace(/'/g,"''")+"'";
-const users=new Map(),access=new Map(),refresh=new Map();let configured=true;
+const users=new Map(),access=new Map(),refresh=new Map();let configured=true,legacySchema=false;
+function profileRows(rows){return legacySchema?rows.map(p=>Object.fromEntries(Object.entries(p).filter(([k])=>!['class_code','assigned_teacher_email','assigned_teacher_id'].includes(k)))):rows;}
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
 async function input(req){let s='';for await(const c of req)s+=c;return JSON.parse(s||'{}');}
 function publicUser(u){return {id:u.id,email:u.email,user_metadata:u.data};}
@@ -27,14 +29,14 @@ const provider=http.createServer(async(req,res)=>{try{
  }
  if(url.pathname==='/auth/v1/user'){
   if(!u)return send(res,401,{code:'bad_jwt'});
-  if(req.method==='PUT'){if(data.data)u.data={...u.data,...data.data};if(data.password)u.password=data.password;}
+  if(req.method==='PUT'){if(data.data)u.data={...u.data,...data.data};if(data.password)u.password=data.password;if(dbContainer&&data.data)sql('update auth.users set raw_user_meta_data='+quote(JSON.stringify(u.data))+'::jsonb where id='+quote(u.id));}
   return send(res,200,publicUser(u));
  }
  if(url.pathname==='/rest/v1/profiles'){
   if(!u)return send(res,401,{code:'bad_jwt'});
   if(url.searchParams.get('id')!=='eq.'+u.id)return send(res,200,[]);
-  if(dbContainer)return send(res,200,JSON.parse(sql('select coalesce(jsonb_agg(to_jsonb(p)),\'[]\') from (select id,display_name,avatar_id,role from public.profiles where id='+quote(u.id)+') p;')));
-  return send(res,200,[{id:u.id,display_name:u.data.display_name,avatar_id:u.data.avatar_id,role:u.role||'student'}]);
+  if(dbContainer)return send(res,200,profileRows(JSON.parse(sql('select coalesce(jsonb_agg(to_jsonb(p)),\'[]\') from (select * from public.profiles where id='+quote(u.id)+') p;'))));
+  return send(res,200,profileRows([{id:u.id,display_name:u.data.display_name,avatar_id:u.data.avatar_id,role:u.role||'student',class_code:u.role==='teacher'?null:u.data.class_code||null,assigned_teacher_email:u.data.class_code?(Number(u.data.class_code.slice(-1))<5?'sf.alhammadi@moe.sch.ae':'riham.hassan@moe.sch.ae'):null,assigned_teacher_id:null}]));
  }
  if(url.pathname==='/auth/v1/verify'){
   const next=users.get(data.token_hash==='confirm-test'?'confirm@example.com':'amina@example.com');if(!next||!['confirm-test','recovery-test'].includes(data.token_hash))return send(res,400,{code:'otp_expired'});
@@ -45,7 +47,7 @@ const provider=http.createServer(async(req,res)=>{try{
  if(url.pathname.startsWith('/rest/v1/rpc/')){
   if(!u)return send(res,401,{code:'bad_jwt'});
   if(!dbContainer)return send(res,404,{code:'PGRST202'});
-  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access'].includes(name))return send(res,404,{});
+  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access','inneru_select_student_class'].includes(name))return send(res,404,{});
   const params=Object.entries(data).map(([k,v])=>{if(!/^p_[a-z_]+$/.test(k))throw Error('Bad fixture parameter');return k+'=>'+(v===null?'null':typeof v==='object'?quote(JSON.stringify(v))+'::jsonb':typeof v==='number'||typeof v==='boolean'?String(v):quote(v));});
   try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');return send(res,200,JSON.parse(result));}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:details.includes('revision_conflict')?'revision_conflict':'fixture_database_error'});}
  }
@@ -57,6 +59,7 @@ const site=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://
  if(url.pathname==='/__test/approve-teacher'){const data=await input(req);if(dbContainer)sql("update public.profiles set role='teacher' where id="+quote(data.id));else for(const u of users.values())if(u.id===data.id)u.role='teacher';return send(res,200,{approved:true});}
  if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured});
  if(url.pathname==='/__test/config'){configured=(await input(req)).enabled;return send(res,200,{configured});}
+ if(url.pathname==='/__test/legacy-schema'){legacySchema=(await input(req)).enabled;return send(res,200,{legacySchema});}
  if(url.pathname==='/__test/expire'){access.clear();return send(res,200,{expired:true});}
  if(url.pathname==='/__test/clear-avatar'){const data=await input(req),u=users.get(data.email);if(u)delete u.data.avatar_id;return send(res,200,{cleared:!!u});}
  const relative=url.pathname==='/'?'/index.html':url.pathname==='/login'?'/login.html':url.pathname;const file=path.resolve(root,'.'+relative);

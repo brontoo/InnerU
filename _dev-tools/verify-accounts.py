@@ -15,7 +15,7 @@ def profile(p):return p.evaluate('JSON.parse(localStorage.getItem("bodyquest-v1"
 def role(p,name='student'):
  p.goto(ENTRY);p.wait_for_selector('[data-select-role="'+name+'"]');p.locator('[data-select-role="'+name+'"]').click();p.wait_for_selector('#entry-email')
 def signup(p,email='amina@example.com',name='Amina',password='Correct-Horse-123'):
- p.locator('[data-auth-mode="signup"]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-password').fill(password);p.locator('#entry-confirm').fill(password);p.locator('#gate-entry-form [type=submit]').click();p.wait_for_selector('.gate-avatar-grid')
+ p.locator('[data-auth-mode="signup"]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-class').select_option('10G1');p.locator('#entry-password').fill(password);p.locator('#entry-confirm').fill(password);p.locator('#gate-entry-form [type=submit]').click();p.wait_for_selector('.gate-avatar-grid')
 def choose(p,id):p.locator('input[name=avatar][value="'+id+'"]').check()
 def enter(p):p.locator('#gate-avatar-form [type=submit]').click()
 def home(p):p.wait_for_url('**/index.html#dashboard');p.wait_for_selector('.sd-page')
@@ -35,7 +35,7 @@ try:
   check('valid email' in p.locator('#entry-error').inner_text() and p.locator('.gate-avatar-grid').count()==0,'invalid email cannot advance or create an account')
   p.locator('#entry-email').fill('amina@example.com');p.locator('#entry-confirm').fill('Different-password');p.locator('#gate-entry-form [type=submit]').click()
   check('do not match' in p.locator('#entry-error').inner_text(),'signup checks password confirmation before continuing')
-  p.locator('#entry-confirm').fill('Correct-Horse-123');p.locator('#entry-nickname').fill('Amina');p.locator('#gate-entry-form [type=submit]').click();p.wait_for_selector('.gate-avatar-grid')
+  p.locator('#entry-confirm').fill('Correct-Horse-123');p.locator('#entry-class').select_option('10G1');p.locator('#entry-nickname').fill('Amina');p.locator('#gate-entry-form [type=submit]').click();p.wait_for_selector('.gate-avatar-grid')
   check(p.locator('.gate-avatar-card').count()==12 and p.locator('input[type=password]').count()==0,'signup advances to twelve original premium avatar choices without retaining password fields in the page')
   check('Correct-Horse' not in p.evaluate('JSON.stringify(localStorage)') and 'amina@example.com' not in p.evaluate('JSON.stringify(localStorage)'),'credentials are absent from browser application storage')
   p.locator('input[value=nova]').focus();p.keyboard.press('ArrowRight');check(p.locator('input[value=atlas]').is_checked(),'keyboard arrows select an avatar and update its native radio state')
@@ -95,6 +95,13 @@ try:
   check(p.locator('.gate-avatar-card .iu-avatar-art').first.evaluate('e=>getComputedStyle(e).animationName')=='none','reduced motion removes character wiggles and avatar entrance animation')
   p.emulate_media(reduced_motion='no-preference');p.locator('[data-action-motion]').click();check(p.locator('.iu-gate').get_attribute('data-visual-motion')=='off','the entry’s own motion control also pauses avatar animation')
   p.set_viewport_size({'width':1680,'height':1100});p.screenshot(path='/workspace/cloud-onboarding/account-entry-avatars-final.png',full_page=True)
+  # A code-first deployment must not block accounts before SQL migration 005.
+  p.request.post(ORIGIN+'/__test/legacy-schema',data={'enabled':True});rollout=browser.new_context(service_workers='block');r=rollout.new_page()
+  result=r.request.post(ORIGIN+'/api/auth?action=signup',data={'email':'rollout@example.com','password':'Fixture-Rollout-123','name':'Rollout','avatarId':'sage','classCode':'10G3'}).json()
+  check(result['authenticated'] and result['user']['classCode'] is None and not result['user']['classSelectionRequired'],'an older database can still verify accounts while migration 005 is pending')
+  r.goto(ORIGIN+'/login.html?nosw=1');home(r);check(r.locator('#gate-class-form').count()==0,'a code-first deployment does not trap students in an unavailable class selection step')
+  check(next(u for u in p.request.get(ORIGIN+'/__test/status').json()['users'] if u['email']=='rollout@example.com')['data']['class_code']=='10G3','the selected class remains in signup metadata for migration backfill')
+  rollout.close();p.request.post(ORIGIN+'/__test/legacy-schema',data={'enabled':False})
   # Unconfigured deployments expose a real setup state instead of fake accounts.
   p.request.post(ORIGIN+'/__test/config',data={'enabled':False});role(p);p.wait_for_selector('.gate-account-unavailable')
   check('not available yet' in p.locator('.gate-account-unavailable').inner_text(),'missing account configuration is visible rather than simulated as a successful login')

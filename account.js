@@ -45,5 +45,6 @@
  function markup(id,name='Explorer'){const a=avatar(id);return a?`<span class="avatar iu-profile-avatar" role="img" aria-label="${e(a.name)} avatar">${portrait(id)}</span>`:`<span class="avatar">${e(String(name).slice(0,1).toUpperCase())}</span>`;}
  function identityFields(profile){return {...(profile?.authUserId?{authUserId:profile.authUserId}:{}),...(avatar(profile?.avatarId)?{avatarId:profile.avatarId}:{})};}
  const destination=user=>['teacher','admin'].includes(user?.role)?'teacher':'dashboard';
- window.InneruAccount={avatars,avatar,portrait,markup,identityFields,api,readProfile,bindUser,clearActive,destination};
+ const studentClasses=Object.freeze(['10G1','10G2','10G3','10G4','10G5','10G6']);
+ window.InneruAccount={avatars,avatar,portrait,markup,identityFields,api,readProfile,bindUser,clearActive,destination,studentClasses};
 })();

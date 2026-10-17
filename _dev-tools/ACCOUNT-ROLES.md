@@ -16,8 +16,9 @@ workspace from flashing on screen. An unavailable account service leaves private
 workspaces closed and gives a sign-in/connection-check explanation.
 
 The account menu and teacher header identify the verified user. Saved learning
-is bound to that user's Auth ID. Cloud teacher reads remain limited to enrolled
-students. Teachers cannot submit student XP via the API or direct learning RPC.
+is bound to that user's Auth ID. Cloud teacher reads remain limited to students assigned to their school classes
+(or unrelated legacy enrollments). See [STUDENT-CLASSES.md](STUDENT-CLASSES.md) for
+the six-class mapping, pending teacher links and migration 005. Teachers cannot submit student XP via the API or direct learning RPC.
 Browser classroom registers use an account-specific IndexedDB name, so another
 teacher's imported register is not automatically opened. Earlier unscoped browser
 registers are retained separately and are not silently assigned to an account.
@@ -61,10 +62,12 @@ The original six avatars remain available. A second generated sheet adds Amira,
 Sami, Noor, Finn, Pebble and Sage. All twelve are selectable by radio, keyboard and
 touch. The chooser scrolls within a bounded area; directional keys use the actual
 column count on each screen width. Existing hover/selection animation and reduced
-motion controls remain. Both sheets and the hijab illustration are in worker v42.
+motion controls remain. Both sheets and the hijab illustration are included in the offline worker.
 
 ## Checks
 
+- `verify-student-classes.py`: all six assignments, pending teacher registration,
+  preserved learning, SQL permissions, school rosters, feedback and desktop/mobile.
 - `verify-roles.py`: actual database/Auth profile roles, anonymous denial, wrong
   dashboard routes, role requests/approval, API and direct-RPC restrictions,
   separate teacher registers, identity switching, new avatars and phone layouts.

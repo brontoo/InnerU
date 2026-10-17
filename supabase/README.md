@@ -41,6 +41,15 @@ an external-script fallback. If JavaScript cannot run, its direct API links rema
 available. The old “Checking this deployment…” placeholder is not a successful
 check and does not establish whether Supabase is configured.
 
+## School class assignment update
+
+Existing installations should run **[migrations/005_student_classes.sql](migrations/005_student_classes.sql)**
+in the Supabase SQL Editor after migration 004. It seeds the six school classes,
+links registered teachers by verified email, and leaves missing teachers pending.
+No teacher account is created by this migration. See
+[STUDENT-CLASSES.md](../_dev-tools/STUDENT-CLASSES.md) for the mapping, one-time
+selection for existing students, permissions, and local verification.
+
 ## Where to find a new user
 
 Email/password users appear in **Authentication → Users**. They will not appear
@@ -62,7 +71,8 @@ successful signup request. Do not manually insert password rows into `auth.users
 
 | Table | Purpose |
 | --- | --- |
-| `profiles` | One row per Auth user: nickname, avatar, approved role; no password |
+| `profiles` | One row per Auth user: nickname, avatar, approved role, student class and assigned teacher; no password |
+| `school_classes`, `school_teachers` | Six school classes, canonical teacher emails and pending/verified account links |
 | `systems`, `missions` | Six systems, missions and required task credits |
 | `badges`, `reward_definitions` | Achievement requirements and fixed task XP |
 | `student_progress` | Full resumable learning snapshot, revision and total XP |
@@ -75,7 +85,8 @@ successful signup request. Do not manually insert password rows into `auth.users
 | `inneru_schema` | Installed database schema version |
 
 Students can read their own records. Teachers can read learning records only
-for students enrolled in a class they own. Anonymous clients cannot read learner
+for students assigned to them by the fixed school-class mapping. Legacy enrollment
+permissions remain for unrelated legacy records. Anonymous clients cannot read learner
 records. Direct writes are revoked; authenticated RPCs use the session's user
 ID and check authorization. All learning tables have row-level security enabled.
 Role metadata from signup and the entry role cards never approve teacher access.
@@ -92,10 +103,11 @@ Then approve the verified teacher account with the owner-only helper:
 select public.inneru_approve_teacher('teacher@example.com');
 ```
 
-The teacher signs in again and opens Teacher Dashboard → **Open cloud
-classroom**, creates a named class and shares its generated class code. A signed-in
-student joins from Student Dashboard. Only then does their synced work appear
-for that teacher. The existing imported browser register stays separate from the
+The teacher signs in again and opens Teacher Dashboard. Maryam’s 10G1–10G4
+and Riham’s 10G5–10G6 rosters and synced work appear automatically after students
+select their class. Registration with the matching verified email resolves pending
+assignments; the approved teacher role still gates access. Other teachers can
+continue using their existing legacy classroom workflow. The existing imported browser register stays separate from the
 cloud roster; this prevents a browser-imported name from impersonating an account.
 Preparing a shared device should use **Sign out**; account learning is not reset.
 
@@ -127,14 +139,15 @@ Preparing a shared device should use **Sign out**; account learning is not reset
 ## Development and migration changes
 
 The ordered sources are `migrations/001_schema.sql`, `002_catalog.sql` and
-`003_functions.sql` and `004_roles_avatars.sql`. `setup.sql` is their combined installer. Curriculum names
+`003_functions.sql`, `004_roles_avatars.sql` and `005_student_classes.sql`. `setup.sql` is their combined installer. Curriculum names
 are captured in `catalog.json` from the actual learning model. After changing
 course content, review `_dev-tools/build-db-catalog.py`, regenerate the catalog
 seeds and combined installer, and apply the reviewed database update.
 
 Verification uses a temporary `postgres:17-alpine` container, the real SQL
 functions/RLS, production API handlers and Python Playwright. Test data never
-uses a real student's email or password. See `_dev-tools/verify-database.py` and
+uses a real student's email or password. School teacher emails appear only as
+matching strings in isolated local test fixtures; no real account or email is created. See `_dev-tools/verify-database.py` and
 `_dev-tools/verify-cloud-learning.py`. Local success does not validate production
 credentials, email delivery or whether the migration was run in Supabase.
 

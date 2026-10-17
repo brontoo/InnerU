@@ -21,6 +21,7 @@
   let companionAnimation = null;
   let role = null;
   let draftName = null;
+  let draftClass = '';
   let paused = false;
   let switching = false;
   let opening = false;
@@ -70,12 +71,12 @@
     return new Intl.NumberFormat('en').format(xp) + ' XP saved here · Your next discovery awaits';
   }
   const A=window.InneruAccount;
-  let authMode='login',credentials=null,selectedAvatar=null,authUser=null,carryLocal=true;
+  let authMode='login',credentials=null,selectedAvatar=null,authUser=null,carryLocal=true,continueAsStudent=false;
   let accountConfigured=null;
   const service=A.api('session').then(result=>{accountConfigured=result.configured!==false;return result;}).catch(()=>{accountConfigured=false;return {configured:false,authenticated:false};});
   const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const hasLearning=p=>!!(p&&(p.xp||p.done?.length||p.rewards?.length));
-  function rememberDraft(){const input=panel.querySelector('#entry-nickname');if(input)draftName=input.value;}
+  function rememberDraft(){const input=panel.querySelector('#entry-nickname');if(input)draftName=input.value;const choice=panel.querySelector('#entry-class');if(choice)draftClass=choice.value;}
   function clearPassword(){if(credentials)credentials.password='';credentials=null;panel.querySelectorAll('input[type=password],input[data-password]').forEach(el=>el.value='');}
   function roles(){
     if(opening)return;clearTimeout(timer);switching=false;rememberDraft();clearPassword();
@@ -94,6 +95,12 @@
   function passwordField(id,label,kind='current-password'){
     return `<div class="gate-field"><label for="${id}">${label}</label><div class="gate-password-field"><input id="${id}" name="${id}" data-password type="password" autocomplete="${kind}" required minlength="8" maxlength="128" aria-describedby="${kind==='new-password'?'entry-password-help ':''}entry-error"><button type="button" data-password-toggle="${id}" aria-label="Show ${label.toLowerCase()}" aria-pressed="false">Show</button></div></div>`;
   }
+  function classField(){
+    return `<div class="gate-field"><label for="entry-class">Your class <small>required</small></label><select id="entry-class" name="classCode" required autocomplete="off" aria-describedby="entry-class-help entry-error"><option value="" disabled ${!A.studentClasses.includes(draftClass)?'selected':''}>Select your class</option>${A.studentClasses.map(code=>`<option value="${code}" ${code===draftClass?'selected':''}>${code}</option>`).join('')}</select><small id="entry-class-help" class="gate-class-help">Choose the class you attend. Your teacher will be assigned automatically.</small></div>`;
+  }
+  function validateClass(){
+    const input=panel.querySelector('#entry-class');if(!A.studentClasses.includes(input?.value)){input?.setAttribute('aria-invalid','true');input?.focus();throw new Error('Select your school class to continue.');}draftClass=input.value;return input.value;
+  }
   function accountForm(mode='login',email=''){
     authMode=mode;rememberDraft();clearPassword();
     const signup=mode==='signup';
@@ -101,6 +108,7 @@
       <nav class="gate-auth-tabs" aria-label="Account entry"><button type="button" data-auth-mode="login" aria-current="${signup?'false':'page'}">Sign in</button><button type="button" data-auth-mode="signup" aria-current="${signup?'page':'false'}">Create account</button></nav>
       <form id="gate-entry-form" novalidate><div class="gate-field"><label for="entry-email">Email address</label><input id="entry-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="254" value="${safe(email)}" placeholder="you@example.com" aria-describedby="entry-error"></div>
       ${signup?`<div class="gate-field"><label for="entry-nickname">First name or nickname <small>optional</small></label><input id="entry-nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" value="${safe(draftName??(readProfile().value?.name!=='Explorer'?readProfile().value?.name||'':''))}" placeholder="What should we call you?"></div>`:''}
+      ${signup&&role==='student'?classField():''}
       ${passwordField('entry-password','Password',signup?'new-password':'current-password')}${signup?'<p id="entry-password-help" class="gate-password-help">Use at least 8 characters. A longer, unique password is a great start.</p>':''}
       ${signup?passwordField('entry-confirm','Confirm password','new-password'):'<button type="button" class="gate-auth-link" data-auth-mode="recover">Forgot password?</button>'}${localChoice()}
       <button type="submit" class="gate-enter gate-submit"><span data-submit-label>${signup?'CHOOSE MY AVATAR':'SIGN IN & EXPLORE'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button></form>
@@ -112,7 +120,7 @@
     grid.querySelectorAll('[data-card]').forEach(card=>{card.classList.toggle('is-selected',card.dataset.card===selected);card.classList.toggle('is-unselected',card.dataset.card!==selected);});resetPointer();
     timer=setTimeout(()=>{switching=false;accountForm('login');},canMove()?260:0);
   }
-  function setBusy(busy){opening=busy;root.classList.toggle('is-opening',busy);const form=panel.querySelector('form');form?.setAttribute('aria-busy',String(busy));panel.querySelectorAll('button,input').forEach(el=>el.disabled=busy);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent=busy?'ONE MOMENT…':authMode==='avatar'?(credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'):authMode==='signup'?'CHOOSE MY AVATAR':authMode==='recover'?'SEND RESET LINK':authMode==='reset'?'SAVE PASSWORD & EXPLORE':'SIGN IN & EXPLORE';}
+  function setBusy(busy){opening=busy;root.classList.toggle('is-opening',busy);const form=panel.querySelector('form');form?.setAttribute('aria-busy',String(busy));panel.querySelectorAll('button,input,select').forEach(el=>el.disabled=busy);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent=busy?'ONE MOMENT…':authMode==='class'?'SAVE CLASS & EXPLORE':authMode==='avatar'?(credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'):authMode==='signup'?'CHOOSE MY AVATAR':authMode==='recover'?'SEND RESET LINK':authMode==='reset'?'SAVE PASSWORD & EXPLORE':'SIGN IN & EXPLORE';}
   function showError(error){setBusy(false);const node=panel.querySelector('#entry-error');node.textContent=error.message||String(error);node.scrollIntoView({block:'nearest'});}
   function validateEmail(){const input=panel.querySelector('#entry-email');if(!input.value.trim()||!input.checkValidity()){input.setAttribute('aria-invalid','true');input.focus();throw new Error('Enter a valid email address.');}return input.value.trim();}
   function validatePassword(confirm=false){const input=panel.querySelector('#entry-password'),value=input.value;if(value.length<(authMode==='login'?1:8)||value.length>128){input.focus();throw new Error(authMode==='login'?'Enter your password.':'Use a password between 8 and 128 characters.');}if(confirm&&value!==panel.querySelector('#entry-confirm').value){panel.querySelector('#entry-confirm').focus();throw new Error('The passwords do not match yet. Please try again.');}return value;}
@@ -127,9 +135,14 @@
     authUser=user;
     if(!['student','teacher','admin'].includes(user?.role))throw new Error('Your account role could not be verified. Please try signing in again.');
     if(!A.avatar(user?.avatarId)){clearPassword();setBusy(false);avatarPicker();return;}
-    if(user.role==='student'&&(role==='teacher'||user.requestedRole==='teacher')){clearPassword();setBusy(false);teacherPending();return;}
+    if(user.role==='student'&&(role==='teacher'||(user.requestedRole==='teacher'&&!continueAsStudent))){clearPassword();setBusy(false);teacherPending();return;}
+    if(user.role==='student'&&user.classSelectionRequired){clearPassword();setBusy(false);classSelection();return;}
     A.bindUser(user,{keepLocal:carryLocal});clearPassword();setBusy(true);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent='LET’S EXPLORE…';
     await new Promise(resolve=>setTimeout(resolve,canMove()?220:0));location.assign('index.html#'+A.destination(user));
+  }
+  function classSelection(){
+    authMode='class';role='student';draftClass='';
+    shell('One class. Your next discovery.','Choose your class to connect your learning with the right teacher. You only need to do this once.',`<form id="gate-class-form" novalidate>${classField()}<button type="submit" class="gate-enter gate-submit"><span data-submit-label>SAVE CLASS & EXPLORE</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button></form><button type="button" class="gate-auth-link" data-entry-logout>Sign out</button>`);
   }
   function teacherPending(){
     authMode='teacher-pending';shell('Your teacher workspace. Your verified account.','This account is currently saved as a student in the database. Teacher access needs the school owner’s approval.',`<div class="gate-role-status"><p>Your teacher selection is a request, not a change to your account permissions. Once your teacher role is approved, return here and check again.</p><button type="button" class="gate-enter" data-teacher-request>REQUEST TEACHER ACCESS ${arrows}</button><button type="button" class="gate-auth-link" data-role-refresh>Check my approved role</button><button type="button" class="gate-auth-link" data-student-continue>Continue as a student</button><button type="button" class="gate-auth-link" data-entry-logout>Sign out</button><p role="status" data-role-request-status></p></div>`);
@@ -140,6 +153,12 @@
     if(opening||!role)return;
     panel.querySelector('#entry-error').textContent='';
     try{
+      if(authMode==='class'){
+        const classCode=validateClass();setBusy(true);
+        const response=await fetch('/api/learning?action=select-class',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({classCode})});
+        const data=await response.json();if(!response.ok)throw new Error(data.error||'Your class could not be saved. Please try again.');
+        const result=await A.api('session');if(!result.authenticated)throw new Error('Please sign in again to finish selecting your class.');await finish(result.user);return;
+      }
       if(authMode==='avatar'){
         const id=panel.querySelector('input[name=avatar]:checked')?.value;if(!A.avatar(id))throw new Error('Choose an avatar to continue.');selectedAvatar=id;setBusy(true);
         if(credentials){const result=await A.api('signup',{...credentials,avatarId:id,requestedRole:role});if(result.authenticated)await finish(result.user);else{setBusy(false);confirmation();}}
@@ -149,7 +168,7 @@
       const email=validateEmail();
       if(authMode==='recover'){setBusy(true);await A.api('recover',{email});setBusy(false);const message=panel.querySelector('#entry-error');message.textContent='If this email has an account, a reset link is on its way. Check your inbox.';message.classList.add('is-success');return;}
       const pass=validatePassword(authMode==='signup');carryLocal=panel.querySelector('#entry-keep-progress')?.checked??false;
-      if(authMode==='signup'){const name=panel.querySelector('#entry-nickname').value.trim();if(name.length>24||/[\u0000-\u001f\u007f]/.test(name))throw new Error('Use up to 24 characters for your nickname.');draftName=name;credentials={email,password:pass,name:name||'Explorer'};avatarPicker();return;}
+      if(authMode==='signup'){const name=panel.querySelector('#entry-nickname').value.trim();if(name.length>24||/[\u0000-\u001f\u007f]/.test(name))throw new Error('Use up to 24 characters for your nickname.');const classCode=role==='student'?validateClass():undefined;draftName=name;credentials={email,password:pass,name:name||'Explorer',...(classCode?{classCode}:{})};avatarPicker();return;}
       setBusy(true);const result=await A.api('login',{email,password:pass});if(!result.authenticated)throw new Error('Please confirm your email before signing in.');await finish(result.user);
     }catch(error){showError(error);}
   }
@@ -160,10 +179,10 @@
     if(button.dataset.passwordToggle){const input=panel.querySelector('#'+button.dataset.passwordToggle),visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'Hide':'Show';button.setAttribute('aria-pressed',String(visible));button.setAttribute('aria-label',(visible?'Hide':'Show')+' password');}
     if(button.hasAttribute('data-teacher-request')){button.disabled=true;fetch('/api/learning?action=request-teacher',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:'{}'}).then(async r=>{const data=await r.json();if(!r.ok)throw new Error(data.error);panel.querySelector('[data-role-request-status]').textContent='Teacher access requested. Your school owner can now approve this account.';}).catch(error=>{panel.querySelector('[data-role-request-status]').textContent=error.message||'The request could not be saved.';button.disabled=false;});}
     if(button.hasAttribute('data-role-refresh'))A.api('session').then(s=>finish(s.user)).catch(showError);
-    if(button.hasAttribute('data-student-continue')){role='student';finish({...authUser,requestedRole:'student'}).catch(showError);}
+    if(button.hasAttribute('data-student-continue')){role='student';continueAsStudent=true;finish({...authUser,requestedRole:'student'}).catch(showError);}
     if(button.hasAttribute('data-entry-logout'))A.api('logout',{}).then(()=>location.assign('login.html')).catch(showError);
   });
-  panel.addEventListener('change',event=>{if(event.target.name==='avatar')cheer(event.target.value);if(event.target.id==='entry-keep-progress')carryLocal=event.target.checked;});
+  panel.addEventListener('change',event=>{if(event.target.name==='avatar')cheer(event.target.value);if(event.target.id==='entry-keep-progress')carryLocal=event.target.checked;if(event.target.id==='entry-class'){draftClass=event.target.value;event.target.removeAttribute('aria-invalid');panel.querySelector('#entry-error').textContent='';}});
   panel.addEventListener('keydown',event=>{
     if(event.target.name!=='avatar'||!['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
     event.preventDefault();const inputs=[...panel.querySelectorAll('input[name=avatar]')],i=inputs.indexOf(event.target),delta=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:event.key==='ArrowDown'?3:-3;

@@ -46,7 +46,7 @@ try:
   p.unroute('**/api/auth?action=session');p.locator('#connection-retry').click();finish(p)
   check('Supabase Auth is reachable' in output(p),'retry succeeds after a stalled request is cleared')
   p.clock.resume()
-  p.request.post(ORIGIN+'/api/auth?action=signup',data={'email':'connection-'+uuid.uuid4().hex+'@example.com','password':'Fixture-Only-Secure-123','avatarId':'pip','name':'Fixture'})
+  p.request.post(ORIGIN+'/api/auth?action=signup',data={'email':'connection-'+uuid.uuid4().hex+'@example.com','password':'Fixture-Only-Secure-123','avatarId':'pip','name':'Fixture','classCode':'10G1'})
   p.reload();finish(p)
   check('Account session verified' in output(p) and 'database is not installed yet' in output(p),'a real authenticated session reports a missing SQL migration through the production gateway')
   p.route('**/api/learning?action=state',lambda r:json_route(r,{'schemaVersion':1,'profile':{'role':'student'},'progress':{'revision':3}}));p.reload();finish(p)

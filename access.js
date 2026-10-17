@@ -14,6 +14,7 @@
   const user=result.authenticated?result.user:null;
   if(!user){if(!privatePath(target))return true;const root=document.getElementById('app');if(root)root.innerHTML='<main class="iu-access-notice"><h1>'+ (failed?'Account verification unavailable.':'Sign in to your dashboard.')+'</h1><p>'+ (failed?'Your dashboard stays closed until your account can be verified. Please check your connection and try again.':'Dashboard access belongs to your signed-in account.')+'</p><a href="login.html?role='+ (target==='teacher'?'teacher':'student')+'">Sign in</a> · <a href="connection.html">Check connection</a></main>';return false;}
   const destination=A.destination(user);
+  if(user.role==='student'&&user.classSelectionRequired){location.replace('login.html?class=1');return false;}
   if((teacher(user)&&target!=='teacher'&&!infoPath(target))||(!teacher(user)&&target==='teacher')){
    history.replaceState(null,'',location.pathname+location.search+'#'+destination);queueMicrotask(()=>window.route?.());return false;
   }

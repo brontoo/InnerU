@@ -14,7 +14,7 @@ def q(v):return "'"+str(v).replace("'","''")+"'"
 def entry(p,role='student'):
  p.goto(ORIGIN+'/login.html?nosw=1');p.locator('[data-select-role='+role+']').click();p.wait_for_selector('#entry-email')
 def create(p,email,name,avatar='sage'):
- p.locator('[data-auth-mode=signup]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-password').fill('Fixture-Role-Test-123');p.locator('#entry-confirm').fill('Fixture-Role-Test-123');p.locator('#gate-entry-form [type=submit]').click();p.locator('input[value='+avatar+']').check();p.locator('#gate-avatar-form [type=submit]').click()
+ p.locator('[data-auth-mode=signup]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-class').select_option('10G1');p.locator('#entry-password').fill('Fixture-Role-Test-123');p.locator('#entry-confirm').fill('Fixture-Role-Test-123');p.locator('#gate-entry-form [type=submit]').click();p.locator('input[value='+avatar+']').check();p.locator('#gate-avatar-form [type=submit]').click()
 def login(p,email):
  p.locator('#entry-email').fill(email);p.locator('#entry-password').fill('Fixture-Role-Test-123');p.locator('#gate-entry-form [type=submit]').click()
 def student(p):p.wait_for_url('**/index.html#dashboard');p.wait_for_selector('.sd-page');p.wait_for_function('!document.body.classList.contains("iu-access-pending")')
@@ -64,7 +64,7 @@ try:
   check(session(p)['id']==id2 and p.evaluate('state.authUserId')==id2,'switching accounts binds the dashboard to the new verified identity')
   for width in [1680,768,390,320]:
    p.set_viewport_size({'width':width,'height':950});check(p.evaluate('document.documentElement.scrollWidth<=innerWidth'),f'role-specific teacher dashboard and avatar fit {width}px')
-  sql("update public.profiles set role='student',requested_role='student' where id="+q(id2)+';');p.reload();student(p)
+  sql("update public.profiles set role='student',requested_role='student' where id="+q(id2)+';');p.reload();p.wait_for_selector('#gate-class-form');p.locator('#entry-class').select_option('10G1');p.locator('#gate-class-form [type=submit]').click();student(p)
   check(session(p)['role']=='student' and p.locator('.td-page').count()==0,'a revoked teacher role is reflected on the next verified page load')
   check(not errors,'no JavaScript exceptions across role requests, approval, identity changes or dashboard restrictions: '+str(errors))
   browser.close()

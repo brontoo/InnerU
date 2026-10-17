@@ -25,12 +25,13 @@
   if(teacher){document.querySelectorAll('a.brand').forEach(a=>a.href='#teacher');document.querySelector('.topbar .xp')?.remove();document.querySelector('.habit-chip')?.remove();}
  }
  const oldRoute=route;window.removeEventListener('hashchange',oldRoute);route=function(){if(InneruAccess.check())return oldRoute.apply(this,arguments);};window.addEventListener('hashchange',route);
- async function start(){if(loading)return;loading=true;let session;try{session=await InneruAccess.ready;if(!session.authenticated){if(state.authUserId){A.clearActive(state.authUserId);state=A.readProfile();}return;}user=session.user;
+ async function start(){if(loading)return;loading=true;let session,redirecting=false;try{session=await InneruAccess.ready;if(!session.authenticated){if(state.authUserId){A.clearActive(state.authUserId);state=A.readProfile();}return;}user=session.user;
+   if(user.role==='student'&&user.classSelectionRequired){redirecting=true;location.replace('login.html?class=1');return;}
    if(state.authUserId!==user.id){state=A.bindUser(user,{keepLocal:!state.authUserId});save();route();}
    else if(A.avatar(user.avatarId)&&state.avatarId!==user.avatarId){state.avatarId=user.avatarId;save();}
    if(InneruAccess.teacher(user)&&state.name!==user.name){state.name=user.name;save();}
    A.currentUser=user;decorate();navigation();document.dispatchEvent(new CustomEvent('inneru-account',{detail:{user}}));
-  }catch(error){session={authenticated:false,error:error.message};}finally{loading=false;InneruAccess.complete(session||{authenticated:false});route();}}
+  }catch(error){session={authenticated:false,error:error.message};}finally{loading=false;if(!redirecting){InneruAccess.complete(session||{authenticated:false});route();}}}
  const decorateAccount=decorate;decorate=function(){decorateAccount();navigation();};
  document.addEventListener('click',event=>{document.querySelectorAll('.iu-account-menu[open]').forEach(menu=>{if(!menu.contains(event.target))menu.open=false;});});
  document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.iu-account-menu[open]').forEach(menu=>menu.open=false);});

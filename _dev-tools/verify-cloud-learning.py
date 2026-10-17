@@ -10,7 +10,7 @@ def check(v,m):
  assert v,m
  checks+=1;print('PASS',m,flush=True)
 def signup(p,email,name):
- p.goto(ORIGIN+'/login.html?nosw=1');p.locator('[data-select-role=student]').click();p.locator('[data-auth-mode=signup]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-password').fill('Fixture-Only-Password-123');p.locator('#entry-confirm').fill('Fixture-Only-Password-123');p.locator('#gate-entry-form [type=submit]').click();p.locator('input[value=luna]').check();p.locator('#gate-avatar-form [type=submit]').click();p.wait_for_url('**/index.html#dashboard')
+ p.goto(ORIGIN+'/login.html?nosw=1');p.locator('[data-select-role=student]').click();p.locator('[data-auth-mode=signup]').first.click();p.locator('#entry-email').fill(email);p.locator('#entry-nickname').fill(name);p.locator('#entry-class').select_option('10G5');p.locator('#entry-password').fill('Fixture-Only-Password-123');p.locator('#entry-confirm').fill('Fixture-Only-Password-123');p.locator('#gate-entry-form [type=submit]').click();p.locator('input[value=luna]').check();p.locator('#gate-avatar-form [type=submit]').click();p.wait_for_url('**/index.html#dashboard')
 def sync(p):
  try:p.wait_for_function('window.InneruCloud&&["Saved to your account","Teacher classroom connected"].includes(InneruCloud.status())',timeout=25000)
  except Exception:
@@ -19,6 +19,8 @@ def sync(p):
 def go(p,hash):p.evaluate('(h)=>location.hash=h',hash);p.wait_for_selector('[data-cloud-panel]')
 def api(p,action,values=None):return p.evaluate('(v)=>InneruCloud.api(v.action,v.values)',{'action':action,**({'values':values} if values is not None else {})})
 try:
+ # Only this isolated local Auth fixture uses the school's teacher address.
+ subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-v','ON_ERROR_STOP=1','-q'],input="delete from auth.users where lower(email)='riham.hassan@moe.sch.ae';",text=True,check=True)
  with sync_playwright() as pw:
   browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader']);student=browser.new_context(viewport={'width':1440,'height':1000},service_workers='block');p=student.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
   signup(p,'db-student-'+uuid.uuid4().hex[:8]+'@example.com','Cloud learner');sync(p);uid=p.evaluate('state.authUserId')
@@ -27,15 +29,15 @@ try:
   p.evaluate('InneruEvidence.record({id:"skeletal:1:q0",system:"skeletal",mission:1,title:"Name the tissue",prompt:"Which tissue supports the body?",answer:"Bone",correct:true});reward("activity1",20);reward("q1-0",10);state.done.push(1);save()');sync(p)
   saved=api(p,'state')['progress'];check(saved['snapshot']['xp']==30 and len(saved['snapshot']['assessment']['responses'])==1,'completed work uploads task credits, answers and mission progress')
   rev=saved['revision'];p.evaluate('reward("q1-0",10);save()');sync(p);check(api(p,'state')['progress']['snapshot']['xp']==30,'replaying a credited task cannot duplicate cloud points')
-  teacher=browser.new_context(service_workers='block');t=teacher.new_page();t.on('pageerror',lambda e:errors.append(str(e)));signup(t,'db-teacher-'+uuid.uuid4().hex[:8]+'@example.com','Teacher');sync(t);tid=t.evaluate('state.authUserId')
+  teacher=browser.new_context(service_workers='block');t=teacher.new_page();t.on('pageerror',lambda e:errors.append(str(e)));signup(t,'riham.hassan@moe.sch.ae','Teacher');sync(t);tid=t.evaluate('state.authUserId')
   denied=t.request.get(ORIGIN+'/api/learning?action=classroom');check(denied.status==403,'choosing a role card does not grant database teacher permissions')
   t.request.post(ORIGIN+'/__test/approve-teacher',data={'id':tid});t.reload();sync(t);go(t,'teacher');t.locator('[data-cloud-open-classroom]').click();t.wait_for_selector('[data-cloud-create]');t.locator('[data-cloud-create] input').fill('Biology studio');t.locator('[data-cloud-create] button').click();t.wait_for_selector('.iu-cloud-classes input');code=t.locator('.iu-cloud-classes input').input_value()
-  p.locator('[data-cloud-join] input').fill(code);p.locator('[data-cloud-join] button').click();p.wait_for_function('document.querySelector("[data-cloud-panel]").textContent.includes("Biology studio")')
-  check('Biology studio' in p.locator('[data-cloud-panel]').inner_text(),'student can enroll using the approved teacher’s class code')
-  t.reload();sync(t);t.locator('[data-cloud-open-classroom]').click();t.wait_for_selector('[data-cloud-student]');t.locator('[data-cloud-student]').click();t.wait_for_selector('[data-cloud-feedback]')
+  result=api(p,'join-class',{'code':code})
+  check(result['name']=='Biology studio' and '10G5' in p.locator('[data-cloud-panel]').inner_text(),'student assignment is automatic and extra class codes are limited to the assigned teacher')
+  t.reload();sync(t);t.locator('[data-cloud-open-classroom]').click();t.wait_for_selector('[data-cloud-student]');t.locator('[data-cloud-student="'+uid+'"]').click();t.wait_for_selector('[data-cloud-feedback]')
   check('Cloud learner' in t.locator('[data-cloud-student-detail]').inner_text() and 'Bone' in t.locator('[data-cloud-student-detail]').inner_text(),'teacher cloud classroom displays assigned student progress, achievements and answers')
   t.locator('[data-cloud-feedback] textarea').fill('Good connection between structure and support.');t.locator('[data-cloud-feedback] input[type=checkbox]').check();t.locator('[data-cloud-feedback] button').click();t.wait_for_function('document.querySelector("[data-cloud-feedback] [role=status]").textContent.includes("saved")')
-  check(api(t,'classroom')['students'][0]['feedback']['skeletal:1:q0']['note'].startswith('Good connection'),'teacher feedback is persisted in the relational database')
+  check(next(s for s in api(t,'classroom')['students'] if s['id']==uid)['feedback']['skeletal:1:q0']['note'].startswith('Good connection'),'teacher feedback is persisted in the relational database')
   # Simulate a second device by sharing only the HttpOnly session, never local learner data.
   other=browser.new_context(service_workers='block');other.add_cookies(student.cookies());q=other.new_page();q.on('pageerror',lambda e:errors.append(str(e)));q.goto(ORIGIN+'/index.html?nosw=1#dashboard');sync(q)
   check(q.evaluate('state.xp')==30 and q.evaluate('state.assessment.responses[0].answer')=='Bone','a fresh browser restores account progress and answers from the database')
@@ -50,10 +52,12 @@ try:
   check('q2-1' in api(p,'state')['progress']['snapshot']['rewards'],'choosing the device record explicitly replaces the cloud version at its current revision')
   # Connection diagnostics do not ask for or expose credentials.
   p.goto(ORIGIN+'/connection.html');p.wait_for_function('!document.querySelector("#connection-retry").disabled');check('learning database installed' in p.locator('#connection-results').inner_text(),'connection diagnostics verify the deployed Auth adapter and learning schema')
-  t.reload();sync(t);go(t,'teacher');t.locator('[data-cloud-open-classroom]').click();t.wait_for_selector('[data-cloud-student]');t.locator('[data-cloud-student]').click();t.wait_for_selector('[data-cloud-feedback]')
+  t.reload();sync(t);go(t,'teacher');t.locator('[data-cloud-open-classroom]').click();t.wait_for_selector('[data-cloud-student]');t.locator('[data-cloud-student="'+uid+'"]').click();t.wait_for_selector('[data-cloud-feedback]')
   for width in [1440,768,390,320]:
    t.set_viewport_size({'width':width,'height':1000});check(t.evaluate('document.documentElement.scrollWidth<=innerWidth'),f'cloud classroom, answers and feedback fit {width}px without horizontal overflow')
   check(not errors,'no JavaScript exceptions during real database signup, sync, classroom review or conflicts: '+str(errors))
   browser.close()
  print(checks,'cloud-learning browser checks passed.')
-finally:proc.terminate();proc.wait(timeout=10)
+finally:
+ proc.terminate();proc.wait(timeout=10)
+ subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-q'],input="delete from auth.users where lower(email)='riham.hassan@moe.sch.ae';",text=True,check=True)
