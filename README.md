@@ -1,7 +1,11 @@
 # InnerU — Explore What's Inside
 
 Interactive, gamified human-body learning for **Grade 10 Science** at **Um Al-Emarat School**.
-Plain HTML / CSS / JavaScript: **no build step, no framework, no dependencies, no server**.
+The learning portal uses plain HTML / CSS / JavaScript with no build step or framework.
+Email/password accounts use the Vercel Node function in `api/auth.js` and Supabase Auth.
+Connect the account service using [_dev-tools/ACCOUNT-SETUP.md](_dev-tools/ACCOUNT-SETUP.md).
+The illustrated entry includes six animated avatar choices and redirects authenticated
+learners directly to Home. Without the external configuration, account creation is unavailable.
 
 The muscular landing page has a **real-time rotatable 3D studio immediately below
 its hero**, with six region tabs and 23 selectable anatomical structures. Choosing
@@ -36,11 +40,14 @@ for weak wifi.
 | `#glossary` | every key term in the six systems, one sentence each, with the Arabic term beside it |
 | `#teacher` | **classroom tools** (see below) |
 
-Progress is stored in **`localStorage`** under `bodyquest-v1`; nothing is uploaded.
+Learning progress is stored in **`localStorage`** under `bodyquest-v1` and does not
+automatically sync to the account service. Account email, password and avatar metadata
+are handled by the connected auth service; passwords and session tokens are not stored
+in application localStorage.
 
-Two reading supports run on every lesson page: **tap any underlined term** for a one-sentence
-definition with the Arabic word beside it, and **▶ Listen** to have the page read aloud with the
-words highlighted as they are spoken. Both respect a per-student preference and need no network.
+**Tap an underlined term** for a one-sentence definition with the Arabic word beside it.
+Audio is limited to pronouncing selected structure names inside the anatomy models;
+page narration and glossary audio are unavailable.
 
 ## Excretory expedition
 

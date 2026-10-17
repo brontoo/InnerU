@@ -313,7 +313,7 @@
   function undoAvailable(){try{const s=JSON.parse(localStorage.getItem(UNDO_KEY)||'null');return !!s?.data&&Date.now()-s.at<600000;}catch{return false;}}
   function undo(){
     const snap=JSON.parse(localStorage.getItem(UNDO_KEY)||'null');if(!snap?.data||Date.now()-snap.at>=600000)throw new Error('The 10-minute restore window has ended.');
-    const next=JSON.parse(snap.data);if(!Array.isArray(next.done)||!Array.isArray(next.rewards))throw new Error('The saved learner record is unreadable.');
+    const next=JSON.parse(snap.data);if(state.authUserId&&next.authUserId!==state.authUserId)throw new Error('That saved learner belongs to a different account.');if(!Array.isArray(next.done)||!Array.isArray(next.rewards))throw new Error('The saved learner record is unreadable.');
     localStorage.setItem('bodyquest-v1',snap.data);state=next;save();localStorage.removeItem(UNDO_KEY);
   }
   function restore(payload){backup();applyPayload(payload);}

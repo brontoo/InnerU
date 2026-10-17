@@ -1,9 +1,12 @@
 # Verification harnesses
 
 For the standalone InnerU adventure entry at `/login.html`, run
-`python _dev-tools/verify-login.py`. It verifies both browser entry flows, saved
-progress, illustrated role cards, discovery tips, responsive layouts, motion preferences,
-fallbacks and offline access. See [DISCOVERY-ENTRY.md](DISCOVERY-ENTRY.md).
+`python3 _dev-tools/verify-login.py`. It verifies signup, returning sign-in,
+animated avatars, direct Home redirects, session cookies, separate learner
+archives, confirmation/recovery, responsive layouts, motion preferences and
+offline account behavior. It uses the real API adapter against an isolated local
+provider fixture. See [DISCOVERY-ENTRY.md](DISCOVERY-ENTRY.md) and
+[ACCOUNT-SETUP.md](ACCOUNT-SETUP.md) for the required production configuration.
 
 These are the headless harnesses used while building the site. Each one serves this
 project read-only on a local port, loads the real pages inside same-origin iframes,

@@ -1,4 +1,4 @@
-/* InnerU discovery entry. Roles choose existing public workspaces, not permissions. */
+/* InnerU adventure entry: real account sign-in and an animated avatar welcome. */
 (() => {
   'use strict';
   const root = document.querySelector('.iu-gate');
@@ -11,10 +11,10 @@
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const arrows = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>';
   const discoveries = {
-    explore:{title:'Follow your curiosity.',text:'Choose Student to open your learning dashboard. Explore at your own pace and return to the discoveries you want to understand more deeply.',tip:'A good adventure starts with a question. What will you discover today?'},
+    explore:{title:'Follow your curiosity.',text:'Choose Student to sign in or create your explorer account. Explore at your own pace and return to the discoveries you want to understand more deeply.',tip:'A good adventure starts with a question. What will you discover today?'},
     learn:{title:'Look closer. Make connections.',text:'Investigate, experiment and use the evidence. Your next discovery can begin with a new question or a familiar idea seen in a different way.',tip:'Take your time. Explaining why something happens is part of the discovery.'},
     grow:{title:'Every discovery is a step forward.',text:'Completed tasks earn the points and achievements shown in your dashboard. Exploring this welcome page does not change your learning record.',tip:'Your progress belongs to you. Continue on this browser whenever you are ready.'},
-    help:{title:'Your adventure starts here.',text:'Students can continue to their learning dashboard and optionally choose a nickname. Teachers can open classroom tools and use progress codes. Everything uses the existing browser-based entry.',tip:'Saved progress stays in this browser. Your teacher can help you use a progress code on another device.'}
+    help:{title:'Your adventure starts here.',text:'Sign in with your email and password, or create an account and choose an explorer avatar. Teachers can use the classroom dashboard after opening the portal.',tip:'Saved progress stays in this browser. Your teacher can help you use a progress code on another device.'}
   };
   const greetings = ['Your next discovery starts with a question!','Big discoveries begin with little steps.','Stay curious. You’ve got this!','Ready when you are, explorer!'];
   let greetingIndex = 0;
@@ -69,93 +69,110 @@
     const xp = Number.isFinite(Number(value.xp)) ? Math.max(0,Number(value.xp)) : 0;
     return new Intl.NumberFormat('en').format(xp) + ' XP saved here · Your next discovery awaits';
   }
-  function rememberDraft() {
-    const input = panel.querySelector('#entry-nickname');
-    if (input) draftName = input.value;
+  const A=window.InneruAccount;
+  let authMode='login',credentials=null,selectedAvatar=null,authUser=null,carryLocal=true;
+  let accountConfigured=null;
+  const service=A.api('session').then(result=>{accountConfigured=result.configured!==false;return result;}).catch(()=>{accountConfigured=false;return {configured:false,authenticated:false};});
+  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hasLearning=p=>!!(p&&(p.xp||p.done?.length||p.rewards?.length));
+  function rememberDraft(){const input=panel.querySelector('#entry-nickname');if(input)draftName=input.value;}
+  function clearPassword(){if(credentials)credentials.password='';credentials=null;panel.querySelectorAll('input[type=password],input[data-password]').forEach(el=>el.value='');}
+  function roles(){
+    if(opening)return;clearTimeout(timer);switching=false;rememberDraft();clearPassword();
+    const previous=role;role=null;root.dataset.view='roles';delete root.dataset.role;panel.hidden=true;grid.hidden=false;
+    grid.querySelectorAll('[data-card]').forEach(card=>card.classList.remove('is-selected','is-unselected'));
+    support.textContent='Choose your mission role and let’s explore!';if(previous)grid.querySelector('[data-select-role="'+previous+'"]').focus({preventScroll:true});resetPointer();
   }
-  function roles() {
-    if (opening) return;
-    clearTimeout(timer); switching = false; rememberDraft();
-    const previous = role;
-    role = null;
-    root.dataset.view = 'roles';
-    delete root.dataset.role;
-    panel.hidden = true;
-    grid.hidden = false;
-    grid.querySelectorAll('[data-card]').forEach(card => card.classList.remove('is-selected','is-unselected'));
-    support.textContent = 'Choose your mission role and let’s explore!';
-    if (previous) grid.querySelector('[data-select-role="'+previous+'"]').focus({preventScroll:true});
-    resetPointer();
+  function shell(title,intro,html){
+    grid.hidden=true;panel.hidden=false;root.dataset.view='entry';root.dataset.role=role||'student';
+    panel.innerHTML=`<button type="button" class="gate-back" data-back-roles>← Choose another role</button><span class="gate-panel-label">${role==='teacher'?'MISSION GUIDE':'BODY EXPLORER'} / YOUR INNERU ACCOUNT</span><h2 id="gate-panel-title" tabindex="-1">${title}</h2><p class="gate-panel-intro">${intro}</p><div data-account-availability role="status"></div>${html}<p id="entry-error" class="gate-entry-error" role="alert"></p><p class="gate-panel-local">Your chosen avatar follows you into InnerU. Learning progress is saved on this device.</p>`;
+    support.textContent='Your next adventure begins with you.';
+    panel.querySelector('#gate-panel-title').focus({preventScroll:true});
+    service.then(()=>{const status=panel.querySelector('[data-account-availability]');if(status&&accountConfigured===false)status.innerHTML='<p class="gate-account-unavailable">Account sign-in is not available yet. You can still explore the portal from Home.</p>';});
   }
-  function entry(selected) {
-    if (switching || opening || !['student','teacher'].includes(selected)) return;
-    switching = true;
-    role = selected;
-    root.dataset.role = selected;
-    root.dataset.view = 'selecting';
-    grid.querySelectorAll('[data-card]').forEach(card => {
-      card.classList.toggle('is-selected',card.dataset.card === selected);
-      card.classList.toggle('is-unselected',card.dataset.card !== selected);
-    });
-    resetPointer();
-    timer = setTimeout(() => {
-      switching = false;
-      const current = readProfile();
-      const student = selected === 'student';
-      panel.innerHTML = `<button type="button" class="gate-back" data-back-roles>← Choose another role</button><span class="gate-panel-label">${student?'STUDENT / BODY EXPLORER':'TEACHER / MISSION GUIDE'}</span><h2 id="gate-panel-title" tabindex="-1">${student?'Your next discovery awaits.':'Welcome to your Teacher Area.'}</h2><p class="gate-panel-intro">${student?'Continue your InnerU adventure with the learning profile saved on this browser.':'Open your classroom dashboard to review shared learning records, submitted answers and achievements.'}</p><div class="gate-entry-facts">${student?`<span class="gate-saved-indicator" aria-hidden="true"></span><p data-profile-summary></p>`:'<span>PROGRESS CODES</span><i aria-hidden="true"></i><span>STUDENT RECORDS</span><i aria-hidden="true"></i><span>SHARED-DEVICE TOOLS</span>'}</div><form id="gate-entry-form" novalidate>${student?'<div class="gate-field"><label for="entry-nickname">Your first name or nickname <small>optional</small></label><input id="entry-nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" aria-describedby="entry-name-help entry-error" placeholder="What should we call you?"><span id="entry-name-help">Keep your existing name, or choose a nickname for this device.</span></div>':''}<p id="entry-error" class="gate-entry-error" role="alert"></p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${student?'OPEN MY DASHBOARD':'OPEN TEACHER DASHBOARD'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button><button type="button" class="gate-continue-unchanged" data-continue-unchanged hidden>Open the dashboard without changing my name ${arrows}</button></form><p class="gate-panel-local">${student?'Your progress, XP and achievements stay on this device.':'Teacher tools use this browser’s class list and shared-device progress.'}</p>`;
-      if (student) {
-        panel.querySelector('[data-profile-summary]').textContent = progressLabel(current.value);
-        panel.querySelector('#entry-nickname').value = draftName ?? (typeof current.value?.name === 'string' && current.value.name !== 'Explorer' ? current.value.name.slice(0,24) : '');
-        if (current.invalid) panel.querySelector('#entry-error').textContent = 'Saved progress could not be read. You can open the dashboard without changing your name.';
-        if (current.unavailable) panel.querySelector('#entry-error').textContent = 'Browser saving is unavailable. You can still open your dashboard.';
-        if (current.invalid || current.unavailable) panel.querySelector('[data-continue-unchanged]').hidden = false;
+  function localChoice(){const p=readProfile().value;return p&&!p.authUserId&&hasLearning(p)?`<label class="gate-keep-progress"><input type="checkbox" id="entry-keep-progress" ${carryLocal?'checked':''}> Keep my saved learning on this device <small>${new Intl.NumberFormat('en').format(Number(p.xp)||0)} XP · mission progress and badges</small></label>`:'';}
+  function passwordField(id,label,kind='current-password'){
+    return `<div class="gate-field"><label for="${id}">${label}</label><div class="gate-password-field"><input id="${id}" name="${id}" data-password type="password" autocomplete="${kind}" required minlength="8" maxlength="128" aria-describedby="${kind==='new-password'?'entry-password-help ':''}entry-error"><button type="button" data-password-toggle="${id}" aria-label="Show ${label.toLowerCase()}" aria-pressed="false">Show</button></div></div>`;
+  }
+  function accountForm(mode='login',email=''){
+    authMode=mode;rememberDraft();clearPassword();
+    const signup=mode==='signup';
+    shell(signup?'Your adventure. Your account.':'Welcome back, explorer.',signup?'Create your account, choose your explorer and make yourself at home.':'Sign in with your email and password. Your next discovery is waiting.',`
+      <nav class="gate-auth-tabs" aria-label="Account entry"><button type="button" data-auth-mode="login" aria-current="${signup?'false':'page'}">Sign in</button><button type="button" data-auth-mode="signup" aria-current="${signup?'page':'false'}">Create account</button></nav>
+      <form id="gate-entry-form" novalidate><div class="gate-field"><label for="entry-email">Email address</label><input id="entry-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="254" value="${safe(email)}" placeholder="you@example.com" aria-describedby="entry-error"></div>
+      ${signup?`<div class="gate-field"><label for="entry-nickname">First name or nickname <small>optional</small></label><input id="entry-nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" value="${safe(draftName??(readProfile().value?.name!=='Explorer'?readProfile().value?.name||'':''))}" placeholder="What should we call you?"></div>`:''}
+      ${passwordField('entry-password','Password',signup?'new-password':'current-password')}${signup?'<p id="entry-password-help" class="gate-password-help">Use at least 8 characters. A longer, unique password is a great start.</p>':''}
+      ${signup?passwordField('entry-confirm','Confirm password','new-password'):'<button type="button" class="gate-auth-link" data-auth-mode="recover">Forgot password?</button>'}${localChoice()}
+      <button type="submit" class="gate-enter gate-submit"><span data-submit-label>${signup?'CHOOSE MY AVATAR':'SIGN IN & EXPLORE'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button></form>
+      <p class="gate-auth-switch">${signup?'Already have an account?':'New to InnerU?'} <button type="button" class="gate-auth-link" data-auth-mode="${signup?'login':'signup'}">${signup?'Sign in':'Create your account'}</button></p>`);
+  }
+  function entry(selected){
+    if(switching||opening||!['student','teacher'].includes(selected))return;
+    switching=true;role=selected;root.dataset.role=selected;root.dataset.view='selecting';
+    grid.querySelectorAll('[data-card]').forEach(card=>{card.classList.toggle('is-selected',card.dataset.card===selected);card.classList.toggle('is-unselected',card.dataset.card!==selected);});resetPointer();
+    timer=setTimeout(()=>{switching=false;accountForm('login');},canMove()?260:0);
+  }
+  function setBusy(busy){opening=busy;root.classList.toggle('is-opening',busy);const form=panel.querySelector('form');form?.setAttribute('aria-busy',String(busy));panel.querySelectorAll('button,input').forEach(el=>el.disabled=busy);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent=busy?'ONE MOMENT…':authMode==='avatar'?(credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'):authMode==='signup'?'CHOOSE MY AVATAR':authMode==='recover'?'SEND RESET LINK':authMode==='reset'?'SAVE PASSWORD & EXPLORE':'SIGN IN & EXPLORE';}
+  function showError(error){setBusy(false);const node=panel.querySelector('#entry-error');node.textContent=error.message||String(error);node.scrollIntoView({block:'nearest'});}
+  function validateEmail(){const input=panel.querySelector('#entry-email');if(!input.value.trim()||!input.checkValidity()){input.setAttribute('aria-invalid','true');input.focus();throw new Error('Enter a valid email address.');}return input.value.trim();}
+  function validatePassword(confirm=false){const input=panel.querySelector('#entry-password'),value=input.value;if(value.length<(authMode==='login'?1:8)||value.length>128){input.focus();throw new Error(authMode==='login'?'Enter your password.':'Use a password between 8 and 128 characters.');}if(confirm&&value!==panel.querySelector('#entry-confirm').value){panel.querySelector('#entry-confirm').focus();throw new Error('The passwords do not match yet. Please try again.');}return value;}
+  function avatarPicker(){
+    authMode='avatar';selectedAvatar=authUser?.avatarId||selectedAvatar||null;
+    shell('Meet your explorer.','Choose the character that feels like you. A little personality makes every discovery more fun.',`
+      <div class="gate-signup-steps" aria-label="Signup progress"><span>✓ Your account details</span><b>02 / Choose your avatar</b></div><form id="gate-avatar-form"><fieldset class="gate-avatar-fieldset"><legend>Choose one avatar</legend><div class="gate-avatar-grid">${A.avatars.map((a,i)=>`<label class="gate-avatar-card" style="--avatar-delay:${i*45}ms"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar===a.id?'checked':''} required><span class="gate-avatar-portrait">${A.portrait(a.id)}<span class="gate-avatar-tick" aria-hidden="true">✓</span></span><b>${a.name}</b><small>${a.tag}</small></label>`).join('')}</div></fieldset><p class="gate-avatar-cheer" data-avatar-cheer role="status">Your explorer is waiting to meet you.</p><button type="submit" class="gate-enter gate-submit"><span data-submit-label>${credentials?'CREATE ACCOUNT & EXPLORE':'SAVE AVATAR & EXPLORE'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button>${credentials?'<button type="button" class="gate-auth-link gate-avatar-back" data-avatar-back>← Back to account details</button>':''}</form>`);
+    if(selectedAvatar)cheer(selectedAvatar);
+  }
+  function cheer(id){selectedAvatar=id;const a=A.avatar(id);const note=panel.querySelector('[data-avatar-cheer]');note.textContent=a.name+' is ready. Let’s make a discovery!';panel.querySelectorAll('.gate-avatar-card').forEach(card=>card.classList.toggle('is-picked',card.querySelector('input').value===id));}
+  async function finish(user){
+    authUser=user;
+    if(!A.avatar(user?.avatarId)){clearPassword();setBusy(false);avatarPicker();return;}
+    A.bindUser(user,{keepLocal:carryLocal});clearPassword();setBusy(true);const label=panel.querySelector('[data-submit-label]');if(label)label.textContent='LET’S EXPLORE…';
+    await new Promise(resolve=>setTimeout(resolve,canMove()?220:0));location.assign('index.html#home');
+  }
+  function confirmation(){clearPassword();authMode='confirm';shell('A little check. A big adventure.','Check your email to confirm your account. Your avatar is saved with your signup.',`<div class="gate-confirm-art">${A.portrait(selectedAvatar)}</div><p class="gate-confirm-copy">Open the confirmation link in your inbox. Once confirmed, you’ll go straight to the InnerU home page.</p><button type="button" class="gate-enter" data-auth-mode="login">BACK TO SIGN IN ${arrows}</button>`);}
+  function recovery(reset=false){clearPassword();authMode=reset?'reset':'recover';shell(reset?'A fresh password. A fresh start.':'Let’s get you exploring again.',reset?'Choose a new password for your account.':'Enter your email. If an account exists, you’ll receive a password reset link.',`<form id="gate-recovery-form" novalidate>${reset?passwordField('entry-password','New password','new-password')+passwordField('entry-confirm','Confirm password','new-password')+'<p id="entry-password-help" class="gate-password-help">Use at least 8 characters.</p>':'<div class="gate-field"><label for="entry-email">Email address</label><input id="entry-email" type="email" autocomplete="email" required maxlength="254"></div>'}<button class="gate-enter gate-submit" type="submit"><span data-submit-label>${reset?'SAVE PASSWORD & EXPLORE':'SEND RESET LINK'}</span><span class="gate-opening-spinner" aria-hidden="true"></span>${arrows}</button><button type="button" class="gate-auth-link" data-auth-mode="login">Back to sign in</button></form>`);}
+  async function openWorkspace(){
+    if(opening||!role)return;
+    panel.querySelector('#entry-error').textContent='';
+    try{
+      if(authMode==='avatar'){
+        const id=panel.querySelector('input[name=avatar]:checked')?.value;if(!A.avatar(id))throw new Error('Choose an avatar to continue.');selectedAvatar=id;setBusy(true);
+        if(credentials){const result=await A.api('signup',{...credentials,avatarId:id});if(result.authenticated)await finish(result.user);else{setBusy(false);confirmation();}}
+        else{const result=await A.api('avatar',{avatarId:id,name:authUser?.name||'Explorer'});await finish(result.user);}return;
       }
-      support.textContent = student ? 'Keep exploring the extraordinary world inside you.' : 'Inspire your explorers. Celebrate every discovery.';
-      grid.hidden = true;
-      panel.hidden = false;
-      root.dataset.view = 'entry';
-      panel.querySelector('#gate-panel-title').focus({preventScroll:true});
-    }, canMove() ? 260 : 0);
+      if(authMode==='reset'){const pass=validatePassword(true);setBusy(true);const result=await A.api('password',{password:pass});await finish(result.user);return;}
+      const email=validateEmail();
+      if(authMode==='recover'){setBusy(true);await A.api('recover',{email});setBusy(false);const message=panel.querySelector('#entry-error');message.textContent='If this email has an account, a reset link is on its way. Check your inbox.';message.classList.add('is-success');return;}
+      const pass=validatePassword(authMode==='signup');carryLocal=panel.querySelector('#entry-keep-progress')?.checked??false;
+      if(authMode==='signup'){const name=panel.querySelector('#entry-nickname').value.trim();if(name.length>24||/[\u0000-\u001f\u007f]/.test(name))throw new Error('Use up to 24 characters for your nickname.');draftName=name;credentials={email,password:pass,name:name||'Explorer'};avatarPicker();return;}
+      setBusy(true);const result=await A.api('login',{email,password:pass});if(!result.authenticated)throw new Error('Please confirm your email before signing in.');await finish(result.user);
+    }catch(error){showError(error);}
   }
-  function setBusy(busy) {
-    opening = busy;
-    root.classList.toggle('is-opening',busy);
-    panel.querySelector('form').setAttribute('aria-busy',String(busy));
-    panel.querySelectorAll('button,input').forEach(el => { el.disabled = busy; });
-    const label = panel.querySelector('[data-submit-label]');
-    label.textContent = busy ? 'OPENING YOUR WORKSPACE…' : role === 'student' ? 'OPEN MY DASHBOARD' : 'OPEN TEACHER DASHBOARD';
-  }
-  async function openWorkspace(unchanged = false) {
-    if (opening || !role) return;
-    const student = role === 'student';
-    const error = panel.querySelector('#entry-error');
-    error.textContent = '';
-    const input = panel.querySelector('#entry-nickname');
-    const name = input?.value.trim() || '';
-    if (student && !unchanged && (name.length > 24 || /[\u0000-\u001f\u007f]/.test(name))) {
-      error.textContent = 'Please use up to 24 characters for your first name or nickname.';
-      input.setAttribute('aria-invalid','true'); input.focus(); return;
+  root.addEventListener('click',event=>{
+    const button=event.target.closest('button');if(!button||opening)return;
+    if(button.dataset.authMode){const email=panel.querySelector('#entry-email')?.value||'';if(button.dataset.authMode==='recover')recovery();else accountForm(button.dataset.authMode,email);}
+    if(button.hasAttribute('data-avatar-back')){const email=credentials?.email||'';accountForm('signup',email);}
+    if(button.dataset.passwordToggle){const input=panel.querySelector('#'+button.dataset.passwordToggle),visible=input.type==='password';input.type=visible?'text':'password';button.textContent=visible?'Hide':'Show';button.setAttribute('aria-pressed',String(visible));button.setAttribute('aria-label',(visible?'Hide':'Show')+' password');}
+  });
+  panel.addEventListener('change',event=>{if(event.target.name==='avatar')cheer(event.target.value);if(event.target.id==='entry-keep-progress')carryLocal=event.target.checked;});
+  panel.addEventListener('keydown',event=>{
+    if(event.target.name!=='avatar'||!['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
+    event.preventDefault();const inputs=[...panel.querySelectorAll('input[name=avatar]')],i=inputs.indexOf(event.target),delta=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:event.key==='ArrowDown'?3:-3;
+    const n=event.key==='Home'?0:event.key==='End'?inputs.length-1:(i+delta+inputs.length)%inputs.length;inputs[n].checked=true;inputs[n].focus();cheer(inputs[n].value);
+  });
+  window.addEventListener('pagehide',clearPassword);
+  async function callback(){
+    const url=new URL(location.href),hash=new URLSearchParams(url.hash.slice(1));
+    const accessToken=hash.get('access_token'),refreshToken=hash.get('refresh_token'),tokenHash=url.searchParams.get('token_hash'),type=url.searchParams.get('type')||hash.get('type');
+    if(accessToken||tokenHash||hash.get('error')){
+      role='student';for(const key of ['token_hash','type','code'])url.searchParams.delete(key);url.hash='';history.replaceState(null,'',url.pathname+url.search);
+      shell('Getting your adventure ready.','Confirming your account…','<p class="gate-auth-pending" role="status">One moment, explorer.</p>');
+      try{if(hash.get('error'))throw new Error('This account link has expired. Request a new link and try again.');const result=await A.api('verify',tokenHash?{tokenHash,type:type||'email'}:{accessToken,refreshToken});authUser=result.user;carryLocal=!!(readProfile().value&&!readProfile().value.authUserId);if(type==='recovery')recovery(true);else await finish(result.user);}catch(error){accountForm('login');showError(error);}return;
     }
-    setBusy(true);
-    if (student && !unchanged && name) {
-      const latest = readProfile();
-      try {
-        if (latest.invalid || latest.unavailable) throw new Error('Profile unavailable');
-        const value = latest.value || {name:'Explorer',xp:0,done:[],rewards:[],weak:[],level:'Explorer',motion:false};
-        if (value.name !== name) {
-          value.name = name;
-          localStorage.setItem('bodyquest-v1',JSON.stringify(value));
-        }
-      } catch {
-        setBusy(false);
-        error.textContent = 'Your name could not be saved. Your existing progress is unchanged.';
-        panel.querySelector('[data-continue-unchanged]').hidden = false;
-        return;
-      }
-    }
-    await new Promise(resolve => setTimeout(resolve,canMove() ? 180 : 0));
-    location.assign(student ? 'index.html#dashboard' : 'index.html#teacher');
+    const session=await service;
+    if(session.authenticated){authUser=session.user;role='student';carryLocal=!!(readProfile().value&&!readProfile().value.authUserId);if(url.searchParams.get('avatar')==='1')avatarPicker();else try{await finish(session.user);}catch(error){accountForm('login');showError(error);}}
   }
+  callback();
   function discovery(id,opener) {
     const item = discoveries[id];
     if (!item) return;
@@ -182,7 +199,7 @@
     else if (button.hasAttribute('data-discovery')) discovery(button.dataset.discovery,button);
     else if (button.hasAttribute('data-close-discovery')) dialog.close();
     else if (button.hasAttribute('data-companion')) greet();
-    else if (button.hasAttribute('data-continue-unchanged')) openWorkspace(true);
+
   });
   panel.addEventListener('submit',event => { event.preventDefault(); openWorkspace(); });
   panel.addEventListener('input',event => {
