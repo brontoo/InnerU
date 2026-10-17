@@ -35,6 +35,12 @@ migrations have already been applied to the live project.
    a real signup, email confirmation when required, one task completion, sign-out
    and sign-in from a second browser.
 
+The current connection page displays **CHECKER 2**. Each API step has a 20-second
+timeout and a specific result. The page embeds its own checker and also provides
+an external-script fallback. If JavaScript cannot run, its direct API links remain
+available. The old “Checking this deployment…” placeholder is not a successful
+check and does not establish whether Supabase is configured.
+
 ## Where to find a new user
 
 Email/password users appear in **Authentication → Users**. They will not appear

@@ -163,3 +163,9 @@ revision and classroom authorization checks. `verify-cloud-learning.py` drives
 the production gateway and browser against that database using an isolated Auth
 fixture. They require a local `inneru-db-check` PostgreSQL container; see
 [supabase/README.md](../supabase/README.md) for production installation and access.
+
+`python3 _dev-tools/verify-connection.py` checks connection diagnostics with the
+production account/learning handlers against an isolated Auth fixture. It covers
+missing script assets, CSP, disabled JavaScript, stalled API timeouts and retries,
+configuration and schema errors, healthy results and phone layouts. No production
+credentials or database container are needed for this diagnostics harness.

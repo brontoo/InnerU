@@ -1,1 +1,76 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>InnerU · Account connection</title><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="cloud-learning.css?v=cloud-learning-1"><style>body{margin:0;background:#edf4f3;color:#173e4d;font:16px/1.7 system-ui}main{max-width:760px;margin:7vh auto;padding:24px}a{color:#087c7e}h1{font-size:38px;line-height:1.2}li{margin:18px 0;overflow-wrap:anywhere}code{font-size:13px}</style><script defer src="connection.js?v=cloud-learning-1"></script></head><body><main><a href="login.html">← Back to InnerU</a><section class="iu-cloud-panel"><span class="iu-cloud-kicker">ACCOUNT CONNECTION</span><h1>Check the connection.</h1><p>This page checks the deployed account service and learning database. It never asks for a password or displays account keys.</p><ol id="connection-results" aria-live="polite"><li>Checking this deployment…</li></ol><button id="connection-retry">Check again</button><p>Supabase accounts appear under <b>Authentication → Users</b>. Learning tables appear under <b>Database → Tables</b>. They are separate.</p><p>After changing Vercel environment variables, redeploy the website. Database tables require the project's InnerU SQL migration.</p></section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InnerU · Account connection</title><link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="cloud-learning.css?v=cloud-learning-1">
+<style>body{margin:0;background:#edf4f3;color:#173e4d;font:16px/1.7 system-ui}main{max-width:760px;margin:7vh auto;padding:24px}a{color:#087c7e}h1{font-size:38px;line-height:1.2}li{margin:18px 0;overflow-wrap:anywhere}code{font-size:13px}[data-state=error]{color:#943c3c}[data-state=success]{color:#116f5d}.direct-checks{border-top:1px solid #c7ded8;margin-top:25px;padding-top:20px}.direct-checks a{display:inline-block;margin:0 16px 12px 0}noscript p{background:#fff1d9;padding:12px}</style>
+<script defer src="connection.js?v=connection-check-2"></script>
+</head>
+<body><main><a href="login.html">← Back to InnerU</a>
+<section class="iu-cloud-panel"><span class="iu-cloud-kicker">ACCOUNT CONNECTION · CHECKER 2</span>
+<h1>Check the connection.</h1>
+<p>This page checks the deployed account service and learning database. It never asks for a password or displays account keys.</p>
+<ol id="connection-results" aria-live="polite"><li>The checker has not started. If this message remains, JavaScript was blocked or the page did not load completely. Use the direct checks below.</li></ol>
+<button type="button" id="connection-retry">Check again</button>
+<noscript><p>JavaScript is disabled. The automatic check cannot run. Open the direct API links below instead.</p></noscript>
+<div class="direct-checks"><b>Direct checks — available even if the checker cannot start</b>
+<p>Open these read-only endpoints in this browser. An account session is needed for the third check. Account responses can include your email; share only the configuration/error message, never credentials or full personal details.</p>
+<a href="/api/auth?action=connection" target="_blank" rel="noopener">1. Auth connection</a>
+<a href="/api/auth?action=session" target="_blank" rel="noopener">2. Account session</a>
+<a href="/api/learning?action=state" target="_blank" rel="noopener">3. Learning database</a>
+</div>
+<p>Supabase accounts appear under <b>Authentication → Users</b>. Learning tables appear under <b>Database → Tables</b>. They are separate.</p>
+<p>After changing Vercel environment variables, redeploy the website. Database tables require the project's InnerU SQL migration.</p>
+</section></main>
+<!-- Same checker embedded below so a missing external JavaScript file cannot strand this page. -->
+<script data-connection-inline>/* Embedded in connection.html as well: diagnostics must survive a missing script asset. */
+(() => {
+ 'use strict';
+ if(window.InneruConnection?.started)return;
+ const list=document.querySelector('#connection-results'),button=document.querySelector('#connection-retry');
+ if(!list||!button)return;
+ window.InneruConnection={started:true};
+ const TIMEOUT=20000;let running=false;
+ function line(text,state=''){const li=document.createElement('li');li.textContent=text;if(state)li.dataset.state=state;list.append(li);return li;}
+ async function read(url){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),TIMEOUT);
+  try{
+   const response=await fetch(url,{credentials:'same-origin',cache:'no-store',signal:controller.signal,headers:{Accept:'application/json'}});
+   if(!(response.headers.get('content-type')||'').includes('application/json'))throw new Error('The API returned a web page instead of JSON (HTTP '+response.status+'). Check that Vercel deployed the latest main branch with its api and lib folders.');
+   let data;try{data=await response.json();}catch(error){if(controller.signal.aborted)throw error;throw new Error('The API response could not be read. Check the Vercel function logs.');}
+   if(!response.ok)throw new Error(data.error||'The API returned HTTP '+response.status+'. Check the Vercel function logs.');
+   return data;
+  }catch(error){
+   if(controller.signal.aborted)throw new Error('This check timed out after 20 seconds. The deployed API did not finish responding. Check Vercel function logs, then try again.');
+   if(error instanceof TypeError)throw new Error('The browser could not reach the API. Check your connection or browser blocking settings, then use the direct links below.');
+   throw error;
+  }finally{clearTimeout(timer);}
+ }
+ async function stage(message,url){
+  const pending=line(message+' (up to 20 seconds)…','checking');
+  try{const value=await read(url);pending.remove();return value;}catch(error){pending.textContent=error.message;pending.dataset.state='error';throw error;}
+ }
+ async function check(){
+  if(running)return;running=true;button.disabled=true;button.textContent='Checking…';list.replaceChildren();
+  try{
+   const s=await stage('Checking the deployed account API','/api/auth?action=session');
+   if(typeof s.configured!=='boolean')throw new Error('This API response is not the current InnerU account endpoint. Redeploy the latest main branch.');
+   if(!s.configured){line('Account service is not configured in this Vercel deployment. Add SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY to Production, then redeploy.','error');return;}
+   if(!s.projectHost)throw new Error('The account endpoint is from an older deployment. Redeploy the current main branch.');
+   line('Configured Supabase project: '+s.projectHost,'success');
+   const c=await stage('Checking Supabase Auth connectivity','/api/auth?action=connection');
+   if(c.authReachable!==true)throw new Error('Supabase Auth did not confirm connectivity. Verify the project URL and publishable key in Vercel.');
+   line('Supabase Auth is reachable and accepts the configured project key.','success');
+   if(!s.authenticated){line('No signed-in account in this browser. Sign in on this same website, then return here to check the learning database.');return;}
+   line('Account session verified.','success');
+   const d=await stage('Checking the learning database','/api/learning?action=state');
+   if(d.schemaVersion!==1||!d.profile||!d.progress)throw new Error('The learning API returned an unexpected result. Check that the complete current SQL installer was run.');
+   line('InnerU learning database installed · schema '+d.schemaVersion+' · '+d.profile.role+' profile · saved revision '+d.progress.revision+'.','success');
+  }catch(error){if(!list.querySelector('[data-state="error"]'))line(error.message||'The connection check failed. Use the direct links below.','error');}
+  finally{running=false;button.disabled=false;button.textContent='Check again';}
+ }
+ button.onclick=check;check();
+})();
+</script>
+</body></html>

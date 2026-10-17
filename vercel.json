@@ -20,6 +20,18 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=300" }
       ]
+    },
+    {
+      "source": "/connection.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/connection.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
     }
   ]
 }
