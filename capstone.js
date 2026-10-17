@@ -234,6 +234,7 @@
       card.querySelectorAll('[data-cap-choice]').forEach(btn => {
         btn.onclick = () => {
           const good = +btn.dataset.capChoice === stations[i].answer;
+          window.InneruEvidence?.record({id:'capstone:station:'+i,system:'extra',kind:'final',title:stations[i].system+' decision',prompt:stations[i].question||stations[i].prompt||card.querySelector('h3,h4')?.textContent||'Final challenge',answer:btn.textContent.trim(),expected:stations[i].options[stations[i].answer],correct:good,feedback:stations[i].why});
           const box = card.querySelector('.cap-feedback');
           if (good) {
             c.stations['s' + i] = true;
@@ -294,6 +295,7 @@
         if (stationsDone() !== stations.length || c.response.trim().length < 80 || c.rubric.length < 3) return;
         c.done = true;
         c.date = new Date().toISOString().slice(0, 10);
+        window.InneruEvidence?.record({id:'capstone:explanation',system:'extra',kind:'written',title:'Final whole-body explanation',prompt:'Explain how the systems keep the body alive.',answer:c.response,correct:null,feedback:'Student completed the reflection rubric. Teacher review required.'});
         reward('capstone', XP_SYNTHESIS);
         save();
         toast('+' + XP_SYNTHESIS + ' XP \u00b7 Final challenge complete');

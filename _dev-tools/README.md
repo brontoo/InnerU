@@ -134,3 +134,10 @@ balanced/focused/due sessions, answer records, spaced intervals, early practice,
 pause/resume, isolated retry rounds, reset scope, motion settings, keyboard/lens
 controls and phone layouts. See [RECALL-STUDIO.md](RECALL-STUDIO.md) for the
 scheduling rules and scientific wording corrections.
+
+## Teacher classroom dashboard
+
+Run `python3 _dev-tools/verify-teacher-dashboard.py` for real submitted answers,
+student snapshot collection, individual progress and achievements, feedback,
+backups, legacy imports, reset/undo, and responsive records. See
+[TEACHER-DASHBOARD.md](TEACHER-DASHBOARD.md) for the browser classroom data model.

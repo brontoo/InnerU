@@ -35,14 +35,15 @@
     if(w){if(kind==='final')href=finalRoute(w);else if(mission){href=mission===8?finalRoute(w):missionRoute(w,mission);label+=' · '+(mission===8?w.final:w.titles[mission-1]||'Mission '+mission);}else if(href==='#home')href=w.route;}
     return {id,system,kind,mission,label,href};
   }
-  function readWorld(w){
-    const s=w.id==='skeletal'?state:(state[w.id]||{}),raw=array(s.done),done=[...new Set(raw.filter(n=>Number.isInteger(n)&&n>=1&&n<=w.titles.length))];
+  function readWorld(w,profile=state){
+    const s=w.id==='skeletal'?profile:(profile[w.id]||{}),raw=array(s.done),done=[...new Set(raw.filter(n=>Number.isInteger(n)&&n>=1&&n<=w.titles.length))];
     const key=w.id==='skeletal'||w.id==='muscle'?raw.includes(8):!!s.mastery;
-    const steps=w.id==='skeletal'?array(state.rewards).filter(id=>/^(activity[1-8]|q[1-8]-[0-2]|case[0-3])$/.test(id)):w.id==='muscle'?Object.keys(s.tasks||{}).filter(k=>s.tasks[k]):Array.isArray(s.steps)?s.steps:Object.keys(s.steps||{}).filter(k=>s.steps[k]);
+    const steps=w.id==='skeletal'?array(profile.rewards).filter(id=>/^(activity[1-8]|q[1-8]-[0-2]|case[0-3])$/.test(id)):w.id==='muscle'?Object.keys(s.tasks||{}).filter(k=>s.tasks[k]):Array.isArray(s.steps)?s.steps:Object.keys(s.steps||{}).filter(k=>s.steps[k]);
     const next=Array.from({length:w.titles.length},(_,i)=>i+1).find(n=>!done.includes(n));
     return {...w,keyName:w.key,done,key,steps:[...new Set(steps)],completed:done.length+Number(key),total:w.titles.length+1,percent:Math.round((done.length+Number(key))/(w.titles.length+1)*100),next,resume:key?w.route:next?missionRoute(w,next):finalRoute(w)};
   }
-  function achievements(ws){
+  function achievements(ws,profile=state){
+    const has=id=>array(profile.rewards).includes(id);
     const rows=[];
     for(const w of ws){
       w.titles.forEach((title,i)=>{const n=i+1,earned=w.done.includes(n);rows.push({id:w.id+'-mission-'+n,system:w.id,kind:'mission',name:w.id==='skeletal'&&n===1?'ANATOMY EXPLORER':w.id==='skeletal'&&n===3?'FUNCTION DETECTIVE':title,requirement:'Complete mission '+n+': '+title+'.',earned,current:earned?1:0,total:1,href:earned||n===1||w.done.includes(n-1)?missionRoute(w,n):w.route});});
@@ -52,18 +53,18 @@
     rows.push({id:'medical',system:'skeletal',kind:'investigation',name:'MEDICAL INVESTIGATOR',requirement:'Solve all four joint evidence files in skeletal mission 7.',earned:casesDone===4,current:casesDone,total:4,href:'#mission/7'},
       {id:'detective',system:'extra',kind:'investigation',name:'ALL-SYSTEMS INVESTIGATOR',requirement:'File six supported Body Detective investigations.',earned:dd===6,current:dd,total:6,href:'#detective'},
       {id:'connection',system:'extra',kind:'connection',name:'SYSTEM THINKER',requirement:'Complete the six matches, predictions and reviewed reflection in System Connections.',earned:has('connection'),current:has('connection')?1:0,total:1,href:'#connect'},
-      {id:'capstone',system:'extra',kind:'final',name:'WHOLE-BODY EXPLORER',requirement:'Earn six System Keys, complete six final decisions and review your final explanation.',earned:!!state.capstone?.done,current:state.capstone?.done?7:Object.values(state.capstone?.stations||{}).filter(Boolean).length,total:7,href:'#final'});
+      {id:'capstone',system:'extra',kind:'final',name:'WHOLE-BODY EXPLORER',requirement:'Earn six System Keys, complete six final decisions and review your final explanation.',earned:!!profile.capstone?.done,current:profile.capstone?.done?7:Object.values(profile.capstone?.stations||{}).filter(Boolean).length,total:7,href:'#final'});
     return rows;
   }
-  function snapshot(){
-    const ws=worlds.map(readWorld),badges=achievements(ws),book=state.learning?.version===1?state.learning:null;
+  function snapshot(profile=state){
+    const ws=worlds.map(w=>readWorld(w,profile)),badges=achievements(ws,profile),book=profile.learning?.version===1?profile.learning:null;
     const entries=array(book?.entries).filter(r=>typeof r.id==='string'&&Number.isFinite(r.xp)&&r.xp>=0).map(r=>({...describe(r.id),...r}));
-    const tracked=entries.reduce((sum,r)=>sum+r.xp,0),xp=money(state.xp),earlier=Math.max(0,xp-tracked);
-    const historical=array(state.rewards).filter(id=>!entries.some(r=>r.id===id)).map(id=>({...describe(id),xp:null,at:null}));
+    const tracked=entries.reduce((sum,r)=>sum+r.xp,0),xp=money(profile.xp),earlier=Math.max(0,xp-tracked);
+    const historical=array(profile.rewards).filter(id=>!entries.some(r=>r.id===id)).map(id=>({...describe(id),xp:null,at:null}));
     const milestones=ws.flatMap(w=>w.done.filter(n=>![...entries,...historical].some(r=>r.system===w.id&&r.kind==='mission'&&r.mission===n)).map(n=>({id:'completed-'+w.id+'-'+n,system:w.id,kind:'mission',mission:n,label:'Mission completed · '+w.titles[n-1],href:missionRoute(w,n),xp:0,at:book?.completed?.[w.id+'-mission-'+n]||null})));
     const earned=badges.filter(b=>b.earned).sort((a,b)=>(book?.completed?.['badge:'+b.id]||'').localeCompare(book?.completed?.['badge:'+a.id]||''));
     const recommended=ws.filter(w=>!w.key&&(w.percent>0||w.steps.length>0)).sort((a,b)=>b.percent-a.percent)[0]||ws.find(w=>w.id==='skeletal'&&!w.key)||ws.find(w=>!w.key)||ws[1];
-    return {worlds:ws,badges,earned,xp,entries,historical,milestones,earlier,tracked,missions:ws.reduce((s,w)=>s+w.done.length,0),missionTotal:ws.reduce((s,w)=>s+w.titles.length,0),keys:ws.filter(w=>w.key).length,completed:ws.reduce((s,w)=>s+w.completed,0),total:ws.reduce((s,w)=>s+w.total,0),tasks:new Set(array(state.rewards)).size,percent:Math.round(ws.reduce((s,w)=>s+w.completed,0)/ws.reduce((s,w)=>s+w.total,0)*100),recommended,book};
+    return {worlds:ws,badges,earned,xp,entries,historical,milestones,earlier,tracked,missions:ws.reduce((s,w)=>s+w.done.length,0),missionTotal:ws.reduce((s,w)=>s+w.titles.length,0),keys:ws.filter(w=>w.key).length,completed:ws.reduce((s,w)=>s+w.completed,0),total:ws.reduce((s,w)=>s+w.total,0),tasks:new Set(array(profile.rewards)).size,percent:Math.round(ws.reduce((s,w)=>s+w.completed,0)/ws.reduce((s,w)=>s+w.total,0)*100),recommended,book};
   }
   const completedIDs=()=>{const p=snapshot();return p.worlds.flatMap(w=>[...w.done.map(n=>w.id+'-mission-'+n),...(w.key?[w.id+'-key']:[])]).concat(p.earned.map(b=>'badge:'+b.id));};
   let seen={ref:state,xp:money(state.xp),rewards:new Set(array(state.rewards)),completed:new Set(completedIDs())},pending=new Map(),queued=false,unlock=[];

@@ -122,6 +122,7 @@
         const i=Number(b.dataset.skelQuestion),j=Number(b.dataset.skelAnswer),q=checks[n][i];
         if(picks[i]===q.answer)return;
         picks[i]=j;tries[i]=(tries[i]||0)+1;
+        window.InneruEvidence?.record({id:'skeletal:'+n+':q'+i,system:'skeletal',mission:n,kind:'check',title:'Science check '+(i+1),prompt:q.text,answer:q.options[j],expected:q.options[q.answer],correct:j===q.answer,feedback:q.why});
         if(!practice){
           if(j===q.answer){reward('q'+n+'-'+i,10);state.weak=state.weak.filter(w=>w!==n+'-'+i);}
           else if(!state.weak.includes(n+'-'+i))state.weak.push(n+'-'+i);

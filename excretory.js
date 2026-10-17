@@ -892,6 +892,7 @@
               b.dataset.ph === "correct"
                 ? "✓ Excreting H⁺ and conserving bicarbonate helps counter excess acidity. Bicarbonate supports buffering; reabsorbing it does not make blood more acidic."
                 : "Retaining hydrogen ions would worsen excess acidity. Try the other response.";
+            window.InneruEvidence?.record({id:'excretory:5:ph',system:'excretory',mission:5,kind:'activity',title:'Acid-base response',prompt:'Which kidney response helps when blood becomes too acidic?',answer:b.textContent.trim(),expected:document.querySelector('[data-ph="correct"]').textContent.trim(),correct:b.dataset.ph==='correct'});
             if (b.dataset.ph === "correct") step("5-ph", 10);
           }),
       );
@@ -904,6 +905,7 @@
           .value.trim()
           .slice(0, 2000);
         if (!preview) {
+          window.InneruEvidence?.record({id:'excretory:investigation-note',system:'excretory',mission:5,kind:'written',title:'Exercise investigation plan',prompt:'Predict the exercise response and describe the evidence you would collect.',answer:note,correct:null,feedback:'A student investigation note. Teacher review required.'});
           progress().investigation = note;
           save();
         }
@@ -920,6 +922,7 @@
               b.dataset.treatment === "dialysis"
                 ? "✓ A dialyzer removes wastes and excess fluid from blood. A transplant supplies a donor kidney."
                 : "A transplant places a healthy donor kidney in the body. Try the external filtering treatment.";
+            window.InneruEvidence?.record({id:'excretory:6:treatment',system:'excretory',mission:6,kind:'activity',title:'Kidney treatment',prompt:'Choose the external filtering treatment.',answer:b.textContent.trim(),expected:document.querySelector('[data-treatment="dialysis"]').textContent.trim(),correct:b.dataset.treatment==='dialysis'});
             if (b.dataset.treatment === "dialysis") step("6-treatment", 10);
           }),
       );
@@ -939,6 +942,7 @@
           (b) =>
             (b.onclick = () => {
               const good = +b.dataset.choice === q[2];
+              window.InneruEvidence?.record({id:'excretory:'+id,system:'excretory',mission:final?0:n,kind:final?'final':'check',title:final?'Final decision '+(i+1):'Science check '+(i+1),prompt:q[0],answer:b.textContent.trim(),expected:q[1][q[2]],correct:good,feedback:q[3]});
               el.querySelector(".resp-feedback").textContent = good
                 ? "✓ " + q[3]
                 : "Try again. " + q[3];
