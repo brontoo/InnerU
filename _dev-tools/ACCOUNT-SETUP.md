@@ -49,17 +49,21 @@ SameSite=Lax cookies, with Secure on HTTPS. Passwords, emails and tokens are nev
 saved in application localStorage or learner progress codes. The API is private
 and uncached, and the service worker bypasses all `/api/` requests.
 
-Avatar IDs and an optional nickname are account metadata. No client-selected role
-grants authorization. Lessons and the existing browser teacher dashboard remain
-public; this change does not introduce school administrator permissions.
+Avatar IDs and an optional nickname are account metadata. Signup role choices
+never grant teacher access. Apply [the database installer](../supabase/README.md)
+to enable account-bound learning sync, class enrollment and approved teacher
+access. Existing browser classroom imports remain separate from cloud classes.
 
-Learning records remain local to the device. Each account receives a separate
-local progress archive on sign-out/account switching. Existing unclaimed progress
-can be carried into an account using the visible checkbox. Account metadata is
-stored by Supabase; learning progress, answers, XP and classroom records are not
-automatically synchronized between devices. Existing teacher progress-code and
-classroom-backup workflows continue to work. Browser archives are local storage,
-not a privacy boundary between people who share a browser profile.
+Authenticated learning sync uses revision checks and keeps offline work locally
+until a successful upload. Cross-device conflicts require a learner choice.
+Students see their own data; approved teachers see students in their classes.
+The database derives XP and badges from seeded task definitions rather than
+accepting arbitrary totals. Browser archives are local storage, not a privacy
+boundary between people who share a browser profile.
+
+Use `/connection.html` on the deployed site to check the actual configured project
+host, Auth connectivity and database installation. Auth accounts appear under
+Authentication → Users independently of the public learning tables.
 
 ## Verification
 

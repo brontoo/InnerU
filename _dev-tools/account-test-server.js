@@ -1,6 +1,10 @@
 /* Isolated test fixture only. Never deployed; production uses the real Auth API. */
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const handler=require('../api/auth.js'),root=path.resolve(__dirname,'..');
+const learningHandler=require('../api/learning.js'),{execFileSync}=require('node:child_process');
+const dbContainer=process.env.INNERU_DB_TEST_CONTAINER;
+function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-v','ON_ERROR_STOP=1','-qAt'],{input:query,encoding:'utf8'}).trim();}
+const quote=value=>"'"+String(value).replace(/'/g,"''")+"'";
 const users=new Map(),access=new Map(),refresh=new Map();let configured=true;
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
 async function input(req){let s='';for await(const c of req)s+=c;return JSON.parse(s||'{}');}
@@ -8,11 +12,13 @@ function publicUser(u){return {id:u.id,email:u.email,user_metadata:u.data};}
 function grant(u){const a='access-'+crypto.randomUUID(),r='refresh-'+crypto.randomUUID();access.set(a,u);refresh.set(r,u);return {access_token:a,refresh_token:r,expires_in:3600,user:publicUser(u)};}
 const provider=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://local'),data=req.method==='GET'?{}:await input(req),u=access.get((req.headers.authorization||'').replace('Bearer ',''));
+ if(url.pathname==='/auth/v1/settings')return send(res,200,{external:{email:true}});
  if(url.pathname==='/auth/v1/signup'){
   if(data.email==='limited@example.com')return send(res,429,{code:'over_request_rate_limit'});
   if(users.has(data.email))return send(res,400,{code:'user_already_exists'});
   const next={id:crypto.randomUUID(),email:data.email,password:data.password,data:data.data,confirmed:data.email!=='confirm@example.com'};users.set(next.email,next);
-  return send(res,200,next.confirmed?grant(next):{user:publicUser(next)});
+  if(dbContainer)sql('insert into auth.users(id,email,raw_user_meta_data) values('+quote(next.id)+','+quote(next.email)+','+quote(JSON.stringify(next.data))+'::jsonb);');
+  return send(res,200,next.confirmed?grant(next):publicUser(next));
  }
  if(url.pathname==='/auth/v1/token'){
   if(url.searchParams.get('grant_type')==='refresh_token'){const next=refresh.get(data.refresh_token);return next?send(res,200,grant(next)):send(res,401,{code:'refresh_token_not_found'});}
@@ -30,10 +36,19 @@ const provider=http.createServer(async(req,res)=>{try{
  }
  if(url.pathname==='/auth/v1/recover')return send(res,200,{});
  if(url.pathname==='/auth/v1/logout'){access.delete((req.headers.authorization||'').replace('Bearer ',''));return send(res,200,{});}
+ if(url.pathname.startsWith('/rest/v1/rpc/')){
+  if(!u)return send(res,401,{code:'bad_jwt'});
+  if(!dbContainer)return send(res,404,{code:'PGRST202'});
+  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback'].includes(name))return send(res,404,{});
+  const params=Object.entries(data).map(([k,v])=>{if(!/^p_[a-z_]+$/.test(k))throw Error('Bad fixture parameter');return k+'=>'+(v===null?'null':typeof v==='object'?quote(JSON.stringify(v))+'::jsonb':typeof v==='number'||typeof v==='boolean'?String(v):quote(v));});
+  try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');return send(res,200,JSON.parse(result));}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:details.includes('revision_conflict')?'revision_conflict':'fixture_database_error'});}
+ }
  send(res,404,{});
  }catch(e){send(res,500,{error:'Fixture request failed.'});}});
 const site=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://local');
  if(url.pathname==='/api/auth'){const previous=process.env.SUPABASE_URL;if(!configured)delete process.env.SUPABASE_URL;await handler(req,res);if(previous)process.env.SUPABASE_URL=previous;return;}
+ if(url.pathname==='/api/learning'){await learningHandler(req,res);return;}
+ if(url.pathname==='/__test/approve-teacher'&&dbContainer){const data=await input(req);sql("update public.profiles set role='teacher' where id="+quote(data.id));return send(res,200,{approved:true});}
  if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured});
  if(url.pathname==='/__test/config'){configured=(await input(req)).enabled;return send(res,200,{configured});}
  if(url.pathname==='/__test/expire'){access.clear();return send(res,200,{expired:true});}

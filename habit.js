@@ -95,7 +95,8 @@
     if (!chip) {
       chip = document.createElement('span');
       chip.className = 'habit-chip';
-      profile.insertBefore(chip, profile.querySelector('.avatar') || null);
+      const avatar=profile.querySelector('.iu-account-menu')||profile.querySelector('.avatar');
+      profile.insertBefore(chip,avatar?.parentNode===profile?avatar:null);
     }
     chip.textContent = '\u25cf ' + h.streak;
     chip.title = 'Days in a row: ' + h.streak + ' (best ' + h.best + ')';

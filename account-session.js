@@ -11,14 +11,14 @@
   const details=document.createElement('details');details.className='iu-account-menu';
   details.innerHTML=`<summary aria-label="Open account menu">${A.markup(state.avatarId,state.name)}</summary><div><b>${e(state.name)}</b><small>Your InnerU account</small><a href="login.html?avatar=1">Change avatar</a><button type="button" data-account-logout>Sign out</button><small data-account-status role="status"></small></div>`;
   if(existing)existing.replaceWith(details);else profile.append(details);
-  details.querySelector('[data-account-logout]').onclick=async event=>{event.target.disabled=true;try{await A.api('logout',{});A.clearActive(user.id);location.assign('login.html');}catch(error){details.querySelector('[data-account-status]').textContent=error.message;event.target.disabled=false;}};
+  details.querySelector('[data-account-logout]').onclick=async event=>{event.target.disabled=true;try{if(window.InneruCloud)await InneruCloud.beforeLogout();await A.api('logout',{});A.clearActive(user.id);location.assign('login.html');}catch(error){details.querySelector('[data-account-status]').textContent=error.message;event.target.disabled=false;}};
  }
  const oldLayout=layout;layout=function(...args){oldLayout(...args);queueMicrotask(decorate);};
  const oldSave=save;save=function(...args){if(user){Object.assign(state,A.identityFields({authUserId:user.id,avatarId:state.avatarId||user.avatarId}));}return oldSave.apply(this,args);};
  async function start(){if(loading)return;loading=true;try{const session=await A.api('session');if(!session.authenticated)return;user=session.user;
    if(state.authUserId!==user.id){state=A.bindUser(user,{keepLocal:!state.authUserId});save();route();}
    else if(A.avatar(user.avatarId)&&state.avatarId!==user.avatarId){state.avatarId=user.avatarId;save();}
-   decorate();
+   A.currentUser=user;decorate();document.dispatchEvent(new CustomEvent('inneru-account',{detail:{user}}));
   }catch{/* Existing local learning remains accessible when the account service is offline. */}finally{loading=false;}}
  document.addEventListener('click',event=>{document.querySelectorAll('.iu-account-menu[open]').forEach(menu=>{if(!menu.contains(event.target))menu.open=false;});});
  document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.iu-account-menu[open]').forEach(menu=>menu.open=false);});

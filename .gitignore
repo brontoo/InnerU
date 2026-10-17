@@ -3,6 +3,12 @@ node_modules/
 dist/
 build/
 
+# local account/deployment configuration
+.env
+.env.*
+!.env.example
+.vercel/
+
 # host-injected bot-challenge script (belongs to the old host, not to this project)
 cdn-cgi/
 

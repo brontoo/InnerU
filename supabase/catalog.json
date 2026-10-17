@@ -1,0 +1,436 @@
+{
+  "worlds": [
+    {
+      "id": "integumentary",
+      "name": "Integumentary",
+      "titles": [
+        "Build the barrier",
+        "Layers and renewal",
+        "Hair, nails and glands",
+        "Balance the temperature",
+        "Protect and sense",
+        "Repair the shield"
+      ],
+      "final": "Restore the Living Shield",
+      "key": "Shield"
+    },
+    {
+      "id": "skeletal",
+      "name": "Skeletal",
+      "titles": [
+        "Meet your skeleton",
+        "Bone detective",
+        "Inside a bone",
+        "Joint lab",
+        "Bone remodeling",
+        "Repair the fracture",
+        "Body Detective"
+      ],
+      "final": "The athlete case",
+      "key": "Framework"
+    },
+    {
+      "id": "muscle",
+      "name": "Muscular",
+      "titles": [
+        "Meet the three muscles",
+        "Muscle to movement",
+        "Zoom inside a muscle",
+        "Slide to contract",
+        "Fuel the movement",
+        "Endurance or power?",
+        "Muscle Lab"
+      ],
+      "final": "Power the finish",
+      "key": "Power"
+    },
+    {
+      "id": "respiratory",
+      "name": "Respiratory",
+      "titles": [
+        "Why we breathe",
+        "Follow the air",
+        "At the alveolus",
+        "The breathing engine",
+        "Oxygen on the move",
+        "Protect the exchange"
+      ],
+      "final": "Keep oxygen moving",
+      "key": "Oxygen"
+    },
+    {
+      "id": "circ",
+      "name": "Circulatory",
+      "titles": [
+        "Vessel Highway",
+        "Capillary Exchange",
+        "Heart Headquarters",
+        "The Double Circuit",
+        "Blood Cargo",
+        "Blood Type Match",
+        "Circulatory Emergency"
+      ],
+      "final": "Keep Every Cell Alive",
+      "key": "Transport"
+    },
+    {
+      "id": "excretory",
+      "name": "Excretory",
+      "titles": [
+        "Waste relay",
+        "Kidney cartographer",
+        "The filtration gate",
+        "Reabsorption rescue",
+        "Balance lab",
+        "Kidney care detective"
+      ],
+      "final": "Restore the balance",
+      "key": "Balance"
+    }
+  ],
+  "badges": [
+    {
+      "id": "integumentary-mission-1",
+      "system": "integumentary",
+      "kind": "mission",
+      "name": "Build the barrier",
+      "requirement": "Complete mission 1: Build the barrier."
+    },
+    {
+      "id": "integumentary-mission-2",
+      "system": "integumentary",
+      "kind": "mission",
+      "name": "Layers and renewal",
+      "requirement": "Complete mission 2: Layers and renewal."
+    },
+    {
+      "id": "integumentary-mission-3",
+      "system": "integumentary",
+      "kind": "mission",
+      "name": "Hair, nails and glands",
+      "requirement": "Complete mission 3: Hair, nails and glands."
+    },
+    {
+      "id": "integumentary-mission-4",
+      "system": "integumentary",
+      "kind": "mission",
+      "name": "Balance the temperature",
+      "requirement": "Complete mission 4: Balance the temperature."
+    },
+    {
+      "id": "integumentary-mission-5",
+      "system": "integumentary",
+      "kind": "mission",
+      "name": "Protect and sense",
+      "requirement": "Complete mission 5: Protect and sense."
+    },
+    {
+      "id": "integumentary-mission-6",
+      "system": "integumentary",
+      "kind": "mission",
+      "name": "Repair the shield",
+      "requirement": "Complete mission 6: Repair the shield."
+    },
+    {
+      "id": "integumentary-key",
+      "system": "integumentary",
+      "kind": "mastery",
+      "name": "Shield Master",
+      "requirement": "Complete all 6 missions and the final challenge to earn the Shield Key."
+    },
+    {
+      "id": "skeletal-mission-1",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "ANATOMY EXPLORER",
+      "requirement": "Complete mission 1: Meet your skeleton."
+    },
+    {
+      "id": "skeletal-mission-2",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "Bone detective",
+      "requirement": "Complete mission 2: Bone detective."
+    },
+    {
+      "id": "skeletal-mission-3",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "FUNCTION DETECTIVE",
+      "requirement": "Complete mission 3: Inside a bone."
+    },
+    {
+      "id": "skeletal-mission-4",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "Joint lab",
+      "requirement": "Complete mission 4: Joint lab."
+    },
+    {
+      "id": "skeletal-mission-5",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "Bone remodeling",
+      "requirement": "Complete mission 5: Bone remodeling."
+    },
+    {
+      "id": "skeletal-mission-6",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "Repair the fracture",
+      "requirement": "Complete mission 6: Repair the fracture."
+    },
+    {
+      "id": "skeletal-mission-7",
+      "system": "skeletal",
+      "kind": "mission",
+      "name": "Body Detective",
+      "requirement": "Complete mission 7: Body Detective."
+    },
+    {
+      "id": "skeletal-key",
+      "system": "skeletal",
+      "kind": "mastery",
+      "name": "SKELETAL MASTER · Skeletal System",
+      "requirement": "Complete all 7 missions and the final challenge to earn the Framework Key."
+    },
+    {
+      "id": "muscle-mission-1",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Meet the three muscles",
+      "requirement": "Complete mission 1: Meet the three muscles."
+    },
+    {
+      "id": "muscle-mission-2",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Muscle to movement",
+      "requirement": "Complete mission 2: Muscle to movement."
+    },
+    {
+      "id": "muscle-mission-3",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Zoom inside a muscle",
+      "requirement": "Complete mission 3: Zoom inside a muscle."
+    },
+    {
+      "id": "muscle-mission-4",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Slide to contract",
+      "requirement": "Complete mission 4: Slide to contract."
+    },
+    {
+      "id": "muscle-mission-5",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Fuel the movement",
+      "requirement": "Complete mission 5: Fuel the movement."
+    },
+    {
+      "id": "muscle-mission-6",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Endurance or power?",
+      "requirement": "Complete mission 6: Endurance or power?."
+    },
+    {
+      "id": "muscle-mission-7",
+      "system": "muscle",
+      "kind": "mission",
+      "name": "Muscle Lab",
+      "requirement": "Complete mission 7: Muscle Lab."
+    },
+    {
+      "id": "muscle-key",
+      "system": "muscle",
+      "kind": "mastery",
+      "name": "Power Master",
+      "requirement": "Complete all 7 missions and the final challenge to earn the Power Key."
+    },
+    {
+      "id": "respiratory-mission-1",
+      "system": "respiratory",
+      "kind": "mission",
+      "name": "Why we breathe",
+      "requirement": "Complete mission 1: Why we breathe."
+    },
+    {
+      "id": "respiratory-mission-2",
+      "system": "respiratory",
+      "kind": "mission",
+      "name": "Follow the air",
+      "requirement": "Complete mission 2: Follow the air."
+    },
+    {
+      "id": "respiratory-mission-3",
+      "system": "respiratory",
+      "kind": "mission",
+      "name": "At the alveolus",
+      "requirement": "Complete mission 3: At the alveolus."
+    },
+    {
+      "id": "respiratory-mission-4",
+      "system": "respiratory",
+      "kind": "mission",
+      "name": "The breathing engine",
+      "requirement": "Complete mission 4: The breathing engine."
+    },
+    {
+      "id": "respiratory-mission-5",
+      "system": "respiratory",
+      "kind": "mission",
+      "name": "Oxygen on the move",
+      "requirement": "Complete mission 5: Oxygen on the move."
+    },
+    {
+      "id": "respiratory-mission-6",
+      "system": "respiratory",
+      "kind": "mission",
+      "name": "Protect the exchange",
+      "requirement": "Complete mission 6: Protect the exchange."
+    },
+    {
+      "id": "respiratory-key",
+      "system": "respiratory",
+      "kind": "mastery",
+      "name": "Oxygen Master",
+      "requirement": "Complete all 6 missions and the final challenge to earn the Oxygen Key."
+    },
+    {
+      "id": "circ-mission-1",
+      "system": "circ",
+      "kind": "mission",
+      "name": "Vessel Highway",
+      "requirement": "Complete mission 1: Vessel Highway."
+    },
+    {
+      "id": "circ-mission-2",
+      "system": "circ",
+      "kind": "mission",
+      "name": "Capillary Exchange",
+      "requirement": "Complete mission 2: Capillary Exchange."
+    },
+    {
+      "id": "circ-mission-3",
+      "system": "circ",
+      "kind": "mission",
+      "name": "Heart Headquarters",
+      "requirement": "Complete mission 3: Heart Headquarters."
+    },
+    {
+      "id": "circ-mission-4",
+      "system": "circ",
+      "kind": "mission",
+      "name": "The Double Circuit",
+      "requirement": "Complete mission 4: The Double Circuit."
+    },
+    {
+      "id": "circ-mission-5",
+      "system": "circ",
+      "kind": "mission",
+      "name": "Blood Cargo",
+      "requirement": "Complete mission 5: Blood Cargo."
+    },
+    {
+      "id": "circ-mission-6",
+      "system": "circ",
+      "kind": "mission",
+      "name": "Blood Type Match",
+      "requirement": "Complete mission 6: Blood Type Match."
+    },
+    {
+      "id": "circ-mission-7",
+      "system": "circ",
+      "kind": "mission",
+      "name": "Circulatory Emergency",
+      "requirement": "Complete mission 7: Circulatory Emergency."
+    },
+    {
+      "id": "circ-key",
+      "system": "circ",
+      "kind": "mastery",
+      "name": "Transport Master",
+      "requirement": "Complete all 7 missions and the final challenge to earn the Transport Key."
+    },
+    {
+      "id": "excretory-mission-1",
+      "system": "excretory",
+      "kind": "mission",
+      "name": "Waste relay",
+      "requirement": "Complete mission 1: Waste relay."
+    },
+    {
+      "id": "excretory-mission-2",
+      "system": "excretory",
+      "kind": "mission",
+      "name": "Kidney cartographer",
+      "requirement": "Complete mission 2: Kidney cartographer."
+    },
+    {
+      "id": "excretory-mission-3",
+      "system": "excretory",
+      "kind": "mission",
+      "name": "The filtration gate",
+      "requirement": "Complete mission 3: The filtration gate."
+    },
+    {
+      "id": "excretory-mission-4",
+      "system": "excretory",
+      "kind": "mission",
+      "name": "Reabsorption rescue",
+      "requirement": "Complete mission 4: Reabsorption rescue."
+    },
+    {
+      "id": "excretory-mission-5",
+      "system": "excretory",
+      "kind": "mission",
+      "name": "Balance lab",
+      "requirement": "Complete mission 5: Balance lab."
+    },
+    {
+      "id": "excretory-mission-6",
+      "system": "excretory",
+      "kind": "mission",
+      "name": "Kidney care detective",
+      "requirement": "Complete mission 6: Kidney care detective."
+    },
+    {
+      "id": "excretory-key",
+      "system": "excretory",
+      "kind": "mastery",
+      "name": "Balance Master",
+      "requirement": "Complete all 6 missions and the final challenge to earn the Balance Key."
+    },
+    {
+      "id": "medical",
+      "system": "skeletal",
+      "kind": "investigation",
+      "name": "MEDICAL INVESTIGATOR",
+      "requirement": "Solve all four joint evidence files in skeletal mission 7."
+    },
+    {
+      "id": "detective",
+      "system": "extra",
+      "kind": "investigation",
+      "name": "ALL-SYSTEMS INVESTIGATOR",
+      "requirement": "File six supported Body Detective investigations."
+    },
+    {
+      "id": "connection",
+      "system": "extra",
+      "kind": "connection",
+      "name": "SYSTEM THINKER",
+      "requirement": "Complete the six matches, predictions and reviewed reflection in System Connections."
+    },
+    {
+      "id": "capstone",
+      "system": "extra",
+      "kind": "final",
+      "name": "WHOLE-BODY EXPLORER",
+      "requirement": "Earn six System Keys, complete six final decisions and review your final explanation."
+    }
+  ]
+}

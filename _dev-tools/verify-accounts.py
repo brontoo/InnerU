@@ -26,7 +26,7 @@ def signin(p,email='amina@example.com',password='Correct-Horse-123'):
 try:
  with sync_playwright() as pw:
   browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
-  context=browser.new_context(viewport={'width':1680,'height':1100});p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
+  context=browser.new_context(viewport={'width':1680,'height':1100},service_workers='block');p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
   p.goto(ENTRY);p.wait_for_selector('.gate-role-grid')
   check(p.locator('.gate-role').count()==2 and p.locator('.gate-scene').evaluate('e=>e.complete&&e.naturalWidth>0'),'the illustrated student/teacher adventure entry is preserved')
   p.evaluate('localStorage.setItem("bodyquest-v1",JSON.stringify({name:"Amina",xp:88,done:[1],rewards:["activity1"],weak:[],level:"Explorer",motion:false}))')

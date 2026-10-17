@@ -40,8 +40,10 @@ for weak wifi.
 | `#glossary` | every key term in the six systems, one sentence each, with the Arabic term beside it |
 | `#teacher` | **classroom tools** (see below) |
 
-Learning progress is stored in **`localStorage`** under `bodyquest-v1` and does not
-automatically sync to the account service. Account email, password and avatar metadata
+Learning progress stays available offline in **`localStorage`** under `bodyquest-v1`.
+After [installing the Supabase schema](supabase/README.md), signed-in accounts
+sync learning, answers, fixed task credits and achievements across devices with
+explicit conflict handling. Approved teachers can review enrolled students’ work. Account email, password and avatar metadata
 are handled by the connected auth service; passwords and session tokens are not stored
 in application localStorage.
 

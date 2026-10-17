@@ -24,3 +24,8 @@ cdn-cgi/
 
 # development-time verification harnesses
 _dev-tools/
+
+# Database migrations and local development artifacts
+supabase/
+.env
+.env.*

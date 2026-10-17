@@ -155,3 +155,11 @@ the exact utterance text without relying on installed voices or an audio device.
 See [STRUCTURE-AUDIO.md](STRUCTURE-AUDIO.md) for scope and device behavior.
 The former page reader and its arbitrary-text API have been removed. Native
 browser voices provide pronunciation; voice availability depends on the device.
+
+## Account database and cloud learning
+
+`verify-database.py` runs real PostgreSQL RLS, Auth trigger, task-credit, badge,
+revision and classroom authorization checks. `verify-cloud-learning.py` drives
+the production gateway and browser against that database using an isolated Auth
+fixture. They require a local `inneru-db-check` PostgreSQL container; see
+[supabase/README.md](../supabase/README.md) for production installation and access.
