@@ -3,7 +3,7 @@
  'use strict';
  const L=window.InneruLearning,A=window.InneruAccount;
  const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let catalog=null,previewState=null,previewActive=false,ticket=0,refreshing=null;
+ let catalog=null,previewState=null,previewActive=false,browseActive=false,ticket=0,refreshing=null;
  async function api(action,values){
   const response=await fetch('/api/learning?action='+action,{method:values===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:values===undefined?{}:{'Content-Type':'application/json'},...(values===undefined?{}:{body:JSON.stringify(values)})});
   let data;try{data=await response.json();}catch{throw new Error('Mission access could not be checked. Please reconnect and try again.');}
@@ -17,12 +17,12 @@
   return {world:w,number:n,preview:new URLSearchParams(query).get('preview')==='1'};
  }
  function normalRoute(m){return m.number>m.world.titles.length?L.finalRoute(m.world):L.missionRoute(m.world,m.number);}
- function restorePreview(){if(previewState){state=previewState;previewState=null;}previewActive=false;}
+ function restorePreview(){if(previewState){state=previewState;previewState=null;}previewActive=false;browseActive=false;}
  function beginPreview(m){
   if(!previewState)previewState=state;
   state=structuredClone(previewState);state.rewards=[];state.done=[];
   for(const w of L.worlds){const done=Array.from({length:m.number-1},(_,i)=>i+1);if(w.id==='skeletal')state.done=w.id===m.world.id?done:[];else state[w.id]={done:w.id===m.world.id?done:[],steps:{},tasks:{},weak:[],mastery:false};}
-  previewActive=true;
+  previewActive=true;browseActive=!!m.browse;
  }
  const priorSave=save,priorReward=reward;
  save=function(){if(previewActive)return;return priorSave.apply(this,arguments);};
@@ -38,9 +38,15 @@
   const user=InneruAccess.user;if(!user)return;
   const main=document.querySelector('main.main');if(!main)return;
   if(previewActive){
-   if(!main.querySelector('.iu-teacher-preview-bar')){const bar=document.createElement('aside');bar.className='iu-teacher-preview-bar';bar.dataset.previewMission=parse()?.world.id+'-'+parse()?.number;bar.setAttribute('aria-label','Teacher preview');bar.innerHTML='<div><b>TEACHER MISSION PREVIEW</b><p>Try the activities freely. Student progress and class locks stay unchanged.</p></div><a href="#teacher">Home</a><a href="#teacher?view=preview">All mission previews</a><a href="#teacher?view=controls">Control Panel</a>';main.prepend(bar);}
+   if(!main.querySelector('.iu-teacher-preview-bar')){const bar=document.createElement('aside');bar.className='iu-teacher-preview-bar';bar.dataset.previewMission=browseActive?'system':parse()?.world.id+'-'+parse()?.number;bar.setAttribute('aria-label','Teacher preview');bar.innerHTML='<div><b>TEACHER MISSION PREVIEW</b><p>Try the activities freely. Student progress and class locks stay unchanged.</p></div><a href="#home">Explore Worlds</a><a href="#teacher?view=preview">All mission previews</a><a href="#teacher?view=controls">Control Panel</a>';main.prepend(bar);}
    const crumb=document.querySelector('.topbar .crumb');if(crumb)crumb.textContent='Grade 10 Science / Teacher mission preview';
    main.querySelectorAll('a[href^="#"]').forEach(link=>{const m=parse(link.getAttribute('href'));if(m)link.href=normalRoute(m)+'?preview=1';});return;
+  }
+  if(InneruAccess.teacher(user)&&main.querySelector('.explore-screen')){
+   const screen=main.querySelector('.explore-screen');
+   if(!screen.querySelector('.iu-home-teacher-note')){const note=document.createElement('aside');note.className='iu-home-teacher-note';note.innerHTML='<span><b>Teacher exploration</b> · Explore the body systems and preview lessons. Student progress stays unchanged.</span><a href="#teacher">Open your Dashboard →</a>';screen.prepend(note);}
+   main.querySelectorAll('a[href="#dashboard"]').forEach(link=>{link.href='#teacher';if(link.textContent.includes('discoveries'))link.innerHTML='Your classroom ↗';});
+   main.querySelectorAll('a[href="#detective"],a[href="#connect"],a[href="#final"]').forEach(link=>{link.href='#teacher?view=preview';});
   }
   if(user.role!=='student'||!catalog)return;
   main.querySelectorAll('.skel-mode-bar,.resp-preview-bar,.integ-preview-bar,.exc-mode-banner').forEach(bar=>{const title=bar.querySelector('b,strong'),description=bar.querySelector('p');if(title)title.textContent='Your class mission pathway';if(description)description.textContent='Open the missions your teacher has unlocked, and complete each discovery before the next one.';});
@@ -65,7 +71,7 @@
  const oldLayout=layout;layout=function(){const result=oldLayout.apply(this,arguments);queueMicrotask(decorate);return result;};
  const priorRoute=route;window.removeEventListener('hashchange',priorRoute);
  route=async function(){
-  const request=++ticket,hash=location.hash,user=InneruAccess.user,m=parse(hash),isTeacher=InneruAccess.teacher(user);
+  const request=++ticket,hash=location.hash,user=InneruAccess.user,isTeacher=InneruAccess.teacher(user),landing=isTeacher&&L.worlds.find(w=>w.route===hash.split('?')[0]),m=parse(hash)||(landing?{world:landing,number:1,preview:true,browse:true}:null);
   if(!m){restorePreview();if(user?.role==='student'&&hash.includes('preview=1')&&systemPath(hash)){unavailable('Mission previews are available only to teachers.');return;}if(user?.role==='student'&&L.worlds.some(w=>w.route===hash.split('?')[0])){try{await refresh();}catch(error){unavailable(error.message);return;}if(request!==ticket||hash!==location.hash)return;}return priorRoute.apply(this,arguments);}
   if(!user){restorePreview();if(!InneruAccess.user&&document.body.classList.contains('iu-access-pending'))return;unavailable('Sign in to open your assigned missions.',m);return;}
   if(!isTeacher&&m.preview){restorePreview();unavailable('Only teachers can preview missions. Your class follows the normal mission sequence.',m);return;}
@@ -75,7 +81,7 @@
    if(!isTeacher){await window.InneruCloud?.flush();if(window.InneruCloud?.status()==='Choose a saved version')throw new Error('Open Student Dashboard and choose which saved version to continue with before opening this mission.');}
    await api('authorize-mission',{system:m.world.id,number:m.number,preview:isTeacher});
    if(request!==ticket||hash!==location.hash)return;
-   if(isTeacher){beginPreview(m);history.replaceState(null,'',location.pathname+location.search+normalRoute(m)+'?preview=1');}
+   if(isTeacher){beginPreview(m);history.replaceState(null,'',location.pathname+location.search+(m.browse?m.world.route:normalRoute(m))+'?preview=1');}
    priorRoute();decorate();
    if(!isTeacher)refresh().catch(()=>{});
   }catch(error){if(request!==ticket||hash!==location.hash)return;restorePreview();unavailable(error.message,m);}
@@ -87,6 +93,6 @@
  document.addEventListener('visibilitychange',recheck);
  window.addEventListener('focus',recheck);window.addEventListener('online',recheck);
  setInterval(()=>{if(parse())recheck();},30000);
- window.InneruMissionAccess={refresh,parse,get teacherPreviewActive(){return previewActive;}};
+ window.InneruMissionAccess={refresh,parse,get teacherPreviewActive(){return previewActive;},get teacherBrowseActive(){return browseActive;}};
  route();
 })();

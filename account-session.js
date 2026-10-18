@@ -19,7 +19,7 @@
  function navigation(){
   if(!user)return;
   const teacher=InneruAccess.teacher(user);
-  document.querySelectorAll('.sidebar .navlink,main>footer nav a').forEach(a=>{const target=a.getAttribute('href')?.replace(/^#/,'').split(/[/?]/)[0];if(teacher?!['teacher','sources','privacy','about','attribution'].includes(target):target==='teacher')a.remove();});
+  document.querySelectorAll('.sidebar .navlink,main>footer nav a').forEach(a=>{const target=a.getAttribute('href')?.replace(/^#/,'').split(/[/?]/)[0];if(teacher?!['home','teacher','sources','privacy','about','attribution'].includes(target):target==='teacher')a.remove();});
   if(!teacher)document.querySelectorAll('a[href="#teacher"]').forEach(a=>a.remove());
   const label=document.querySelector('.sidebar .navlabel');if(label&&teacher)label.textContent='Your classroom';
   if(teacher){
@@ -27,13 +27,14 @@
    if(nav){
     if(!nav.hasAttribute('data-teacher-navigation')){
      nav.setAttribute('data-teacher-navigation','');nav.setAttribute('aria-label','Teacher workspace');
-     nav.innerHTML=[['home','world','Home'],['overview','dashboard','Class overview'],['students','world','Classes & students'],['answers','book','Answers & feedback'],['achievements','badge','Achievements'],['controls','connect','Control Panel'],['preview','book','Mission previews']].map(([view,mark,title])=>`<a class="navlink" data-teacher-view="${view}" href="#teacher${view==='home'?'':'?view='+view}">${icon(mark)}${e(title)}</a>`).join('');
+     nav.innerHTML=[['home','world','Explore Worlds','#home'],['dashboard','dashboard','Dashboard','#teacher'],['preview','book','Mission Preview','#teacher?view=preview'],['board','badge','Achievements Board','#teacher?view=board']].map(([view,mark,title,href])=>`<a class="navlink" data-teacher-view="${view}" href="${href}">${icon(mark)}${e(title)}</a>`).join('');
     }
-    const [path,query='']=location.hash.slice(1).split('?'),view=path.startsWith('teacher/student/')?'students':new URLSearchParams(query).get('view')||'home';
-    nav.querySelectorAll('[data-teacher-view]').forEach(link=>{const active=path==='teacher'&&link.dataset.teacherView===view||window.InneruMissionAccess?.teacherPreviewActive&&link.dataset.teacherView==='preview'||path.startsWith('teacher/student/')&&link.dataset.teacherView==='students';link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
+    const [path,query='']=location.hash.slice(1).split('?'),view=new URLSearchParams(query).get('view')||'overview';
+    const selected=path==='home'||!path||window.InneruMissionAccess?.teacherBrowseActive?'home':window.InneruMissionAccess?.teacherPreviewActive||view==='preview'?'preview':['board','achievements'].includes(view)&&!path.startsWith('teacher/student/')?'board':'dashboard';
+    nav.querySelectorAll('[data-teacher-view]').forEach(link=>{const active=link.dataset.teacherView===selected;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
    }
-   document.querySelector('.sidebar .sidebottom a[href="#teacher"]')?.remove();
-   document.querySelectorAll('a.brand').forEach(a=>a.href='#teacher');document.querySelector('.topbar .xp')?.remove();document.querySelector('.habit-chip')?.remove();
+   document.querySelectorAll('.sidebar .sidebottom .navlink').forEach(a=>a.remove());
+   document.querySelectorAll('a.brand').forEach(a=>a.href='#home');document.querySelector('.topbar .xp')?.remove();document.querySelector('.habit-chip')?.remove();
   }
  }
  const oldRoute=route;window.removeEventListener('hashchange',oldRoute);route=function(){if(InneruAccess.check())return oldRoute.apply(this,arguments);};window.addEventListener('hashchange',route);

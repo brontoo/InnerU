@@ -76,14 +76,28 @@ Run `python3 _dev-tools/verify-excretory.py` for the current excretory browser
 checks. See `_dev-tools/EXCRETORY-CONTENT.md` for lesson alignment and scientific
 clarifications.
 
-## What the teacher gets (`#teacher`)
+## Teacher workspace
 
-* A **progress code** per student (about 90 characters, checksum protected) that moves
-  a student between devices.
-* A **class list** built by pasting codes or saving the current device, printable as a
-  one-page PDF.
-* **"Finish for the next student"** — one tap to clear a shared tablet, with a
-  10-minute undo.
+Approved teachers have four primary destinations:
+
+| Area | Content |
+|---|---|
+| Explore Worlds (`#home`) | Shared body-system home and read-only anatomy exploration |
+| Dashboard (`#teacher`) | Overview, Students, Missions, Feedback and Analytics views |
+| Mission Preview (`#teacher?view=preview`) | Existing 45 lesson/final previews; progress and locks stay unchanged |
+| Achievements Board (`#teacher?view=board`) | Class-filtered Discovery League with XP, mission and badge rankings, student passports and earned badge details |
+
+The dashboard and board read the teacher’s assigned cloud roster. They never use
+sample students, browser imports or another teacher’s classes as a fallback. Tied
+scores share a rank, and zero scores are unranked. Celebrations add no XP.
+Student login, class assignments and saved learning are unchanged. Mission
+controls continue to require [Supabase migration 007](supabase/migrations/007_mission_access.sql).
+
+Local verification: `_dev-tools/verify-teacher-workspace.py` exercises real
+PostgreSQL permissions with local Auth fixtures, shared Home, dashboard data,
+class filters, rankings, celebrations and desktop/mobile layouts.
+`_dev-tools/verify-mission-access.py` covers mission locks, progression and all
+45 read-only teacher previews. No production account is created by these tests.
 
 ## Daily workflow (two double-clicks)
 

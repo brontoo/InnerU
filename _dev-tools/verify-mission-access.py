@@ -43,19 +43,21 @@ try:
   student,u=account('mission-fixture-five@example.com','Student five','10G5')
   other_class,v=account('mission-fixture-six@example.com','Student six','10G6')
   other_teacher,w=account('mission-fixture-one@example.com','Student one','10G1')
-  teacher.goto(ORIGIN+'/index.html?nosw=1#teacher');teacher.wait_for_selector('[data-teacher-page=home]')
-  expected=['home','overview','students','answers','achievements','controls','preview']
-  check(teacher.locator('[data-teacher-navigation] [data-teacher-view]').evaluate_all('(a)=>a.map(n=>n.dataset.teacherView)')==expected,'all teacher navigation entries exist, including Home and Control Panel')
-  check(len(set(teacher.locator('[data-teacher-navigation] a').evaluate_all('(a)=>a.map(n=>n.getAttribute("href"))')))==7,'all seven teacher tabs have distinct routes')
+  teacher.goto(ORIGIN+'/index.html?nosw=1#teacher');teacher.wait_for_selector('[data-teacher-page=overview]')
+  expected=['home','dashboard','preview','board']
+  check(teacher.locator('[data-teacher-navigation] [data-teacher-view]').evaluate_all('(a)=>a.map(n=>n.dataset.teacherView)')==expected,'teacher navigation contains only Explore Worlds, Dashboard, Mission Preview and Achievements Board')
+  check(len(set(teacher.locator('[data-teacher-navigation] a').evaluate_all('(a)=>a.map(n=>n.getAttribute("href"))')))==4,'the four main teacher destinations have distinct routes')
   headings=[]
-  for view in expected:
-   teacher.locator('[data-teacher-view='+view+']').click();teacher.wait_for_selector('[data-teacher-page='+view+']');teacher.wait_for_selector('[data-teacher-view='+view+'][aria-current=page]')
+  for view in ['overview','students','answers','controls','analytics']:
+   teacher.locator('.td-tabs a[href="'+('#teacher' if view=='overview' else '#teacher?view='+view)+'"]').click();teacher.wait_for_selector('[data-teacher-page='+view+']');teacher.wait_for_selector('[data-teacher-view=dashboard][aria-current=page]')
    headings.append(teacher.locator('.td-page h1').inner_text())
-   check(teacher.locator('.td-hero').count()==(1 if view=='home' else 0),view+' opens its own content with the welcome hero only on Home')
-  check(len(set(headings))==7,'every teacher view has a different visible page heading')
-  check(teacher.locator('.td-preview-list a').count()==45,'teacher preview library includes all 39 missions and six final challenges')
-  teacher.locator('[data-teacher-view=home]').click();teacher.wait_for_selector('[data-teacher-page=home]')
-  check(teacher.url.endswith('#teacher'),'Home returns to the teacher home dashboard')
+   check(teacher.locator('.td-hero').count()==0,view+' opens its own dashboard content without a repeated welcome hero')
+  check(len(set(headings))==5,'every dashboard tab has a different relevant heading')
+  teacher.locator('[data-teacher-view=preview]').click();teacher.wait_for_selector('.td-preview-library')
+  check(teacher.locator('.td-preview-list a').count()==45,'unchanged teacher preview library includes all 39 missions and six final challenges')
+  teacher.locator('[data-teacher-view=home]').click();teacher.wait_for_selector('.explore-screen')
+  check(teacher.url.endswith('#home') and teacher.locator('.anatomy-lab [data-system]').count()==6,'Explore Worlds opens the shared student home with all six body systems')
+  teacher.locator('[data-teacher-view=dashboard]').click();teacher.wait_for_selector('[data-teacher-page=overview]')
   data=api(teacher,'mission-controls').json()
   check([c['code'] for c in data['classes']]==['10G5','10G6'],'teacher controls are restricted to assigned classes')
   check([s['id'] for s in data['classes'][0]['systems']]==['integumentary','skeletal','muscle','respiratory','circ','excretory'],'Control Panel keeps the portal’s six systems in their existing order')
@@ -75,7 +77,7 @@ try:
   check(authorize(student,'skeletal',1,True).status==403 and own(u['id'],"select public.inneru_authorize_mission('skeletal',1,true);",False).returncode!=0,'student URLs and direct RPCs cannot grant teacher preview access')
   check(controls(teacher,'10G5','skeletal',0,False).ok,'teacher can lock a whole body system')
   check(authorize(student,'skeletal',1).status==403 and authorize(other_class,'skeletal',1).ok and authorize(other_teacher,'skeletal',1).ok,'a system lock applies only to the selected assigned class')
-  teacher.reload();teacher.wait_for_selector('[data-teacher-page=home]');teacher.locator('[data-teacher-view=controls]').click();teacher.wait_for_selector('[data-control-system=skeletal]')
+  teacher.reload();teacher.wait_for_selector('[data-teacher-page=overview]');teacher.locator('.td-tabs a[href="#teacher?view=controls"]').click();teacher.wait_for_selector('[data-control-system=skeletal]')
   section=teacher.locator('[data-control-system=skeletal]')
   check('System locked' in section.inner_text(),'system lock survives refresh and is shown in the Control Panel')
   fresh=browser.new_context(service_workers='block');fresh.add_cookies(teacher.context.cookies());newpage=fresh.new_page();newpage.goto(ORIGIN+'/index.html?nosw=1#teacher?view=controls');newpage.wait_for_selector('[data-control-system=skeletal]')
@@ -133,14 +135,14 @@ try:
    teacher.evaluate('reward("activity1",999);save()')
    expected_title=parsed['world']['final'] if parsed['number']>len(parsed['world']['titles']) else parsed['world']['titles'][parsed['number']-1]
    check(expected_title.lower() in teacher.locator('main h1').inner_text().lower() and teacher.evaluate('localStorage.getItem("bodyquest-v1")')==before,mission_id+' preview shows the correct lesson and does not change saved account progress')
-  teacher.locator('.iu-teacher-preview-bar a[href="#teacher"]').click();teacher.wait_for_selector('[data-teacher-page=home]')
+  teacher.locator('.iu-teacher-preview-bar a[href="#home"]').click();teacher.wait_for_selector('.explore-screen');teacher.locator('[data-teacher-view=dashboard]').click();teacher.wait_for_selector('[data-teacher-page=overview]')
   check(teacher.evaluate('localStorage.getItem("bodyquest-v1")')==before,'leaving preview restores the teacher’s original account record')
   check(sql('select jsonb_agg(to_jsonb(s) order by user_id) from public.student_progress s;').stdout==baseline and sql('select jsonb_agg(to_jsonb(s) order by class_code,system_id,mission_number) from public.class_mission_settings s;').stdout==settings,'all teacher previews leave every student’s database progress and lock settings unchanged')
   # Keep existing records and locks when the installer is reapplied.
   sql((ROOT/'supabase/setup.sql').read_text())
   check(sql('select jsonb_agg(to_jsonb(s) order by user_id) from public.student_progress s;').stdout==baseline and authorize(student,'skeletal',1).status==403,'reapplying the installer preserves student records and persistent teacher locks')
   for width in [1440,768,390,320]:
-   teacher.set_viewport_size({'width':width,'height':1000});teacher.locator('[data-teacher-view=controls]').click();teacher.wait_for_selector('[data-teacher-page=controls]')
+   teacher.set_viewport_size({'width':width,'height':1000});teacher.locator('.td-tabs a[href="#teacher?view=controls"]').click();teacher.wait_for_selector('[data-teacher-page=controls]')
    check(teacher.evaluate('document.documentElement.scrollWidth<=innerWidth'),str(width)+'px Control Panel fits without page overflow')
   teacher.set_viewport_size({'width':1440,'height':1000});teacher.screenshot(path='/workspace/cloud-onboarding/teacher-control-panel.png',full_page=True)
   check(not errors,'no uncaught browser errors in teacher views, controls, previews or student locks: '+str(errors))
