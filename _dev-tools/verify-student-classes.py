@@ -74,6 +74,7 @@ try:
    expected=MARYAM if n<=4 else RIHAM
    check(u['classCode']==code and u['assignedTeacher']['email']==expected and u['assignedTeacher']['id']==(None if n<=4 else r['id']),code+' saves the canonical teacher assignment on the Auth-linked profile')
    check(p.url.endswith('#dashboard') and p.locator('a[href="#teacher"]').count()==0 and ('registration pending' in p.locator('[data-cloud-panel]').inner_text())==(n<=4),code+' stays in the student dashboard and shows accurate pending teacher status')
+   check(p.locator('[data-cloud-join]').count()==0 and 'Class code' not in p.locator('[data-cloud-panel]').inner_text() and code in p.locator('.iu-cloud-assignment').inner_text(),code+' shows its saved class assignment without asking for an invitation code')
    save_work(p)
    check(sql('select total_xp from public.student_progress where user_id='+q(u['id'])).stdout.strip()=='50' and sql('select count(*) from public.student_badges where user_id='+q(u['id'])).stdout.strip()=='1',code+' retains linked progress, answers, XP and earned badges')
   approve(rt,RIHAM);data=roster(rt)
@@ -100,6 +101,9 @@ try:
     raw=own(teacher['id'],'select distinct '+col+' from public.'+table+';').stdout.strip().splitlines();visible=set(raw)
     check(allowed_ids<=visible and not denied_ids.intersection(visible),teacher['email']+' RLS isolates '+table)
    target=denied[0][1]['id'];check(own(teacher['id'],'select public.inneru_feedback('+q(target)+",'skeletal:1:q0','Wrong teacher',true,now());",False).returncode!=0,teacher['email']+' cannot submit feedback for the other teacher’s student')
+  unassigned=page();unassigned_email='class-fixture-unassigned-'+uuid.uuid4().hex[:8]+'@example.com';details(unassigned,unassigned_email,'Unassigned teacher',role='teacher');submit(unassigned);unassigned.wait_for_selector('[data-role-refresh]');other_teacher=session(unassigned);created.append(other_teacher['id']);approve(unassigned,unassigned_email)
+  unassigned.evaluate('InneruTeacher.list=async()=>{throw new Error("Legacy browser roster used")};InneruTeacherDashboard.render()');unassigned.wait_for_selector('[data-td-students]')
+  check(roster(unassigned)['students']==[] and roster(unassigned)['classes']==[] and unassigned.locator('[data-td-students]').inner_text()=='0' and unassigned.locator('#td-sharing').count()==0,'teachers without assigned school classes have an empty cloud roster and never fall back to imported browser students')
   first=students[0];p,u,email=first
   for values in [{'classCode':'10G7'},{'classCode':'10G5'},{'classCode':'10G2'}]:
    response=p.request.post(ORIGIN+'/api/learning?action=select-class',data=values);check(response.status in [400,403],'saved student class cannot be invalid or self-reassigned: '+values['classCode'])
@@ -108,10 +112,16 @@ try:
   sql('update auth.users set raw_user_meta_data=raw_user_meta_data||\'{"class_code":"10G5","assigned_teacher_email":"riham.hassan@moe.sch.ae"}\'::jsonb where id='+q(u['id']))
   check(session(p)['classCode']=='10G1','updating editable Auth metadata cannot move an existing student to another teacher')
   # A deliberately incorrect legacy enrollment must not punch a hole through RLS.
-  wrong=json.loads(own(r['id'],"select public.inneru_create_class('Wrong teacher fixture');").stdout)
-  check(p.request.post(ORIGIN+'/api/learning?action=join-class',data={'code':wrong['join_code']}).status==403,'a school student cannot join a class code owned by the wrong teacher')
+  wrong=json.loads(sql('insert into public.classrooms(teacher_id,name) values('+q(r['id'])+",'Archived fixture') returning to_jsonb(classrooms);").stdout)
+  for action,values in [('join-class',{'code':wrong['join_code']}),('create-class',{'name':'Retired workflow'})]:
+   check(p.request.post(ORIGIN+'/api/learning?action='+action,data=values).status==410,action+' is retired at the API')
+  for uid,call in [(u['id'],"inneru_join_class("+q(wrong['join_code'])+")"),(r['id'],"inneru_create_class('Retired workflow')")]:
+   check(own(uid,'select public.'+call+';',False).returncode!=0,'direct authenticated database calls cannot use '+call.split('(')[0])
   sql('insert into public.enrollments(class_id,student_id) values('+q(wrong['id'])+','+q(u['id'])+')')
-  check(not own(r['id'],'select id from public.profiles where id='+q(u['id'])).stdout.strip() and not own(r['id'],'select student_id from public.enrollments where student_id='+q(u['id'])).stdout.strip(),'a stale or injected legacy enrollment cannot expose a school student to another teacher')
+  check(not own(r['id'],'select id from public.profiles where id='+q(u['id'])).stdout.strip() and own(r['id'],'select student_id from public.enrollments where student_id='+q(u['id']),False).returncode!=0,'a stale or injected legacy enrollment cannot expose a school student to another teacher')
+  check([c['name'] for c in roster(rt)['classes']]==['10G5','10G6'],'archived invitation classrooms never appear alongside the assigned school classes')
+  rt.locator('[data-cloud-open-classroom]').click();rt.wait_for_selector('.iu-cloud-classes')
+  check(rt.locator('[data-cloud-create],.iu-cloud-classes input').count()==0 and [s.inner_text() for s in rt.locator('.iu-cloud-classes article>b').all()]==['10G5','10G6'],'teacher classroom lists automatic classes without creating or sharing invitation codes')
   # Canonical fields overwrite forged caller assignments, even on privileged updates.
   sql('update public.profiles set assigned_teacher_id='+q(r['id'])+',assigned_teacher_email='+q(RIHAM)+' where id='+q(u['id']))
   check(session(p)['assignedTeacher']['id']==m['id'],'database triggers derive teacher identity instead of accepting supplied teacher fields')
@@ -124,6 +134,11 @@ try:
   legacy.locator('#entry-class').select_option('10G6');legacy.locator('#gate-class-form [type=submit]').click();dashboard(legacy)
   check(session(legacy)['id']==lu['id'] and legacy.evaluate('state.xp')==50 and session(legacy)['assignedTeacher']['id']==r['id'],'one-time legacy class selection preserves account, answers, XP and teacher assignment')
   legacy.reload();dashboard(legacy);check(legacy.locator('#gate-class-form').count()==0,'a saved class is not requested on subsequent sign-ins or reloads')
+  # Even a stale archived enrollment cannot expose a student awaiting selection.
+  sql('update public.profiles set class_code=null where id='+q(lu['id']))
+  sql('insert into public.enrollments(class_id,student_id) values('+q(wrong['id'])+','+q(lu['id'])+')')
+  check(not own(r['id'],'select id from public.profiles where id='+q(lu['id'])).stdout.strip(),'classless students cannot become visible through old invitation enrollments')
+  sql("update public.profiles set class_code='10G6' where id="+q(lu['id']))
   # Invalid/fabricated teacher fields are ignored at new account creation.
   extra=page();extra.goto(ORIGIN+'/login.html');response=signup_api(extra,'class-fixture-forged-'+uuid.uuid4().hex[:8]+'@example.com',classCode='10G3',teacherId=r['id'],assignedTeacher={'email':RIHAM,'id':r['id']});fu=response.json()['user'];created.append(fu['id'])
   check(fu['classCode']=='10G3' and fu['assignedTeacher']['id']==m['id'],'signup ignores forged teacher fields and uses the selected class mapping')
@@ -140,11 +155,17 @@ try:
   check(sql("select jsonb_agg(jsonb_build_array(id,role,class_code,assigned_teacher_email,assigned_teacher_id) order by id) from public.profiles;").stdout==canonical,'reapplying migration 005 preserves saved classes, canonical teacher links and approved roles')
   sql((ROOT/'supabase/setup.sql').read_text())
   check(sql("select jsonb_agg(jsonb_build_array(id,role,class_code,assigned_teacher_email,assigned_teacher_id) order by id) from public.profiles;").stdout==canonical,'the full installer remains idempotent with classified students and linked teachers')
+  check(own(u['id'],'select public.inneru_join_class('+q(wrong['join_code'])+');',False).returncode!=0,'rerunning the full installer preserves retired invitation permissions')
   check(sql("update public.school_classes set teacher_email='riham.hassan@moe.sch.ae' where code='10G1';",False).returncode!=0,'database constraints reject an incorrect class-to-teacher mapping')
   check(own(u['id'],"update public.school_classes set teacher_email='riham.hassan@moe.sch.ae' where code='10G1';",False).returncode!=0,'authenticated students cannot modify the mapping catalog')
   check(mt.request.post(ORIGIN+'/api/learning?action=select-class',data={'classCode':'10G1'}).status==403,'an approved teacher cannot take the student class selection action')
   for width in [1440,768,390,320]:
    rt.set_viewport_size({'width':width,'height':1000});check(rt.evaluate('document.documentElement.scrollWidth<=innerWidth'),'assigned teacher dashboard fits '+str(width)+'px')
+  p.request.post(ORIGIN+'/__test/legacy-schema',data={'enabled':True})
+  check(p.request.get(ORIGIN+'/api/learning?action=state').status==503 and rt.request.get(ORIGIN+'/api/learning?action=classroom').status==503,'old database installations return an explicit update requirement instead of invitation-based rosters')
+  p.reload();p.wait_for_selector('[data-cloud-panel] .iu-cloud-notice')
+  check(p.locator('[data-cloud-join]').count()==0 and 'database update' in p.locator('[data-cloud-panel]').inner_text(),'an old database cannot bring back the student class-code form')
+  p.request.post(ORIGIN+'/__test/legacy-schema',data={'enabled':False})
   sql('delete from auth.users where id='+q(m['id']))
   sql('update auth.users set email='+q(MARYAM)+' where id='+q(r['id']))
   check({s['classCode'] for s in json.loads(own(r['id'],'select public.inneru_classroom()').stdout)['students']}=={'10G1','10G2','10G3','10G4'},'changing between configured teacher emails relinks only the new email’s classes without a unique-ID collision')

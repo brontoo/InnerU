@@ -43,10 +43,12 @@ check and does not establish whether Supabase is configured.
 
 ## School class assignment update
 
-Existing installations should run **[migrations/005_student_classes.sql](migrations/005_student_classes.sql)**
-in the Supabase SQL Editor after migration 004. It seeds the six school classes,
-links registered teachers by verified email, and leaves missing teachers pending.
-No teacher account is created by this migration. See
+Existing installations should run the complete **[setup.sql](setup.sql)** in the
+Supabase SQL Editor. It seeds the six school classes, links registered teachers by
+verified email, leaves missing teachers pending, and retires class invitations.
+Existing accounts, approved roles and progress are preserved. If migration 005 is
+already installed, **[migrations/006_automatic_rosters.sql](migrations/006_automatic_rosters.sql)**
+is the incremental update. No teacher account is created by these migrations. See
 [STUDENT-CLASSES.md](../_dev-tools/STUDENT-CLASSES.md) for the mapping, one-time
 selection for existing students, permissions, and local verification.
 
@@ -80,13 +82,13 @@ successful signup request. Do not manually insert password rows into `auth.users
 | `learning_responses` | Submitted answers, attempt history and activity feedback |
 | `xp_events` | Unique credits per account/task; duplicate saves cannot pay twice |
 | `student_badges` | Achievements derived from completed tasks and mission gates |
-| `classrooms`, `enrollments` | Approved teachers, classes and joined students |
+| `classrooms`, `enrollments` | Archived invitation data, retained for owner recovery; no longer used for access |
 | `teacher_feedback` | Assigned teachers' feedback on a specific submitted answer |
 | `inneru_schema` | Installed database schema version |
 
 Students can read their own records. Teachers can read learning records only
 for students assigned to them by the fixed school-class mapping. Legacy enrollment
-permissions remain for unrelated legacy records. Anonymous clients cannot read learner
+records never grant access. Anonymous clients cannot read learner
 records. Direct writes are revoked; authenticated RPCs use the session's user
 ID and check authorization. All learning tables have row-level security enabled.
 Role metadata from signup and the entry role cards never approve teacher access.
@@ -106,9 +108,9 @@ select public.inneru_approve_teacher('teacher@example.com');
 The teacher signs in again and opens Teacher Dashboard. Maryam’s 10G1–10G4
 and Riham’s 10G5–10G6 rosters and synced work appear automatically after students
 select their class. Registration with the matching verified email resolves pending
-assignments; the approved teacher role still gates access. Other teachers can
-continue using their existing legacy classroom workflow. The existing imported browser register stays separate from the
-cloud roster; this prevents a browser-imported name from impersonating an account.
+assignments; the approved teacher role still gates access. Teachers without assigned
+school classes see an empty cloud roster. Existing imported browser records remain
+archived and never appear as account-linked students.
 Preparing a shared device should use **Sign out**; account learning is not reset.
 
 ## Sync, rewards and limits
@@ -139,7 +141,8 @@ Preparing a shared device should use **Sign out**; account learning is not reset
 ## Development and migration changes
 
 The ordered sources are `migrations/001_schema.sql`, `002_catalog.sql` and
-`003_functions.sql`, `004_roles_avatars.sql` and `005_student_classes.sql`. `setup.sql` is their combined installer. Curriculum names
+`003_functions.sql`, `004_roles_avatars.sql`, `005_student_classes.sql` and
+`006_automatic_rosters.sql`. `setup.sql` is their combined installer. Curriculum names
 are captured in `catalog.json` from the actual learning model. After changing
 course content, review `_dev-tools/build-db-catalog.py`, regenerate the catalog
 seeds and combined installer, and apply the reviewed database update.

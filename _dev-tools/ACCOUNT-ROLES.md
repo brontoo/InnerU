@@ -16,9 +16,11 @@ workspace from flashing on screen. An unavailable account service leaves private
 workspaces closed and gives a sign-in/connection-check explanation.
 
 The account menu and teacher header identify the verified user. Saved learning
-is bound to that user's Auth ID. Cloud teacher reads remain limited to students assigned to their school classes
-(or unrelated legacy enrollments). See [STUDENT-CLASSES.md](STUDENT-CLASSES.md) for
-the six-class mapping, pending teacher links and migration 005. Teachers cannot submit student XP via the API or direct learning RPC.
+is bound to that user's Auth ID. Cloud teacher reads remain limited to students
+assigned through their saved school class. Legacy enrollments do not grant access.
+See [STUDENT-CLASSES.md](STUDENT-CLASSES.md) for the six-class mapping, pending
+teacher links and migrations 005–006. Teachers cannot submit student XP via the
+API or direct learning RPC.
 Browser classroom registers use an account-specific IndexedDB name, so another
 teacher's imported register is not automatically opened. Earlier unscoped browser
 registers are retained separately and are not silently assigned to an account.

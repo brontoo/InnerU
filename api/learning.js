@@ -22,17 +22,22 @@ module.exports=async(req,res)=>{
   if(req.method==='POST'&&((req.headers.origin&&req.headers.origin!==origin(req))||req.headers['sec-fetch-site']==='cross-site'))throw new AuthError('Open this action from InnerU.',403);
   const cfg=config();if(!cfg)throw new AuthError('The Supabase account service is not connected in Vercel.',503);
   const active=await session(req,res,cfg);if(!active)throw new AuthError('Sign in to save learning to your account.',401);
-  if(['save','join-class','select-class'].includes(action)){const user=await publicUser(active.user,cfg,active.token);if(user.role!=='student')throw new AuthError('This action belongs to a student account.',403);if(action!=='select-class'&&user.classSelectionRequired)throw new AuthError('Choose your school class at sign-in before saving learning.',403);}
+  if(['create-class','join-class'].includes(action))throw new AuthError('Classes are assigned automatically from the student’s school class selection. No class code is needed.',410);
+  if(['save','select-class'].includes(action)){const user=await publicUser(active.user,cfg,active.token);if(user.role!=='student')throw new AuthError('This action belongs to a student account.',403);if(action!=='select-class'&&user.classSelectionRequired)throw new AuthError('Choose your school class at sign-in before saving learning.',403);}
   const data=req.method==='POST'?await body(req,3000000):{};
   let result;
-  if(action==='state')result=await rpc(cfg,active.token,'inneru_state');
+  if(action==='state'){
+   result=await rpc(cfg,active.token,'inneru_state');
+   if(!Object.hasOwn(result?.profile||{},'classCode'))throw new AuthError('School class assignments need a database update. Ask the site owner to run the latest supabase/setup.sql in the Supabase SQL Editor. Your learning is safe on this device.',503);
+  }
   else if(action==='save'){
    if(!Number.isSafeInteger(data.revision)||data.revision<0||!/^[-a-f0-9]{36}$/i.test(data.requestId||''))throw new AuthError('The learning save request is invalid.');
    let value;try{value=snapshot(data.snapshot);}catch(error){throw new AuthError(error.message);}
    result=await rpc(cfg,active.token,'inneru_save',{p_snapshot:value,p_revision:data.revision,p_request_id:data.requestId});
-  }else if(action==='classroom')result=await rpc(cfg,active.token,'inneru_classroom');
-  else if(action==='create-class')result=await rpc(cfg,active.token,'inneru_create_class',{p_name:String(data.name||'').trim().slice(0,80)});
-  else if(action==='join-class')result=await rpc(cfg,active.token,'inneru_join_class',{p_code:String(data.code||'').trim().toLowerCase()});
+  }else if(action==='classroom'){
+   result=await rpc(cfg,active.token,'inneru_classroom');
+   if(result?.assignmentVersion!==6)throw new AuthError('Automatic teacher rosters need a database update. Ask the site owner to run the latest supabase/setup.sql in the Supabase SQL Editor.',503);
+  }
   else if(action==='select-class'){
    if(!['10G1','10G2','10G3','10G4','10G5','10G6'].includes(data.classCode))throw new AuthError('Select one of the six school classes.');
    result=await rpc(cfg,active.token,'inneru_select_student_class',{p_code:data.classCode});

@@ -15,18 +15,18 @@ Dashboard under the existing approved-role rules.
 
 ## Activate in the existing Supabase project
 
-Run the complete [005_student_classes.sql](../supabase/migrations/005_student_classes.sql)
-in the project owner's **Supabase SQL Editor** after migration 004. This is the
-only new migration required for an existing, updated InnerU database. It runs in
-one transaction and is safe to rerun. New installations can use the combined
-[setup.sql](../supabase/setup.sql).
+Run the complete [setup.sql](../supabase/setup.sql) in the project owner's
+**Supabase SQL Editor**. It installs the class mapping and automatic roster rules
+while preserving existing accounts, approved roles and learning records. Projects
+already on migration 005 can instead apply
+[006_automatic_rosters.sql](../supabase/migrations/006_automatic_rosters.sql).
 
 This checkout has no live database-owner connection. Local test results do not
 mean the migration has been applied to production. No Vercel environment-variable
-changes are needed. Code can deploy before SQL: existing sign-in stays available;
-the class requirement and automatic rosters activate when the new columns and
-functions are installed. Classes submitted during that interval remain in Auth
-signup metadata and are backfilled by the migration.
+changes are needed. If code deploys before SQL, the dashboard explicitly reports
+that the database update is required; it never falls back to class invitations or
+an imported teacher register. Classes submitted during that interval remain in
+Auth signup metadata and are backfilled by the installer.
 
 The migration creates **configuration records**, not Auth accounts:
 
@@ -64,9 +64,9 @@ saved class.
 Teachers' main dashboard totals, class filter, student register, progress, answers,
 achievements and feedback use the database roster for these school classes.
 Refresh records loads the latest synced work. School assignments do not require
-joining a shared class code or importing progress codes. Other teachers' existing
-local-register workflow remains available; imported records do not become school
-assignments.
+joining a shared class code or importing progress codes. Teachers with no assigned
+school classes see an empty roster. Archived browser records and old invitation
+enrollments do not appear in any account's school roster.
 
 ## Enforcement
 
@@ -78,8 +78,9 @@ assignments.
   cannot write profile, teacher, class or enrollment tables directly.
 - Row-level security checks the approved teacher role and assigned teacher ID on
   profile, progress, responses, XP and badge reads. Feedback uses the same check.
-- A wrong teacher's class code or stale enrollment cannot expose a school student.
-  Existing legacy enrollment permissions remain only for unrelated legacy records.
+- Invitation creation and joining are retired at the API and direct database RPC
+  permissions. Legacy tables remain intact for owner recovery, but no legacy
+  enrollment grants access, including for students who have not selected a class.
 - Email confirmation/change and account deletion refresh or revoke teacher links.
   Unverified emails and unapproved teacher roles cannot open another student's data.
 - Class assignments live outside the learning snapshot. Progress-code imports and

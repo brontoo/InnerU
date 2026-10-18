@@ -1,7 +1,12 @@
 # Teacher dashboard
 
-Open `index.html#teacher` (or choose Teacher dashboard in the portal). The public,
-browser-based entry remains in place; this is not an authenticated school service.
+Open `index.html#teacher` after signing in with an approved teacher account.
+The dashboard uses the authenticated cloud roster: Maryam sees 10G1–10G4 and
+Riham sees 10G5–10G6. Students appear after choosing their school class; no class
+invitations or progress-code imports are needed. See
+[STUDENT-CLASSES.md](STUDENT-CLASSES.md) for installation and permission rules.
+The browser register described below is historical storage retained for recovery;
+it is no longer used as a fallback for the account dashboard.
 
 ## Classroom records
 

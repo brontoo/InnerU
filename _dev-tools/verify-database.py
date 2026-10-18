@@ -1,10 +1,10 @@
 """Real PostgreSQL integration: schema, Auth trigger, constraints, RLS and RPCs."""
-import json,subprocess,uuid
+import json,os,subprocess,uuid
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-NAME='inneru-db-check';checks=0
+NAME='inneru-db-check';DB=os.environ.get('INNERU_DB_TEST_DATABASE','postgres');checks=0
 def sql(s,ok=True):
- r=subprocess.run(['docker','exec','-i',NAME,'psql','-U','postgres','-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True,capture_output=True)
+ r=subprocess.run(['docker','exec','-i',NAME,'psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True,capture_output=True)
  if ok and r.returncode:raise AssertionError(r.stderr)
  return r
 
@@ -36,9 +36,9 @@ snap['rewards']+=['q1-1','q1-2'];r=save(a,snap,1,str(uuid.uuid4()))
 check(r['snapshot']['xp']==50 and sql('select count(*) from public.student_badges where user_id='+q(a)+" and badge_id='skeletal-mission-1';").stdout.strip()=='1','a complete investigation and three checks earn the mission badge')
 check(as_user(b,'select count(*) from public.learning_responses;').stdout.strip()=='0','another student cannot read answers or progress')
 for id in [t,t2]:sql("update public.profiles set role='teacher' where id="+q(id)+';')
-c=json.loads(as_user(t,"select public.inneru_create_class('Grade 10 A');").stdout)
-as_user(a,'select public.inneru_join_class('+q(c['join_code'])+');')
-check(as_user(t,'select count(*) from public.learning_responses;').stdout.strip()=='1','an approved teacher can read answers from an enrolled student')
+sql("update auth.users set email='riham.hassan@moe.sch.ae' where id="+q(t)+';')
+sql("update public.profiles set class_code='10G5' where id="+q(a)+';')
+check(as_user(t,'select count(*) from public.learning_responses;').stdout.strip()=='1','an approved teacher can read answers from an automatically assigned student')
 check(as_user(t2,'select count(*) from public.learning_responses;').stdout.strip()=='0','an unrelated approved teacher cannot access that student')
 check(len(json.loads(as_user(t,'select public.inneru_classroom();').stdout)['students'])==1,'cloud classroom returns only assigned student accounts')
 as_user(t,'select public.inneru_feedback('+q(a)+",'skeletal:1:q0','Clear explanation',true,'2026-10-17T10:00:00Z');")
