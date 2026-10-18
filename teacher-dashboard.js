@@ -22,7 +22,7 @@
   const meter=(value,label)=>`<div class="td-meter" role="progressbar" aria-label="${E(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${value}"><i style="width:${value}%"></i></div>`;
   const tag=(text,kind='')=>`<span class="td-tag ${kind}">${E(text)}</span>`;
   const empty=(title,text,action='')=>`<div class="td-empty"><span class="td-empty-mark" aria-hidden="true">✧</span><h3>${title}</h3><p>${text}</p>${action}</div>`;
-  const reviewed=(r,a)=>!!r.feedback?.[a.id]?.reviewedAt&&r.feedback[a.id].submissionAt===a.at;
+  const reviewed=(r,a)=>!!r.feedback?.[a.id]?.reviewedAt&&Date.parse(r.feedback[a.id].submissionAt)===Date.parse(a.at);
   function labelSystem(id){return L.worlds.find(w=>w.id===id)?.name||'Whole-body learning';}
   function stats(records){return {count:records.length,xp:records.reduce((n,r)=>n+r.model.xp,0),progress:records.length?Math.round(records.reduce((n,r)=>n+r.model.percent,0)/records.length):0,review:records.reduce((n,r)=>n+r.model.needsReview,0),achievements:records.reduce((n,r)=>n+r.model.earned.length,0)};}
   function classOptions(){return [...new Set([...schoolClasses,...rows.map(r=>r.group).filter(Boolean)])].sort();}

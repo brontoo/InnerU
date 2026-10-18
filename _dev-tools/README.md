@@ -1,3 +1,101 @@
+# Automatic critical release checks
+
+`npm test` runs the same six critical checks as GitHub Actions, **sequentially**:
+
+| Script | Release coverage |
+|---|---|
+| `verify-accounts.py` | Signup, sign-in, avatars, recovery, cookies and account isolation |
+| `verify-student-classes.py` | All six class choices, pending teacher linking and class permissions |
+| `verify-dashboard.py` | Real mission work, once-only XP, saved progress, badges and responsive student dashboard |
+| `verify-mission-access.py` | Persistent locks, sequence gates, teacher controls and all 45 read-only previews |
+| `verify-teacher-dashboard.py` | Assigned roster, actual student answers, versioned feedback, exports and individual records |
+| `verify-teacher-workspace.py` | Four teacher destinations, shared home, rankings and teacher-class isolation |
+
+The dashboard scripts use signed-in local fixtures, not the retired anonymous
+teacher/import interface. Existing progress-code formats are checked as data
+compatibility without restoring one account over another. The other historical
+harnesses below are optional; they are not part of this release gate.
+
+## Prerequisites and commands
+
+Use Node.js 22+, Python 3.12+, and a running Docker engine with Linux-container
+support (Docker Desktop on Windows/macOS). No npm runtime or test packages are
+needed; Node uses its standard library. Browser dependencies are **test-only** in
+`_dev-tools/requirements-test.txt` and should be installed in a virtual environment.
+From the checkout root on Linux/macOS:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r _dev-tools/requirements-test.txt
+python -m playwright install chromium
+# Linux/CI: python -m playwright install --with-deps chromium
+npm test
+```
+
+Windows PowerShell (leave the existing `.cmd`/PowerShell launchers in place):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r _dev-tools/requirements-test.txt
+python -m playwright install chromium
+npm test
+```
+
+The runner uses `python3` on Unix or `python` on Windows. `PYTHON` can point to a
+specific environment's Python executable if activation is unavailable. It uses
+Playwright's installed Chromium by default; it never assumes a system browser
+path. An explicit `INNERU_TEST_CHROMIUM_EXECUTABLE` override is available only for
+restricted developer environments that cannot download Playwright's browser.
+CI does not set that override. `PLAYWRIGHT_BROWSERS_PATH` is also supported by
+Playwright for choosing a writable browser cache.
+
+`npm run dev:local` serves the same static portal on loopback port 8080, without
+PowerShell or a framework. `PORT` selects another port. This has the same static
+scope as `serve.ps1`; it does not simulate production accounts. The verification
+scripts start their own loopback Auth/API server for account and database checks.
+The existing `npm run dev`, `npm start` and Windows launchers are unchanged.
+
+## Isolation, artifacts and failures
+
+The test runner removes inherited Supabase/Vercel service configuration. The
+fixture server supplies a fake key and a loopback-only Auth provider, and refuses
+outbound provider requests. Browser contexts abort external HTTP resources.
+Tests use fake local accounts; school teacher emails are matching fixture strings
+inside the isolated database only. No email is sent and no production service,
+student account, database permissions or data is changed.
+
+Each `npm test` run creates a randomly named, labelled `postgres:17-alpine`
+container with **no published port or mounted volume**. The existing
+`prepare-db-tests.py` bootstraps the test-only Auth schema and applies the existing
+SQL installer there. Suites have separate database names, run one after another,
+and the runner removes only its own container on completion/interruption. A
+standalone database suite uses the existing `inneru-db-check` container; stop it
+with `docker stop inneru-db-check` when finished. Only labelled test containers
+of the expected image are accepted.
+
+The runner prints each suite's result, continues after a failed check, writes a
+JSON summary, and exits nonzero if any suite fails. Each suite has a six-minute
+limit. Logs, screenshots and database/fixture output go under a fresh directory
+in the OS temporary folder by default. Set `INNERU_TEST_ARTIFACT_DIR` to choose a
+root directory (use a fresh directory per run); each suite gets its own subfolder.
+The path is printed at startup. Browser failures capture available pages before
+teardown. Generated artifacts, Python caches and `.venv` are not source files.
+
+`.github/workflows/critical-checks.yml` runs on pull requests targeting `main`
+and pushes to `main`, without secrets or deployment steps. It installs the pinned
+Playwright package and its Chromium, runs `npm test`, and uploads the temporary
+artifact directory **only on failure**, retaining it for seven days. Results also
+appear in the Actions job summary.
+
+If failed checks should block merges, a repository administrator must configure
+GitHub branch protection/rulesets on `main` to require **Critical checks** from
+**InnerU release checks**. The workflow alone does not block merges. These changes
+do not configure branch protection, change Vercel, merge or publish anything.
+
+---
+
 # Verification harnesses
 
 For the standalone InnerU adventure entry at `/login.html`, run

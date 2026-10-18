@@ -1,7 +1,8 @@
 """Start an isolated PostgreSQL test database; no production credentials used."""
 import subprocess,time,os,re
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1];NAME='inneru-db-check'
+ROOT=Path(__file__).resolve().parents[1];NAME=os.environ.get('INNERU_DB_TEST_CONTAINER','inneru-db-check')
+if not re.fullmatch(r'inneru-[a-z0-9-]{1,60}',NAME):raise RuntimeError('Use an isolated inneru- test container name.')
 DB=os.environ.get('INNERU_DB_TEST_DATABASE','postgres')
 if not re.fullmatch('[a-z_][a-z0-9_]{0,50}',DB):raise RuntimeError('Use a simple local test database name.')
 def run(args,**kwargs):return subprocess.run(args,check=True,text=True,**kwargs)
@@ -11,10 +12,10 @@ if probe.returncode:
 else:
  import json
  info=json.loads(probe.stdout)[0]
- if info['Config']['Image']!='postgres:17-alpine':raise RuntimeError('The test-container name belongs to a different image; leave it untouched.')
+ if info['Config']['Image']!='postgres:17-alpine' or (info['Config'].get('Labels') or {}).get('inneru.database-test')!='true':raise RuntimeError('The test-container name belongs to a different image; leave it untouched.')
  run(['docker','start',NAME],stdout=subprocess.DEVNULL)
-for _ in range(60):
- p=subprocess.run(['docker','exec',NAME,'pg_isready','-U','postgres'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+for _ in range(120):
+ p=subprocess.run(['docker','exec',NAME,'pg_isready','-h','127.0.0.1','-U','postgres'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
  if p.returncode==0:break
  time.sleep(.25)
 else:raise RuntimeError('PostgreSQL did not become ready.')

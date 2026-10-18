@@ -1,0 +1,2 @@
+# Development verification only; not an application/runtime dependency.
+playwright==1.58.0

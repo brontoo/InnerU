@@ -6,6 +6,13 @@ const dbContainer=process.env.INNERU_DB_TEST_CONTAINER;
 const dbName=process.env.INNERU_DB_TEST_DATABASE||'postgres';
 function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-d',dbName,'-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose','-qAt'],{input:query,encoding:'utf8'}).trim();}
 const quote=value=>"'"+String(value).replace(/'/g,"''")+"'";
+// This process can only call the local provider, even with production variables inherited.
+const originalFetch=global.fetch;
+global.fetch=(input,options)=>{
+ const url=new URL(typeof input==='string'?input:input.url);
+ if(url.hostname!=='127.0.0.1'||url.origin!==process.env.SUPABASE_URL)throw Error('Test fixture blocked a non-local provider request.');
+ return originalFetch(input,options);
+};
 const users=new Map(),access=new Map(),refresh=new Map();let configured=true,legacySchema=false;
 const limits=new Map(),authCounts={};
 function profileRows(rows){return legacySchema?rows.map(p=>Object.fromEntries(Object.entries(p).filter(([k])=>!['class_code','assigned_teacher_email','assigned_teacher_id'].includes(k)))):rows;}

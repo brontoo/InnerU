@@ -4,16 +4,14 @@ No real account, outbound email or production database is created/contacted.
 """
 import json,os,subprocess,uuid
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, CONTAINER, start_fixture
 ROOT=Path(__file__).resolve().parents[1];DB='inneru_school_class_check'
-ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':'inneru-db-check','INNERU_DB_TEST_DATABASE':DB}
-subprocess.run(['python3',str(ROOT/'_dev-tools/prepare-db-tests.py')],env=ENV,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-proc=subprocess.Popen(['node',str(ROOT/'_dev-tools/account-test-server.js')],env=ENV,stdout=subprocess.PIPE,stderr=open('/workspace/cloud-onboarding/class-fixture-errors.log','w'),text=True)
-ORIGIN=json.loads(proc.stdout.readline())['origin'];checks=0;errors=[];created=[]
+ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':CONTAINER,'INNERU_DB_TEST_DATABASE':DB}
+proc,ORIGIN=start_fixture(ENV,database=True);checks=0;errors=[];created=[]
 MARYAM='sf.alhammadi@moe.sch.ae';RIHAM='riham.hassan@moe.sch.ae';PASSWORD='Local-Class-Fixture-Only-123'
 def q(v):return "'"+str(v).replace("'","''")+"'"
 def sql(s,ok=True):
- r=subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True,capture_output=True)
+ r=subprocess.run(['docker','exec','-i',CONTAINER,'psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True,capture_output=True)
  if ok and r.returncode:raise AssertionError(r.stderr)
  return r
 
@@ -46,9 +44,9 @@ try:
  # Existing school availability is preconfigured by the owner in this assignment fixture.
  sql("insert into public.class_mission_settings(class_code,system_id,mission_number,unlocked) select code,'skeletal',0,true from public.school_classes on conflict(class_code,system_id,mission_number) do update set unlocked=true;")
  with sync_playwright() as pw:
-  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
+  browser=launch(pw)
   def page(width=1440):
-   c=browser.new_context(service_workers='block',viewport={'width':width,'height':1000},is_mobile=width<=600,has_touch=width<=600);p=c.new_page();p.on('pageerror',lambda e:errors.append(str(e)));return p
+   c=new_context(browser, service_workers='block',viewport={'width':width,'height':1000},is_mobile=width<=600,has_touch=width<=600);p=c.new_page();p.on('pageerror',lambda e:errors.append(str(e)));return p
   probe=page();probe.goto(ORIGIN+'/login.html?nosw=1')
   for code in [None,'','10G0','10G7','10g1',' 10G1 ',{},['10G1']]:
    response=signup_api(probe,'class-fixture-invalid-'+uuid.uuid4().hex[:8]+'@example.com',**({'classCode':code} if code is not None else {}))
@@ -71,7 +69,7 @@ try:
    check(p.evaluate('document.documentElement.scrollWidth<=innerWidth') and p.locator('#entry-class').bounding_box()['width']>=44,code+' selector fits and remains usable on '+('desktop' if n%2 else 'mobile'))
    if n==1:
     p.locator('#gate-entry-form [type=submit]').click();p.locator('[data-avatar-back]').click();check(p.locator('#entry-class').input_value()==code,'returning from avatar selection retains the selected class');p.locator('#entry-password').fill(PASSWORD);p.locator('#entry-confirm').fill(PASSWORD)
-   if n==6:p.screenshot(path='/workspace/cloud-onboarding/student-class-mobile.png',full_page=True)
+   if n==6:p.screenshot(path=artifact('student-class-mobile.png'),full_page=True)
    submit(p);dashboard(p);u=session(p);created.append(u['id']);students.append((p,u,email))
    expected=MARYAM if n<=4 else RIHAM
    check(u['classCode']==code and u['assignedTeacher']['email']==expected and u['assignedTeacher']['id']==(None if n<=4 else r['id']),code+' saves the canonical teacher assignment on the Auth-linked profile')

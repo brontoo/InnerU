@@ -21,3 +21,9 @@ desktop.ini
 *.log
 serve-out.txt
 serve-err.txt
+
+# Python verification environment / generated artifacts
+.venv/
+__pycache__/
+*.pyc
+.test-artifacts/

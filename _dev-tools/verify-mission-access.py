@@ -3,16 +3,14 @@ School emails are local matching fixtures only. No production account or email i
 """
 import json,os,subprocess,uuid
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, CONTAINER, start_fixture
 ROOT=Path(__file__).resolve().parents[1];DB='inneru_mission_access_check'
-ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':'inneru-db-check','INNERU_DB_TEST_DATABASE':DB}
-subprocess.run(['python3',str(ROOT/'_dev-tools/prepare-db-tests.py')],env=ENV,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-proc=subprocess.Popen(['node',str(ROOT/'_dev-tools/account-test-server.js')],env=ENV,stdout=subprocess.PIPE,stderr=open('/workspace/cloud-onboarding/mission-access-fixture-errors.log','w'),text=True)
-ORIGIN=json.loads(proc.stdout.readline())['origin'];checks=0;created=[];errors=[]
+ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':CONTAINER,'INNERU_DB_TEST_DATABASE':DB}
+proc,ORIGIN=start_fixture(ENV,database=True);checks=0;created=[];errors=[]
 PASSWORD='Local-Mission-Access-Fixture-123'
 def q(v):return "'"+str(v).replace("'","''")+"'"
 def sql(s,ok=True):
- r=subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True,capture_output=True)
+ r=subprocess.run(['docker','exec','-i',CONTAINER,'psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True,capture_output=True)
  if ok and r.returncode:raise AssertionError(r.stderr)
  return r
 
@@ -31,9 +29,9 @@ def classroom(page):return api(page,'classroom').json()
 try:
  sql("delete from auth.users where lower(email) in ('riham.hassan@moe.sch.ae','sf.alhammadi@moe.sch.ae') or email like 'mission-fixture-%@example.com';delete from public.class_mission_settings;")
  with sync_playwright() as pw:
-  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
+  browser=launch(pw)
   def account(email,name,code=None,teacher=False):
-   context=browser.new_context(service_workers='block',viewport={'width':1440,'height':1000},reduced_motion='reduce');p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
+   context=new_context(browser, service_workers='block',viewport={'width':1440,'height':1000},reduced_motion='reduce');p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
    response=p.request.post(ORIGIN+'/api/auth?action=signup',data={'email':email,'password':PASSWORD,'name':name,'avatarId':'sage','requestedRole':'teacher' if teacher else 'student',**({'classCode':code} if code else {})})
    assert response.ok,response.text();user=response.json()['user'];created.append(user['id'])
    if teacher:sql('select public.inneru_approve_teacher('+q(email)+');')
@@ -80,7 +78,7 @@ try:
   teacher.reload();teacher.wait_for_selector('[data-teacher-page=overview]');teacher.locator('.td-tabs a[href="#teacher?view=controls"]').click();teacher.wait_for_selector('[data-control-system=skeletal]')
   section=teacher.locator('[data-control-system=skeletal]')
   check('System locked' in section.inner_text(),'system lock survives refresh and is shown in the Control Panel')
-  fresh=browser.new_context(service_workers='block');fresh.add_cookies(teacher.context.cookies());newpage=fresh.new_page();newpage.goto(ORIGIN+'/index.html?nosw=1#teacher?view=controls');newpage.wait_for_selector('[data-control-system=skeletal]')
+  fresh=new_context(browser, service_workers='block');fresh.add_cookies(teacher.context.cookies());newpage=fresh.new_page();newpage.goto(ORIGIN+'/index.html?nosw=1#teacher?view=controls');newpage.wait_for_selector('[data-control-system=skeletal]')
   check('System locked' in newpage.locator('[data-control-system=skeletal]').inner_text(),'a new teacher session restores persisted lock settings')
   student.goto(ORIGIN+'/index.html?nosw=1#mission/1');student.wait_for_selector('.iu-mission-access-notice')
   student.wait_for_function('document.querySelector(".iu-mission-access-notice").textContent.includes("teacher has locked")')
@@ -144,7 +142,7 @@ try:
   for width in [1440,768,390,320]:
    teacher.set_viewport_size({'width':width,'height':1000});teacher.locator('.td-tabs a[href="#teacher?view=controls"]').click();teacher.wait_for_selector('[data-teacher-page=controls]')
    check(teacher.evaluate('document.documentElement.scrollWidth<=innerWidth'),str(width)+'px Control Panel fits without page overflow')
-  teacher.set_viewport_size({'width':1440,'height':1000});teacher.screenshot(path='/workspace/cloud-onboarding/teacher-control-panel.png',full_page=True)
+  teacher.set_viewport_size({'width':1440,'height':1000});teacher.screenshot(path=artifact('teacher-control-panel.png'),full_page=True)
   check(not errors,'no uncaught browser errors in teacher views, controls, previews or student locks: '+str(errors))
   browser.close()
  print(checks,'mission access checks passed.')

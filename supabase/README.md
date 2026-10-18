@@ -163,7 +163,14 @@ matching strings in isolated local test fixtures; no real account or email is cr
 `_dev-tools/verify-cloud-learning.py`. Local success does not validate production
 credentials, email delivery or whether the migration was run in Supabase.
 
-For local verification with Docker and the existing Playwright/Chromium setup:
+For the automatic six-check release gate, see
+[_dev-tools/README.md](../_dev-tools/README.md#automatic-critical-release-checks).
+After installing the documented test-only prerequisites, run `npm test`. It creates
+and cleans up a unique isolated `postgres:17-alpine` container, runs database
+checks sequentially, and requires no Supabase project credentials. The GitHub
+Actions workflow uses the same command; it does not install or migrate production.
+
+For the optional lower-level database suites with Docker and Python Playwright:
 
 ```sh
 python3 _dev-tools/prepare-db-tests.py

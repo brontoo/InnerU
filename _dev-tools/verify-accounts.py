@@ -1,10 +1,9 @@
 """Exercise the real account adapter and portal against an isolated Auth fixture."""
 import json,subprocess
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, CONTAINER, start_fixture
 ROOT=Path(__file__).resolve().parents[1]
-proc=subprocess.Popen(['node',str(ROOT/'_dev-tools/account-test-server.js')],stdout=subprocess.PIPE,text=True)
-ORIGIN=json.loads(proc.stdout.readline())['origin'];ENTRY=ORIGIN+'/login.html?nosw=1'
+proc,ORIGIN=start_fixture();ENTRY=ORIGIN+'/login.html?nosw=1'
 checks=0;errors=[]
 def check(v,m):
  global checks
@@ -25,8 +24,8 @@ def signin(p,email='amina@example.com',password='Correct-Horse-123'):
  p.locator('#entry-email').fill(email);p.locator('#entry-password').fill(password);p.locator('#gate-entry-form [type=submit]').click()
 try:
  with sync_playwright() as pw:
-  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
-  context=browser.new_context(viewport={'width':1680,'height':1100},service_workers='block');p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
+  browser=launch(pw)
+  context=new_context(browser, viewport={'width':1680,'height':1100},service_workers='block');p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
   p.goto(ENTRY);p.wait_for_selector('.gate-role-grid')
   check(p.locator('.gate-role').count()==2 and p.locator('.gate-scene').evaluate('e=>e.complete&&e.naturalWidth>0'),'the illustrated student/teacher adventure entry is preserved')
   p.evaluate('localStorage.setItem("bodyquest-v1",JSON.stringify({name:"Amina",xp:88,done:[1],rewards:["activity1"],weak:[],level:"Explorer",motion:false}))')
@@ -40,7 +39,7 @@ try:
   check('Correct-Horse' not in p.evaluate('JSON.stringify(localStorage)') and 'amina@example.com' not in p.evaluate('JSON.stringify(localStorage)'),'credentials are absent from browser application storage')
   p.locator('input[value=nova]').focus();p.keyboard.press('ArrowRight');check(p.locator('input[value=atlas]').is_checked(),'keyboard arrows select an avatar and update its native radio state')
   choose(p,'pip');check('Pip is ready' in p.locator('[data-avatar-cheer]').inner_text(),'avatar selection produces a character-specific welcome')
-  p.screenshot(path='/workspace/cloud-onboarding/account-avatars.png',full_page=True)
+  p.screenshot(path=artifact('account-avatars.png'),full_page=True)
   enter(p);home(p)
   first=profile(p);uid=first['authUserId']
   check(first['avatarId']=='pip' and first['name']=='Amina' and first['xp']==88 and first['done']==[1],'signup binds the chosen avatar while retaining explicitly selected existing progress')
@@ -94,9 +93,9 @@ try:
   p.emulate_media(reduced_motion='reduce');p.locator('input[value=nova]').check()
   check(p.locator('.gate-avatar-card .iu-avatar-art').first.evaluate('e=>getComputedStyle(e).animationName')=='none','reduced motion removes character wiggles and avatar entrance animation')
   p.emulate_media(reduced_motion='no-preference');p.locator('[data-action-motion]').click();check(p.locator('.iu-gate').get_attribute('data-visual-motion')=='off','the entry’s own motion control also pauses avatar animation')
-  p.set_viewport_size({'width':1680,'height':1100});p.screenshot(path='/workspace/cloud-onboarding/account-entry-avatars-final.png',full_page=True)
+  p.set_viewport_size({'width':1680,'height':1100});p.screenshot(path=artifact('account-entry-avatars-final.png'),full_page=True)
   # A code-first deployment must not block accounts before SQL migration 005.
-  p.request.post(ORIGIN+'/__test/legacy-schema',data={'enabled':True});rollout=browser.new_context(service_workers='block');r=rollout.new_page()
+  p.request.post(ORIGIN+'/__test/legacy-schema',data={'enabled':True});rollout=new_context(browser, service_workers='block');r=rollout.new_page()
   result=r.request.post(ORIGIN+'/api/auth?action=signup',data={'email':'rollout@example.com','password':'Fixture-Rollout-123','name':'Rollout','avatarId':'sage','classCode':'10G3'}).json()
   check(result['authenticated'] and result['user']['classCode'] is None and not result['user']['classSelectionRequired'],'an older database can still verify accounts while migration 005 is pending')
   r.goto(ORIGIN+'/login.html?nosw=1');home(r);check(r.locator('#gate-class-form').count()==0,'a code-first deployment does not trap students in an unavailable class selection step')
@@ -109,7 +108,7 @@ try:
   check('not connected' in p.locator('#entry-error').inner_text() and '/login' in p.url,'an unconfigured signup cannot redirect as if an account had been created')
   p.request.post(ORIGIN+'/__test/config',data={'enabled':True})
   # The worker must never cache the session or return app HTML for an auth error.
-  offline=browser.new_context();q=offline.new_page();q.goto(ORIGIN+'/login.html');q.evaluate('navigator.serviceWorker.ready');q.wait_for_function('navigator.serviceWorker.controller!==null')
+  offline=new_context(browser, );q=offline.new_page();q.goto(ORIGIN+'/login.html');q.evaluate('navigator.serviceWorker.ready');q.wait_for_function('navigator.serviceWorker.controller!==null')
   q.wait_for_selector('.gate-role-grid');q.evaluate('fetch("/api/auth?action=session",{cache:"no-store"}).then(r=>r.json())')
   cached=q.evaluate('(async()=>{const keys=await caches.keys();const all=(await Promise.all(keys.map(async k=>(await(await caches.open(k)).keys()).map(r=>new URL(r.url).pathname)))).flat();return all})()')
   check('/assets/avatars/explorers.png' in cached and not any(x.startswith('/api/') for x in cached),'avatar artwork is cached while account API requests are excluded from the service worker')

@@ -3,14 +3,12 @@ Uses isolated PostgreSQL and local Auth fixtures. No production identities or da
 """
 import json,os,subprocess,uuid
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, CONTAINER, start_fixture
 ROOT=Path(__file__).resolve().parents[1];DB='inneru_teacher_workspace_check'
-ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':'inneru-db-check','INNERU_DB_TEST_DATABASE':DB}
-subprocess.run(['python3',str(ROOT/'_dev-tools/prepare-db-tests.py')],env=ENV,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-proc=subprocess.Popen(['node',str(ROOT/'_dev-tools/account-test-server.js')],env=ENV,stdout=subprocess.PIPE,stderr=open('/workspace/cloud-onboarding/workspace-fixture-errors.log','w'),text=True)
-ORIGIN=json.loads(proc.stdout.readline())['origin'];checks=0;errors=[];created=[]
+ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':CONTAINER,'INNERU_DB_TEST_DATABASE':DB}
+proc,ORIGIN=start_fixture(ENV,database=True);checks=0;errors=[];created=[]
 def q(v):return "'"+str(v).replace("'","''")+"'"
-def sql(s):return subprocess.check_output(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True).strip()
+def sql(s):return subprocess.check_output(['docker','exec','-i',CONTAINER,'psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-qAt'],input=s,text=True).strip()
 def check(v,m):
  global checks
  assert v,m
@@ -20,9 +18,9 @@ def go(p,h,selector):p.evaluate('(h)=>location.hash=h',h);p.wait_for_selector(se
 try:
  sql("delete from auth.users where lower(email) in ('riham.hassan@moe.sch.ae','sf.alhammadi@moe.sch.ae') or email like 'workspace-fixture-%@example.com';delete from public.class_mission_settings;")
  with sync_playwright() as pw:
-  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
+  browser=launch(pw)
   def account(email,name,code=None):
-   ctx=browser.new_context(service_workers='block',viewport={'width':1680,'height':1100},reduced_motion='reduce');p=ctx.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
+   ctx=new_context(browser, service_workers='block',viewport={'width':1680,'height':1100},reduced_motion='reduce');p=ctx.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
    response=p.request.post(ORIGIN+'/api/auth?action=signup',data={'email':email,'password':'Local-Workspace-Fixture-123','name':name,'avatarId':'pip','requestedRole':'student' if code else 'teacher',**({'classCode':code} if code else {})});assert response.ok,response.text()
    u=response.json()['user'];created.append(u['id'])
    if not code:sql('select public.inneru_approve_teacher('+q(email)+');')
@@ -64,7 +62,7 @@ try:
   check('applause' in teacher.locator('[data-board-cheer]').inner_text() and teacher.locator('.td-confetti i').count()==0,'celebration has accessible feedback and honors reduced motion')
   teacher.emulate_media(reduced_motion='no-preference');teacher.locator('[data-board-celebrate]').click();check(teacher.locator('.td-confetti i').count()==24,'animated celebration works when motion is enabled');teacher.emulate_media(reduced_motion='reduce')
   check(sql('select jsonb_agg(to_jsonb(s) order by user_id) from public.student_progress s;')==baseline,'ranking changes, badge inspection and celebrations never alter student learning or XP')
-  teacher.screenshot(path='/workspace/cloud-onboarding/teacher-discovery-league.png',full_page=True)
+  teacher.screenshot(path=artifact('teacher-discovery-league.png'),full_page=True)
   teacher.reload();teacher.wait_for_selector('[data-board-content]');check(teacher.locator('[data-board-row]').count()==3,'board reload restores saved class learning records')
   maryam.goto(ORIGIN+'/index.html?nosw=1#teacher?view=board');maryam.wait_for_selector('[data-board-content]')
   check(maryam.locator('.td-league-person b').all_text_contents()==['Outside class'] and maryam.locator('#td-board-class option').all_text_contents()==['All assigned classes','10G1','10G2','10G3','10G4'],'Maryam sees only her four classes and assigned student')
@@ -87,8 +85,8 @@ try:
     check(teacher.locator('[data-teacher-navigation] .navlink').count()==4 and teacher.locator('[data-teacher-navigation] [aria-current=page]').count()==1,str(width)+'px '+view+' retains the four destinations and one active highlight')
     if width<=390:check(teacher.locator('[data-teacher-navigation] .navlink').evaluate_all('(links)=>links.every(link=>{const r=link.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth})'),str(width)+'px '+view+' shows all four teacher links without scrolling the navigation')
    if width==390:
-    go(teacher,'teacher?view=board','[data-board-content]');teacher.screenshot(path='/workspace/cloud-onboarding/teacher-discovery-league-mobile.png',full_page=True)
-  teacher.set_viewport_size({'width':1680,'height':1100});go(teacher,'teacher','[data-dashboard-overview]');teacher.screenshot(path='/workspace/cloud-onboarding/teacher-dashboard-workspace.png',full_page=True)
+    go(teacher,'teacher?view=board','[data-board-content]');teacher.screenshot(path=artifact('teacher-discovery-league-mobile.png'),full_page=True)
+  teacher.set_viewport_size({'width':1680,'height':1100});go(teacher,'teacher','[data-dashboard-overview]');teacher.screenshot(path=artifact('teacher-dashboard-workspace.png'),full_page=True)
   check(not errors,'no uncaught browser errors: '+str(errors));browser.close()
  print(checks,'teacher workspace checks passed.')
 finally:

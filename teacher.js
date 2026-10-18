@@ -301,7 +301,7 @@
     }
     result.summaryOnly=legacy;
     result.responses=window.InneruEvidence.normalise(payload.a)?.responses||[];
-    result.needsReview=result.responses.filter(r=>r.correct!==true&&!(record.feedback?.[r.id]?.reviewedAt&&record.feedback[r.id].submissionAt===r.at)).length;
+    result.needsReview=result.responses.filter(r=>r.correct!==true&&!(record.feedback?.[r.id]?.reviewedAt&&Date.parse(record.feedback[r.id].submissionAt)===Date.parse(r.at))).length;
     result.graded=result.responses.filter(r=>typeof r.correct==='boolean');
     result.accuracy=result.graded.length?Math.round(result.graded.filter(r=>r.correct).length/result.graded.length*100):null;
     result.lastActivity=[...result.responses.map(r=>r.at),...result.entries.map(r=>r.at)].filter(date).sort().at(-1)||null;
