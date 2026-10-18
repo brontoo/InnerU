@@ -22,7 +22,19 @@
   document.querySelectorAll('.sidebar .navlink,main>footer nav a').forEach(a=>{const target=a.getAttribute('href')?.replace(/^#/,'').split(/[/?]/)[0];if(teacher?!['teacher','sources','privacy','about','attribution'].includes(target):target==='teacher')a.remove();});
   if(!teacher)document.querySelectorAll('a[href="#teacher"]').forEach(a=>a.remove());
   const label=document.querySelector('.sidebar .navlabel');if(label&&teacher)label.textContent='Your classroom';
-  if(teacher){document.querySelectorAll('a.brand').forEach(a=>a.href='#teacher');document.querySelector('.topbar .xp')?.remove();document.querySelector('.habit-chip')?.remove();}
+  if(teacher){
+   const nav=document.querySelector('.sidebar>nav');
+   if(nav){
+    if(!nav.hasAttribute('data-teacher-navigation')){
+     nav.setAttribute('data-teacher-navigation','');nav.setAttribute('aria-label','Teacher workspace');
+     nav.innerHTML=[['overview','dashboard','Class overview'],['students','world','Classes & students'],['answers','book','Answers & feedback'],['achievements','badge','Achievements']].map(([view,mark,title])=>`<a class="navlink" data-teacher-view="${view}" href="#teacher${view==='overview'?'':'?view='+view}">${icon(mark)}${e(title)}</a>`).join('');
+    }
+    const [path,query='']=location.hash.slice(1).split('?'),view=path.startsWith('teacher/student/')?'students':new URLSearchParams(query).get('view')||'overview';
+    nav.querySelectorAll('[data-teacher-view]').forEach(link=>{const active=path==='teacher'&&link.dataset.teacherView===view||path.startsWith('teacher/student/')&&link.dataset.teacherView==='students';link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
+   }
+   document.querySelector('.sidebar .sidebottom a[href="#teacher"]')?.remove();
+   document.querySelectorAll('a.brand').forEach(a=>a.href='#teacher');document.querySelector('.topbar .xp')?.remove();document.querySelector('.habit-chip')?.remove();
+  }
  }
  const oldRoute=route;window.removeEventListener('hashchange',oldRoute);route=function(){if(InneruAccess.check())return oldRoute.apply(this,arguments);};window.addEventListener('hashchange',route);
  async function start(){if(loading)return;loading=true;let session,redirecting=false;try{session=await InneruAccess.ready;if(!session.authenticated){if(state.authUserId){A.clearActive(state.authUserId);state=A.readProfile();}return;}user=session.user;

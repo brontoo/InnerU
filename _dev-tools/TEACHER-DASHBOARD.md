@@ -8,6 +8,11 @@ invitations or progress-code imports are needed. See
 The browser register described below is historical storage retained for recovery;
 it is no longer used as a fallback for the account dashboard.
 
+The teacher sidebar always provides Class overview, Classes & students, Answers &
+feedback, and Achievements. It tracks the current view and remains available on
+individual student records and reference pages. On mobile it uses the portal's
+horizontal navigation. Student accounts retain their separate learning links.
+
 ## Classroom records
 
 The class overview, searchable/grouped register, individual mission records,
