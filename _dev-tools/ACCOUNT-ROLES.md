@@ -53,10 +53,13 @@ apply this SQL without supplying a separate administrative connection.
 
 ## Artwork and avatars
 
-The teacher art is an original image edit retaining the teacher's face, pose,
-classroom, lab coat, tablet and stylus, with a simple lavender hijab. The generated
-original is retained outside the repository; `teacher-guide-hijab.webp` is its
-optimized production encoding. Teacher Dashboard uses the same illustration.
+The teacher artwork is a regenerated, polished adult educator with a welcoming
+expression, simple lavender hijab, glasses, modest science coat, tablet and stylus.
+It retains the portal’s softly lit lavender classroom and animated illustration
+style. The generated master is retained outside the repository;
+`teacher-guide-welcome.webp` is the optimized production encoding. The login card
+and Teacher Dashboard share this illustration and retain their existing motion
+and reduced-motion behavior.
 
 The original six avatars remain available. A second generated sheet adds Amira,
 Sami, Noor, Finn, Pebble and Sage. All twelve are selectable by radio, keyboard and

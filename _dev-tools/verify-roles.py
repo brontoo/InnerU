@@ -27,7 +27,7 @@ try:
   browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader']);ctx=browser.new_context(service_workers='block',viewport={'width':1680,'height':1100});p=ctx.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
   p.goto(ORIGIN+'/index.html?nosw=1#teacher');p.wait_for_selector('.iu-access-notice');check(p.locator('.td-page').count()==0,'anonymous users cannot open the teacher dashboard')
   p.goto(ORIGIN+'/index.html?nosw=1#dashboard');p.wait_for_selector('.iu-access-notice');check(p.locator('.sd-page').count()==0,'anonymous users cannot open an account’s student dashboard')
-  p.goto(ORIGIN+'/login.html?nosw=1');check(p.locator('.gate-role-teacher img').get_attribute('src').endswith('teacher-guide-hijab.webp') and p.locator('.gate-role-teacher img').evaluate('e=>e.complete&&e.naturalWidth>0'),'the teacher card loads the new premium hijab illustration')
+  p.goto(ORIGIN+'/login.html?nosw=1');check(p.locator('.gate-role-teacher img').get_attribute('src').endswith('teacher-guide-welcome.webp') and p.locator('.gate-role-teacher img').evaluate('e=>e.complete&&e.naturalWidth>0'),'the teacher card loads the new premium hijab illustration')
   email='role-student-'+uuid.uuid4().hex[:8]+'@example.com';entry(p);create(p,email,'Student One','noor');student(p);u=session(p)
   check(u['role']=='student' and p.evaluate('state.authUserId')==u['id'],'student identity and role come from the same verified database account')
   check(u['avatarId']=='noor' and p.locator('.iu-avatar-sheet-2').count()>0,'new avatar suggestions persist in the database and appear on the dashboard')
