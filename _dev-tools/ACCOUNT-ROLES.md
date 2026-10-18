@@ -9,7 +9,9 @@ browser comes from that database row.
 Students sign in to `#dashboard`, can explore learning content and cannot open
 `#teacher` or its child routes. Teachers/admins sign in to `#teacher`; attempts
 to open Student Dashboard, achievements, review or student missions return them
-to the teacher workspace. Informational reference/privacy pages remain available.
+to the teacher workspace. Teacher-authorized mission previews are a read-only
+exception; they use disposable state and cannot upload student progress.
+Informational reference/privacy pages remain available.
 Anonymous or unverified users cannot open either account dashboard. The app is
 hidden while its initial session is checked, preventing a previous user's
 workspace from flashing on screen. An unavailable account service leaves private

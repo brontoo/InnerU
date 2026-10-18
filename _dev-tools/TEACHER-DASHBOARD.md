@@ -8,10 +8,12 @@ invitations or progress-code imports are needed. See
 The browser register described below is historical storage retained for recovery;
 it is no longer used as a fallback for the account dashboard.
 
-The teacher sidebar always provides Class overview, Classes & students, Answers &
-feedback, and Achievements. It tracks the current view and remains available on
+The teacher sidebar provides Home, Class overview, Classes & students, Answers &
+feedback, Achievements, Control Panel and Mission previews. It tracks the current view and remains available on
 individual student records and reference pages. On mobile it uses the portal's
 horizontal navigation. Student accounts retain their separate learning links.
+Only Home shows the welcome hero. See [MISSION-ACCESS.md](MISSION-ACCESS.md) for
+persistent class controls, server progression rules and read-only previews.
 
 ## Classroom records
 

@@ -47,10 +47,10 @@ try:
   check(approved['role']=='teacher' and approved['id']==u['id'],'owner approval opens Teacher Dashboard for the existing account without creating another identity')
   check(p.locator('.topbar .name').inner_text()==approved['name'],'teacher identity is visible in the dashboard header')
   check(p.locator('a[href="#dashboard"]').count()==0 and p.locator('a[href="#world"]').count()==0,'teacher navigation exposes the teacher workspace instead of student routes')
-  check(p.locator('[data-teacher-navigation] .navlink').all_text_contents()==['Class overview','Classes & students','Answers & feedback','Achievements'],'the teacher sidebar replaces student links with all four classroom shortcuts')
+  check(p.locator('[data-teacher-navigation] .navlink').all_text_contents()==['Home','Class overview','Classes & students','Answers & feedback','Achievements','Control Panel','Mission previews'],'the teacher sidebar replaces student links with all seven classroom shortcuts')
   for view,content in [('students','#td-group-filter'),('answers','#td-answer-system'),('achievements','#td-badge-system'),('overview','.td-system-overview')]:
    link=p.locator('[data-teacher-view='+view+']');link.focus();link.press('Enter');p.wait_for_selector(content);p.wait_for_selector('[data-teacher-view='+view+'][aria-current=page]')
-   check(p.locator('[data-teacher-navigation] .navlink').count()==4 and p.locator('[data-teacher-navigation] [aria-current=page]').count()==1,'keyboard navigation opens '+view+' and keeps the teacher sidebar and current indicator')
+   check(p.locator('[data-teacher-navigation] .navlink').count()==7 and p.locator('[data-teacher-navigation] [aria-current=page]').count()==1,'keyboard navigation opens '+view+' and keeps the teacher sidebar and current indicator')
   p.evaluate('location.hash="dashboard"');teacher(p);check(p.locator('.sd-page').count()==0,'a typed student dashboard URL cannot open for a teacher')
   p.evaluate('location.hash="muscle"');teacher(p);check(p.locator('.mq-world').count()==0,'teacher accounts stay in the teacher workspace instead of opening student missions')
   p.wait_for_function('window.InneruCloud.status()==="Teacher classroom connected"')
@@ -69,7 +69,7 @@ try:
   check(session(p)['id']==id2 and p.evaluate('state.authUserId')==id2,'switching accounts binds the dashboard to the new verified identity')
   for width in [1680,768,390,320]:
    p.set_viewport_size({'width':width,'height':950});check(p.evaluate('document.documentElement.scrollWidth<=innerWidth'),f'role-specific teacher dashboard and avatar fit {width}px')
-   check(p.locator('[data-teacher-navigation]').is_visible() and p.locator('[data-teacher-navigation] .navlink').count()==4,f'all teacher shortcuts remain available at {width}px')
+   check(p.locator('[data-teacher-navigation]').is_visible() and p.locator('[data-teacher-navigation] .navlink').count()==7,f'all seven teacher shortcuts remain available at {width}px')
   sql("update public.profiles set role='student',requested_role='student' where id="+q(id2)+';');p.reload();p.wait_for_selector('#gate-class-form');p.locator('#entry-class').select_option('10G1');p.locator('#gate-class-form [type=submit]').click();student(p)
   check(session(p)['role']=='student' and p.locator('.td-page').count()==0,'a revoked teacher role is reflected on the next verified page load')
   check(not errors,'no JavaScript exceptions across role requests, approval, identity changes or dashboard restrictions: '+str(errors))

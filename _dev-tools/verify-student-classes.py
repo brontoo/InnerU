@@ -43,6 +43,8 @@ def save_work(p):
 try:
  # Retained local fixture DBs are cleaned only of this suite's fake accounts.
  sql("delete from auth.users where email in ("+q(MARYAM)+','+q(RIHAM)+") or email like 'class-fixture-%@example.com';")
+ # Existing school availability is preconfigured by the owner in this assignment fixture.
+ sql("insert into public.class_mission_settings(class_code,system_id,mission_number,unlocked) select code,'skeletal',0,true from public.school_classes on conflict(class_code,system_id,mission_number) do update set unlocked=true;")
  with sync_playwright() as pw:
   browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
   def page(width=1440):
@@ -79,8 +81,9 @@ try:
    check(sql('select total_xp from public.student_progress where user_id='+q(u['id'])).stdout.strip()=='50' and sql('select count(*) from public.student_badges where user_id='+q(u['id'])).stdout.strip()=='1',code+' retains linked progress, answers, XP and earned badges')
   approve(rt,RIHAM);data=roster(rt)
   check({s['id'] for s in data['students']}=={s[1]['id'] for s in students[4:]} and [c['name'] for c in data['classes'] if c.get('schoolClass')]==['10G5','10G6'],'Riham sees only 10G5 and 10G6 students automatically')
-  check(rt.locator('[data-td-students]').inner_text()=='2' and rt.locator('.td-student-link').count()==2,'Riham’s main dashboard metrics and register use the assigned cloud roster')
-  delayed=[];rt.route('**/cloud-learning.js*',lambda route:delayed.append(route));rt.reload(wait_until='commit');rt.wait_for_selector('.td-student-link');rt.wait_for_function('document.querySelector("[data-td-students]").textContent==="2"')
+  check(rt.locator('[data-td-students]').inner_text()=='2','Riham’s Home metrics use her assigned cloud roster')
+  rt.locator('[data-teacher-view=students]').click();rt.wait_for_selector('.td-student-link');check(rt.locator('.td-student-link').count()==2,'Riham’s Classes & students view uses only her assigned students')
+  delayed=[];rt.route('**/cloud-learning.js*',lambda route:delayed.append(route));rt.reload(wait_until='commit');rt.wait_for_selector('.td-student-link');rt.wait_for_function('document.querySelectorAll(".td-student-link").length===2')
   check(bool(delayed) and rt.locator('.td-student-link').count()==2,'the teacher dashboard loads its assigned roster even before the shared sync script arrives')
   for request in delayed:request.continue_()
   rt.unroute('**/cloud-learning.js*');rt.wait_for_function('window.InneruCloud?.status()==="Teacher classroom connected"')
@@ -90,8 +93,8 @@ try:
   check(mt.request.get(ORIGIN+'/api/learning?action=classroom').status==403,'linking a matching email does not bypass teacher approval')
   approve(mt,MARYAM);data=roster(mt)
   check({s['id'] for s in data['students']}=={s[1]['id'] for s in students[:4]} and [c['name'] for c in data['classes'] if c.get('schoolClass')]==['10G1','10G2','10G3','10G4'],'Maryam sees only 10G1–10G4, including progress saved before her registration')
-  check(mt.locator('[data-td-students]').inner_text()=='4' and mt.locator('.td-student-link').count()==4,'Maryam’s main teacher dashboard uses only her four assigned students')
-  mt.locator('a[href="#teacher?view=students"]').click();mt.wait_for_selector('#td-group-filter');mt.locator('#td-group-filter').select_option('10G2')
+  check(mt.locator('[data-td-students]').inner_text()=='4','Maryam’s Home metrics use only her four assigned students')
+  mt.locator('[data-teacher-view=students]').click();mt.wait_for_selector('#td-group-filter');mt.locator('#td-group-filter').select_option('10G2')
   check(mt.locator('.td-student-link').count()==1 and '10G2' in mt.locator('.td-student-link').inner_text(),'teacher class filters organize the automatic roster')
   mt.locator('.td-student-link').click();mt.wait_for_selector('.td-hero-student');mt.locator('.td-tabs a[href*="view=answers"]').click();mt.wait_for_selector('.td-answer');mt.locator('.td-feedback summary').click();mt.wait_for_selector('[data-td-feedback]');mt.locator('[data-td-feedback] textarea').fill('Mapped teacher feedback');mt.locator('[data-td-feedback] input').check();mt.locator('[data-td-feedback] button').click();mt.wait_for_function('document.querySelector(".td-form-status").textContent.includes("saved")')
   check(next(s for s in roster(mt)['students'] if s['classCode']=='10G2')['feedback']['skeletal:1:q0']['note']=='Mapped teacher feedback','assigned teachers can save feedback from the main dashboard')

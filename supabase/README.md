@@ -52,6 +52,14 @@ is the incremental update. No teacher account is created by these migrations. Se
 [STUDENT-CLASSES.md](../_dev-tools/STUDENT-CLASSES.md) for the mapping, one-time
 selection for existing students, permissions, and local verification.
 
+## Mission access controls
+
+Mission availability is controlled by migration
+**[007_mission_access.sql](migrations/007_mission_access.sql)** after migration 006.
+It adds persistent class-scoped system and mission controls, teacher-only previews,
+and server validation of sequential student progress. Existing records are kept.
+See [MISSION-ACCESS.md](../_dev-tools/MISSION-ACCESS.md) for behavior and verification.
+
 ## Where to find a new user
 
 Email/password users appear in **Authentication → Users**. They will not appear
@@ -75,6 +83,7 @@ successful signup request. Do not manually insert password rows into `auth.users
 | --- | --- |
 | `profiles` | One row per Auth user: nickname, avatar, approved role, student class and assigned teacher; no password |
 | `school_classes`, `school_teachers` | Six school classes, canonical teacher emails and pending/verified account links |
+| `class_mission_settings` | Persistent system/mission access per assigned school class, with teacher-only edits |
 | `systems`, `missions` | Six systems, missions and required task credits |
 | `badges`, `reward_definitions` | Achievement requirements and fixed task XP |
 | `student_progress` | Full resumable learning snapshot, revision and total XP |
@@ -142,7 +151,7 @@ Preparing a shared device should use **Sign out**; account learning is not reset
 
 The ordered sources are `migrations/001_schema.sql`, `002_catalog.sql` and
 `003_functions.sql`, `004_roles_avatars.sql`, `005_student_classes.sql` and
-`006_automatic_rosters.sql`. `setup.sql` is their combined installer. Curriculum names
+`006_automatic_rosters.sql` and `007_mission_access.sql`. `setup.sql` is their combined installer. Curriculum names
 are captured in `catalog.json` from the actual learning model. After changing
 course content, review `_dev-tools/build-db-catalog.py`, regenerate the catalog
 seeds and combined installer, and apply the reviewed database update.

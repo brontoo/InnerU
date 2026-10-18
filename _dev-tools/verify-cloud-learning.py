@@ -21,6 +21,8 @@ def go(p,hash):p.evaluate('(h)=>location.hash=h',hash);p.wait_for_selector('[dat
 def api(p,action,values=None):return p.evaluate('(v)=>InneruCloud.api(v.action,v.values)',{'action':action,**({'values':values} if values is not None else {})})
 try:
  # Only this isolated local Auth fixture uses the school's teacher address.
+ # Pre-existing owner-approved availability; this test focuses on sync and identity.
+ subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-q'],input="insert into public.class_mission_settings(class_code,system_id,mission_number,unlocked) values('10G5','skeletal',0,true) on conflict(class_code,system_id,mission_number) do update set unlocked=true;",text=True,check=True)
  subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-d',DB,'-v','ON_ERROR_STOP=1','-q'],input="delete from auth.users where lower(email)='riham.hassan@moe.sch.ae';",text=True,check=True)
  with sync_playwright() as pw:
   browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader']);student=browser.new_context(viewport={'width':1440,'height':1000},service_workers='block');p=student.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
@@ -48,6 +50,7 @@ try:
   q.locator('[data-cloud-use=remote]').click();sync(q);check(q.evaluate('state.rewards.includes("q1-2")&&!state.rewards.includes("q1-1")'),'choosing cloud restores the newer saved record without silently merging answers')
   check(q.evaluate('(id)=>JSON.parse(localStorage.getItem("inneru-cloud-recovery-v1:"+id)).rewards.includes("q1-1")',uid),'conflict resolution keeps a local recovery copy before replacing work')
   # Test the opposite conflict choice.
+  q.evaluate('reward("q1-1",10);state.done.push(1);save()');sync(q);p.reload();sync(p)
   q.evaluate('reward("q2-0",10)');sync(q);p.evaluate('reward("q2-1",10)');p.wait_for_selector('[data-cloud-use=local]');p.locator('[data-cloud-use=local]').click();sync(p)
   check('q2-1' in api(p,'state')['progress']['snapshot']['rewards'],'choosing the device record explicitly replaces the cloud version at its current revision')
   # Connection diagnostics do not ask for or expose credentials.

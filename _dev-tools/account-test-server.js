@@ -4,7 +4,7 @@ const handler=require('../api/auth.js'),root=path.resolve(__dirname,'..');
 const learningHandler=require('../api/learning.js'),{execFileSync}=require('node:child_process');
 const dbContainer=process.env.INNERU_DB_TEST_CONTAINER;
 const dbName=process.env.INNERU_DB_TEST_DATABASE||'postgres';
-function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-d',dbName,'-v','ON_ERROR_STOP=1','-qAt'],{input:query,encoding:'utf8'}).trim();}
+function sql(query){return execFileSync('docker',['exec','-i',dbContainer,'psql','-U','postgres','-d',dbName,'-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose','-qAt'],{input:query,encoding:'utf8'}).trim();}
 const quote=value=>"'"+String(value).replace(/'/g,"''")+"'";
 const users=new Map(),access=new Map(),refresh=new Map();let configured=true,legacySchema=false;
 const limits=new Map(),authCounts={};
@@ -51,9 +51,9 @@ const provider=http.createServer(async(req,res)=>{try{
  if(url.pathname.startsWith('/rest/v1/rpc/')){
   if(!u)return send(res,401,{code:'bad_jwt'});
   if(!dbContainer)return send(res,404,{code:'PGRST202'});
-  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access','inneru_select_student_class'].includes(name))return send(res,404,{});
+  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access','inneru_select_student_class','inneru_mission_catalog','inneru_mission_controls','inneru_set_mission_control','inneru_authorize_mission'].includes(name))return send(res,404,{});
   const params=Object.entries(data).map(([k,v])=>{if(!/^p_[a-z_]+$/.test(k))throw Error('Bad fixture parameter');return k+'=>'+(v===null?'null':typeof v==='object'?quote(JSON.stringify(v))+'::jsonb':typeof v==='number'||typeof v==='boolean'?String(v):quote(v));});
-  try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');const value=JSON.parse(result);if(legacySchema){if(name==='inneru_state')delete value.profile.classCode;if(name==='inneru_classroom')delete value.assignmentVersion;}return send(res,200,value);}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:details.includes('revision_conflict')?'revision_conflict':'fixture_database_error'});}
+  try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');const value=JSON.parse(result);if(legacySchema){if(name==='inneru_state')delete value.profile.classCode;if(name==='inneru_classroom')delete value.assignmentVersion;}return send(res,200,value);}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('42501')||details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('22023')||details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:['revision_conflict','teacher_locked','previous_required','class_required','teacher_preview_only'].find(code=>details.includes(code))||'fixture_database_error'});}
  }
  send(res,404,{});
  }catch(e){send(res,500,{error:'Fixture request failed.'});}});

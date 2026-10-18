@@ -140,6 +140,11 @@ scheduling rules and scientific wording corrections.
 
 ## Teacher classroom dashboard
 
+For the current Home, distinct teacher views, class-scoped Control Panel and
+read-only lesson previews, see [MISSION-ACCESS.md](MISSION-ACCESS.md).
+Run `python3 _dev-tools/verify-mission-access.py` for the browser/API/PostgreSQL
+checks of persistent locks, sequential progression and all 45 mission previews.
+
 Run `python3 _dev-tools/verify-teacher-dashboard.py` for real submitted answers,
 student snapshot collection, individual progress and achievements, feedback,
 backups, legacy imports, reset/undo, and responsive records. See

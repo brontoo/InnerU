@@ -22,6 +22,9 @@ check(not sql('set role anon;select * from public.student_progress;',ok=False).r
 check(as_user(a,'select count(*) from public.profiles;').stdout.strip()=='1','students can read only their own profile')
 check(sql('set role authenticated;set request.jwt.claim.sub='+q(a)+";update public.profiles set role='teacher';",ok=False).returncode!=0,'students cannot promote their profile by direct database writes')
 check(sql('set role authenticated;set request.jwt.claim.sub='+q(a)+";select public.inneru_create_class('Unauthorized');",ok=False).returncode!=0,'student sessions cannot create teacher classes')
+# Owner-configured school availability for the relational learning fixture.
+sql("update public.profiles set class_code=case when id="+q(a)+" then '10G5' else '10G1' end where id in ("+q(a)+','+q(b)+");")
+sql("insert into public.class_mission_settings(class_code,system_id,mission_number,unlocked) select c.code,s.id,0,true from public.school_classes c cross join public.systems s where c.code in ('10G1','10G5') on conflict(class_code,system_id,mission_number) do update set unlocked=true;")
 snap={'name':'SQL learner','level':'Explorer','motion':False,'done':[1],'rewards':['activity1','q1-0','q1-0','unknown-million-xp'],'xp':9999999,'assessment':{'version':1,'responses':[{'id':'skeletal:1:q0','system':'skeletal','title':'Recall','answer':'Bones','correct':True,'at':'2026-10-17T10:00:00Z'}]}}
 rid=str(uuid.uuid4())
 def save(id,s,rev,request):return json.loads(as_user(id,'select public.inneru_save('+q(json.dumps(s))+'::jsonb,'+str(rev)+','+q(request)+');').stdout)
@@ -52,13 +55,22 @@ check(reset['snapshot']['xp']==0 and sql('select count(*) from public.student_ba
 # A full six-system record must satisfy each seeded final gate.
 catalog=json.loads((ROOT/'supabase/catalog.json').read_text())
 all_rewards=json.loads(sql("select jsonb_agg(id) from public.reward_definitions;").stdout)
-full={'name':'Full course','done':list(range(1,9)),'rewards':all_rewards,'capstone':{'done':True}}
-for w in catalog['worlds']:
- if w['id']!='skeletal':full[w['id']]={'done':list(range(1,len(w['titles'])+1))+([8] if w['id']=='muscle' else []),'mastery':True}
-complete=save(b,full,0,str(uuid.uuid4()))
+full={'name':'Full course','done':[],'rewards':[],'capstone':{'done':False}}
+for world in catalog['worlds']:
+ if world['id']!='skeletal':full[world['id']]={'done':[],'mastery':False}
+sequence=json.loads(sql("select jsonb_agg(jsonb_build_object('system',m.system_id,'number',m.number,'final',m.is_final,'rewards',(select jsonb_agg(id) from public.reward_definitions where mission_id=m.id)) order by s.sort_order,m.number) from public.missions m join public.systems s on s.id=m.system_id;").stdout)
+revision=0
+for mission in sequence:
+ full['rewards']+=mission['rewards'] or []
+ field=full if mission['system']=='skeletal' else full[mission['system']]
+ if mission['final'] and mission['system'] not in ['skeletal','muscle']:field['mastery']=True
+ else:field['done'].append(8 if mission['final'] else mission['number'])
+ complete=save(b,full,revision,str(uuid.uuid4()));revision=complete['revision']
+full['rewards']=all_rewards;full['capstone']['done']=True
+complete=save(b,full,revision,str(uuid.uuid4()));revision=complete['revision']
 check(sql('select count(*) from public.system_progress where user_id='+q(b)+' and mastery;').stdout.strip()=='6','all six systems accept their complete activity, science-check and final gates')
 missing={**full,'rewards':[id for id in full['rewards'] if id!='resp-final-7']}
-save(b,missing,1,str(uuid.uuid4()))
+save(b,missing,revision,str(uuid.uuid4()))
 check(sql('select mastery from public.system_progress where user_id='+q(b)+" and system_id='respiratory';").stdout.strip()=='f','a missing final decision prevents its System Key and mastery badge')
 
 # Running the supplied setup again retains users and approved roles.

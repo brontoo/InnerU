@@ -27,10 +27,10 @@
    if(nav){
     if(!nav.hasAttribute('data-teacher-navigation')){
      nav.setAttribute('data-teacher-navigation','');nav.setAttribute('aria-label','Teacher workspace');
-     nav.innerHTML=[['overview','dashboard','Class overview'],['students','world','Classes & students'],['answers','book','Answers & feedback'],['achievements','badge','Achievements']].map(([view,mark,title])=>`<a class="navlink" data-teacher-view="${view}" href="#teacher${view==='overview'?'':'?view='+view}">${icon(mark)}${e(title)}</a>`).join('');
+     nav.innerHTML=[['home','world','Home'],['overview','dashboard','Class overview'],['students','world','Classes & students'],['answers','book','Answers & feedback'],['achievements','badge','Achievements'],['controls','connect','Control Panel'],['preview','book','Mission previews']].map(([view,mark,title])=>`<a class="navlink" data-teacher-view="${view}" href="#teacher${view==='home'?'':'?view='+view}">${icon(mark)}${e(title)}</a>`).join('');
     }
-    const [path,query='']=location.hash.slice(1).split('?'),view=path.startsWith('teacher/student/')?'students':new URLSearchParams(query).get('view')||'overview';
-    nav.querySelectorAll('[data-teacher-view]').forEach(link=>{const active=path==='teacher'&&link.dataset.teacherView===view||path.startsWith('teacher/student/')&&link.dataset.teacherView==='students';link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
+    const [path,query='']=location.hash.slice(1).split('?'),view=path.startsWith('teacher/student/')?'students':new URLSearchParams(query).get('view')||'home';
+    nav.querySelectorAll('[data-teacher-view]').forEach(link=>{const active=path==='teacher'&&link.dataset.teacherView===view||window.InneruMissionAccess?.teacherPreviewActive&&link.dataset.teacherView==='preview'||path.startsWith('teacher/student/')&&link.dataset.teacherView==='students';link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
    }
    document.querySelector('.sidebar .sidebottom a[href="#teacher"]')?.remove();
    document.querySelectorAll('a.brand').forEach(a=>a.href='#teacher');document.querySelector('.topbar .xp')?.remove();document.querySelector('.habit-chip')?.remove();
