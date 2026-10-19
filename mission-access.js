@@ -45,7 +45,7 @@
   if(InneruAccess.teacher(user)&&main.querySelector('.explore-screen')){
    const screen=main.querySelector('.explore-screen');
    if(!screen.querySelector('.iu-home-teacher-note')){const note=document.createElement('aside');note.className='iu-home-teacher-note';note.innerHTML='<span><b>Teacher exploration</b> · Explore the body systems and preview lessons. Student progress stays unchanged.</span><a href="#teacher">Open your Dashboard →</a>';screen.prepend(note);}
-   main.querySelectorAll('a[href="#dashboard"]').forEach(link=>{link.href='#teacher';if(link.textContent.includes('discoveries'))link.innerHTML='Your classroom ↗';});
+   main.querySelectorAll('a[href="#dashboard"]').forEach(link=>{link.href='#teacher';if((window.InneruLocale?InneruLocale.source(link):link.textContent).includes('discoveries'))link.innerHTML='Your classroom ↗';});
    main.querySelectorAll('a[href="#detective"],a[href="#connect"],a[href="#final"]').forEach(link=>{link.href='#teacher?view=preview';});
   }
   if(user.role!=='student'||!catalog)return;
@@ -53,7 +53,7 @@
   main.querySelectorAll('a[href^="#"]').forEach(link=>{
    const raw=link.getAttribute('href'),m=parse(raw);
    if(!m){if(raw.includes('preview=1')&&systemPath(raw))link.remove();return;}
-   if(m.preview&&/preview|browse freely/i.test(link.textContent)){link.remove();return;}
+   if(m.preview&&/preview|browse freely/i.test((window.InneruLocale?InneruLocale.source(link):link.textContent))){link.remove();return;}
    if(m.preview)link.setAttribute('href',normalRoute(m));
    const g=gateFor(m);if(!g)return;
    link.classList.toggle('iu-mission-locked',!g.allowed);

@@ -34,7 +34,7 @@ export function mountMuscleExplorer(root){
   function updateViewName(){
     if(camera&&controls){const v=camera.position.clone().sub(controls.target);viewName=Math.abs(v.z)<Math.abs(v.x)*.70?(v.x>0?'left lateral':'right lateral'):v.z>0?'anterior':'posterior';}
     const element=root.querySelector('.muscle-studio-view'),text=(selection?find(selection).name:tabs.find(t=>t.id===region).name)+' · '+viewName+' view';
-    if(element.textContent!==text)element.textContent=text;
+    if((window.InneruLocale?InneruLocale.source(element):element.textContent)!==text)element.textContent=text;
   }
   function applyVisual(){
     if(!model)return;

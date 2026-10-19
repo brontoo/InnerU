@@ -1,6 +1,6 @@
 # Automatic critical release checks
 
-`npm test` runs the same six critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same seven critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
@@ -10,6 +10,7 @@
 | `verify-mission-access.py` | Persistent locks, sequence gates, teacher controls and all 45 read-only previews |
 | `verify-teacher-dashboard.py` | Assigned roster, actual student answers, versioned feedback, exports and individual records |
 | `verify-teacher-workspace.py` | Four teacher destinations, shared home, rankings and teacher-class isolation |
+| `verify-learning-support.py` | Guided mode, language/RTL, controlled speech, actual rewards, locks and mobile reflow |
 
 The dashboard scripts use signed-in local fixtures, not the retired anonymous
 teacher/import interface. Existing progress-code formats are checked as data
@@ -56,6 +57,18 @@ PowerShell or a framework. `PORT` selects another port. This has the same static
 scope as `serve.ps1`; it does not simulate production accounts. The verification
 scripts start their own loopback Auth/API server for account and database checks.
 The existing `npm run dev`, `npm start` and Windows launchers are unchanged.
+
+## Guided mode, read-aloud and Arabic
+
+`npm run test:accessibility` runs the new support regression alone, using its own
+isolated PostgreSQL container. `npm test` includes it after the existing six suites.
+`npm run test:arabic-coverage` is a separate strict catalogue audit; it currently
+**fails because translation is incomplete**, and writes the outstanding strings
+for each route. A passing support regression does not mean full Arabic coverage.
+See [LEARNING-SUPPORT.md](LEARNING-SUPPORT.md) for behaviour, WCAG review, test
+scope and limitations, and [locales/README.md](../locales/README.md) for translation
+authoring. The earlier structure-only audio policy is superseded by explicit
+instruction/feedback reading; there is still no autoplay.
 
 ## Loading performance and lazy routes
 

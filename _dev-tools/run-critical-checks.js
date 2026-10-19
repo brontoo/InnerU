@@ -9,7 +9,9 @@ fs.mkdirSync(artifacts,{recursive:true});
 const env={...process.env,PYTHONUNBUFFERED:'1',PYTHONUTF8:'1',INNERU_DB_TEST_CONTAINER:'inneru-release-'+crypto.randomBytes(6).toString('hex')};
 // Never hand production configuration to a test process.
 for(const key of Object.keys(env))if(key.startsWith('SUPABASE_')||['APP_ORIGIN','VERCEL_URL','VERCEL_PROJECT_PRODUCTION_URL','INNERU_DB_TEST_DATABASE'].includes(key))delete env[key];
-const checks=[['accounts','Sign-in and signup'],['student-classes','Student classes and teacher assignment'],['dashboard','Student progress and dashboard'],['mission-access','Mission locks, progression, previews and controls'],['teacher-dashboard','Teacher roster, student work and feedback'],['teacher-workspace','Teacher workspace, isolation and navigation']];
+const available=[['accounts','Sign-in and signup'],['student-classes','Student classes and teacher assignment'],['dashboard','Student progress and dashboard'],['mission-access','Mission locks, progression, previews and controls'],['teacher-dashboard','Teacher roster, student work and feedback'],['teacher-workspace','Teacher workspace, isolation and navigation'],['learning-support','Guided mode, Arabic presentation and controlled read-aloud']];
+const selected=process.argv.slice(2);if(selected.includes('arabic-coverage'))available.push(['arabic-coverage','Strict Arabic coverage audit']);if(selected.some(name=>!available.some(row=>row[0]===name)))throw new Error('Unknown local verification suite.');
+const checks=selected.length?available.filter(row=>selected.includes(row[0])):available;
 const results=[];let active;
 function stopActive(){
  if(!active?.pid)return;

@@ -23,8 +23,8 @@ window.InneruRouteManifest={
   "home": {
     "scripts": [
       "home-core.js?v=on-demand-1",
-      "world-navigation.js?v=on-demand-1",
-      "home-expedition.js?v=discovery-gallery-1"
+      "world-navigation.js?v=guided-ar-1",
+      "home-expedition.js?v=guided-ar-1"
     ],
     "styles": [
       {
@@ -42,7 +42,7 @@ window.InneruRouteManifest={
       "content-skeletal.js?v=on-demand-1",
       "skeletal-core.js?v=on-demand-1",
       "skeletal-map-art.js?v=framework-path-1",
-      "rich-pages.js?v=on-demand-1",
+      "rich-pages.js?v=guided-ar-1",
       "skeletal-activities.js?v=framework-path-1",
       "skeletal-course.js?v=on-demand-1"
     ],
@@ -62,8 +62,8 @@ window.InneruRouteManifest={
       "muscle-visuals.js",
       "muscle-pair.js?v=arm-team-1",
       "muscle-learning.js?v=arm-team-1",
-      "muscle-atlas-ui.js?v=muscle-studio-1",
-      "muscle.js?v=on-demand-1",
+      "muscle-atlas-ui.js?v=guided-ar-1",
+      "muscle.js?v=guided-ar-1",
       "muscle-force.js?v=on-demand-1"
     ],
     "styles": [
@@ -90,7 +90,7 @@ window.InneruRouteManifest={
       "circ-studies.js?v=circ-route-1",
       "circ-route-quest.js?v=circ-route-1",
       "heart-lab-ui.js?v=heart-studio-1",
-      "circulatory.js?v=on-demand-1",
+      "circulatory.js?v=guided-ar-1",
       "circ-map-art.js?v=on-demand-1",
       "anatomy-loader.js?v=on-demand-1"
     ],
@@ -115,13 +115,13 @@ window.InneruRouteManifest={
   },
   "circ-missions": {
     "scripts": [
-      "circ-activities.js?v=circ-atlas-1"
+      "circ-activities.js?v=guided-ar-1"
     ],
     "styles": []
   },
   "respiratory": {
     "scripts": [
-      "respiratory.js?v=on-demand-1",
+      "respiratory.js?v=guided-ar-1",
       "resp-map-art.js?v=on-demand-1"
     ],
     "styles": [
@@ -141,14 +141,14 @@ window.InneruRouteManifest={
   },
   "resp-missions": {
     "scripts": [
-      "resp-ventilation.js?v=ventilation-1",
-      "resp-activities.js?v=teacher-desk-1"
+      "resp-ventilation.js?v=guided-ar-1",
+      "resp-activities.js?v=guided-ar-1"
     ],
     "styles": []
   },
   "integumentary": {
     "scripts": [
-      "integumentary.js?v=on-demand-1",
+      "integumentary.js?v=guided-ar-1",
       "integ-map-art.js?v=on-demand-1"
     ],
     "styles": [
@@ -172,14 +172,14 @@ window.InneruRouteManifest={
   },
   "integ-missions": {
     "scripts": [
-      "integ-activities.js?v=teacher-desk-1"
+      "integ-activities.js?v=guided-ar-1"
     ],
     "styles": []
   },
   "excretory": {
     "scripts": [
-      "excretory-art.js?v=renal-studies-1",
-      "excretory.js?v=on-demand-1"
+      "excretory-art.js?v=guided-ar-1",
+      "excretory.js?v=guided-ar-1"
     ],
     "styles": [
       {
@@ -194,7 +194,7 @@ window.InneruRouteManifest={
   },
   "final": {
     "scripts": [
-      "capstone.js?v=on-demand-1"
+      "capstone.js?v=guided-ar-1"
     ],
     "styles": [
       {
@@ -220,7 +220,7 @@ window.InneruRouteManifest={
     "scripts": [
       "connections-core.js?v=on-demand-1",
       "connection-art.js?v=everyday-anatomy-1",
-      "body-team.js?v=teacher-desk-1"
+      "body-team.js?v=guided-ar-1"
     ],
     "styles": [
       {
@@ -252,7 +252,7 @@ window.InneruRouteManifest={
   },
   "teacher": {
     "scripts": [
-      "teacher-dashboard.js?v=on-demand-1"
+      "teacher-dashboard.js?v=guided-ar-1"
     ],
     "styles": [
       {

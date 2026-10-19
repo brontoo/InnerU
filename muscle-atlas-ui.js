@@ -48,6 +48,6 @@
     </section>`;
   }
   let modulePromise;
-  function mount(){const root=document.querySelector('.muscle-studio');if(!root||root.dataset.mounted)return;root.dataset.mounted='true';modulePromise||=import('./muscle-explorer.js?v=muscle-studio-1');modulePromise.then(m=>{if(root.isConnected)m.mountMuscleExplorer(root)}).catch(e=>{modulePromise=null;console.error('Muscle studio:',e);root.querySelector('.muscle-studio-loading').textContent='The 3D studio could not load. Please reload to explore.';root.querySelector('.muscle-studio-fallback').hidden=false;root.querySelector('.muscle-studio-unavailable').hidden=false;});}
+  function mount(){const root=document.querySelector('.muscle-studio');if(!root||root.dataset.mounted)return;root.dataset.mounted='true';modulePromise||=import('./muscle-explorer.js?v=guided-ar-1');modulePromise.then(m=>{if(root.isConnected)m.mountMuscleExplorer(root)}).catch(e=>{modulePromise=null;console.error('Muscle studio:',e);root.querySelector('.muscle-studio-loading').textContent='The 3D studio could not load. Please reload to explore.';root.querySelector('.muscle-studio-fallback').hidden=false;root.querySelector('.muscle-studio-unavailable').hidden=false;});}
   window.InnerUMuscleAtlas={parts,tabs,markup,mount};
 })();

@@ -1,0 +1,40 @@
+/* Added presentation aids use the portal palette and respect existing motion. */
+.learning-support{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:.85rem;max-width:100%;padding:.35rem 0}
+.learning-support label{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;color:#164655;font-weight:600}
+.learning-support select,.learning-support button,.guide-actions button,.support-read-controls button{font:inherit;color:#104456;background:#f4fbfa;border:1px solid #7ca6ad;border-radius:10px;min-height:44px;padding:.5rem .8rem;cursor:pointer}
+.learning-support [aria-pressed=true]{background:#0b7778;color:#fff;border-color:#075c60}
+.learning-support .support-status:empty,.support-read-controls .support-status:empty{display:none}
+.support-status{display:block;color:#315a66;font-size:.85rem;line-height:1.6;max-width:42rem}
+.support-read-controls{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-block:.3rem .8rem;font-size:.82rem}
+.support-read-controls button{min-height:32px}
+.iu-guidance{background:#f0faf6;color:#133f4d;border:1px solid #72a9a3;border-radius:14px;padding:1rem;margin-block:0 1rem;max-width:100%}
+.iu-guidance[hidden]{display:none}
+.guide-heading,.guide-actions{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;justify-content:space-between}
+.guide-heading a{color:#006b73;text-decoration:underline;min-height:24px}
+.iu-guidance [data-iu-guide-text]{font-size:1.08rem;line-height:1.8;margin-block:.8rem;max-width:65ch}
+.guide-actions{justify-content:flex-start}
+.guide-actions button:disabled{opacity:.55;cursor:default}
+.iu-guided-instruction-hidden{display:none!important}
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #086b83!important;outline-offset:4px!important;box-shadow:0 0 0 2px #fff!important}
+.topbar{flex-wrap:wrap;gap:.65rem;height:auto;min-height:80px}
+.gate-header .learning-support,.gate-welcome .learning-support{position:relative;z-index:8;justify-content:center}
+html[lang=ar]{font-family:Tahoma,Arial,sans-serif}
+html[dir=rtl] body{font-family:Tahoma,Arial,sans-serif;letter-spacing:normal}
+html[dir=rtl] :where(h1,h2,h3,h4,p,button,a,label,small,span){letter-spacing:normal;word-break:normal}
+html[dir=rtl] .shell{direction:rtl}
+html[dir=rtl] :where(.navlink,.crumb,.sd-page,.td-page,.resp-world,.exc-world,.mq-world,.skel-expedition,.glossary-page){text-align:start}
+html[dir=rtl] .sidebar{border-left:1px solid #c5dadd;border-right:0}
+html[dir=rtl] .navlink.active{border-left:0;border-right:3px solid #008b8d}
+html[dir=rtl] :where(input[type=email],input[type=password],[data-password],.xp,.bar,.sd-progress-ring,.td-progress-ring,svg,canvas,meter,progress,input[type=range]){direction:ltr;unicode-bidi:isolate}
+html[dir=rtl] :where(.gate-panel-label,.eyebrow,.td-kicker,.sd-kicker){letter-spacing:normal;line-height:1.7}
+html[dir=rtl] :where(.gate-enter,.sd-button,.td-button,.btn){white-space:normal;line-height:1.6;height:auto;min-height:44px}
+html[dir=rtl] :where(.gate-role-name,.sd-hero h1,.td-view-heading h1){line-height:1.4}
+html[dir=rtl] .iu-localized{unicode-bidi:plaintext}
+html[dir=rtl] :where(.ra-transport,.ca-route-stops,.quest-scene,.skel-specimen-image){direction:ltr}
+html[dir=rtl] :where(.gate-sign-label,.gate-art-note){text-align:center}
+html[dir=rtl] :where(.gate-art-note,.td-mascot-note){font-family:Tahoma,Arial,sans-serif}
+@media(max-width:700px){.learning-support{width:100%;justify-content:flex-start}.learning-support label{font-size:.8rem}.learning-support select{max-width:9rem}.topbar{padding:12px 16px}.support-read-controls{max-width:100%}.guide-actions button{flex:1 1 auto}.learning-support .support-status{flex-basis:100%}}
+@media(prefers-reduced-motion:reduce){.iu-guidance,.learning-support{scroll-behavior:auto;animation:none;transition:none}}
+html[dir=rtl] :where(.brand,.brandname,.gate-wordmark,.gate-footer-brand,.iu-avatar-art){direction:ltr;unicode-bidi:isolate}
+.gate-header .learning-support{grid-column:1 / -1;justify-content:center;margin-inline:auto}
+html[lang=ar] :where(.eyebrow,.td-kicker,.sd-kicker,.micro,.gate-role-label){font-size:max(.75rem,1em)}

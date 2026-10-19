@@ -26,14 +26,14 @@
   ['Body Shield','arrector pili','The tiny muscle that raises a hair and causes goose bumps.','العضلة الناصبة للشعر',['arrector pili']],
   ['Body Shield','homeostasis','Keeping the body\'s internal conditions steady, such as temperature and water balance.','الاتزان الداخلي',['homeostasis']],
   ['Body Shield','ultraviolet','The invisible part of sunlight that can damage DNA in skin cells.','الأشعة فوق البنفسجية',['ultraviolet','UV']],
-  ['Framework','axial skeleton','The skull, spine, ribs and sternum: the central axis of the body.','الهيكل المحوري',['axial skeleton']],
-  ['Framework','appendicular skeleton','The limbs together with their shoulder and hip girdles.','الهيكل الطرفي',['appendicular skeleton']],
+  ['Framework','axial skeleton','The skull, spine, ribs and sternum: the central axis of the body.','الهيكل المحوري',['axial skeleton','axial']],
+  ['Framework','appendicular skeleton','The limbs together with their shoulder and hip girdles.','الهيكل الطرفي',['appendicular skeleton','appendicular']],
   ['Framework','ligament','Tough tissue that connects bone to bone at a joint.','الرباط',['ligament','ligaments']],
   ['Framework','tendon','Tough tissue that connects a muscle to a bone.','الوتر',['tendon','tendons']],
   ['Framework','cartilage','Smooth, flexible tissue that covers the ends of bones and reduces friction.','الغضروف',['cartilage']],
   ['Framework','marrow','The tissue inside a bone; red marrow makes blood cells.','نخاع العظم',['marrow']],
-  ['Framework','osteoblast','A cell that builds new bone.','بانيات العظم',['osteoblast','osteoblasts']],
-  ['Framework','osteoclast','A cell that breaks bone down so that it can be remodelled.','ناقضات العظم',['osteoclast','osteoclasts']],
+  ['Framework','osteoblast','A cell that builds new bone.',"الخلية البانية للعظم",['osteoblast','osteoblasts']],
+  ['Framework','osteoclast','A cell that breaks bone down so that it can be remodelled.',"الخلية الناقضة للعظم",['osteoclast','osteoclasts']],
   ['Framework','spongy bone','Bone with a lattice of struts that keeps it strong but light.','العظم الإسفنجي',['spongy bone']],
   ['Framework','compact bone','The dense outer bone that resists bending and twisting.','العظم الكثيف',['compact bone']],
   ['Framework','vertebra','One of the bones that make up the spine.','الفقرة',['vertebra','vertebrae']],
@@ -55,7 +55,7 @@
   ['Oxygen','bronchiole','A narrow airway that leads to the alveoli.','الشعيبة الهوائية',['bronchiole','bronchioles']],
   ['Oxygen','trachea','The windpipe that carries air from the larynx to the bronchi.','القصبة الهوائية',['trachea']],
   ['Oxygen','diffusion','The movement of particles from a higher to a lower concentration.','الانتشار',['diffusion']],
-  ['Oxygen','tidal volume','The volume of air moved in one normal breath.','الحجم الشهيقي',['tidal volume']],
+  ['Oxygen','tidal volume','The volume of air moved in one normal breath.',"الحجم الجاري",['tidal volume']],
   ['Oxygen','emphysema','A disease that destroys alveolar walls and reduces the exchange surface.','النفاخ الرئوي',['emphysema']],
   ['Oxygen','asthma','A condition in which the airways narrow, making breathing difficult.','الربو',['asthma']],
   ['Oxygen','haemoglobin','The red pigment in red blood cells that carries oxygen.','الهيموغلوبين',['haemoglobin','hemoglobin']],
@@ -70,16 +70,16 @@
   ['Transport','plasma','The liquid part of blood that carries dissolved substances.','البلازما',['plasma']],
   ['Transport','fibrin','The protein mesh that holds a blood clot together.','الفايبرين',['fibrin']],
   ['Transport','pulmonary artery','The artery that carries oxygen-poor blood from the heart to the lungs.','الشريان الرئوي',['pulmonary artery']],
-  ['Transport','aorta','The main artery that carries oxygen-rich blood from the heart to the body.','الأورطي',['aorta']],
+  ['Transport','aorta','The main artery that carries oxygen-rich blood from the heart to the body.',"الأبهر",['aorta']],
   ['Transport','ABO system','The blood groups A, B, AB and O, based on markers on the red cells.','نظام ABO',['ABO system']],
-  ['Transport','stroke volume','The volume of blood pumped out by one heartbeat.','حجم النفضة',['stroke volume']],
+  ['Transport','stroke volume','The volume of blood pumped out by one heartbeat.',"حجم الضربة",['stroke volume']],
   ['Filter','urea','The waste made in the liver from excess amino acids and removed by the kidneys.','اليوريا',['urea']],
   ['Filter','kidney','The organ that filters blood and adjusts the body\'s water and salt balance.','الكلية',['kidney','kidneys']],
   ['Filter','nephron','The filtering unit of the kidney.','النفرون',['nephron','nephrons']],
-  ['Filter','glomerulus','The knot of capillaries in the kidney where filtration begins.','الكبة',['glomerulus','glomeruli']],
+  ['Filter','glomerulus','The knot of capillaries in the kidney where filtration begins.',"الكبيبة",['glomerulus','glomeruli']],
   ['Filter','tubule','The tube after the glomerulus where useful substances are reabsorbed.','النبيب',['tubule','tubules']],
   ['Filter','reabsorption','Returning useful substances from the tubule back into the blood.','إعادة الامتصاص',['reabsorption']],
-  ['Filter','ADH','The hormone that increases water reabsorption, so urine becomes more concentrated.','الهرمون المضاد للإدرار',['ADH','antidiuretic hormone']],
+  ['Filter','ADH','The hormone that increases water reabsorption, so urine becomes more concentrated.',"الهرمون المضاد لإدرار البول",['ADH','antidiuretic hormone']],
   ['Filter','ureter','The tube that carries urine from a kidney to the bladder.','الحالب',['ureter','ureters']],
   ['Filter','urethra','The tube that carries urine out of the body.','الإحليل',['urethra']],
   ['Filter','urinary bladder','The organ that stores urine until it is released.','المثانة البولية',['urinary bladder','bladder']],
@@ -91,7 +91,7 @@
   const TERMS = DATA.map(t => {
     const forms = (t[4] && t[4].length ? t[4] : [t[1]]).map(f => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const body = forms.map(f => /y$/.test(f) ? f + '(?:ies)?' : /s$/.test(f) ? f : f + '(?:s|es)?').join('|');
-    return { key: KEY(t), label: t[1], definition: t[2], arabic: t[3], category: t[0], rx: new RegExp('\\b(?:' + body + ')\\b', 'i') };
+    return { key: KEY(t), label: t[1], definition: t[2], arabic: t[3], forms: t[4]||[t[1]], category: t[0], rx: new RegExp('\\b(?:' + body + ')\\b', 'i') };
   }).sort((a, b) => b.label.length - a.label.length);
 
   const CATEGORIES = [];
@@ -115,7 +115,7 @@
     pop.setAttribute('role', 'dialog');
     pop.setAttribute('aria-label', 'Definition');
     pop.hidden = true;
-    pop.innerHTML = `<b class="term-pop-word"></b><span class="term-pop-ar" lang="ar" dir="rtl"></span>
+    pop.innerHTML = `<b class="term-pop-word" data-iu-scientific-term lang="en" dir="ltr"></b><span class="term-pop-ar" lang="ar" dir="rtl"></span>
       <p class="term-pop-def"></p>
       <div class="term-pop-actions">
         <a class="textlink" href="#glossary">All terms \u2192</a>
@@ -178,6 +178,7 @@
     span.setAttribute('aria-expanded', 'false');
     span.dataset.termId = entry.key;
     span.textContent = hit;
+    if(document.documentElement.lang==='ar')span.setAttribute('aria-label',entry.arabic+' ('+entry.label+')');
     return span;
   }
 
@@ -189,7 +190,8 @@
     const chosen = [];
     TERMS.forEach(entry => {
       if (used.has(entry.key)) return;
-      const rx = new RegExp(entry.rx.source, 'gi');
+      const variants=[entry.arabic,...[entry.label,...entry.forms].map(form=>window.InneruLocale?.t(form)||entry.arabic)].filter(word=>/[\u0600-\u06ff]/.test(word)).sort((a,b)=>b.length-a.length);
+      const rx = document.documentElement.lang==='ar'?new RegExp([...new Set(variants)].map(word=>word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g'):new RegExp(entry.rx.source, 'gi');
       const m = rx.exec(text);
       if (!m) return;
       chosen.push({ start: m.index, end: m.index + m[0].length, entry, hit: m[0] });
@@ -215,6 +217,7 @@
 
   function scan() {
     if (!data().on) return;
+    window.InneruLocale?.translate(document.getElementById('main'));
     document.querySelectorAll(BLOCKS).forEach(el => {
       if (el.dataset.terms) return;
       if (el.closest('.term, .topbar, nav, footer, aside, .teacher-table, [data-no-terms]')) return;
@@ -230,6 +233,19 @@
       }
       nodes.forEach(markNode);
     });
+  }
+
+  /* Guided instructions share the existing inline definitions without navigation. */
+  const guidedMarks=new WeakMap();
+  function markInstruction(element){
+    if(!element||!data().on)return;
+    const key=document.documentElement.lang+':'+element.textContent,old=guidedMarks.get(element);
+    if(old?.key===key&&old.nodes.every(node=>node.isConnected))return;
+    const previous=used;used=new Set();
+    const nodes=[],walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);let node;
+    while((node=walker.nextNode()))if(node.nodeValue.trim()&&!node.parentElement.closest('.term'))nodes.push(node);
+    nodes.forEach(markNode);used=previous;
+    guidedMarks.set(element,{key,nodes:[...element.querySelectorAll('.term')]});
   }
 
   /* ---------------------------------------------------------------- events */
@@ -252,7 +268,7 @@
     const groups = CATEGORIES.map(cat => {
       const rows = TERMS.filter(t => t.category === cat).sort((a, b) => a.label.localeCompare(b.label));
       return `<section class="panel glossary-group"><div class="eyebrow">${esc(cat.toUpperCase())}</div>
-        <dl class="glossary-list">${rows.map(t => `<dt>${esc(t.label)} <span lang="ar" dir="rtl">${esc(t.arabic)}</span></dt><dd>${esc(t.definition)}</dd>`).join('')}</dl></section>`;
+        <dl class="glossary-list">${rows.map(t => `<dt><span data-iu-scientific-term lang="en" dir="ltr">${esc(t.label)}</span> <span lang="ar" dir="rtl">${esc(t.arabic)}</span></dt><dd>${esc(t.definition)}</dd>`).join('')}</dl></section>`;
     }).join('');
     layout(`<div class="glossary-page" data-no-terms>
       <div class="eyebrow">REFERENCE</div><h1>Glossary</h1>
@@ -320,6 +336,7 @@
   };
   window.addEventListener('hashchange', route);
 
-  window.inneruGlossary = { terms: TERMS.length, scan, unmarkAll, isOn: () => data().on };
+  document.addEventListener('inneru-language-ready',()=>{window.InneruLocale?.restore(document.getElementById('main'));unmarkAll();document.querySelectorAll('#main [data-terms]').forEach(el=>delete el.dataset.terms);scan();renderToggle();});
+  window.inneruGlossary = { markInstruction, terms: TERMS.length, scan, unmarkAll, isOn: () => data().on };
   route();
 })();

@@ -1,0 +1,131 @@
+"""Local-only SEN/EAL presentation regression checks; real task and permission gates."""
+import json
+from test_support import DatabaseFixture,playwright_session,launch,new_context,artifact
+f=DatabaseFixture('inneru_learning_support_check')
+f.sql('delete from auth.users;')
+checks=0;errors=[]
+def check(value,label):
+ global checks
+ assert value,label
+ checks+=1;print('PASS',label,flush=True)
+def snapshot(p):return p.evaluate('JSON.stringify({xp:state.xp,done:state.done,rewards:state.rewards,assessment:state.assessment,learning:state.learning,muscle:state.muscle,circ:state.circ,respiratory:state.respiratory,integumentary:state.integumentary,excretory:state.excretory,review:state.review})')
+def language(p,code):
+ p.locator('[data-interface-language]').select_option(code)
+ p.wait_for_function('(code)=>document.documentElement.lang===code',arg=code)
+ p.wait_for_timeout(300)
+def go(p,route,selector):
+ p.evaluate('(r)=>location.hash=r',route);p.wait_for_selector(selector);p.wait_for_timeout(250)
+VOICE_STUB="""(()=>{window.__speech={calls:[],cancelled:0};class U{constructor(text){this.text=text;}}window.SpeechSynthesisUtterance=U;Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>[{lang:'en-GB',localService:true},{lang:'ar-AE',localService:true}],speak:u=>window.__speech.calls.push({text:u.text,lang:u.lang}),cancel:()=>window.__speech.cancelled++},configurable:true});})();"""
+try:
+ with playwright_session() as pw:
+  b=launch(pw)
+  context=new_context(b,service_workers='block',reduced_motion='reduce',viewport={'width':1440,'height':1000})
+  context.add_init_script(VOICE_STUB);login=context.new_page();login.on('pageerror',lambda e:errors.append(str(e)))
+  login.goto(f.origin+'/login.html');login.wait_for_selector('[data-interface-language]');language(login,'ar')
+  check(login.locator('html').get_attribute('dir')=='rtl' and login.locator('[data-select-role=student]').inner_text().strip()=='ابدأ مهمّتك','Arabic selector is available on sign-in and translates role controls')
+  login.locator('[data-select-role=student]').click();login.wait_for_selector('#entry-email')
+  login.locator('#entry-email').fill('local-fixture@example.com');login.locator('#entry-password').fill('Local-Only-Fixture-123')
+  language(login,'en');language(login,'ar')
+  check(login.locator('#entry-email').input_value()=='local-fixture@example.com' and login.locator('#entry-password').input_value()=='Local-Only-Fixture-123','language changes preserve typed credentials without submitting or replacing the form')
+  check(login.evaluate('__speech.calls.length')==0,'sign-in and language changes never autoplay speech')
+  login.reload();login.wait_for_selector('#entry-email') if login.locator('#entry-email').count() else login.wait_for_selector('[data-interface-language]')
+  check(login.locator('html').get_attribute('lang')=='ar','Arabic preference persists after refresh')
+  retry_context=new_context(b,service_workers='block');retry=retry_context.new_page();retry.route('**/locales/ar/login.js*',lambda r:r.abort());retry.goto(f.origin+'/login.html?role=student');retry.wait_for_selector('#entry-email');retry.locator('#entry-email').fill('retry-fixture@example.com');language(retry,'ar');retry.wait_for_selector('[data-locale-retry]');check(retry.locator('[data-support-status]').inner_text()!='','failed Arabic catalogue load has an accessible retry action')
+  retry.unroute('**/locales/ar/login.js*');retry.locator('[data-locale-retry]').click();retry.wait_for_function('!document.querySelector("[data-locale-retry]")');check(retry.locator('#entry-email').input_value()=='retry-fixture@example.com','retrying Arabic loads preserves the live account form')
+  storage_context=new_context(b,service_workers='block');storage_context.add_init_script("const original=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='inneru-accessibility-v1')throw new Error('Local preference fixture');return original.call(this,k,v);}");storage=storage_context.new_page();storage.goto(f.origin+'/login.html');storage.wait_for_selector('[data-guided-toggle]');storage.locator('[data-guided-toggle]').click();check(storage.locator('[data-guided-toggle]').get_attribute('aria-pressed')=='true' and 'cannot save preferences' in storage.locator('[data-support-status]').inner_text(),'unavailable preference storage keeps the in-memory mode and explains persistence limits')
+  teacher,_=f.account(b,'Riham.hassan@moe.sch.ae','Local teacher');student,_=f.account(b,'support-fixture@example.com','Learner fixture','10G5');f.unlock(teacher)
+  student.context.add_init_script(VOICE_STUB);student.on('pageerror',lambda e:errors.append(str(e)))
+  f.open(student,'dashboard','.sd-page');before=snapshot(student)
+  check(student.locator('[data-guided-toggle]').get_attribute('aria-pressed')=='false','Guided mode is off by default')
+  language(student,'ar');check('لوحة الطالب' in student.locator('.sidebar').inner_text(),'student navigation has Arabic labels')
+  check(snapshot(student)==before,'changing dashboard language leaves XP, completion and answers unchanged')
+  language(student,'en');student.locator('[data-guided-toggle]').click();student.reload();student.wait_for_selector('.sd-page')
+  check(student.locator('[data-guided-toggle]').get_attribute('aria-pressed')=='true','Guided preference persists across refresh separately from learning records')
+  routes=[('mission/1','#skeletal-lab-body'),('muscle/mission/1','.mq-panel'),('respiratory/mission/1','.resp-activity-game'),('integumentary/mission/1','.integ-quest'),('circulatory/1','#circ-lab'),('excretory/mission/1','.exc-lab')]
+  coverage={}
+  for route,selector in routes:
+   go(student,route,selector);guide=student.locator(selector+' .iu-guidance').first;guide.wait_for(state='visible');before=snapshot(student)
+   text=guide.locator('[data-iu-guide-text]').inner_text();guide.locator('[data-iu-guide-next]').click()
+   check(guide.locator('[data-iu-guide-text]').inner_text()!=text and guide.locator('[data-iu-guide-text]').evaluate('(n)=>n===document.activeElement'),route+' Next shows one new instruction and moves keyboard focus')
+   guide.locator('[data-iu-guide-back]').click();check(guide.locator('[data-iu-guide-text]').inner_text()==text,route+' Back returns to the previous instruction')
+   student.locator('[data-guided-toggle]').click();check(not guide.is_visible(),route+' standard mode restores the activity without navigation')
+   student.locator('[data-guided-toggle]').click();language(student,'ar');
+   check(guide.locator('[data-iu-guide-text]').inner_text().startswith(('انظر','اقرأ')),route+' guided instruction is Arabic')
+   check(snapshot(student)==before,route+' mode and language switches preserve all task state and rewards')
+   check(student.evaluate('__speech.calls.length')==0,route+' never starts audio automatically')
+   coverage[route]=student.evaluate('InneruLocale.coverage()');open(artifact('translation-gaps.json'),'w').write(json.dumps(coverage,ensure_ascii=False,indent=2))
+   language(student,'en')
+  language(student,'ar');check(student.evaluate('InneruLocale.t("Pelvis")')=='حوض الكلية','renal terminology uses the renal locale context')
+  go(student,'mission/1','#division-check');language(student,'ar');check(student.evaluate('InneruLocale.t("Pelvis")')=='الحوض','changing systems restores skeletal terminology without leaking renal translations')
+  guided=student.locator('#skeletal-lab-body .iu-guidance');guided.locator('[data-iu-guide-next]').click();guided.locator('[data-iu-guide-next]').click();term=guided.locator('.term').first;term.focus();student.keyboard.press('Enter');student.wait_for_selector('#term-pop:not([hidden])');check(student.url.endswith('#mission/1') and student.locator('#term-pop .term-pop-def').inner_text()!='','Guided scientific vocabulary opens the existing glossary in place by keyboard');student.keyboard.press('Escape')
+  for i,value in enumerate(['0','0','0','1','1','1','1']):student.locator('#division-'+str(i)).select_option(value)
+  student.locator('#skeletal-lab-body [data-iu-guide-listen]').click();student.locator('#division-check').click()
+  records=student.evaluate('state.assessment.responses.filter(r=>r.id.startsWith("activity:mission/1:division-check"))')
+  check(bool(records) and all('Listen' not in r['answer'] and 'استمع' not in r['answer'] for r in records),'active read-aloud controls are excluded from captured student answers')
+  student.evaluate("()=>{const panel=document.createElement('section');panel.id='support-decimal-fixture';panel.className='mq-panel';panel.innerHTML='<p>Set the volume to 0.5 L. Observe the lung.</p><select id=support-option-fixture><option>Axial</option></select>';document.querySelector('main').append(panel);}")
+  decimal=student.locator('#support-decimal-fixture .iu-guidance');decimal.wait_for(state='visible');decimal.locator('[data-iu-guide-next]').click();check('0.5 L.' in decimal.locator('[data-iu-guide-text]').inner_text(),'sentence steps preserve scientific decimal values and units');student.wait_for_function('document.querySelector("#support-option-fixture option").label==="محوري"');student.locator('#support-option-fixture option').evaluate('(n)=>n.textContent="Appendicular"');student.wait_for_function('document.querySelector("#support-option-fixture option").label==="طرفي"');check(student.locator('#support-option-fixture').input_value()=='Appendicular','Arabic native-option labels preserve implicit values when an activity updates its text');student.locator('#support-decimal-fixture').evaluate('(n)=>n.remove()')
+  # Actual task state, selections and once-only XP must survive presentation changes.
+  go(student,'muscle/mission/1','#m1-conscious');student.locator('#m1-conscious [data-option="1"]').click()
+  earned=student.evaluate('state.xp');response=student.evaluate('structuredClone(state.assessment.responses.find(r=>r.id==="muscle:m1-conscious"))')
+  check(earned>0 and response['correct'] is True,'a real correct muscle answer earns its existing task credit')
+  before=snapshot(student);language(student,'ar');student.locator('[data-guided-toggle]').click();student.locator('[data-guided-toggle]').click();check(snapshot(student)==before,'switching mode and language after answering preserves the response and XP')
+  student.locator('#m1-conscious [data-option="1"]').click();check(student.evaluate('state.xp')==earned,'replaying a translated completed answer earns no duplicate XP')
+  check(student.locator('#mq-complete').is_disabled(),'presentation aids do not bypass remaining mission requirements')
+  # Feedback speech: exact visible text, explicit activation and cancellation.
+  go(student,'respiratory/mission/1','.resp-activity-game');guide=student.locator('.resp-activity-game .iu-guidance');btn=guide.locator('[data-iu-guide-listen]');btn.focus();student.keyboard.press('Enter')
+  check(student.evaluate('__speech.calls.at(-1).lang')=='ar-AE' and 'انظر' in student.evaluate('__speech.calls.at(-1).text'),'keyboard-activated read-aloud uses the displayed Arabic instruction and voice')
+  cancelled=student.evaluate('__speech.cancelled');guide.locator('[data-iu-guide-next]').click();check(student.evaluate('__speech.cancelled')>cancelled,'changing instruction steps cancels speech')
+  btn.click();cancelled=student.evaluate('__speech.cancelled');language(student,'en');check(student.evaluate('__speech.cancelled')>cancelled,'changing language cancels speech')
+  btn.click();cancelled=student.evaluate('__speech.cancelled');go(student,'dashboard','.sd-page');check(student.evaluate('__speech.cancelled')>cancelled,'changing routes cancels speech')
+  # Graceful fallback keeps instruction text available.
+  fallback=new_context(b,service_workers='block');fallback.add_init_script("Object.defineProperty(window,'speechSynthesis',{value:undefined});")
+  p=fallback.new_page();p.goto(f.origin+'/login.html?role=student');p.wait_for_selector('.gate-panel-intro');p.locator('.support-read-controls button').first.click()
+  check('unavailable' in p.locator('.support-read-controls').first.inner_text() and p.locator('.gate-panel-intro').is_visible(),'unavailable speech has an accessible explanation and visible instructions')
+  for route,selector,title in [('review','.rs-studio','استوديو'),('connect','.bt-lab','جولة')]:
+   go(student,route,selector);language(student,'ar');check(student.locator(selector).inner_text().find(title)>=0,route+' loads its own Arabic interface catalogue')
+   before=snapshot(student);language(student,'en');language(student,'ar');check(snapshot(student)==before,route+' language changes preserve its live learning record')
+  f.open(teacher,'integumentary/mission/1?preview=1','.integ-quest');language(teacher,'ar');teacher.locator('[data-guided-toggle]').click()
+  for i in range(4):teacher.locator('[data-quest-piece="'+str(i)+'"]').click();teacher.locator('[data-quest-target="'+str(i)+'"]').click()
+  check(teacher.evaluate('InneruLocale.source(document.querySelector(".quest-guide [data-guide-count]"))').startswith('1 of 4'),'Guided instruction counters cannot overwrite the existing skin discovery counter')
+  go(teacher,'teacher','.td-page')
+  # Teacher navigation and controls remain role-scoped in Arabic.
+  f.open(teacher,'teacher','.td-page');teacher_before=snapshot(teacher);teacher_saved=teacher.evaluate('localStorage.getItem("bodyquest-v1")');language(teacher,'ar')
+  for view in ['students','answers','controls','analytics','preview','board']:
+   go(teacher,'teacher?view='+view,'[data-teacher-page='+view+']');check(teacher.locator('html').get_attribute('dir')=='rtl' and teacher.locator('.td-page h1').inner_text()!='',view+' teacher view renders in RTL with a meaningful heading')
+  check(snapshot(teacher)==teacher_before,'Arabic teacher navigation does not change the teacher learning record')
+  go(teacher,'respiratory/mission/1?preview=1','.resp-activity-game');teacher.locator('[data-guided-toggle]').click();language(teacher,'en');
+  check(teacher.evaluate('InneruMissionAccess.teacherPreviewActive') and teacher.evaluate('localStorage.getItem("bodyquest-v1")')==teacher_saved,'teacher preview remains read-only when changing support settings')
+  go(teacher,'teacher','.td-page');check(snapshot(teacher)==teacher_before,'leaving preview restores the original teacher learning record')
+  before=snapshot(student)
+  go(student,'respiratory/mission/2','.iu-mission-access-notice')
+  check(student.locator('.resp-activity-game').count()==0 and snapshot(student)==before,'Arabic Guided mode cannot bypass earlier mission completion')
+  go(student,'respiratory/mission/1?preview=1','.iu-mission-access-notice')
+  check(student.locator('.resp-activity-game').count()==0,'Arabic students cannot open teacher preview URLs')
+  locked=f.api(teacher,'set-mission-control',{'classCode':'10G5','system':'respiratory','number':1,'unlocked':False});check(locked.ok,'teacher fixture can save its class lock')
+  go(student,'respiratory/mission/1','.iu-mission-access-notice')
+  check(student.locator('.resp-activity-game').count()==0 and snapshot(student)==before,'teacher lock is enforced despite language and Guided preferences')
+  go(student,'dashboard','.sd-page')
+  # Reflow and target sizes at mobile width, including the native Arabic class select.
+  p=login;p.set_viewport_size({'width':390,'height':844});p.goto(f.origin+'/login.html?role=student');p.wait_for_selector('#entry-email');p.locator('[data-auth-mode=signup]').first.click();language(p,'ar')
+  check(p.locator('#entry-class option').evaluate_all('(a)=>a.slice(1).map(n=>n.value)')==['10G1','10G2','10G3','10G4','10G5','10G6'],'Arabic signup retains exactly the six original class values')
+  p.locator('#entry-class').select_option('10G6');check(p.locator('#entry-class').input_value()=='10G6','mobile Arabic class dropdown remains usable')
+  check(p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Arabic sign-in reflows at 390 pixels without horizontal scrolling')
+  p.screenshot(path=artifact('arabic-signup-mobile.png'),full_page=True)
+  p.locator('#entry-email').fill('avatar-rtl-fixture@example.com');p.locator('#entry-password').fill('Local-Avatar-Fixture-123');p.locator('#entry-confirm').fill('Local-Avatar-Fixture-123');p.locator('#gate-entry-form [type=submit]').click();p.wait_for_selector('input[name=avatar]');p.locator('input[name=avatar][value=nova]').check();p.locator('input[name=avatar][value=nova]').focus();p.keyboard.press('ArrowLeft');check(p.locator('input[name=avatar][value=atlas]').is_checked(),'Arabic avatar arrows follow the visual RTL direction without creating an account')
+  student.set_viewport_size({'width':390,'height':844});language(student,'ar');check(student.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Arabic student dashboard reflows on mobile')
+  student.screenshot(path=artifact('arabic-dashboard-mobile.png'),full_page=True)
+  teacher.set_viewport_size({'width':390,'height':844});language(teacher,'ar');check(teacher.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Arabic teacher dashboard reflows on mobile')
+  teacher.screenshot(path=artifact('arabic-teacher-mobile.png'),full_page=True)
+  student.emulate_media(reduced_motion='reduce');check(student.evaluate('motionReduced()') is True,'native reduced-motion preference remains effective with support settings')
+  for page,label in [(login,'sign-in'),(student,'student dashboard'),(teacher,'teacher dashboard')]:
+   page.set_viewport_size({'width':320,'height':900});check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Arabic '+label+' reflows at 320 CSS pixels')
+  offline=new_context(b,reduced_motion='reduce');offline.add_init_script(VOICE_STUB);off=offline.new_page();off.goto(f.origin+'/login.html');off.wait_for_selector('[data-interface-language]');language(off,'ar');off.wait_for_function('navigator.serviceWorker.controller!==null');off.reload();off.wait_for_selector('[data-interface-language]')
+  off.wait_for_function("caches.keys().then(async keys=>(await Promise.all(keys.map(async key=>(await caches.open(key)).keys()))).flat().some(r=>r.url.includes('/locales/ar/login.js')))")
+  offline.set_offline(True);off.reload();off.wait_for_selector('[data-select-role=student]');check(off.locator('[data-select-role=student]').inner_text().strip()=='ابدأ مهمّتك','visited Arabic sign-in and its catalogues remain available offline')
+  check(off.evaluate('__speech.calls.length')==0,'offline restore never starts speech')
+  check(not errors,'no uncaught browser errors in login, six activities and both dashboards')
+  open(artifact('translation-gaps.json'),'w').write(json.dumps(coverage,ensure_ascii=False,indent=2))
+  print('Translation gaps recorded explicitly; untranslated content is not counted as Arabic coverage.',flush=True)
+  b.close()
+ print('PASS',checks,'learning-support checks; local fixtures only.')
+finally:f.close()

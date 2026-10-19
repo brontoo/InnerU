@@ -133,7 +133,7 @@
     if(button)button.disabled=opening||seconds>0;if(label)label.textContent=opening?'ONE MOMENT…':seconds?'PAUSED · '+time(seconds):submitLabel();
     const resend=panel.querySelector('[data-auth-resend]');if(resend){resend.disabled=opening||resendSeconds>0;resend.querySelector('[data-resend-label]').textContent=resendSeconds?'Send again in '+time(resendSeconds):'Send a new confirmation email';}
     const status=panel.querySelector('[data-auth-retry-status]'),message=seconds||resend&&resendSeconds?(action==='login'?'Sign-in is paused before another attempt. Please wait, then try again.':'Requests are paused before another attempt. Email delivery limits may last longer; check your inbox or ask your teacher about missing account emails.'):'';
-    if(status&&status.textContent!==message)status.textContent=message;
+    if(status&&(window.InneruLocale?InneruLocale.source(status):status.textContent)!==message)status.textContent=message;
     if(seconds||resend&&resendSeconds)cooldownTimer=setTimeout(paintCooldown,1000);
   }
   function setBusy(busy){opening=busy;root.classList.toggle('is-opening',busy);const form=panel.querySelector('form');form?.setAttribute('aria-busy',String(busy));panel.querySelectorAll('button,input,select').forEach(el=>el.disabled=busy);paintCooldown();}
@@ -215,7 +215,8 @@
     if(event.target.name!=='avatar'||!['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
     event.preventDefault();const inputs=[...panel.querySelectorAll('input[name=avatar]')],i=inputs.indexOf(event.target),delta=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:event.key==='ArrowDown'?3:-3;
     const columns=getComputedStyle(panel.querySelector('.gate-avatar-grid')).gridTemplateColumns.split(' ').length;
-    const step=event.key==='ArrowDown'?columns:event.key==='ArrowUp'?-columns:delta;
+    const horizontal=document.documentElement.dir==='rtl'?-delta:delta;
+    const step=event.key==='ArrowDown'?columns:event.key==='ArrowUp'?-columns:horizontal;
     const n=event.key==='Home'?0:event.key==='End'?inputs.length-1:(i+step+inputs.length)%inputs.length;inputs[n].checked=true;inputs[n].focus();inputs[n].scrollIntoView({block:'nearest'});cheer(inputs[n].value);
   });
   window.addEventListener('pagehide',()=>{clearTimeout(cooldownTimer);clearPassword();});

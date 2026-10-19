@@ -39,7 +39,7 @@
   function mount(){
     disposeCurrent();localSelect=null;const old=document.querySelector('.explore-screen .world-journey');if(!old)return;
     const screen=old.closest('.explore-screen'),ps=worlds.map((_,i)=>progress(i)),initial=recommendation(ps),root=document.createElement('section');root.className='iu-expedition';root.id='inneru-expedition';root.setAttribute('aria-labelledby','iu-expedition-title');root.innerHTML=markup(ps,initial);
-    const final=screen.querySelector('.final-destination'),summary=screen.querySelector('.expedition-summary'),heading=[...screen.querySelectorAll('.sectiontitle')].find(el=>el.textContent.includes('Follow your curiosity')),features=heading?.nextElementSibling;
+    const final=screen.querySelector('.final-destination'),summary=screen.querySelector('.expedition-summary'),heading=[...screen.querySelectorAll('.sectiontitle')].find(el=>(window.InneruLocale?InneruLocale.source(el):el.textContent).includes('Follow your curiosity')),features=heading?.nextElementSibling;
     old.before(root);old.remove();final?.remove();summary?.remove();heading?.remove();features?.remove();
     const controller=new AbortController(),events={signal:controller.signal},media=matchMedia('(prefers-reduced-motion: reduce)'),dialog=root.querySelector('dialog');let opener=null,dead=false;
     // The body map also highlights on focus/hover. Preserve the live panel and

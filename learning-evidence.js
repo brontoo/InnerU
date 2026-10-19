@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const LIMIT = 600, HISTORY = 4;
+  const source=node=>window.InneruLocale?InneruLocale.source(node):node?.textContent||'';
   const text = (v,max=6000) => typeof v==='string' ? v.slice(0,max) : '';
   const stamp = v => typeof v==='string' && Number.isFinite(Date.parse(v)) ? v : null;
   const isPreview = () => new URLSearchParams(location.hash.split('?')[1]||'').get('preview')==='1';
@@ -35,37 +36,37 @@
     pendingState=state;
     if(!queued){queued=true;queueMicrotask(()=>{queued=false;if(state===pendingState&&!isPreview())save();pendingState=null;});}
   }
-  function choiceText(element){const copy=element.cloneNode(true);copy.querySelectorAll('[aria-hidden="true"]').forEach(node=>node.remove());return copy.textContent.trim();}
+  function choiceText(element){const copy=element.cloneNode(true);copy.querySelectorAll('[aria-hidden="true"]').forEach(node=>node.remove());return (window.InneruLocale?InneruLocale.source(copy):copy.textContent).trim();}
   const systemForRoute=()=>({mission:'skeletal',world:'skeletal',muscle:'muscle',integumentary:'integumentary',respiratory:'respiratory',circulatory:'circ',excretory:'excretory',review:'extra',connect:'extra',final:'extra',detective:'extra',daily:'extra'})[location.hash.slice(1).split(/[/?]/)[0]];
   function submission(form){
     const system=systemForRoute();if(!system||isPreview()||!form.id)return;
     const answers=[...form.querySelectorAll('input:not([type=hidden]):not([type=button]):not([type=submit]),select,textarea')].filter(e=>!e.disabled&&!['password','email','file'].includes(e.type)).map(el=>{
       if(['checkbox','radio'].includes(el.type)&&!el.checked)return null;
-      const label=el.labels?.[0]?.textContent?.trim()||el.getAttribute('aria-label')||el.name||el.id;
-      const value=el.tagName==='SELECT'?el.selectedOptions[0]?.textContent:el.value;
+      const label=source(el.labels?.[0]).trim()||el.getAttribute('aria-label')||el.name||el.id;
+      const value=el.tagName==='SELECT'?source(el.selectedOptions[0]):el.value;
       return value?.trim()?label+': '+value.trim():null;
     }).filter(Boolean);
     if(!answers.length)return;
-    const title=form.querySelector('h2,h3,h4')?.textContent||form.closest('section')?.querySelector('h2,h3,h4')?.textContent||document.querySelector('main h1')?.textContent||'Activity submission';
+    const title=source(form.querySelector('h2,h3,h4'))||source(form.closest('section')?.querySelector('h2,h3,h4'))||source(document.querySelector('main h1'))||'Activity submission';
     record({id:'form:'+location.hash.split('?')[0].slice(1)+':'+form.id,system,kind:'submission',title,prompt:title,answer:answers.join('\n'),correct:null,feedback:'Activity submission recorded. This response needs teacher review; no automatic grade was inferred.'});
   }
   document.addEventListener('click',event=>{
     const button=event.target.closest('button'),system=systemForRoute();
     if(!button||!system||isPreview()||button.disabled||button.closest('form'))return;
     if(button.matches('[data-skel-answer],[data-choice],[data-answer],[data-option],[data-sort-check],[data-sequence-check],[data-cap-choice],[data-dd-act-file],[data-rs-check],[data-confirm],[data-quest-action],[data-bt-predict]'))return;
-    if(!/^(check|test|calculate|save|submit)\b/i.test(button.textContent.trim()))return;
+    if(!/^(check|test|calculate|save|submit)\b/i.test((window.InneruLocale?InneruLocale.source(button):button.textContent).trim()))return;
     const scope=button.closest('[data-quest],.mq-panel,#skeletal-lab-body,.exc-lab,.resp-lab,.resp-activity,#circ-lab,.activity');
     if(!scope)return;
     const values=[...scope.querySelectorAll('input,select,textarea')].filter(el=>!el.disabled&&!['hidden','file','password','email','button','submit'].includes(el.type)).map(el=>{
       if(['checkbox','radio'].includes(el.type)&&!el.checked)return null;
-      const value=el.tagName==='SELECT'?el.selectedOptions[0]?.textContent:el.value;
-      const label=el.labels?.[0]?.textContent?.trim()||el.getAttribute('aria-label')||el.name||el.id;
+      const value=el.tagName==='SELECT'?source(el.selectedOptions[0]):el.value;
+      const label=source(el.labels?.[0]).trim()||el.getAttribute('aria-label')||el.name||el.id;
       return value?.trim()?label+': '+value.trim():null;
     }).filter(Boolean);
-    const choices=[...scope.querySelectorAll('button[aria-pressed="true"]')].map(el=>el.textContent.trim()).filter(Boolean);
+    const choices=[...scope.querySelectorAll('button[aria-pressed="true"]')].filter(el=>!el.closest('.iu-guidance,.support-read-controls,.learning-support,.structure-audio')).map(el=>(window.InneruLocale?InneruLocale.source(el):el.textContent).trim()).filter(Boolean);
     if(choices.length)values.push('Selected: '+choices.join(' · '));
     if(!values.length)return;
-    const prompt=scope.querySelector('h3,h4,h2')?.textContent||button.textContent.trim();
+    const prompt=source(scope.querySelector('h3,h4,h2'))||(window.InneruLocale?InneruLocale.source(button):button.textContent).trim();
     let hash=2166136261;for(const c of prompt)hash=Math.imul(hash^c.charCodeAt(0),16777619);
     record({id:'activity:'+location.hash.split('?')[0].slice(1)+':'+(button.id||scope.id||'check')+':'+(hash>>>0).toString(36),system,kind:'submission',title:prompt,prompt,answer:values.join('\n'),correct:null,feedback:'Activity submission captured. A teacher can review the recorded settings or written response; no automatic grade was inferred.'});
   },true);

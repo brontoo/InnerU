@@ -1,12 +1,13 @@
-/* Audio is restricted to names selected in the anatomy models.
-   No page reader, glossary narration, text selection or arbitrary-text API. */
+/* User-activated anatomy pronunciation and instruction/feedback reading.
+   Built-in voices only; never autoplay or read account fields. */
 (() => {
   'use strict';
   const supported=!!window.speechSynthesis&&typeof window.SpeechSynthesisUtterance==='function';
   const engine=window.speechSynthesis;
   const roots=new Map();
-  let current=null,serial=0;
-  const text=element=>element?.textContent.trim().replace(/_/g,' ').replace(/\s+/g,' ')||'';
+  let current=null,serial=0,reader=null;
+  const tr=value=>window.InneruLocale?.t(value)||value;
+  const text=element=>(window.InneruLocale?InneruLocale.source(element):element?.textContent||'').trim().replace(/_/g,' ').replace(/\s+/g,' ');
   const pressed=(root,selector)=>root.querySelector(selector+'[aria-pressed="true"]');
   const configs=[
     {root:'[data-skin-explorer]',info:'.body-atlas-info',name(root,info){
@@ -30,6 +31,7 @@
   function resetButton(entry){entry.button.setAttribute('aria-pressed','false');entry.button.querySelector('span').textContent='Pronounce structure';}
   function stop(){
     ++serial;
+    if(reader){const previous=reader;reader=null;try{engine?.cancel();}catch{}previous.button?.setAttribute('aria-pressed','false');if(previous.status)previous.status.textContent='';}
     if(!current)return;
     const entry=current;current=null;
     try{engine.cancel();}catch{}
@@ -51,11 +53,13 @@
     if(!supported||!entry.name||!entry.root.isConnected)return;
     if(current===entry){stop();return;}
     stop();
-    const request=++serial,name=entry.name;
+    const request=++serial,name=tr(entry.name);
     const utterance=new window.SpeechSynthesisUtterance(name);
-    utterance.lang='en-GB';utterance.rate=.85;
+    utterance.lang=/[\u0600-\u06ff]/.test(name)?'ar-AE':'en-GB';utterance.rate=.85;
     const voices=engine.getVoices?.()||[];
-    const voice=voices.find(v=>v.localService&&/^en[-_]GB/i.test(v.lang))||voices.find(v=>v.localService&&/^en\b/i.test(v.lang))||voices.find(v=>/^en[-_]GB/i.test(v.lang))||voices.find(v=>/^en\b/i.test(v.lang));
+    const prefix=utterance.lang==='ar-AE'?'ar':'en';
+    const voice=voices.find(v=>v.localService&&v.lang?.toLowerCase().startsWith(prefix))||voices.find(v=>v.lang?.toLowerCase().startsWith(prefix));
+    if(utterance.lang==='ar-AE'&&!voices.some(v=>/^ar[-_]/i.test(v.lang))){entry.status.textContent=tr('No suitable voice is available for this language. You can read all instructions on screen.');return;}
     if(voice)utterance.voice=voice;
     current=entry;entry.button.setAttribute('aria-pressed','true');entry.button.querySelector('span').textContent='Stop pronunciation';entry.status.textContent='Pronouncing: '+name;
     utterance.onend=()=>{if(request!==serial)return;current=null;resetButton(entry);entry.status.textContent='Pronunciation finished.';};
@@ -84,15 +88,31 @@
   }
   let queued=false;
   function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;refresh();});}
-  const previousLayout=layout;
-  layout=function(...args){stop();previousLayout(...args);schedule();};
+  if(typeof layout==='function'){const previousLayout=layout;layout=function(...args){stop();previousLayout(...args);schedule();};}
   const app=document.getElementById('app');
   if(app)new MutationObserver(changes=>{
     if(changes.some(change=>change.target===app||[...change.addedNodes,...change.removedNodes].some(node=>node.nodeType===1&&(node.matches?.('.body-atlas,.muscle-studio,.arm-lab,.exc-explorer,.heart-lab')||node.querySelector?.('.body-atlas,.muscle-studio,.arm-lab,.exc-explorer,.heart-lab')))))schedule();
   }).observe(app,{childList:true,subtree:true});
   window.addEventListener('hashchange',stop);
   window.addEventListener('pagehide',stop);
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&current)stop();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&(current||reader))stop();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+  function read(element,button,status){
+    if(reader?.button===button){stop();return;}
+    stop();
+    if(!element?.isConnected||!element.matches('[data-iu-guide-text],[data-support-reader]')||element.closest('input,textarea,[data-iu-private]'))return;
+    if(!supported){status.textContent=tr('Read-aloud is unavailable in this browser. You can read all instructions on screen.');return;}
+    const language=(element.closest('[lang]')?.getAttribute('lang')||document.documentElement.lang).startsWith('ar')?'ar':'en',voices=engine.getVoices?.()||[],voice=voices.find(v=>v.lang?.toLowerCase().startsWith(language)&&v.localService)||voices.find(v=>v.lang?.toLowerCase().startsWith(language));
+    if(!voice){status.textContent=tr('No suitable voice is available for this language. You can read all instructions on screen.');return;}
+    const words=element.innerText?.trim()||element.textContent?.trim();if(!words)return;
+    const request=++serial,utterance=new window.SpeechSynthesisUtterance(words);utterance.lang=language==='ar'?'ar-AE':'en-GB';utterance.voice=voice;utterance.rate=.85;
+    reader={button,status,element};button?.setAttribute('aria-pressed','true');status.textContent=tr('Reading. Select Listen / Stop to stop.');
+    const finish=message=>{if(request!==serial)return;reader=null;button?.setAttribute('aria-pressed','false');status.textContent=tr(message);};
+    utterance.onend=()=>finish('Reading finished.');utterance.onerror=()=>finish('Read-aloud is unavailable on this device. All text remains on screen.');
+    try{engine.speak(utterance);}catch{finish('Read-aloud is unavailable on this device. All text remains on screen.');}
+  }
+  window.InneruSpeech={stop,read,changed(target){if(reader&&(!reader.element.isConnected||reader.element.contains(target)))stop();}};
+  document.addEventListener('inneru-preferences-change',()=>{stop();schedule();});
+  document.addEventListener('inneru-instruction-change',stop);
   refresh();
 })();

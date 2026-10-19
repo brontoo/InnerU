@@ -1,14 +1,18 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v51-demand';
+const VERSION='inneru-v52-guided-ar';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
+  "./preferences.js?v=guided-ar-1",
+  "./locale.js?v=guided-ar-1",
+  "./learning-support.js?v=guided-ar-1",
+  "./learning-support.css?v=guided-ar-1",
   "./index.html",
   "./404.html",
   "./manifest.webmanifest",
   "./login.html",
   "./login.css?v=auth-recovery-1",
-  "./login.js?v=auth-recovery-1",
+  "./login.js?v=guided-ar-1",
   "./favicon.svg",
   "./inneru-mark.svg",
   "./inneru-mark-light.svg",
@@ -27,18 +31,18 @@ const SHELL=[
   "./access.js?v=teacher-workspace-2",
   "./app.js?v=on-demand-1",
   "./route-runtime.js?v=on-demand-1",
-  "./learning-evidence.js?v=teacher-desk-1",
+  "./learning-evidence.js?v=guided-ar-1",
   "./a11y.js?v=classroom-theme-2",
   "./teacher.js?v=roles-avatars-2",
   "./review-state.js?v=on-demand-1",
   "./habit.js?v=cloud-learning-1",
-  "./glossary.js?v=names-only-1",
-  "./speech.js?v=names-only-1",
+  "./glossary.js?v=guided-ar-1",
+  "./speech.js?v=guided-ar-1",
   "./learning-progress.js?v=on-demand-1",
   "./student-dashboard.js?v=on-demand-1",
   "./account-session.js?v=teacher-workspace-2",
   "./cloud-learning.js?v=account-panel-bottom-1",
-  "./mission-access.js?v=on-demand-1",
+  "./mission-access.js?v=guided-ar-1",
   "./route-manifest.js?v=on-demand-1",
   "./route-loader.js?v=on-demand-1",
   "./pwa.js"

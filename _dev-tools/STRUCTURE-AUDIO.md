@@ -1,4 +1,4 @@
-# Structure-only anatomy pronunciation
+# Anatomy pronunciation and instruction reading
 
 The audio control appears beside the selected-structure information in the skin,
 skeletal, muscular, respiratory, heart and excretory anatomy studios, including
@@ -7,13 +7,17 @@ choose anatomy with the model or its structure buttons and explicitly press
 **Pronounce structure**. Only that structure's name is passed to browser speech
 synthesis. Selecting a structure does not play audio automatically.
 
-The page reader, speed control, glossary audio button, word highlighting and
-`inneruSpeech.speakText` API have been removed. Lessons, quizzes, dashboards,
-glossary definitions and other portal prose have no narration path.
+The former page reader, speed control and arbitrary-text `inneruSpeech.speakText`
+API remain removed. The current accessibility branch also offers explicit
+instruction/feedback **Listen / Stop** controls and Guided steps. They share the
+same cancellation mechanism and use browser English/Arabic voices. See
+[LEARNING-SUPPORT.md](LEARNING-SUPPORT.md) for the current scope and tests.
+Nothing autoplays; user writing and account inputs are not speech targets.
 
 `speech.js` resolves the current anatomy name from the model's selected-structure
-panel and semantic selection flags. It does not accept arbitrary text from a
-caller, selected page text, paragraph, answer, user input or queue. Mesh-name
+panel and semantic selection flags. The anatomy control does not accept arbitrary text from a caller or text selection.
+The separate instruction reader accepts only marked instruction/feedback elements,
+never an arbitrary string, input or textarea. Mesh-name
 underscores are converted to spaces for anatomical pronunciation. Detailed dermal
 parts and internal heart structures use the same names as their selection panels.
 

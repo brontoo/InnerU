@@ -192,6 +192,26 @@ the home card, the dashboard and the capstone gate.
 * `review.js` holds the 54-item review pool
 * `capstone.js` holds the final-mission scenario and rubric
 
+## Learning support and Arabic
+
+The sign-in screen and portal top bar offer **Guided mode** and a language
+selector. Guided mode defaults off; it shows activity instructions one at a time
+without resetting answers or changing mission credit. **Listen / Stop** reads
+instructions or feedback only after activation, using an available browser voice.
+English and Arabic are supported when those voices are installed. All text stays
+available when speech is unavailable. Existing anatomy pronunciation and reduced
+motion remain available. Preferences are device-local and separate from scored
+progress; no database migration is required.
+
+Arabic uses RTL layout and authored route-specific message catalogues. **Arabic
+coverage is incomplete on this branch.** Navigation, sign-in, dashboards, shared
+terminology and representative activities are translated, while later lesson and
+feedback branches and several auxiliary activities still need translation. The
+strict `npm run test:arabic-coverage` audit currently fails and records these gaps;
+it must not be presented as a complete Arabic release. See
+[the implementation and verification notes](_dev-tools/LEARNING-SUPPORT.md) and
+[the locale authoring guide](locales/README.md).
+
 ## Offline and performance
 
 `sw.js` installs only the essential HTML, shared JS/CSS, manifest and small brand
@@ -247,6 +267,15 @@ geometry would require a separate loader/appearance validation change. No model
 variants, duplicate production artwork, remeshing or new runtime dependencies
 were introduced.
 
+The optional learning-support layer adds local preferences, language selection,
+Guided instructions and browser speech controls. Its English-default cold
+measurement is 22,123 B gzip JS / 11,524 B gzip CSS / 18 requests on sign-in, and
+69,307 B gzip JS / 31,166 B gzip CSS / 48 requests on the first student dashboard.
+Images and early model requests are unchanged. Arabic catalogues load only when
+Arabic is selected; no world catalogue is fetched for an unrelated route. The
+login JS/request limits below include these new controls; dashboard limits stay
+unchanged. These are local gzip measurements, not production CDN measurements.
+
 ### Repeatable loading check and budget
 
 Use the test-only Python/Playwright prerequisites in
@@ -266,7 +295,7 @@ above the measured result while remaining far below the baseline:
 
 | Page | Gzip JS | Gzip CSS | Initial image bytes | Requests |
 |---|---:|---:|---:|---:|
-| Login | 14 KiB | 12 KiB | 440 KiB | 15 |
+| Login | 24 KiB | 12 KiB | 440 KiB | 18 |
 | First signed-in dashboard | **72 KiB** | **34 KiB** | **2,200 KiB** | **48** |
 
 The check also opens and refreshes all six system routes with their mission-card

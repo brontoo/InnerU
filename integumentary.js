@@ -66,7 +66,7 @@ function mission(n){
  const finish=()=>{
    const complete=[done(`${n}-lab`),...d.checks.map((_,i)=>done(`${n}-q${i}`))],count=complete.filter(Boolean).length;
    document.querySelector('[data-mission-completion]').textContent=count+' / 4 discoveries';document.querySelector('[data-guide-count]').textContent=count+' of 4 discoveries';
-   document.querySelectorAll('[data-progress-step]').forEach((button,i)=>{button.classList.toggle('is-done',complete[i]);button.querySelector('b').textContent=complete[i]?'✓':i+1;button.setAttribute('aria-label',(complete[i]?'Completed: ':'Explore: ')+button.querySelector('span').textContent)});
+   document.querySelectorAll('[data-progress-step]').forEach((button,i)=>{button.classList.toggle('is-done',complete[i]);button.querySelector('b').textContent=complete[i]?'✓':i+1;button.setAttribute('aria-label',(complete[i]?'Completed: ':'Explore: ')+(window.InneruLocale?InneruLocale.source(button.querySelector('span')):button.querySelector('span').textContent))});
    if(count===4){
      if(!p.done.includes(n)){p.done.push(n);saveProgress();award('integ-mission-'+n,25)}
      document.querySelector('.quest-guide').classList.add('is-done');
