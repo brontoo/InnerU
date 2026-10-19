@@ -243,10 +243,11 @@ export function mountExcretoryExplorer(root) {
     b.onclick = () => setView(b.dataset.explorerTab);
     b.onkeydown = (e) => {
       let n;
-      if (e.key === "ArrowRight") n = (i + 1) % all.length;
-      else if (e.key === "ArrowLeft") n = (i + all.length - 1) % all.length;
-      else if (e.key === "Home") n = 0;
-      else if (e.key === "End") n = all.length - 1;
+      const key=document.documentElement.dir==="rtl"?({ArrowLeft:"ArrowRight",ArrowRight:"ArrowLeft"}[e.key]||e.key):e.key;
+      if (key === "ArrowRight") n = (i + 1) % all.length;
+      else if (key === "ArrowLeft") n = (i + all.length - 1) % all.length;
+      else if (key === "Home") n = 0;
+      else if (key === "End") n = all.length - 1;
       else return;
       e.preventDefault();
       all[n].focus();

@@ -42,7 +42,7 @@
     const system=systemForRoute();if(!system||isPreview()||!form.id)return;
     const answers=[...form.querySelectorAll('input:not([type=hidden]):not([type=button]):not([type=submit]),select,textarea')].filter(e=>!e.disabled&&!['password','email','file'].includes(e.type)).map(el=>{
       if(['checkbox','radio'].includes(el.type)&&!el.checked)return null;
-      const label=source(el.labels?.[0]).trim()||el.getAttribute('aria-label')||el.name||el.id;
+      const label=source(el.labels?.[0]).trim()||(window.InneruLocale?InneruLocale.sourceAttribute(el,'aria-label'):el.getAttribute('aria-label'))||el.name||el.id;
       const value=el.tagName==='SELECT'?source(el.selectedOptions[0]):el.value;
       return value?.trim()?label+': '+value.trim():null;
     }).filter(Boolean);
@@ -60,7 +60,7 @@
     const values=[...scope.querySelectorAll('input,select,textarea')].filter(el=>!el.disabled&&!['hidden','file','password','email','button','submit'].includes(el.type)).map(el=>{
       if(['checkbox','radio'].includes(el.type)&&!el.checked)return null;
       const value=el.tagName==='SELECT'?source(el.selectedOptions[0]):el.value;
-      const label=source(el.labels?.[0]).trim()||el.getAttribute('aria-label')||el.name||el.id;
+      const label=source(el.labels?.[0]).trim()||(window.InneruLocale?InneruLocale.sourceAttribute(el,'aria-label'):el.getAttribute('aria-label'))||el.name||el.id;
       return value?.trim()?label+': '+value.trim():null;
     }).filter(Boolean);
     const choices=[...scope.querySelectorAll('button[aria-pressed="true"]')].filter(el=>!el.closest('.iu-guidance,.support-read-controls,.learning-support,.structure-audio')).map(el=>(window.InneruLocale?InneruLocale.source(el):el.textContent).trim()).filter(Boolean);

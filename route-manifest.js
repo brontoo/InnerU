@@ -89,7 +89,7 @@ window.InneruRouteManifest={
     "scripts": [
       "circ-studies.js?v=circ-route-1",
       "circ-route-quest.js?v=circ-route-1",
-      "heart-lab-ui.js?v=heart-studio-1",
+      "heart-lab-ui.js?v=guided-ar-1",
       "circulatory.js?v=guided-ar-1",
       "circ-map-art.js?v=on-demand-1",
       "anatomy-loader.js?v=on-demand-1"
@@ -207,7 +207,7 @@ window.InneruRouteManifest={
     "scripts": [
       "detective-data.js?v=field-lab-1",
       "detective-tools.js?v=field-lab-1",
-      "detective.js?v=on-demand-1"
+      "detective.js?v=guided-ar-1"
     ],
     "styles": [
       {

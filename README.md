@@ -203,12 +203,17 @@ available when speech is unavailable. Existing anatomy pronunciation and reduced
 motion remain available. Preferences are device-local and separate from scored
 progress; no database migration is required.
 
-Arabic uses RTL layout and authored route-specific message catalogues. **Arabic
-coverage is incomplete on this branch.** Navigation, sign-in, dashboards, shared
-terminology and representative activities are translated, while later lesson and
-feedback branches and several auxiliary activities still need translation. The
-strict `npm run test:arabic-coverage` audit currently fails and records these gaps;
-it must not be presented as a complete Arabic release. See
+Arabic uses RTL layout and 17 authored, route-specific message catalogues (7,204
+entries). They cover navigation, sign-in/recovery, student and teacher dashboards,
+all six systems' lessons and activities, feedback, anatomy explanations, recall,
+connections, detective cases and information pages. Original scientific terms
+remain available with Arabic definitions in the glossary. User names, submitted
+writing, account fields and teacher-authored notes remain original.
+
+The strict `npm run test:arabic-coverage` audit is included in `npm test`. It
+checks mission entry views, selected anatomy, instruction sequences and populated
+teacher records; unknown English is reported rather than disguised in an Arabic
+placeholder. Passing it is not a full linguistic or WCAG certification. See
 [the implementation and verification notes](_dev-tools/LEARNING-SUPPORT.md) and
 [the locale authoring guide](locales/README.md).
 
@@ -269,10 +274,11 @@ were introduced.
 
 The optional learning-support layer adds local preferences, language selection,
 Guided instructions and browser speech controls. Its English-default cold
-measurement is 22,123 B gzip JS / 11,524 B gzip CSS / 18 requests on sign-in, and
-69,307 B gzip JS / 31,166 B gzip CSS / 48 requests on the first student dashboard.
+measurement is 24,265 B gzip JS / 11,525 B gzip CSS / 18 requests on sign-in, and
+71,946 B gzip JS / 31,167 B gzip CSS / 48 requests on the first student dashboard.
 Images and early model requests are unchanged. Arabic catalogues load only when
-Arabic is selected; no world catalogue is fetched for an unrelated route. The
+Arabic is selected. Teacher answer cards request the matching curriculum catalogue
+for reference prompts, without loading that system’s lesson scripts or models. The
 login JS/request limits below include these new controls; dashboard limits stay
 unchanged. These are local gzip measurements, not production CDN measurements.
 

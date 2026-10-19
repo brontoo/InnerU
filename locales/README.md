@@ -8,21 +8,18 @@ All Arabic entries are explicit Modern Standard Arabic text. There is no remote
 translation service, translated placeholder generator, or translation of student
 writing, emails, passwords or names.
 
-This branch has **partial Arabic coverage**, not a completed Arabic release.
-Sign-in, dashboard navigation, teacher workspace controls, shared glossary and
-representative first activities have authored translations. Later lesson text,
-questions, feedback branches, the recall studio, connection lab, detective cases
-and some anatomy descriptions still need translation and linguistic review.
-Untranslated messages retain English and receive an English language annotation
-where possible. A fallback is never counted as a translation.
+The 17 catalogues contain 7,204 authored entries across the portal, all six systems,
+anatomy, feedback, recall, connections, detective investigations and information
+pages. Unknown messages retain English with a language annotation where possible;
+an English fallback is never counted as Arabic coverage. Original scientific
+English in the bilingual glossary and unchanged user writing are intentional.
 
-`npm run test:arabic-coverage` visits the seven teacher views, 45 read-only mission
-previews and 12 student/information routes with isolated fixtures. It writes
-`arabic-coverage.json` under the printed artifact directory and **fails if gaps
-remain**. This conservative report also lists some intentional bilingual science
-labels and source citations; review them rather than removing the gate or adding
-empty translations. It does not explore every answer/feedback branch, so passing
-that audit alone would not prove full coverage.
+`npm run test:arabic-coverage` writes `arabic-coverage.json` under the printed
+artifact directory and **fails if gaps remain**. It checks teacher views, 45
+read-only mission previews, six system pages, selected model structures, first-lab
+instruction steps, student/information routes and populated teacher work. It does
+not traverse every conditional feedback branch; passing alone is not proof of
+complete translation or a linguistic review. Recheck new text when editing lessons.
 
 Add new messages to the relevant catalogue without changing assessment logic.
 Parameterised keys use named braces, for example `"MISSION {number}"`. Longer,
@@ -34,13 +31,17 @@ Keep answer values, route fragments, task IDs and student-provided content in
 English/original form. The display-only locale layer stores original text on
 `data-iu-source` spans; semantic/evidence readers call `InneruLocale.source(node)`.
 Native option values remain original; their `label` is translated separately.
+Teacher reference prompts use a `data-iu-locale` curriculum context; their
+catalogue loads when those cards appear, without rendering the lesson. Original
+submitted answers and teacher-written notes remain unchanged.
 
 For an existing ambiguous key such as “Back”, use a specific contextual message
 for new controls (e.g. “Previous instruction”). Do not globally replace one
 meaning with another. Preserve formulas, units and abbreviations such as ATP,
 ADH, ABO, O₂, CO₂ and pH; use bidi isolation for interpolated Latin values.
 
-Catalogues load only after Arabic is selected and only for the current route.
+Catalogues load only after Arabic is selected, for the current route and any
+curriculum reference cards currently displayed.
 The service worker caches them on first use. English source messages stay in the
 existing activity files; importing a catalogue must never render an activity,
 answer a question, award credit or change permission checks.

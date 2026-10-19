@@ -23,20 +23,20 @@ parts and internal heart structures use the same names as their selection panels
 
 Changing the selection, resetting it, leaving the page, hiding the tab, or pressing
 Escape stops speech. The button also stops an active pronunciation. Audio does
-not save a preference, answer, XP or achievement. A local English voice is preferred
+not save a preference, answer, XP or achievement. A suitable local English or Arabic voice is preferred
 when available; actual voice availability and synthesis are supplied by the browser
 and operating system. Missing engines and synthesis errors are explained beside
 the control. The anatomy remains explorable without audio.
 
 `structure-audio.css` scopes styling to these controls. The service-worker shell
-(version 39) includes the new CSS and updated speech/glossary scripts. Browser
+(version 52) includes the new CSS and updated speech/glossary scripts. Browser
 voices may require installation or network access on some devices.
 
-Run `python3 _dev-tools/verify-pronunciation.py`. It drives real selection controls
-in all six studios and captures the requested utterances, checking that each is
-exactly the current anatomical name. It also tests individual skeletal mesh
-selection, detailed dermal/heart structures, cancellation, keyboard access,
-unsupported engines, responsive layout and the absence of speech elsewhere.
-Intercepted requests verify application behavior; they do not certify acoustic
-pronunciation quality of an operating-system voice. The earlier stage-7 audio
-harness describes the removed page-reader behavior and is superseded by this test.
+Run `npm run test:accessibility` for the current instruction-reading policy,
+selected-language voices, cancellation, missing engines, keyboard activation and
+unchanged learning credits. Existing anatomy-studio checks cover real structure
+selection, model controls and scientific geometry. The older
+`verify-pronunciation.py` harness still assumes anonymous lesson access and the
+retired no-instruction-audio policy; it is not the current release gate.
+Intercepted speech requests verify application behaviour, not the acoustic quality
+of an operating-system voice.

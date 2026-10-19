@@ -68,7 +68,7 @@
       else if(b.hasAttribute('data-dd-act-file'))verdict();
     },events);
     panel.addEventListener('input',event=>{if(event.target.id==='dd-notebook')memory[active].note=event.target.value;},events);
-    root.querySelector('.dd-case-tabs').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?5:(active+(event.key==='ArrowRight'?1:5))%6;show(next);root.querySelector('[data-dd-act-case="'+next+'"]').focus();},events);
+    root.querySelector('.dd-case-tabs').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?5:(active+(event.key===(document.documentElement.dir==='rtl'?'ArrowLeft':'ArrowRight')?1:5))%6;show(next);root.querySelector('[data-dd-act-case="'+next+'"]').focus();},events);
     media.addEventListener('change',motion,events);
     const prefs=new MutationObserver(motion);prefs.observe(document.body,{attributes:true,attributeFilter:['class']});
     const removal=new MutationObserver(()=>{if(!root.isConnected)dispose();});removal.observe(document.getElementById('app'),{childList:true});

@@ -158,7 +158,7 @@ export function mountSkinExplorer(root) {
   root.querySelector("#skin-matrix-opacity").oninput=e=>{matrixOpacity=+e.target.value/100;root.querySelector("#skin-matrix-value").textContent=e.target.value+"%";applyVisual();};
   root.querySelectorAll("[data-skin-mode]").forEach((b,i,all)=>{
     b.onclick=()=>setMode(b.dataset.skinMode);
-    b.onkeydown=e=>{let next;if(e.key==="ArrowRight")next=(i+1)%all.length;else if(e.key==="ArrowLeft")next=(i+all.length-1)%all.length;else if(e.key==="Home")next=0;else if(e.key==="End")next=all.length-1;else return;e.preventDefault();all[next].focus();setMode(all[next].dataset.skinMode);};
+    b.onkeydown=e=>{let next;const key=document.documentElement.dir==="rtl"?({ArrowLeft:"ArrowRight",ArrowRight:"ArrowLeft"}[e.key]||e.key):e.key;if(key==="ArrowRight")next=(i+1)%all.length;else if(key==="ArrowLeft")next=(i+all.length-1)%all.length;else if(key==="Home")next=0;else if(key==="End")next=all.length-1;else return;e.preventDefault();all[next].focus();setMode(all[next].dataset.skinMode);};
   });
   root.querySelectorAll("[data-skin-process]").forEach(b=>b.onclick=()=>startProcess(b.dataset.skinProcess));
   root.querySelectorAll("[data-skin-detail]").forEach(b=>b.onclick=()=>{

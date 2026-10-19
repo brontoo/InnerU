@@ -204,7 +204,7 @@ function wire() {
       card.querySelectorAll('[data-cap-choice]').forEach(btn => {
         btn.onclick = () => {
           const good = +btn.dataset.capChoice === stations[i].answer;
-          window.InneruEvidence?.record({id:'capstone:station:'+i,system:'extra',kind:'final',title:stations[i].system+' decision',prompt:stations[i].question||stations[i].prompt||card.querySelector('h3,h4')?.textContent||'Final challenge',answer:(window.InneruLocale?InneruLocale.source(btn):btn.textContent).trim(),expected:stations[i].options[stations[i].answer],correct:good,feedback:stations[i].why});
+          window.InneruEvidence?.record({id:'capstone:station:'+i,system:'extra',kind:'final',title:stations[i].system+' decision',prompt:stations[i].question||stations[i].prompt||(window.InneruLocale?InneruLocale.source(card.querySelector('h3,h4')):card.querySelector('h3,h4')?.textContent)||'Final challenge',answer:(window.InneruLocale?InneruLocale.source(btn):btn.textContent).trim(),expected:stations[i].options[stations[i].answer],correct:good,feedback:stations[i].why});
           const box = card.querySelector('.cap-feedback');
           if (good) {
             c.stations['s' + i] = true;

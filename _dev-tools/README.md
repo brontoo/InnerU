@@ -1,6 +1,6 @@
 # Automatic critical release checks
 
-`npm test` runs the same seven critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same eight critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
@@ -11,6 +11,7 @@
 | `verify-teacher-dashboard.py` | Assigned roster, actual student answers, versioned feedback, exports and individual records |
 | `verify-teacher-workspace.py` | Four teacher destinations, shared home, rankings and teacher-class isolation |
 | `verify-learning-support.py` | Guided mode, language/RTL, controlled speech, actual rewards, locks and mobile reflow |
+| `verify-arabic-coverage.py` | All mission previews, system pages, selected anatomy, instruction steps and populated teacher views |
 
 The dashboard scripts use signed-in local fixtures, not the retired anonymous
 teacher/import interface. Existing progress-code formats are checked as data
@@ -62,9 +63,10 @@ The existing `npm run dev`, `npm start` and Windows launchers are unchanged.
 
 `npm run test:accessibility` runs the new support regression alone, using its own
 isolated PostgreSQL container. `npm test` includes it after the existing six suites.
-`npm run test:arabic-coverage` is a separate strict catalogue audit; it currently
-**fails because translation is incomplete**, and writes the outstanding strings
-for each route. A passing support regression does not mean full Arabic coverage.
+`npm run test:arabic-coverage` runs the strict catalogue audit alone. It is also
+included in `npm test`, writes the outstanding strings for each exercised view,
+and fails if any remain. Passing the audit establishes coverage of those states,
+not every possible dynamic response or linguistic quality.
 See [LEARNING-SUPPORT.md](LEARNING-SUPPORT.md) for behaviour, WCAG review, test
 scope and limitations, and [locales/README.md](../locales/README.md) for translation
 authoring. The earlier structure-only audio policy is superseded by explicit

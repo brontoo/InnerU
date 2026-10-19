@@ -10,7 +10,7 @@
   'Choose an event to see what moves and where.':['Choose one event.','Use the picture and controls to see what moves.','Watch where it moves.','Explore all three events.']
  };
  const tr=s=>window.InneruLocale?.t(s)||s,source=el=>window.InneruLocale?.source(el)||el?.textContent||'';
- const selector='#skeletal-lab-body,.resp-activity-game,.integ-quest,#circ-lab,.exc-lab,.mq-panel,.bt-lab,.dd-bench';
+ const selector='#skeletal-lab-body,.resp-activity-game,.integ-quest,#circ-lab,.exc-lab,.mq-panel,.bt-lab,.dd-bench,.cap-station,.cap-synthesis';
  function announce(text){const el=document.querySelector('[data-support-status]');if(el)el.textContent=tr(text);}
  function controls(){
   let box=document.querySelector('.learning-support');
@@ -22,11 +22,11 @@
   }
   const pref=InneruPreferences.get();box.querySelector('select').value=pref.language;const toggle=box.querySelector('button'),label=tr(pref.guided?'Guided mode: on':'Guided mode: off');if(toggle.textContent!==label)toggle.textContent=label;toggle.setAttribute('aria-pressed',String(pref.guided));
  }
- function instructions(root){return [...root.querySelectorAll(':scope > p,:scope > .note,:scope > header p,.quest-intro,.ra-stage > p,.ra-stage .ra-task-instruction')].filter(el=>!el.closest('.iu-guidance,[role=status],[role=alert]')&&!el.querySelector('button,input,select,textarea,img,svg,canvas')&&source(el).trim());}
+ function instructions(root){return [...root.querySelectorAll(':scope > p,:scope > .note,:scope > header p,.quest-intro,.ra-stage > p,.ra-stage .ra-task-instruction')].filter(el=>!el.closest('.iu-guidance,[role=status],[role=alert]')&&!el.querySelector('a,button,input,select,textarea,img,svg,canvas')&&source(el).trim());}
  function stepsFor(root,paragraphs){
   const visual=root.querySelector('img,svg,canvas')||root.closest('main')?.querySelector('.skel-study-section figure,.resp-lesson figure');
   const steps=[visual?'Look at the diagram. You can use the existing controls to explore it.':'Read the instruction below. Take one step at a time.'];
-  for(const p of paragraphs){const text=source(p).trim();if(plain[text]){steps.push(...plain[text]);continue;}for(const sentence of text.split(/(?<=[.!?])\s+(?=[A-Z\u0600-\u06ff])/u)){const item=sentence.trim();if(item&&!steps.includes(item))steps.push(item);}}
+  for(const p of paragraphs){const text=source(p).trim();if(plain[text]){steps.push(...plain[text]);continue;}for(const sentence of tr(text).split(/(?<=[.!?])\s+(?=[A-Z\u0600-\u06ff])/u)){const item=sentence.trim();if(item&&!steps.includes(item))steps.push(item);}}
   steps.push('Try the activity. Keep the scientific terms. Open the glossary if a word is new.','Check your response. Read the feedback. You can try again when the activity allows it.');return steps;
  }
  function draw(entry,focus=false){
@@ -44,7 +44,7 @@
   if(root.parentElement.closest(selector))return;
   const paragraphs=instructions(root),box=document.createElement('section');box.className='iu-guidance';box.dataset.noTerms='';box.setAttribute('aria-label','Guided instructions');
   box.innerHTML='<div class="guide-heading"><b data-iu-guide-count></b><a href="#glossary">Glossary</a></div><p data-iu-guide-text tabindex="-1" aria-live="polite"></p><div class="guide-actions"><button type="button" data-iu-guide-back>Back</button><button type="button" data-iu-guide-next>Next</button><button type="button" data-iu-guide-listen aria-pressed="false">Listen / Stop</button></div><p class="support-status" data-iu-guide-speech-status role="status"></p>';
-  root.prepend(box);paragraphs.forEach(p=>p.dataset.supportInstruction='');const entry={root,box,paragraphs,steps:stepsFor(root,paragraphs),index:0};roots.set(root,entry);
+  root.prepend(box);paragraphs.forEach(p=>p.dataset.supportInstruction='');const entry={root,box,paragraphs,steps:stepsFor(root,paragraphs),index:0,content:paragraphs.map(source).join('\n')};roots.set(root,entry);
   for(const [attr,delta] of [['data-iu-guide-back',-1],['data-iu-guide-next',1]])box.querySelector('['+attr+']').onclick=()=>{document.dispatchEvent(new Event('inneru-instruction-change'));entry.index=Math.max(0,Math.min(entry.steps.length-1,entry.index+delta));draw(entry,true);};
   box.querySelector('[data-iu-guide-listen]').onclick=event=>InneruSpeech.read(box.querySelector('[data-iu-guide-text]'),event.currentTarget,box.querySelector('[data-iu-guide-speech-status]'));draw(entry);
  }
@@ -55,7 +55,7 @@
    el.dataset.supportReader='1';const box=document.createElement('div');box.className='support-read-controls';box.dataset.noTerms='';const b=document.createElement('button');b.type='button';b.textContent='Listen / Stop';b.setAttribute('aria-pressed','false');b.setAttribute('aria-label','Listen to this instruction or feedback / Stop');const status=document.createElement('span');status.className='support-status';status.setAttribute('role','status');box.append(b,status);el.after(box);b.onclick=()=>InneruSpeech.read(el,b,status);
   });
  }
- function refresh(){controls();for(const [root]of roots)if(!root.isConnected)roots.delete(root);document.querySelectorAll(selector).forEach(mount);for(const entry of roots.values()){const paragraphs=instructions(entry.root),steps=stepsFor(entry.root,paragraphs);if(JSON.stringify(steps)!==JSON.stringify(entry.steps)){entry.paragraphs.forEach(p=>p.classList.remove('iu-guided-instruction-hidden'));entry.paragraphs=paragraphs;entry.steps=steps;entry.index=0;document.dispatchEvent(new Event('inneru-instruction-change'));}draw(entry);}readers();}
+ function refresh(){controls();for(const [root]of roots)if(!root.isConnected)roots.delete(root);document.querySelectorAll(selector).forEach(mount);for(const entry of roots.values()){const paragraphs=instructions(entry.root),steps=stepsFor(entry.root,paragraphs);if(JSON.stringify(steps)!==JSON.stringify(entry.steps)){entry.paragraphs.forEach(p=>p.classList.remove('iu-guided-instruction-hidden'));const content=paragraphs.map(source).join('\n');entry.paragraphs=paragraphs;entry.steps=steps;if(content!==entry.content)entry.index=0;entry.content=content;document.dispatchEvent(new Event('inneru-instruction-change'));}draw(entry);}readers();}
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh();});}
  document.addEventListener('inneru-preferences-change',()=>{refresh();announce(InneruPreferences.get().guided?'Guided mode is on. Your activity and answers are unchanged.':'Guided mode is off. Your activity and answers are unchanged.');});
  document.addEventListener('inneru-language-ready',()=>{const status=document.querySelector('[data-support-status][data-language-error]');if(status){const focus=status.contains(document.activeElement);status.replaceChildren();delete status.dataset.languageError;if(focus)document.querySelector('[data-interface-language]')?.focus({preventScroll:true});}schedule();});

@@ -93,7 +93,7 @@ export function mountMuscleExplorer(root){
   const tabButtons=[...root.querySelectorAll('[data-muscle-region]')];
   tabButtons.forEach((b,i)=>{
     on(b,'click',()=>setRegion(b.dataset.muscleRegion));
-    on(b,'keydown',e=>{let n;if(e.key==='ArrowRight')n=(i+1)%tabButtons.length;else if(e.key==='ArrowLeft')n=(i+tabButtons.length-1)%tabButtons.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabButtons.length-1;else return;e.preventDefault();tabButtons[n].focus();setRegion(tabButtons[n].dataset.muscleRegion);});
+    on(b,'keydown',e=>{let n;const key=document.documentElement.dir==='rtl'?({ArrowLeft:'ArrowRight',ArrowRight:'ArrowLeft'}[e.key]||e.key):e.key;if(key==='ArrowRight')n=(i+1)%tabButtons.length;else if(key==='ArrowLeft')n=(i+tabButtons.length-1)%tabButtons.length;else if(key==='Home')n=0;else if(key==='End')n=tabButtons.length-1;else return;e.preventDefault();tabButtons[n].focus();setRegion(tabButtons[n].dataset.muscleRegion);});
   });
   root.querySelectorAll('[data-muscle-action]').forEach(b=>{on(b,'click',()=>action(b.dataset.muscleAction));if(stage.contains(b))on(b,'pointerdown',e=>e.stopPropagation());});
   on(info,'click',e=>{if(!e.target.closest('[data-muscle-reveal]'))return;stage.scrollIntoView({behavior:reduced()?'instant':'smooth',block:'start'});stage.focus({preventScroll:true});});

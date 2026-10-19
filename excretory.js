@@ -304,7 +304,7 @@ function explorerMarkup() {
 function mountExplorer() {
     const root = document.getElementById("exc-explorer");
     if (root)
-      import("./excretory-explorer.js?v=renal-cutaway-5")
+      import("./excretory-explorer.js?v=guided-ar-1")
         .then((m) => {
           if (root.isConnected) m.mountExcretoryExplorer(root);
         })
