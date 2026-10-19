@@ -1,0 +1,1 @@
+function sectionHero(kicker,title,subtitle,action,visual,cls=''){return `<section class="exhibit-hero ${cls}"><div class="hero-copy"><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${subtitle}</p>${action}</div><div class="hero-visual">${visual}</div></section>`}

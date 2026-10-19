@@ -117,5 +117,6 @@
   }
   const run=()=>{clearTimeout(timer);timer=setTimeout(inject,0);};
   window.addEventListener('hashchange',run);
+  document.addEventListener('inneru-route-ready',run);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
 })();

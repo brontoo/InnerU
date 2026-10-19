@@ -57,6 +57,27 @@ scope as `serve.ps1`; it does not simulate production accounts. The verification
 scripts start their own loopback Auth/API server for account and database checks.
 The existing `npm run dev`, `npm start` and Windows launchers are unchanged.
 
+## Loading performance and lazy routes
+
+After installing the same test-only prerequisites above, run
+`npm run test:performance`. Docker is not needed for this additional check: it
+uses fake loopback Auth/API fixtures and isolated browser storage. It measures
+cold login/dashboard gzip payloads, enforces `performance-budget.json`, checks
+direct routes and refresh, module reuse/retry, stale navigation, essential-only
+worker install, visited anatomy offline refresh and uncached offline guidance.
+API responses must never appear in the worker caches. See the measured baseline
+and limits in [README.md](../README.md#offline-and-performance).
+
+`python _dev-tools/measure-loading.py [output.json]` records measurements without
+checking limits. Both commands honor the existing artifact and browser overrides.
+Do not add production credentials or run them against the deployed portal.
+
+The heart, muscle and skin studio harnesses now share the portable browser,
+loopback fixture and artifact helpers. They retain their real WebGL geometry,
+selection, material, responsive and fallback assertions. Their route-cleanup
+checks return to public Home; authenticated mission coverage lives in the
+critical release suite.
+
 ## Isolation, artifacts and failures
 
 The test runner removes inherited Supabase/Vercel service configuration. The

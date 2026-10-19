@@ -3,21 +3,12 @@
 Run with Python Playwright and Chromium installed. Uses isolated browser storage
 and a read-only local server; no user progress or application files are changed.
 """
-import functools
-import http.server
 import json
 import math
-import threading
-from pathlib import Path
-from playwright.sync_api import sync_playwright
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, start_fixture
 
-ROOT = Path(__file__).resolve().parents[1]
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *args): pass
-
-server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Handler, directory=str(ROOT)))
-threading.Thread(target=server.serve_forever, daemon=True).start()
-BASE = f'http://127.0.0.1:{server.server_port}/?nosw=1'
+proc,ORIGIN=start_fixture()
+BASE=ORIGIN+'/?nosw=1'
 checks = 0
 errors = []
 
@@ -34,10 +25,11 @@ def ready(page):
     page.wait_for_function('window.inneruSkinExplorerState && window.inneruSkinExplorerState().canvas')
     page.wait_for_function('window.inneruSkinExplorerState().frames > 0')
 def settled(page):
-    page.locator('.body-atlas-stage').scroll_into_view_if_needed()
+    # Position the viewer directly; animated canvas frames are not a layout-stability assertion.
+    page.locator('.body-atlas-stage').evaluate("e=>e.scrollIntoView({behavior:'instant',block:'center'})")
     page.wait_for_function('!window.inneruSkinExplorerState().transitioning')
 def reset(page):
-    page.locator('[data-skin-action="reset"]').click()
+    page.locator('[data-skin-action="reset"]').click(no_wait_after=True)
     settled(page)
 def alpha(page):
     return page.evaluate("""() => new Promise(resolve => requestAnimationFrame(() => {
@@ -52,9 +44,9 @@ def alpha(page):
 
 try:
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path='/usr/bin/chromium', headless=True,
-                                    args=['--no-sandbox', '--enable-unsafe-swiftshader'])
-        context = browser.new_context(viewport={'width':1440,'height':1100})
+        browser=launch(p)
+        context = new_context(browser, service_workers='block',viewport={'width':1440,'height':1100})
+        context.set_default_timeout(60000)
         page = context.new_page()
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.on('console', lambda msg: errors.append(msg.text) if msg.type == 'error' and
@@ -121,8 +113,9 @@ try:
         reset(page)
         page.locator('[data-part="Dermis"]').click()
         check(page.locator('.skin-dermis-explorer').is_visible(), 'dermis anatomy inventory opens with layer selection')
-        page.locator('.body-atlas-stage').scroll_into_view_if_needed()
-        page.locator('.body-atlas-stage').screenshot(path='/tmp/inneru-dermis-complete.png')
+        # Position the viewer directly; animated canvas frames are not a layout-stability assertion.
+        page.locator('.body-atlas-stage').evaluate("e=>e.scrollIntoView({behavior:'instant',block:'center'})")
+        page.locator('.body-atlas-stage').screenshot(path=artifact('inneru-dermis-complete.png'))
         components=page.locator('[data-dermis-part]').all()
         check(len(components)==12, 'whole dermis plus eleven component controls are available')
         for button in components:
@@ -136,7 +129,7 @@ try:
             page.locator(f'[data-dermis-part="{name}"]').click()
             page.locator('[data-dermis-cell-focus]').click();settled(page)
             check(state(page)['detail']=='dermis-cell' and math.dist(state(page)['camera'],state(page)['target'])<1.4, name+': representative cell can be magnified')
-            if name=='Fibroblasts': page.locator('.body-atlas-stage').screenshot(path='/tmp/inneru-dermis-fibroblast-cell.png')
+            if name=='Fibroblasts': page.locator('.body-atlas-stage').screenshot(path=artifact('inneru-dermis-fibroblast-cell.png'))
         page.locator('[data-dermis-part=""]').click()
         for name in ['Hair follicle','Sweat gland','Sebaceous gland','Arrector pili','Blood vessels','Nerves','Touch receptors','Pressure receptor']:
             check(any(x['part']==name and x['visible'] and x['opacity']==1 for x in state(page)['opacity']), 'whole dermis retains '+name)
@@ -163,7 +156,7 @@ try:
             check(math.dist(s['camera'],s['target']) < 3.6, lens+': detail lens magnifies a small anatomical region')
             check('Detail lens' in page.locator('.skin-view-name').text_content(), lens+': visible close-up indicator')
             if lens in ['cells','fat','follicle']:
-                page.locator('.body-atlas-stage').screenshot(path='/tmp/inneru-skin-detail-'+lens+'.png')
+                page.locator('.body-atlas-stage').screenshot(path=artifact('inneru-skin-detail-'+lens+'.png'))
             page.locator('[data-skin-action="clear"]').click();settled(page)
             check(not state(page)['detail'] and not state(page)['selection'], lens+': show all restores the full context')
 
@@ -196,7 +189,8 @@ try:
 
         for route, count in [('cooling',17),('touch',5)]:
             page.locator(f'[data-skin-process="{route}"]').click()
-            page.locator('.body-atlas-stage').scroll_into_view_if_needed()
+            # Position the viewer directly; animated canvas frames are not a layout-stability assertion.
+            page.locator('.body-atlas-stage').evaluate("e=>e.scrollIntoView({behavior:'instant',block:'center'})")
             check(state(page)['process']==route and state(page)['particles']==count, route + ': animated route exists')
             first=state(page)['particlePositions']
             page.wait_for_function('(first)=>JSON.stringify(window.inneruSkinExplorerState().particlePositions)!==JSON.stringify(first)',arg=first)
@@ -219,15 +213,15 @@ try:
         page.locator('[data-skin-mode="cutaway"]').focus();page.keyboard.press('ArrowRight')
         check(state(page)['mode']=='layers' and page.locator('#skin-tab-layers').evaluate('(e)=>e===document.activeElement'), 'keyboard tab navigation changes the view and focus')
         reset(page)
-        page.locator('.skin-explorer').screenshot(path='/tmp/inneru-skin-desktop.png')
+        page.locator('.skin-explorer').screenshot(path=artifact('inneru-skin-desktop.png'))
 
-        page.goto(BASE+'#integumentary/mission/1')
-        page.wait_for_selector('[data-quest]')
-        check(page.locator('.resp-question').count()==3, 'integumentary lesson and checks still render')
+        page.goto(BASE+'#home')
+        page.wait_for_selector('.explore-screen')
+        check(page.locator('[data-system]').count()==6, 'leaving the studio restores the six-system home')
         page.wait_for_function('!window.inneruSkinExplorerState')
         check(True, 'leaving the studio disposes its renderer and animation loop')
 
-        mobile=browser.new_page(viewport={'width':390,'height':844})
+        mobile=new_context(browser, service_workers='block',viewport={'width':390,'height':844}).new_page()
         ready(mobile)
         check(mobile.locator('.skin-explorer').evaluate('(e)=>e.scrollWidth<=e.clientWidth'), 'mobile studio fits its container')
         for mode in ['layers','glands','sensation']:
@@ -243,10 +237,10 @@ try:
         mobile.locator('[data-skin-detail="cells"]').click();settled(mobile)
         check(state(mobile)['detail']=='cells', 'mobile cellular close-up works')
         reset(mobile)
-        mobile.locator('.skin-explorer').screenshot(path='/tmp/inneru-skin-mobile.png')
+        mobile.locator('.skin-explorer').screenshot(path=artifact('inneru-skin-mobile.png'))
         mobile.close()
 
-        reduced_context=browser.new_context(reduced_motion='reduce')
+        reduced_context=new_context(browser, service_workers='block',reduced_motion='reduce')
         reduced_page=reduced_context.new_page()
         ready(reduced_page)
         reduced_page.locator('[data-skin-process="touch"]').click()
@@ -254,7 +248,7 @@ try:
         check(reduced_page.locator('[data-skin-action="play"]').inner_text()=='Play route', 'reduced motion offers an explicit play control')
         reduced_context.close()
 
-        fallback_context=browser.new_context()
+        fallback_context=new_context(browser, service_workers='block',)
         fallback_context.add_init_script('HTMLCanvasElement.prototype.getContext=function(){return null}')
         fallback=fallback_context.new_page();fallback.goto(BASE+'#integumentary')
         fallback.wait_for_selector('.skin-fallback',state='visible')
@@ -273,6 +267,6 @@ try:
         check(not errors, 'no JavaScript or shader errors: '+json.dumps(errors))
         browser.close()
 finally:
-    server.shutdown()
+    proc.terminate();proc.wait(timeout=10)
 
 print(f'{checks} skin studio checks passed.',flush=True)

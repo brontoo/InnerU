@@ -1,7 +1,7 @@
-/* WORLD 06 · lesson-aligned excretory expedition · UAE Inspire Science pp. 40–44. */
-(() => {
-  "use strict";
-  const titles = [
+/* Ordered route module; original activity implementations are unchanged. */
+(()=>{
+"use strict";
+const titles = [
     "Waste relay",
     "Kidney cartographer",
     "The filtration gate",
@@ -9,7 +9,7 @@
     "Balance lab",
     "Kidney care detective",
   ];
-  const lessons = [
+const lessons = [
     {
       page: 40,
       goal: "Connect each excretory organ to its waste and trace urine to the outside.",
@@ -188,7 +188,7 @@
       ],
     },
   ];
-  const finalStages = [
+const finalStages = [
     [
       "Match the waste: carbon dioxide, sweat, urea.",
       ["Lungs → skin → kidneys", "Bladder → bones → lungs"],
@@ -247,11 +247,11 @@
       "Dialysis or transplantation may be needed to support kidney function.",
     ],
   ];
-  lessons.forEach((l) => (l.checks = l.checks.map(mixQ)));
-  finalStages.forEach((q, i) => (finalStages[i] = mixQ(q)));
-  let preview = false,
+lessons.forEach((l) => (l.checks = l.checks.map(mixQ)));
+finalStages.forEach((q, i) => (finalStages[i] = mixQ(q)));
+let preview = false,
     sessionSteps = new Set();
-  function progress() {
+function progress() {
     if (!state.excretory || typeof state.excretory !== "object")
       state.excretory = {};
     const p = state.excretory;
@@ -260,9 +260,9 @@
     p.weak = Array.isArray(p.weak) ? p.weak : [];
     return p;
   }
-  const done = (id) =>
+const done = (id) =>
     preview ? sessionSteps.has(id) : !!progress().steps[id];
-  function step(id, xp) {
+function step(id, xp) {
     if (done(id)) return;
     if (preview) {
       sessionSteps.add(id);
@@ -272,21 +272,21 @@
     save();
     reward("exc-" + id, xp);
   }
-  const percent = () =>
+const percent = () =>
     Math.round(
       ((progress().done.filter((n) => n >= 1 && n <= 6).length +
         Number(!!progress().mastery)) /
         7) *
         100,
     );
-  const link = (path, mode = preview) =>
+const link = (path, mode = preview) =>
     "#excretory" + path + (mode ? "?preview=1" : "");
-  const shuffled = (a) =>
+const shuffled = (a) =>
     a.map((v, i) => ({ v, i, r: Math.random() })).sort((a, b) => a.r - b.r);
-  function banner(path) {
+function banner(path) {
     return `<div class="exc-mode-banner ${preview ? "is-preview" : ""}" role="status"><div><b>${preview ? "Preview mode · every activity is open" : "Expedition mode · earn your Balance Key"}</b><span>${preview ? "Try any activity in any order. Your progress, XP and System Keys stay unchanged." : "Complete a challenge and its three checks to secure each fragment."}</span></div><a class="btn line" href="${link(preview ? "" : path, !preview)}">${preview ? "Return to expedition" : "Preview all activities"}</a></div>`;
   }
-  function explorerMarkup() {
+function explorerMarkup() {
     return `<section class="exc-explorer" aria-labelledby="exc-explorer-title" id="exc-explorer"><div class="exc-section-heading"><div><span class="eyebrow">ANATOMY STUDIO</span><h2 id="exc-explorer-title">Look closer. Follow the flow.</h2><p>Explore anatomical structure, from the urinary organs to a magnified nephron.</p></div><span class="exc-pill">ROTATE · SELECT · DISCOVER</span></div><div class="exc-explorer-tabs" role="tablist" aria-label="Anatomy views">${[
       ["organs", "01", "Urinary organs"],
       ["kidney", "02", "Kidney cutaway"],
@@ -301,7 +301,7 @@
         "",
       )}</div><div id="exc-anatomy-panel" role="tabpanel" aria-labelledby="exc-tab-organs" class="exc-anatomy-panel"><div><div class="exc-explorer-stage" tabindex="0" role="group" aria-label="Rotatable anatomy model. Drag or use left and right arrows to rotate; plus and minus zoom."><img class="exc-model-fallback" hidden src="assets/excretory-kidney-cutaway.png" alt="Kidney cutaway with cortex, medullary pyramids, calyces, pelvis, renal vessels and ureter."></div><div class="exc-model-controls"><button type="button" data-model-action="spin" aria-pressed="false">Auto rotate</button><button type="button" data-model-action="focus" disabled>Focus structure</button><button type="button" data-model-action="reset">Reset view</button><button type="button" data-model-action="flow" aria-pressed="true" hidden>Pause flow</button></div><p class="exc-model-status" role="status">Loading anatomy studio…</p></div><aside><span class="eyebrow">EXAMINE A STRUCTURE</span><div class="exc-structures" role="group" aria-label="Anatomical structures"></div><div class="exc-structure-info" aria-live="polite"></div><p class="exc-scale-note"></p><div class="exc-legend"><span><i class="artery"></i>Blood entering</span><span><i class="vein"></i>Blood returning</span><span><i class="urine"></i>Urine / filtrate</span></div></aside></div></section>`;
   }
-  function mountExplorer() {
+function mountExplorer() {
     const root = document.getElementById("exc-explorer");
     if (root)
       import("./excretory-explorer.js?v=renal-cutaway-5")
@@ -315,7 +315,7 @@
             "The 3D studio could not load. The illustration and lesson activities are still available.";
         });
   }
-  function landing() {
+function landing() {
     const p = progress();
     layout(
       `<div class="exc-world exc-expedition">${banner("")}<section class="exc-hero"><div><span class="eyebrow">WORLD 06 / THE EXCRETORY SYSTEM</span><h1>Small filters.<br><em>Big balance.</em></h1><p>Become the body’s balance keeper. Trace a waste, map a kidney, rescue useful substances and solve the mystery of homeostasis.</p><div class="exc-hero-actions"><a class="btn" href="${link("/mission/" + (preview ? 1 : Math.min(6, p.done.length + 1)))}">${preview ? "Explore mission 01" : p.done.length ? "Continue expedition" : "Start the expedition"} <span aria-hidden="true">→</span></a><button class="exc-hero-secondary" type="button" id="exc-browse-missions">Browse the missions ↓</button></div><div class="exc-hero-stats"><span><b>06</b>MISSIONS</span><span><b>18</b>SCIENCE CHECKS</span><span><b>${p.done.length}/6</b>FRAGMENTS EARNED</span></div></div><figure class="exc-hero-art"><img src="assets/excretory-kidney-cutaway.png" alt="Scientific kidney cutaway: outer cortex, medullary pyramids and central calyces draining to the pelvis and ureter, with the renal artery and vein at the hilum." width="1536" height="1024"><figcaption>Kidney architecture · original scientific illustration</figcaption></figure></section>${explorerMarkup()}<div class="exc-section-heading" id="exc-mission-map"><div><span class="eyebrow">YOUR MISSION BOARD</span><h2>Six discoveries. One balanced body.</h2><p>${preview ? "Every mission and the final challenge can be opened now." : "Follow the route to earn six fragments, or preview any activity freely."}</p></div><div class="exc-map-progress"><span>${p.done.length}/6 complete</span><div class="bar"><i style="width:${(p.done.length / 6) * 100}%"></i></div></div></div><div class="exc-mission-grid">${titles
@@ -336,11 +336,10 @@
     mountExplorer();
     art.mount(document.querySelector(".exc-world"));
   }
-  /* Structure labels and process directions are authored separately from the artwork. */
-  const art = window.InneruExcretoryArt;
-  function illustration(n) { return art.picture(n); }
-  function labIllustration(n) { return art.study(n); }
-  const LABS = {
+const art = window.InneruExcretoryArt;
+function illustration(n) { return art.picture(n); }
+function labIllustration(n) { return art.study(n); }
+const LABS = {
     1: {
       kind: "sort",
       title: "Send the waste home",
@@ -423,7 +422,7 @@
       ],
     },
   };
-  const KIDNEY_TARGETS = [
+const KIDNEY_TARGETS = [
     [
       "Renal cortex",
       "Find the outer tissue where glomeruli begin filtration.",
@@ -455,7 +454,7 @@
       "Urine leaves the pelvis through a ureter.",
     ],
   ];
-  const CASES = [
+const CASES = [
     {
       name: "Upstream infection",
       evidence:
@@ -509,10 +508,10 @@
       why: "Cancer involves uncontrolled cell growth. It differs from cysts, inflammation and a mineral deposit.",
     },
   ];
-  function challengeHead(title, intro, tag = "INTERACTIVE LAB") {
+function challengeHead(title, intro, tag = "INTERACTIVE LAB") {
     return `<div class="exc-challenge-heading"><div><span class="eyebrow">${tag}</span><h2>${title}</h2></div><span class="exc-pill">${preview ? "TRY IT FREELY" : "+20 XP"}</span></div><p class="exc-prompt">${intro}</p>`;
   }
-  function lab(n) {
+function lab(n) {
     const d = LABS[n];
     if (d)
       return `<section class="panel exc-lab" id="exc-main-lab">${challengeHead(d.title, d.intro)}<div class="exc-game-status"><span id="exc-lab-step">0 / ${d.items.length} cargo placed</span><span id="exc-combo">Build your accuracy streak</span></div><div class="exc-lab-diagram">${labIllustration(n)}</div><div class="exc-chips" role="group" aria-label="Cargo to sort">${shuffled(
@@ -539,7 +538,7 @@
     if (n === 5) return balanceLab();
     return `<section class="panel exc-lab" id="exc-main-lab">${challengeHead("Open the case files", "Use the evidence to identify the mechanism. Visit the six case files in any order; solve each to finish the investigation.")}<div class="exc-game-status"><span id="exc-lab-step">0 / 6 cases explained</span></div>${art.study(6)}<div class="exc-case-tabs" role="group" aria-label="Case files">${CASES.map((c, i) => `<button type="button" data-case-tab="${i}" aria-pressed="${i === 0}">File 0${i + 1}</button>`).join("")}</div><div id="exc-case-content"></div><div id="exc-lab-feedback" class="exc-lab-feedback" role="status" aria-live="polite">Choose a case, study its evidence, then explain the mechanism.</div><button type="button" class="exc-replay" data-replay>Reset this challenge ↻</button></section>${bonus(6)}`;
   }
-  function bonus(n) {
+function bonus(n) {
     if (n === 1)
       return `<section class="panel exc-bonus"><span class="eyebrow">SIDE QUEST / TRACE THE EXIT</span><h2>Build the urine route</h2><p>Choose each structure in order, from the kidney to outside the body.</p>${art.routeFigure()}<ol class="exc-seq" id="exc-seq"></ol><div class="exc-chips">${shuffled(
         ["Kidney", "Ureter", "Urinary bladder", "Urethra", "Outside"],
@@ -555,7 +554,7 @@
       return `<section class="panel exc-bonus"><span class="eyebrow">SIDE QUEST / THE WATER AUDIT</span><h2>Where did 180 litres go?</h2><p>An approximate adult example: both kidneys form <b>180 L of filtrate</b> in a day. <b>178.5 L</b> of the water returns to blood.</p><div class="exc-water-bar"><span style="width:99.17%">Water returned to blood</span><i aria-label="Remaining water forms urine"></i></div><form id="exc-audit"><label for="exc-audit-answer">180 − 178.5 = how many litres of urine?</label><div class="exc-answer-row"><input id="exc-audit-answer" type="number" min="0" step="0.1" required placeholder="Litres"><button class="btn secondary" type="submit">Check the balance</button></div><p id="exc-audit-feedback" role="status"></p></form><details><summary>Compare filtration, reabsorption and secretion</summary>${illustration(4)}<p>Filtration: blood → capsule. Reabsorption: tubule → blood. Secretion: blood → tubule. All contribute to the final urine.</p></details></section>`;
     return `<section class="panel exc-bonus"><span class="eyebrow">SIDE QUEST / TREATMENT STUDIO</span><h2>Two approaches. Different jobs.</h2><div class="exc-treatment-cards"><article><figure class="ea-treatment-figure">${art.picture(7)}<button type="button" data-ea-open="7">Inspect the dialyzer ⤢</button></figure><h3>Dialysis</h3><p>Blood passes through a dialyzer, where a membrane separates it from dialysis fluid. Wastes and excess fluid are removed; blood returns to the body.</p><small>The textbook example describes sessions of about 3–4 hours, three times weekly; real schedules vary.</small></article><article><figure class="ea-treatment-figure">${art.picture(2)}<button type="button" data-ea-open="2">Inspect the donor organ ⤢</button></figure><h3>Kidney transplant</h3><p>A healthy donor kidney provides kidney function. The recipient needs anti-rejection medicines and ongoing follow-up.</p></article></div><fieldset class="exc-treatment-question"><legend>Which treatment uses a filtering device outside the body?</legend><button type="button" data-treatment="dialysis">Dialysis</button><button type="button" data-treatment="transplant">Transplant</button></fieldset><p id="exc-treatment-feedback" role="status"></p><details><summary>Think deeper: inherited or acquired?</summary><p>Polycystic kidney disease is inherited. Infection and effects of diabetes or high blood pressure are acquired examples. Blockages can have different causes. Explain how one example could reduce filtration or drainage.</p></details></section>`;
   }
-  const BALANCE_CASES = [
+const BALANCE_CASES = [
     {
       id: "hot",
       title: "After a hot run",
@@ -578,10 +577,10 @@
       why: "The kidneys adjust to the body’s needs. This simplified model shows relative changes, not a measured hormone dose or a fluid prescription.",
     },
   ];
-  function balanceLab() {
+function balanceLab() {
     return `<section class="panel exc-lab" id="exc-main-lab">${challengeHead("Control the water response", "Change ADH, predict the kidney’s response, then test your setting in all three situations.")}<div class="exc-game-status"><span id="exc-lab-step">0 / 3 situations balanced</span></div><div class="exc-case-tabs" role="group" aria-label="Water balance situations">${BALANCE_CASES.map((c, i) => `<button type="button" data-balance-case="${i}" aria-pressed="${i === 0}">${c.title}</button>`).join("")}</div>${art.study(5)}<p class="exc-active-clue" id="exc-balance-clue">${BALANCE_CASES[0].text}</p><label class="exc-slider-label" for="adh-level">Relative ADH signal <b id="adh-value">Moderate</b></label><input type="range" id="adh-level" min="0" max="100" value="50" step="5" aria-describedby="exc-adh-note"><div class="exc-slider-scale"><span>Low</span><span>Moderate</span><span>High</span></div>${art.process(5)}<div class="exc-sim-results" role="status"><div><span>Water returned</span><b id="adh-reabsorb">Moderate</b><meter id="exc-water-meter" min="0" max="100" value="50">50</meter></div><div><span>Urine volume</span><b id="adh-volume">Intermediate</b></div><div><span>Concentration</span><b id="adh-conc">Intermediate</b></div></div><p id="exc-adh-note" class="exc-science-note">A qualitative comparison. The slider is not a hormone dose; outputs are not clinical measurements.</p><button type="button" class="btn secondary" id="exc-test-balance">Test this response →</button><div id="exc-lab-feedback" class="exc-lab-feedback" role="status" aria-live="polite">Move the slider, then test your response.</div><button type="button" class="exc-replay" data-replay>Reset this challenge ↻</button></section><section class="panel exc-bonus"><span class="eyebrow">SIDE QUEST / THINK LIKE A SCIENTIST</span><h2>Exercise, acidity and a week of urine</h2><div class="exc-ph-task">${art.acidBaseFigure()}<p>If the blood becomes too acidic, which kidney response helps?</p><button type="button" data-ph="wrong">Retain more hydrogen ions</button><button type="button" data-ph="correct">Excrete hydrogen ions; conserve bicarbonate</button><p id="exc-ph-feedback" role="status"></p></div><form id="exc-weekly"><label for="exc-weekly-answer">The lesson’s adult average is 1.5 L urine each day. How much in 7 days?</label><div class="exc-answer-row"><input id="exc-weekly-answer" type="number" min="0" step="0.1" required placeholder="Litres per week"><button class="btn secondary">Calculate</button></div><p id="exc-weekly-feedback" role="status"></p></form><details><summary>Plan an exercise investigation</summary><p>Compare breathing rate before and after the same light activity, and describe changes in sweating. Keep duration, conditions and measurement method consistent. Predict the kidney response using the lesson. Do not infer kidney function from a short classroom observation.</p><label for="exc-investigation">Your prediction and the evidence you would collect</label><textarea id="exc-investigation" rows="3" placeholder="After activity, I predict… I would measure…"></textarea><button type="button" class="exc-replay" id="exc-journal-save">${preview ? "Keep note for this preview" : "Save investigation note"}</button><p id="exc-journal-status" role="status"></p></details></section>`;
   }
-  function wireLab(n, finish) {
+function wireLab(n, finish) {
     const feedback = document.getElementById("exc-lab-feedback"),
       count = document.getElementById("exc-lab-step");
     const complete = () => {
@@ -811,7 +810,7 @@
       .forEach((b) => (b.onclick = () => mission(n)));
     wireBonus(n);
   }
-  function wireBonus(n) {
+function wireBonus(n) {
     if (n === 1) {
       const route = [
         "Kidney",
@@ -927,11 +926,11 @@
           }),
       );
   }
-  function questionMarkup(q, i, n, final = false) {
+function questionMarkup(q, i, n, final = false) {
     const id = final ? "final-" + i : n + "-q" + i;
     return `<div class="resp-question" ${final ? "data-exc-final" : "data-exc-question"}="${i}"><span class="eyebrow">${final ? "DECISION " + (i + 1) + " / 8" : ["RECALL", "APPLY", "REASON"][i]}</span><h3>${q[0]}</h3>${art.question(n,i,final)}<div class="resp-choices">${q[1].map((a, j) => `<button type="button" data-choice="${j}" ${done(id) ? "disabled" : ""}>${a}</button>`).join("")}</div><div class="resp-feedback" role="status" aria-live="polite">${done(id) ? "✓ " + q[3] : ""}</div>${preview ? `<details class="exc-preview-answer"><summary>Preview answer and explanation</summary><p><b>${q[1][q[2]]}</b> — ${q[3]}</p></details>` : ""}</div>`;
   }
-  function wireQuestions(questions, n, finish, final = false) {
+function wireQuestions(questions, n, finish, final = false) {
     document
       .querySelectorAll(final ? "[data-exc-final]" : "[data-exc-question]")
       .forEach((el) => {
@@ -966,7 +965,7 @@
         );
       });
   }
-  function mission(n) {
+function mission(n) {
     const p = progress();
     if (!Number.isInteger(n) || n < 1 || n > 6) {
       location.hash = link("");
@@ -1013,7 +1012,7 @@
     );
     finish();
   }
-  function mastery() {
+function mastery() {
     const p = progress();
     if (!preview && p.done.length < 6) {
       location.hash = link("");
@@ -1040,109 +1039,8 @@
     wireQuestions(finalStages, 0, finish, true);
     finish();
   }
-  const priorPortal = portal;
-  portal = function (i) {
-    if (i !== 5) return priorPortal(i);
-    const p = percent(),
-      s = systems[5];
-    return `<article class="portal world-portal playable" data-card="5" style="--system-color:${s[3]}"><button class="system-select" data-system="5" aria-pressed="false" aria-label="Select Excretory System"><span class="world-card-top"><span class="system-icon">${systemIcon(5)}</span><span class="world-index">WORLD 06</span></span><span class="world-card-name">FILTER</span><span class="scientific-name">Excretory System</span><span class="ready-label">${p ? "Exploration in progress" : "Ready to explore"}</span><span class="progress-meta"><span>${p}% complete</span><span>${progress().done.length}/6 missions</span></span><span class="bar"><i style="width:${p}%"></i></span></button><a class="btn enter-world" href="#excretory">Enter World →</a></article>`;
-  };
-  const priorHighlight = highlightSystem;
-  highlightSystem = function (i) {
-    priorHighlight(i);
-    if (i !== 5) return;
-    const panel = document.getElementById("selected-system-panel");
-    panel.innerHTML =
-      '<div class="eyebrow">THE BALANCE MISSION</div><h2>Excretory System</h2><p>Trace wastes, inspect kidneys and nephrons, and restore fluid balance.</p><a class="btn selected-enter" href="#excretory">Enter the Balance Mission →</a><button class="clear-selection" aria-label="Show all body systems">Show all systems</button>';
-    panel.querySelector(".clear-selection").onclick = resetSystem;
-  };
-  const priorSelectSystem = selectSystem;
-  selectSystem = function (i) {
-    priorSelectSystem(i);
-    if (i === 5) {
-      const tip = document.getElementById("anatomy-tooltip");
-      if (tip) tip.textContent = "Enter the Balance Mission";
-    }
-  };
-  const priorHome = home;
-  home = function () {
-    priorHome();
-    const j = document.querySelector('[data-journey="5"]');
-    if (j && !j.querySelector(".journey-playable"))
-      j.insertAdjacentHTML(
-        "beforeend",
-        '<b class="journey-playable">PLAYABLE</b>',
-      );
-  };
-  const priorDashboard = dashboard;
-  dashboard = function () {
-    priorDashboard();
-    const p = progress(),
-      section = document.createElement("section");
-    section.className = "panel spacer";
-    section.innerHTML = `<div class="eyebrow">SYSTEM 06 — EXCRETORY SYSTEM</div><h2>The Balance Mission</h2><p>${p.done.length}/6 missions complete · ${p.mastery ? "System Key earned" : "Final challenge awaits"}</p><div class="bar"><i style="width:${percent()}%"></i></div><a class="btn" href="#excretory">Continue the Balance Mission →</a>`;
-    const weakIds = p.weak || [];
-    if (weakIds.length) {
-      const rv = document.createElement("p");
-      rv.className = "note";
-      rv.innerHTML =
-        "Revisit: " +
-        weakIds
-          .map((id) => {
-            const a = id.split("-q").map(Number);
-            return (
-              '<a class="textlink" href="#excretory/mission/' +
-              a[0] +
-              '">' +
-              lessons[a[0] - 1].checks[a[1]][0] +
-              "</a>"
-            );
-          })
-          .join(" · ");
-      section.append(rv);
-    }
-    document.getElementById("main").append(section);
-    const reset = document.getElementById("reset");
-    if (reset) {
-      const before = reset.onclick;
-      reset.onclick = () => {
-        before();
-        const yes = document.getElementById("confirm-reset");
-        if (yes) {
-          const confirm = yes.onclick;
-          yes.onclick = () => {
-            state.excretory = { done: [], steps: {}, mastery: false };
-            confirm();
-          };
-        }
-      };
-    }
-  };
-  const priorBadges = badges;
-  badges = function () {
-    priorBadges();
-    const p = progress();
-    document
-      .getElementById("main")
-      .insertAdjacentHTML(
-        "beforeend",
-        `<section class="panel spacer"><h2>Balance Mission discoveries</h2><div class="resp-grid">${titles.map((title, i) => `<a class="badge ${p.done.includes(i + 1) ? "" : "locked"}" href="#excretory/mission/${i + 1}"><span>◈</span><h3>${title}</h3><p>${p.done.includes(i + 1) ? "Earned" : "Complete mission " + (i + 1)}</p></a>`).join("")}</div><p>${p.mastery ? "Excretory System Key earned." : "Complete all missions and the final challenge to earn the System Key."}</p></section>`,
-      );
-  };
-  const priorInfo = info;
-  info = function (r) {
-    priorInfo(r);
-    if (r === "sources")
-      document
-        .querySelector("#main .sourcelist")
-        ?.insertAdjacentHTML(
-          "beforeend",
-          "<li><b>UAE Inspire Science Biology · Grade 10 General · Excretory System, supplied lesson pp. 40–44.</b><br>Organs of excretion, renal structure, nephron filtration and reabsorption, kidney disorders and treatments. Original 3D teaching model is simplified; textbook figures are not reproduced.</li>",
-        );
-  };
-  const priorRoute = route;
-  window.removeEventListener("hashchange", priorRoute);
-  route = function () {
+const priorRoute=InneruRouteModules.renderer;
+const moduleRoute=function () {
     const [h, query = ""] = location.hash.slice(1).split("?");
     preview =
       h.startsWith("excretory") &&
@@ -1162,6 +1060,5 @@
     else priorRoute();
     if (h !== "excretory/studio") window.scrollTo(0, 0);
   };
-  window.addEventListener("hashchange", route);
-  route();
+InneruRouteModules.registerRenderer(moduleRoute);
 })();

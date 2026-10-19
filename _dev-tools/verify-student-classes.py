@@ -81,10 +81,10 @@ try:
   check({s['id'] for s in data['students']}=={s[1]['id'] for s in students[4:]} and [c['name'] for c in data['classes'] if c.get('schoolClass')]==['10G5','10G6'],'Riham sees only 10G5 and 10G6 students automatically')
   check(rt.locator('[data-td-students]').inner_text()=='2','Riham’s Home metrics use her assigned cloud roster')
   rt.locator('.td-tabs a[href="#teacher?view=students"]').click();rt.wait_for_selector('.td-student-link');check(rt.locator('.td-student-link').count()==2,'Riham’s Classes & students view uses only her assigned students')
-  delayed=[];rt.route('**/cloud-learning.js*',lambda route:delayed.append(route));rt.reload(wait_until='commit');rt.wait_for_selector('.td-student-link');rt.wait_for_function('document.querySelectorAll(".td-student-link").length===2')
-  check(bool(delayed) and rt.locator('.td-student-link').count()==2,'the teacher dashboard loads its assigned roster even before the shared sync script arrives')
+  delayed=[];rt.route('**/api/learning?action=state',lambda route:delayed.append(route));rt.reload(wait_until='commit');rt.wait_for_selector('.td-student-link');rt.wait_for_function('document.querySelectorAll(".td-student-link").length===2')
+  check(bool(delayed) and rt.locator('.td-student-link').count()==2,'the teacher dashboard loads its assigned roster even before shared cloud state arrives')
   for request in delayed:request.continue_()
-  rt.unroute('**/cloud-learning.js*');rt.wait_for_function('window.InneruCloud?.status()==="Teacher classroom connected"')
+  rt.unroute('**/api/learning?action=state');rt.wait_for_function('window.InneruCloud?.status()==="Teacher classroom connected"')
   # Registration resolves pending links, but approval still gates teacher permissions.
   mt=page();details(mt,'Sf.Alhammadi@moe.sch.ae','Maryam fixture',role='teacher');submit(mt);mt.wait_for_selector('[data-role-refresh]');m=session(mt);created.append(m['id'])
   check(sql('select count(*) from public.profiles where class_code in (\'10G1\',\'10G2\',\'10G3\',\'10G4\') and assigned_teacher_id='+q(m['id'])).stdout.strip()=='4','Maryam’s matching email links all four pending classes when her real fixture account registers')

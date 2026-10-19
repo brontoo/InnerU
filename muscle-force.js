@@ -119,9 +119,8 @@
     update();
   }
 
-  const previousRoute = route;
-  window.removeEventListener('hashchange', previousRoute);
-  route = function () {
+  const previousRoute=InneruRouteModules.renderer;
+const moduleRoute=function () {
     previousRoute();
     if (location.hash.slice(1) !== 'muscle/mission/2' || document.getElementById('mq-force')) return;
     const anchor = document.querySelector('#mq-force-host') || document.querySelector('.mq-check-heading');
@@ -134,6 +133,5 @@
     }
     wire();
   };
-  window.addEventListener('hashchange', route);
-  route();
+  InneruRouteModules.registerRenderer(moduleRoute);
 })();

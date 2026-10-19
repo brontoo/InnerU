@@ -1,26 +1,10 @@
-/* ============================================================================
-   WORLD 07 · Capstone — "Keep the body alive"
-   ----------------------------------------------------------------------------
-   The final challenge that the home screen has always advertised but never had.
-   It is unlocked only when all six System Keys are earned, and it asks the
-   student to APPLY all six worlds to one scenario instead of recalling facts:
-
-       A Grade 10 student runs 5 km on a hot day. Six decisions follow, one per
-       body system, and then one written synthesis.
-
-   Like every other world this file is an outer wrapper: it never edits the core,
-   it wraps route/home/dashboard/badges after them and re-decorates what they
-   rendered. It is loaded last, so its decorations run last.
-   ========================================================================== */
-(() => {
-  'use strict';
-
-  const XP_STATION = 15;
-  const XP_SYNTHESIS = 30;
-  const REQUIRED_KEYS = 6;
-
-  /* ---------------------------------------------------------------- the scenario */
-  const stations = [
+/* Ordered route module; original activity implementations are unchanged. */
+(()=>{
+'use strict';
+const XP_STATION = 15;
+const XP_SYNTHESIS = 30;
+const REQUIRED_KEYS = 6;
+const stations = [
     {
       world: 'WORLD 04 · OXYGEN', system: 'Respiratory System', link: '#respiratory', linkLabel: 'the Oxygen Mission',
       situation: 'Two minutes into the run her breathing is faster and deeper.',
@@ -100,33 +84,27 @@
       why: 'Water was lost as sweat, so the body conserves water: ADH increases water reabsorption, so the urine becomes smaller in volume and more concentrated. Filtration continues \u2014 what changes is how much water is returned to the blood.'
     }
   ];
-
-  /* The correct option is not always first: reuse the site-wide mixer. */
-  if (typeof mixQ === 'function') {
+if (typeof mixQ === 'function') {
     stations.forEach((s, i) => {
       const mixed = mixQ(['stem', s.options, s.answer, 'why']);
       stations[i].options = mixed[1];
       stations[i].answer = mixed[2];
     });
   }
-
-  const RUBRIC = [
+const RUBRIC = [
     'I linked muscle contraction to a higher demand for energy (ATP).',
     'I explained how breathing brings oxygen in and removes carbon dioxide.',
     'I explained how blood transports oxygen and is redirected to the muscles.',
     'I included heat loss through sweat, or water conservation through ADH.',
     'I connected at least one support system (bones, joints or ligaments).'
   ];
-
-  const MODEL_ANSWER =
+const MODEL_ANSWER =
     'During the run the leg muscles contract more often, so they need more ATP and cellular respiration increases. ' +
     'That raises oxygen demand and carbon dioxide production, so the respiratory system increases ventilation while the circulatory system raises heart rate, ' +
     'redirects blood to the working muscles and exchanges gases in the capillaries. Heat released by the muscles is lost when sweat evaporates from the skin, ' +
     'and because water is lost that way the kidneys release ADH and reabsorb more water, producing concentrated urine. ' +
     'The skeletal system supplies the levers, joints and ligaments that make the movement possible and stabilise the ankle.';
-
-  /* ---------------------------------------------------------------- state */
-  function data() {
+function data() {
     if (!state.capstone || typeof state.capstone !== 'object') state.capstone = {};
     const c = state.capstone;
     c.stations = c.stations && typeof c.stations === 'object' ? c.stations : {};
@@ -137,11 +115,9 @@
     c.date = typeof c.date === 'string' ? c.date : '';
     return c;
   }
-  const stationsDone = () => { const c = data(); return stations.filter((_, i) => c.stations['s' + i]).length; };
-  const keys = () => (typeof keysEarned === 'function' ? keysEarned() : 0);
-
-  /* ---------------------------------------------------------------- the page */
-  function locked() {
+const stationsDone = () => { const c = data(); return stations.filter((_, i) => c.stations['s' + i]).length; };
+const keys = () => (typeof keysEarned === 'function' ? keysEarned() : 0);
+function locked() {
     const missing = REQUIRED_KEYS - keys();
     const worlds = [
       ['Integumentary System', '#integumentary'], ['Skeletal System', '#world'], ['Muscular System', '#muscle'],
@@ -162,8 +138,7 @@
     <div class="grid three cap-keygrid">${worlds.map(([name, href]) => `<a class="cap-key ${earned[href] ? 'is-earned' : ''}" href="${href}"><span>${earned[href] ? '\u2713' : '\u25cb'}</span><b>${name}</b><small>${earned[href] ? 'Key earned' : 'Key still locked'}</small></a>`).join('')}</div>
     <a class="btn" href="#home">Back to the worlds \u2192</a></div></div>`, 'dashboard');
   }
-
-  function stationCard(s, i) {
+function stationCard(s, i) {
     const c = data(), done = !!c.stations['s' + i];
     return `<section class="panel cap-station ${done ? 'is-done' : ''}" data-cap-station="${i}">
       <div class="cap-station-head"><span class="eyebrow">${s.world}</span><span class="cap-chip">${done ? '\u2713 COMPLETE' : s.system}</span></div>
@@ -174,8 +149,7 @@
       <a class="textlink cap-link" href="${s.link}">Revise this system in ${s.linkLabel} \u2192</a>
     </section>`;
   }
-
-  function synthesisCard() {
+function synthesisCard() {
     const c = data();
     const ready = stationsDone() === stations.length && c.response.trim().length >= 80 && c.rubric.length >= 3;
     return `<section class="panel cap-synthesis">
@@ -191,8 +165,7 @@
       <div class="cap-actions"><button class="btn" id="cap-finish" ${ready ? '' : 'disabled'}>${c.done ? 'Open my certificate' : 'Finish the challenge'}</button></div>
     </section>`;
   }
-
-  function certificate() {
+function certificate() {
     const c = data();
     const date = c.date || new Date().toISOString().slice(0, 10);
     return `<section class="panel cap-certificate" id="cap-certificate">
@@ -210,8 +183,7 @@
       <div class="cap-actions"><button class="btn secondary" id="cap-print">Print or save as PDF</button><a class="btn line" href="#home">Back to the body map</a></div>
     </section>`;
   }
-
-  function landing() {
+function landing() {
     const c = data();
     if (keys() < REQUIRED_KEYS) return locked();
     const done = stationsDone();
@@ -226,9 +198,7 @@
       ${c.done ? certificate() : ''}</div>`, 'dashboard');
     wire();
   }
-
-  /* ---------------------------------------------------------------- behaviour */
-  function wire() {
+function wire() {
     document.querySelectorAll('[data-cap-station]').forEach(card => {
       const i = +card.dataset.capStation, c = data();
       card.querySelectorAll('[data-cap-choice]').forEach(btn => {
@@ -307,8 +277,7 @@
     const print = document.getElementById('cap-print');
     if (print) print.onclick = () => window.print();
   }
-
-  function updateFinishState() {
+function updateFinishState() {
     const btn = document.getElementById('cap-finish');
     if (!btn || data().done) return;
     const c = data();
@@ -318,11 +287,8 @@
       ? (stations.length - stationsDone()) + ' decision(s) still open.'
       : (c.response.trim().length < 80 ? 'Write at least 80 characters.' : 'Tick at least three rubric statements.'));
   }
-
-  /* ---------------------------------------------------------------- wrapping */
-  const previousRoute = route;
-  window.removeEventListener('hashchange', previousRoute);
-  route = function () {
+const previousRoute=InneruRouteModules.renderer;
+const moduleRoute=function () {
     const hash = location.hash.slice(1);
     if (hash === 'final' || hash === 'capstone') {
       landing();
@@ -332,57 +298,5 @@
     }
     previousRoute();
   };
-  window.addEventListener('hashchange', route);
-
-  /* Home: turn the advertised final-mission card into a real destination. */
-  const previousHome = home;
-  home = function () {
-    previousHome();
-    const card = document.querySelector('.final-destination');
-    if (!card) return;
-    const n = keys(), chip = card.querySelector('.chip'), body = card.querySelector('p');
-    if (n >= REQUIRED_KEYS) {
-      if (chip) chip.textContent = 'Unlocked \u00b7 6/6 keys';
-      card.classList.add('is-unlocked');
-      if (body) body.textContent = 'All six keys earned. Six decisions, one story.';
-      if (!card.querySelector('.cap-enter')) card.insertAdjacentHTML('beforeend', '<a class="btn cap-enter" href="#final">Start the final challenge \u2192</a>');
-    } else if (chip) {
-      chip.textContent = 'Locked \u00b7 ' + n + '/6 keys';
-    }
-  };
-
-  const previousDashboard = dashboard;
-  dashboard = function () {
-    previousDashboard();
-    const c = data(), done = stationsDone();
-    const section = document.createElement('section');
-    section.className = 'panel spacer cap-dashboard';
-    section.innerHTML = `<div class="eyebrow">FINAL MISSION \u00b7 SIX SYSTEMS</div><h2>Keep the body alive</h2>
-      <p>${c.done ? 'Completed on ' + esc(c.date) + ' \u00b7 your certificate is ready.'
-        : keys() < REQUIRED_KEYS ? keys() + '/6 System Keys. Earn the remaining ' + (REQUIRED_KEYS - keys()) + ' to open the final challenge.'
-        : done + '/6 decisions made. The run is waiting.'}</p>
-      <div class="bar"><i style="width:${Math.round((keys() / REQUIRED_KEYS * 0.5 + done / stations.length * 0.5) * 100)}%"></i></div>
-      <a class="btn ${keys() < REQUIRED_KEYS ? 'line' : ''}" href="#final">${c.done ? 'Open my certificate \u2192' : keys() < REQUIRED_KEYS ? 'See what is still missing \u2192' : 'Continue the final challenge \u2192'}</a>`;
-    const main = document.getElementById('main');
-    if (main) { const foot = main.querySelector('footer'); if (foot) main.insertBefore(section, foot); else main.append(section); }
-  };
-
-  /* Badges: one honest collection total across all six worlds (this wrapper runs last). */
-  const previousBadges = badges;
-  badges = function () {
-    previousBadges();
-    const main = document.getElementById('main');
-    if (!main || main.querySelector('.cap-total')) return;
-    const tiles = [...main.querySelectorAll('.badge')];
-    if (!tiles.length) return;
-    const earned = tiles.filter(b => !b.classList.contains('locked')).length;
-    const line = document.createElement('p');
-    line.className = 'cap-total';
-    line.innerHTML = `<b>${earned}</b> of <b>${tiles.length}</b> discoveries unlocked across the six worlds.`;
-    const anchor = main.querySelector('.headrow') || main.firstElementChild;
-    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(line, anchor.nextSibling);
-    else main.insertBefore(line, main.firstChild);
-  };
-
-  route();
+InneruRouteModules.registerRenderer(moduleRoute);
 })();

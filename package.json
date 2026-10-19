@@ -7,7 +7,8 @@
     "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./serve.ps1",
     "start": "powershell -NoProfile -ExecutionPolicy Bypass -File ./serve.ps1",
     "test": "node _dev-tools/run-critical-checks.js",
-    "dev:local": "node _dev-tools/serve-local.js"
+    "dev:local": "node _dev-tools/serve-local.js",
+    "test:performance": "node _dev-tools/run-performance-checks.js"
   },
   "keywords": ["education", "anatomy", "science", "grade-10", "gamified-learning"],
   "license": "UNLICENSED"

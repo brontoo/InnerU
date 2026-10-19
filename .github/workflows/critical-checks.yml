@@ -36,6 +36,10 @@ jobs:
         env:
           INNERU_TEST_ARTIFACT_DIR: ${{ runner.temp }}/inneru-release-artifacts
         run: npm test
+      - name: Check cold loading budget, routes and offline caching
+        env:
+          INNERU_TEST_ARTIFACT_DIR: ${{ runner.temp }}/inneru-release-artifacts/performance
+        run: npm run test:performance
       - name: Upload failure logs and screenshots
         if: failure()
         uses: actions/upload-artifact@v4

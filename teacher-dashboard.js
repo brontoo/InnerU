@@ -178,8 +178,8 @@
   }
   document.addEventListener('inneru-classroom',event=>{if(event.detail?.remote){const note=document.querySelector('[data-td-update]');if(note)note.hidden=false;}});
   window.InneruTeacherDashboard={render};
-  const previousRoute=route;window.removeEventListener('hashchange',previousRoute);
-  route=function(){if(location.hash.slice(1).split(/[/?]/)[0]==='teacher'){render();return;}token++;previousRoute();};
-  window.addEventListener('hashchange',route);
-  if(location.hash.slice(1).split(/[/?]/)[0]==='teacher')render();
+  const previousRoute=InneruRouteModules.renderer;
+const moduleRoute=function(){if(location.hash.slice(1).split(/[/?]/)[0]==='teacher'){render();return;}token++;previousRoute();};
+  InneruRouteModules.registerRenderer(moduleRoute);
+
 })();

@@ -1,5 +1,6 @@
-/* WORLD 01 · Integumentary System; original activities based on the supplied Grade 10 lesson. */
-(()=>{'use strict';
+/* Ordered route module; original activity implementations are unchanged. */
+(()=>{
+'use strict';
 const titles=['Build the barrier','Layers and renewal','Hair, nails and glands','Balance the temperature','Protect and sense','Repair the shield'];
 const lessons=[
  {goal:'Explain why skin is an organ and identify its tissue partners.',terms:'epithelial · connective · muscle · nerve · barrier',text:'Your skin is the main organ of the integumentary system. Epithelial tissue forms its outer covering. Connective tissue supports and strengthens it. Tiny muscles move hairs, and nerve tissue detects the world. Together with hair, nails and glands, this living shield helps protect the body and keep its internal conditions steady.',clue:'An organ contains several tissues working together.',checks:[['What makes skin an organ?',['Several tissue types work together','It has only dead cells','It is made solely of muscle'],0,'Skin includes epithelial, connective, muscle and nerve tissues.'],['Which tissue detects pressure?',['Nerve tissue','Keratin alone','Fat alone'],0,'Sensory nerves carry information about pressure and other stimuli.'],['Which structure belongs to the integumentary system?',['A nail','An alveolus','A vertebra'],0,'Skin, hair, nails and glands are integumentary structures.']]},
@@ -18,8 +19,8 @@ const finals=[
  ['What cools the body after sweating?','Evaporation','Goose bumps','Evaporation removes heat.'],
  ['What comes before epidermal renewal after a deeper cut?','Clot and scab','A new follicle','A clot and scab protect the wound first.'],
  ['Why is UV protection useful for all skin tones?','Excess UV can damage cells','Melanin blocks all UV','Excess UV exposure can damage skin cells.']
-];lessons.forEach(l=>{l.checks=l.checks.map(mixQ)});
-
+];
+lessons.forEach(l=>{l.checks=l.checks.map(mixQ)});
 let preview=false;
 const previewProgress={done:[],steps:{},weak:[],mastery:false};
 let disposeActivity=()=>{};
@@ -107,18 +108,12 @@ function mastery(){
    });
  });finish();
 }
-const oldPortal=portal;portal=function(i){if(i!==0)return oldPortal(i);const s=systems[i],p=percent();return `<article class="portal world-portal playable" data-card="0" style="--system-color:${s[3]}"><button class="system-select" data-system="0" aria-pressed="false" aria-label="Select Integumentary System"><span class="world-card-top"><span class="system-icon">${systemIcon(0)}</span><span class="world-index">WORLD 01</span></span><span class="world-card-name">BODY SHIELD</span><span class="scientific-name">Integumentary System</span><span class="ready-label">${p?'Exploration in progress':'Ready to explore'}</span><span class="progress-meta"><span>${p}% complete</span><span>${progress().done.length}/6 missions</span></span><span class="bar"><i style="width:${p}%"></i></span></button><a class="btn enter-world" href="#integumentary">Enter World <span aria-hidden="true">→</span></a></article>`};
-const oldHighlight=highlightSystem;highlightSystem=function(i){oldHighlight(i);if(i!==0)return;const panel=document.getElementById('selected-system-panel');panel.innerHTML='<div class="eyebrow">THE LIVING SHIELD</div><h2>Integumentary System</h2><p>Explore the skin, hair, nails and glands through six interactive missions.</p><a class="btn selected-enter" href="#integumentary">Enter the Living Shield →</a><button class="clear-selection" aria-label="Show all body systems">Show all systems</button>';panel.querySelector('.clear-selection').onclick=resetSystem;const tip=document.getElementById('anatomy-tooltip');if(tip)tip.textContent='Enter the Living Shield'};
-const oldHome=home;home=function(){oldHome();const j=document.querySelector('[data-journey="0"]');if(j&&!j.querySelector('.journey-playable'))j.insertAdjacentHTML('beforeend','<b class="journey-playable">PLAYABLE</b>');};
-const oldDashboard=dashboard;dashboard=function(){oldDashboard();const p=progress(),section=document.createElement('section');section.className='panel spacer';section.innerHTML=`<div class="eyebrow">SYSTEM 01 — INTEGUMENTARY SYSTEM</div><h2>The Living Shield</h2><p>${p.done.length}/6 missions complete · ${p.mastery?'System Key earned':'Final challenge awaits'}</p><div class="bar"><i style="width:${percent()}%"></i></div><a class="btn" href="#integumentary">Continue the Living Shield →</a>`;const weakIds=p.weak||[];if(weakIds.length){const rv=document.createElement('p');rv.className='note';rv.innerHTML='Revisit: '+weakIds.map(id=>{const a=id.split('-q').map(Number);return '<a class="textlink" href="#integumentary/mission/'+a[0]+'">'+lessons[a[0]-1].checks[a[1]][0]+'</a>'}).join(' · ');section.append(rv)}
-document.getElementById('main').append(section);const reset=document.getElementById('reset');if(reset){const prior=reset.onclick;reset.onclick=()=>{prior();const yes=document.getElementById('confirm-reset');if(yes){const confirmed=yes.onclick;yes.onclick=()=>{state.integumentary={done:[],steps:{},mastery:false};confirmed()}}}}};
-const oldBadges=badges;badges=function(){oldBadges();const p=progress();document.getElementById('main').insertAdjacentHTML('beforeend',`<section class="panel spacer"><h2>Living Shield discoveries</h2><div class="resp-grid">${titles.map((title,i)=>`<a class="badge ${p.done.includes(i+1)?'':'locked'}" href="#integumentary/mission/${i+1}"><span>✧</span><h3>${title}</h3><p>${p.done.includes(i+1)?'Earned':'Complete mission '+(i+1)}</p></a>`).join('')}</div><p>${p.mastery?'Integumentary System Key earned.':'Complete all missions and the final challenge to earn the System Key.'}</p></section>`)};
-const oldInfo=info;info=function(r){oldInfo(r);if(r==='sources')document.querySelector('#main .sourcelist')?.insertAdjacentHTML('beforeend','<li><b>UAE Inspire Science Biology · Grade 10 General · Integumentary System, supplied lesson pp. 4–8.</b><br>Skin structure, tissues, thermoregulation, repair and UV effects. Activities and model are original; textbook figures are not reproduced.</li>')};
-const oldRoute=route;window.removeEventListener('hashchange',oldRoute);
-route=function(){
+const oldRoute=InneruRouteModules.renderer;
+const moduleRoute=function(){
  disposeActivity();disposeActivity=()=>{};
  const [hash,query='']=location.hash.slice(1).split('?');preview=new URLSearchParams(query).get('preview')==='1';
  if(hash==='integumentary')landing();else if(hash.startsWith('integumentary/mission/'))mission(Number(hash.split('/')[2]));else if(hash==='integumentary/mastery')mastery();else oldRoute();
  window.scrollTo(0,0);
-};window.addEventListener('hashchange',route);route();
+};
+InneruRouteModules.registerRenderer(moduleRoute);
 })();

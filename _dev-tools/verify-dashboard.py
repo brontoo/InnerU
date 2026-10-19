@@ -142,7 +142,7 @@ try:
   go(p,'dashboard','.sd-page');p.locator('.sd-preferences>details>summary').click();p.locator('#reset').click();p.locator('#confirm-reset').click();p.wait_for_function('document.querySelector("[data-sd-xp]").textContent.trim().startsWith("0")')
   check(model(p)['xp']==0 and model(p)['missions']==0 and model(p)['keys']==0 and model(p)['earned']==0 and len(model(p)['entries'])==0,'confirmed reset clears all six systems, earned points, badges and log together')
   check(p.evaluate('state.name==="Mariam"&&state.level==="Master"&&state.motion'),'reset retains the chosen profile and accessibility preferences')
-  shell=p.evaluate(r"async()=>{const t=await(await fetch('sw.js')).text();return [...t.match(/const SHELL = \[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map(x=>x[1]);}")
+  shell=p.evaluate(r"async()=>{const t=await(await fetch('sw.js')).text();return JSON.parse(t.match(/const SHELL\s*=\s*(\[[\s\S]*?\]);/)[1]);}")
   check(all(p.request.get(fixture.origin+'/'+url.removeprefix('./')).status==200 for url in shell),f'all {len(shell)} offline shell URLs resolve')
   check((ROOT/'index.html').read_bytes()==(ROOT/'404.html').read_bytes(),'both HTML entry points load identical progress and dashboard modules')
   check(not errors,'no JavaScript exceptions across rewards, restore, dashboard, badges or responsive navigation: '+str(errors))

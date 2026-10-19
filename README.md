@@ -115,35 +115,59 @@ Always work through `start-work.cmd` (or `dev.cmd`): the 3D labs use ES modules 
 
 ### The shell
 
-`index.html` loads, in this order:
+`index.html` and its byte-identical fallback `404.html` load only the shared
+shell, account/role checks, progress services, student dashboard and accessibility
+styles. There is no build step and scripts remain ordered classic globals.
 
-**Stylesheets (14)** — ``teacher.css` · `review.css` · `habit.css` · `style.css` · `exhibit.css` · `muscle.css` · `muscle-learning.css` · `welcome.css` · `circulatory.css` · `body-atlas.css` · `respiratory.css` · `integumentary.css` · `excretory.css` · `capstone.css``
-
-**Scripts (21)** — ``anatomy.js` · `visuals.js` · `body-atlas-ui.js` · `content-skeletal.js` · `app.js` · `circulatory.js` · `rich-pages.js` · `muscle-visuals.js` · `muscle-learning.js` · `muscle.js` · `circulatory-integration.js` · `respiratory.js` · `integumentary.js` · `excretory.js` · `capstone.js` · `a11y.js` · `teacher.js` · `review.js` · `habit.js` · `muscle-force.js` · `pwa.js``
-
-**On-demand modules (`body-atlas.js`, `heart-explorer.js`, `excretory-explorer.js`, `excretory-model.js`)** — imported only when a 3D view is on screen, so the ~2 MB
-three.js bundle is not downloaded by pages that do not need it.
-
-`404.html` is a byte-identical copy of `index.html`, used as the fallback shell.
+* `learning-catalog.js` contains shared mission names and achievement metadata.
+  `app.js` contains shared state, layout and dispatch primitives. Activity bodies
+  moved unchanged to `skeletal-core.js`, `home-core.js`, `connections-core.js` and
+  `daily-core.js`; shared exhibit markup lives in `exhibit-core.js`.
+* `route-runtime.js` installs a stable renderer dispatcher **before** the account,
+  accessibility and mission-access wrappers. Deferred world wrappers register with
+  `InneruRouteModules.registerRenderer()` inside those permanent guards; they do
+  not replace the global secure `route()` or autorender during download.
+* `route-manifest.js` lists ordered script/style groups. `route-loader.js` loads
+  the requested group once, waits for its styles, then invokes the guarded route.
+  Concurrent requests share promises; navigation tickets discard stale renders.
+  Failed downloads and a 30-second download deadline produce an accessible retry
+  state. A timed-out in-flight script is retained so retry cannot execute it twice.
+* Styles retain their original cascade positions through `data-style-order`, even
+  when systems are visited in a different order. Existing hash paths and preview
+  query parameters are unchanged. A cold deep link loads its dependencies first.
+* `world-navigation.js` holds the thin home/reference extensions in their original
+  order. Home needs the system links and progress summaries, not every lesson.
+  Teacher dashboard, review, detective, connections and daily interfaces each load
+  on their own route. `review-state.js` keeps dashboard scheduling statistics
+  available without downloading the review questions or interface.
+* Body-system groups load when that system opens. Respiratory and integumentary
+  activity engines, and circulatory mission interactions, load on mission routes.
+  Shared respiratory layout styles also load with the skin world, which reuses
+  those components; world styles include their overview/preview-bar rules.
+  Card illustrations are requested by the cards that use them; lesson illustrations
+  are requested by their rendered activity, not by the dashboard or worker install.
+* `anatomy-loader.js` imports `body-atlas.js` only for an atlas host, and
+  `heart-explorer.js` only for a heart host. Existing muscular, skin and renal
+  importers, viewport model loading, disposal, fallbacks, materials and attribution
+  remain in place. Three.js is never fetched by login or the student dashboard.
 
 ### The extension pattern
 
-Nothing edits the core. Every world and every later feature is an **outer wrapper**:
+Keep cross-cutting guards outside deferred renderers. A deferred world captures
+`InneruRouteModules.renderer`, defines its wrapper and registers it once:
 
 ```js
-const previousRoute = route;
-window.removeEventListener('hashchange', previousRoute);
-route = function () { /* my routes first */ ... ; previousRoute(); };
-window.addEventListener('hashchange', route);
-
-const previousHome = home; home = function () { previousHome(); /* decorate */ };
+const previous = InneruRouteModules.renderer;
+InneruRouteModules.registerRenderer(function () {
+  if (/* this world's route */) { /* existing renderer */ }
+  else previous();
+});
 ```
 
-Loading order therefore matters: the last script loaded is the outermost wrapper.
-`glossary.js` marks key terms in the rendered text and `speech.js` reads a page aloud — both
-are wrappers too, so no world file knows they exist. `a11y.js` decorates whatever the worlds rendered (progress-bar roles, focus, titles),
-and `habit.js` / `teacher.js` / `review.js` / `capstone.js` / `muscle-force.js` add
-their layers on top.
+Core account, preview, glossary and accessibility wrappers continue to wrap the
+stable dispatcher. `speech.js` pronounces selected model structure names only;
+it does not narrate portal text. Do not add eager world imports to the shell or
+have a deferred module call `route()` while it is loading.
 
 ### State
 
@@ -163,22 +187,97 @@ the home card, the dashboard and the capstone gate.
 
 ### Content
 
-* `content-skeletal.js` — World 02 content only (missions, 24 assessment items, cases, references)
+* `content-skeletal.js` — World 02 assessment items and clinical cases; shared mission names are in `learning-catalog.js` and reference links in `world-navigation.js`
 * every other world keeps its lessons, labs and checks at the top of its own file
 * `review.js` holds the 54-item review pool
 * `capstone.js` holds the final-mission scenario and rubric
 
 ## Offline and performance
 
-* `sw.js` + `manifest.webmanifest` (registered by `pwa.js`) make the site installable
-  and usable without wifi: **network-first** for the shell and code so a push is picked
-  up immediately, **stale-while-revalidate** for large immutable assets.
-* `/?nosw=1` skips the service worker — use it if a stale offline copy ever gets in the way.
-* Selection contrast in the muscular lab: unselected muscles fade to 5.5 %, the body support to 2.5 %, and
-  the selected muscle is drawn last so the translucent shell cannot wash it out.
-* 3D payload per route: skeleton 2.2 MB, muscular 3.1 MB, skin 1.1 MB, heart 0.6 MB.
-  These `.glb` files ship uncompressed; compressing them (Draco/meshopt) is the main
-  remaining performance win.
+`sw.js` installs only the essential HTML, shared JS/CSS, manifest and small brand
+icons (39 shell URLs). It does **not** precache body-system modules, Three.js,
+models, avatar sheets, mission images or Home artwork. Same-origin route code and
+assets enter `inneru-visited-v1` on first use. Code uses network-first with cached
+fallback. Cache-write failure does not block a successful online response. Large
+assets use the cached copy immediately and revalidate in the background. Previously visited
+public Home/anatomy routes work after an offline refresh. An uncached route shows
+how to save it by opening it online; missing JS/CSS receives a failed response,
+never the app HTML. Old InnerU shell caches are retired without deleting other
+applications' caches, and the visited-content cache survives shell updates.
+
+Account sessions, role checks, student mission authorization and learning APIs
+are never cached. Protected missions and teacher data still require live
+verification, as before; offline caching does not bypass classroom locks or login.
+Already saved local progress remains on the device until it can sync. `?nosw=1`
+skips worker registration for debugging.
+
+### Measured cold-load baseline and result
+
+Local, repeatable Chromium measurements on 2026-10-19, 1440 × 1000, fresh browser
+contexts, no scrolling, through network-idle plus one second. The fixture serves
+**gzip** JS/CSS; values are response-body bytes, not header bytes. Images are
+actual transferred image bytes, including near-viewport images requested on the
+initial page. The worker is disabled for this comparison so install/reload timing
+cannot double-count shell requests. A separate check verifies worker installation
+and offline refresh. The dashboard uses a signed-in, empty local student fixture;
+cloud storage is unconfigured. All requests stay on loopback; external fonts are
+blocked. These are payload measurements, not production Vercel timings or Web Vitals.
+
+Baseline: main `471fbf3` with the pre-existing local release-check checkpoint
+`64f3b47`; no portal payload changes in that checkpoint.
+
+| Cold page / response bodies | Before | After |
+|---|---:|---:|
+| Login JavaScript, gzip | 12,913 B | 12,913 B |
+| Login CSS, gzip | 9,997 B | 9,993 B |
+| Login images | 428,514 B | 428,514 B |
+| Login requests | 13 | 13 |
+| Student dashboard JavaScript, gzip | 360,436 B | 62,244 B |
+| Student dashboard CSS, gzip | 143,920 B | 29,635 B |
+| Student dashboard initial images | 2,759,201 B | 2,113,950 B |
+| Student dashboard requests | 108 | 44 |
+| Models before opening a viewer (both pages) | 0 | 0 |
+
+Dashboard JS is about **83% smaller**, CSS **79% smaller**, and initial images
+**23% smaller**. The explorer avatar sheet changed from PNG (2,171,529 B) to
+**pixel-identical lossless WebP** (1,526,278 B), replacing the original asset.
+Login artwork was already WebP. GLBs and anatomical images are unchanged: the
+existing GLTFLoader has no Draco/meshopt decoder configured, so compressing mesh
+geometry would require a separate loader/appearance validation change. No model
+variants, duplicate production artwork, remeshing or new runtime dependencies
+were introduced.
+
+### Repeatable loading check and budget
+
+Use the test-only Python/Playwright prerequisites in
+[_dev-tools/README.md](_dev-tools/README.md), then run:
+
+```sh
+npm run test:performance
+# Measurements alone, with an optional JSON output path:
+python _dev-tools/measure-loading.py
+```
+
+The same performance command runs in GitHub Actions after `npm test`. It fails
+if any budget in [_dev-tools/performance-budget.json](_dev-tools/performance-budget.json)
+is exceeded, or if initial login/dashboard fetches deferred route scripts/styles,
+Three.js, a viewer module or a 3D model. Budgets deliberately allow modest growth
+above the measured result while remaining far below the baseline:
+
+| Page | Gzip JS | Gzip CSS | Initial image bytes | Requests |
+|---|---:|---:|---:|---:|
+| Login | 14 KiB | 12 KiB | 440 KiB | 15 |
+| First signed-in dashboard | **72 KiB** | **34 KiB** | **2,200 KiB** | **48** |
+
+The check also opens and refreshes all six system routes with their mission-card
+artwork, exercises other direct routes, checks module reuse, failed-load retry and
+navigation races, inspects the
+worker shell, refreshes a visited 3D anatomy route offline, and tests an uncached
+route's offline message. Existing critical checks cover locked student missions,
+all 45 teacher previews, cold preview links, permissions and saved progress.
+Screenshots, JSON measurements and fixture logs go to `INNERU_TEST_ARTIFACT_DIR`
+(or a temporary directory). CI uploads them only on failure. No production
+credentials, real accounts, Supabase or deployed site are used.
 
 ## Deploy
 

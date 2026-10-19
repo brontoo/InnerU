@@ -15,7 +15,7 @@
   const finalRoute=w=>w.id==='skeletal'?'#mission/8':w.id==='muscle'?'#muscle/mission/8':w.route+'/mastery';
   function describe(id) {
     let system='extra',kind='activity',mission=0,label='Completed discovery',href='#home',m;
-    const detective=window.InneruDetectiveCases?.find(c=>'detective2-'+c.id===id);
+    const detective=(window.InneruDetectiveCases||window.InneruDetectiveCatalog)?.find(c=>'detective2-'+c.id===id);
     if(detective)return {id,system:worlds[['Integumentary','Skeletal','Muscular','Respiratory','Circulatory','Excretory'].indexOf(detective.system)].id,kind:'investigation',mission:0,label:detective.title,href:'#detective'};
     if((m=id.match(/^q([1-8])-([0-2])$/))){system='skeletal';mission=+m[1];kind='check';label='Science check '+(+m[2]+1);}
     else if((m=id.match(/^activity([1-8])$/))){system='skeletal';mission=+m[1];label='Investigation completed';}
@@ -49,7 +49,7 @@
       w.titles.forEach((title,i)=>{const n=i+1,earned=w.done.includes(n);rows.push({id:w.id+'-mission-'+n,system:w.id,kind:'mission',name:w.id==='skeletal'&&n===1?'ANATOMY EXPLORER':w.id==='skeletal'&&n===3?'FUNCTION DETECTIVE':title,requirement:'Complete mission '+n+': '+title+'.',earned,current:earned?1:0,total:1,href:earned||n===1||w.done.includes(n-1)?missionRoute(w,n):w.route});});
       rows.push({id:w.id+'-key',system:w.id,kind:'mastery',name:w.id==='skeletal'?'SKELETAL MASTER · Skeletal System':w.keyName+' Master',requirement:'Complete all '+w.titles.length+' missions and the final challenge to earn the '+w.keyName+' Key.',earned:w.key,current:w.done.length+Number(w.key),total:w.total,href:w.done.length===w.titles.length?finalRoute(w):w.route});
     }
-    const casesDone=[0,1,2,3].filter(n=>has('case'+n)).length,dd=(window.InneruDetectiveCases||[]).filter(c=>has('detective2-'+c.id)).length;
+    const casesDone=[0,1,2,3].filter(n=>has('case'+n)).length,dd=((window.InneruDetectiveCases||window.InneruDetectiveCatalog)||[]).filter(c=>has('detective2-'+c.id)).length;
     rows.push({id:'medical',system:'skeletal',kind:'investigation',name:'MEDICAL INVESTIGATOR',requirement:'Solve all four joint evidence files in skeletal mission 7.',earned:casesDone===4,current:casesDone,total:4,href:'#mission/7'},
       {id:'detective',system:'extra',kind:'investigation',name:'ALL-SYSTEMS INVESTIGATOR',requirement:'File six supported Body Detective investigations.',earned:dd===6,current:dd,total:6,href:'#detective'},
       {id:'connection',system:'extra',kind:'connection',name:'SYSTEM THINKER',requirement:'Complete the six matches, predictions and reviewed reflection in System Connections.',earned:has('connection'),current:has('connection')?1:0,total:1,href:'#connect'},

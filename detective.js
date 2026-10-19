@@ -86,5 +86,4 @@
     main.querySelector('footer').before(card);
     const tiles=[...main.querySelectorAll('.badge')],total=main.querySelector('.cap-total');if(total)total.innerHTML=`<b>${tiles.filter(b=>!b.classList.contains('locked')).length}</b> of <b>${tiles.length}</b> discoveries unlocked across the six worlds.`;
   };
-  if((location.hash.slice(1).split('?')[0]||'home')==='detective')detective();
 })();

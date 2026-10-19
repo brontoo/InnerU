@@ -104,6 +104,7 @@
 
   const run = () => setTimeout(inject, 80);
   window.addEventListener('hashchange', run);
+  document.addEventListener('inneru-route-ready', run);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();

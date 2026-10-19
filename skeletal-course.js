@@ -140,5 +140,4 @@
     root.querySelectorAll('[data-skel-scroll]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.skelScroll).scrollIntoView({behavior:reduced()?'instant':'smooth',block:'start'}));
   };
   // Subsequent decorators call the same public route; refresh this initial view.
-  route();
 })();

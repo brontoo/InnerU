@@ -1,13 +1,8 @@
 """Verify the detailed heart studio using real WebGL, anatomy and stored progress."""
-import functools,http.server,json,threading,math
-from pathlib import Path
-from playwright.sync_api import sync_playwright
-ROOT=Path(__file__).resolve().parents[1]
-class H(http.server.SimpleHTTPRequestHandler):
- def log_message(self,*a):pass
-server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(H,directory=str(ROOT)))
-threading.Thread(target=server.serve_forever,daemon=True).start()
-BASE=f'http://127.0.0.1:{server.server_port}/?nosw=1'
+import json,math
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, start_fixture
+proc,ORIGIN=start_fixture()
+BASE=ORIGIN+'/?nosw=1'
 checks=0;errors=[]
 def check(ok,message):
  global checks
@@ -24,8 +19,8 @@ def choose(p,key):p.locator(f'#heart-structure-list [data-heart-structure="{key}
 def frame(p):return p.evaluate('window.inneruHeartExplorerSnapshot()')
 try:
  with sync_playwright() as pw:
-  b=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
-  p=b.new_page(viewport={'width':1680,'height':1100});p.on('pageerror',lambda e:errors.append(str(e)))
+  b=launch(pw)
+  p=new_context(b, service_workers='block',viewport={'width':1680,'height':1100}).new_page();p.on('pageerror',lambda e:errors.append(str(e)))
   p.goto(BASE+'#home',wait_until='domcontentloaded');p.evaluate("localStorage.setItem('bodyquest-v1',JSON.stringify({name:'Anatomist',xp:0,rewards:[],done:[],weak:[],motion:false,circ:{done:[],steps:[],mastery:false,boss:false,heartExplored:[]}}))")
   p.goto(BASE+'#circulatory',wait_until='domcontentloaded');p.wait_for_function('window.inneruHeartExplorerState?.().canvas',timeout=30000)
   check(p.locator('.heart-lab-modes [role="tab"]').count()==4,'four complete anatomy investigation views are available')
@@ -103,10 +98,10 @@ try:
    mode(p,'cutaway');group(p,'support');choose(p,'chordae');check(live(p)['selectedMeshes']>0,f'{width}px: detailed support structures remain selectable')
   p.evaluate('location.hash="home"');p.wait_for_selector('.heart-lab',state='detached');check(live(p)['disposed'] and not live(p)['canvas'],'leaving the page disposes the renderer and observers')
   # The anatomy text and manual phase controls survive a missing WebGL context.
-  no=b.new_context();no.add_init_script("HTMLCanvasElement.prototype.getContext=function(){return null}")
+  no=new_context(b, service_workers='block',);no.add_init_script("HTMLCanvasElement.prototype.getContext=function(){return null}")
   q=no.new_page();q.goto(BASE+'#circulatory',wait_until='domcontentloaded');q.wait_for_selector('#heart-fallback',state='visible');check(q.locator('#heart-error').is_visible(),'non-WebGL devices receive an anatomical fallback illustration')
   mode(q,'cutaway');group(q,'valves');choose(q,'mitral');check('leaflets' in q.locator('#circ-vessel-info').inner_text(),'fallback still explains internal valve anatomy')
   q.locator('#heart-cycle').fill('65');check(q.locator('#heart-cycle-label').inner_text()=='Ejection','fallback preserves manual scientific phase investigation')
   check(not errors,'no uncaught browser errors: '+str(errors));b.close()
  print(f'{checks} checks passed.',flush=True)
-finally:server.shutdown();server.server_close()
+finally:proc.terminate();proc.wait(timeout=10)

@@ -1,18 +1,10 @@
 """Verify the real muscular studio in Chromium. No learner storage is reused."""
-import functools
-import http.server
 import json
 import math
-import threading
-from pathlib import Path
-from playwright.sync_api import sync_playwright
+from test_support import playwright_session as sync_playwright, launch, new_context, artifact, start_fixture
 
-ROOT=Path(__file__).resolve().parents[1]
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def log_message(self,*args): pass
-server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Handler,directory=str(ROOT)))
-threading.Thread(target=server.serve_forever,daemon=True).start()
-BASE=f'http://127.0.0.1:{server.server_port}/?nosw=1'
+proc,ORIGIN=start_fixture()
+BASE=ORIGIN+'/?nosw=1'
 checks=0
 errors=[]
 def check(value,message):
@@ -35,8 +27,8 @@ def reset(page):
 
 try:
     with sync_playwright() as p:
-        browser=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
-        context=browser.new_context(viewport={'width':1510,'height':1100})
+        browser=launch(p)
+        context=new_context(browser, service_workers='block',viewport={'width':1510,'height':1100})
         page=context.new_page()
         page.on('pageerror',lambda e: errors.append(str(e)))
         page.on('console',lambda m:errors.append(m.text) if m.type=='error' and any(s in m.text for s in ['Shader Error','WebGLProgram','Muscular anatomy:']) else None)
@@ -132,16 +124,16 @@ try:
         page.mouse.click(xy['x'],xy['y']);settled(page)
         check(state(page)['selection']=='rectus','clicking the visible abdomen ray-picks rectus abdominis')
         page.evaluate('window.oldMuscleModel=window.__inneruMuscleStudio.model;window.oldMuscleRenderer=window.__inneruMuscleStudio.renderer')
-        page.evaluate("location.hash='muscle/mission/1'")
-        page.wait_for_selector('.mq-panel')
+        page.evaluate("location.hash='home'")
+        page.wait_for_selector('.explore-screen')
         check(page.locator('.muscle-studio').count()==0 and page.evaluate('window.__inneruMuscleStudio===null && oldMuscleModel.group.children.length===0'),'leaving the page disposes the anatomy and its rendering resources')
-        check(page.locator('.mq-panel').count()>0,'existing muscular mission still opens normally')
+        check(page.locator('.explore-screen').count()>0,'home restores the six-system exploration view')
         ready(page);check(page.locator('.muscle-studio canvas').count()==1,'returning mounts one fresh studio without duplicate canvases')
         page.evaluate("location.hash='integumentary'")
         page.wait_for_selector('.skin-explorer')
         check(page.evaluate('window.__inneruMuscleStudio===null'),'switching to another body system also cleans up the model')
 
-        mobile=browser.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True,reduced_motion='reduce')
+        mobile=new_context(browser, service_workers='block',viewport={'width':390,'height':844},is_mobile=True,has_touch=True,reduced_motion='reduce')
         phone=mobile.new_page();phone.on('pageerror',lambda e:errors.append(str(e)));ready(phone)
         check(phone.evaluate('document.documentElement.scrollWidth<=innerWidth'),'mobile page has no horizontal overflow')
         check(not state(phone)['spin'] and not state(phone)['transitioning'],'reduced motion starts with a still model and immediate camera changes')
@@ -149,10 +141,10 @@ try:
         phone.locator('[data-muscle-part=gastrocnemius]').click();settled(phone)
         check(state(phone)['selection']=='gastrocnemius' and state(phone)['camera'][2]<0,'mobile muscle selection reveals posterior anatomy')
         check(phone.locator('[data-muscle-part=gastrocnemius]').bounding_box()['height']>=43,'mobile muscle targets remain large enough for touch')
-        phone.locator('.muscle-studio').screenshot(path='/tmp/muscle-studio-mobile.png')
+        phone.locator('.muscle-studio').screenshot(path=artifact('muscle-studio-mobile.png'))
         mobile.close()
 
-        fallback=browser.new_context(viewport={'width':1300,'height':1000})
+        fallback=new_context(browser, service_workers='block',viewport={'width':1300,'height':1000})
         fallback.add_init_script('window.WebGLRenderingContext=undefined')
         f=fallback.new_page();f.on('pageerror',lambda e:errors.append(str(e)));f.goto(BASE+'#muscle');f.wait_for_selector('.muscle-studio-unavailable:visible')
         check(f.locator('.muscle-studio-fallback').evaluate('img=>img.complete&&img.naturalWidth>0'),'fallback shows the same covered mannequin when WebGL is unavailable')
@@ -160,7 +152,7 @@ try:
         check('Latissimus dorsi'==f.locator('.muscle-studio-info h3').inner_text(),'fallback tabs and anatomy descriptions remain interactive')
         check(f.locator('[data-muscle-action=spin]').is_disabled(),'unavailable 3D controls do not pretend to rotate the fallback image')
         fallback.close()
-        failed=browser.new_context();failed.route('**/anatomical-muscles.glb',lambda r:r.abort())
+        failed=new_context(browser, service_workers='block',);failed.route('**/anatomical-muscles.glb',lambda r:r.abort())
         f=failed.new_page();f.goto(BASE+'#muscle');f.locator('.muscle-studio').scroll_into_view_if_needed();f.wait_for_selector('.muscle-studio-unavailable:visible')
         f.locator('[data-muscle-part=biceps]').click()
         check(f.locator('.muscle-studio-info h3').inner_text()=='Biceps brachii' and f.locator('.muscle-studio canvas').count()==0,'a failed model download falls back cleanly while anatomy remains usable')
@@ -169,4 +161,4 @@ try:
         context.close();browser.close()
     print(json.dumps({'checks':checks,'result':'PASS','geometry':geometry},indent=2),flush=True)
 finally:
-    server.shutdown();server.server_close()
+    proc.terminate();proc.wait(timeout=10)

@@ -36,7 +36,7 @@
  const systemPath=href=>L.worlds.some(w=>w.route.slice(1)===href.replace(/^#/,'').split(/[/?]/)[0]);
  function decorate(){
   const user=InneruAccess.user;if(!user)return;
-  const main=document.querySelector('main.main');if(!main)return;
+  const main=document.querySelector('main.main');if(!main||main.querySelector('[data-route-loading]'))return;
   if(previewActive){
    if(!main.querySelector('.iu-teacher-preview-bar')){const bar=document.createElement('aside');bar.className='iu-teacher-preview-bar';bar.dataset.previewMission=browseActive?'system':parse()?.world.id+'-'+parse()?.number;bar.setAttribute('aria-label','Teacher preview');bar.innerHTML='<div><b>TEACHER MISSION PREVIEW</b><p>Try the activities freely. Student progress and class locks stay unchanged.</p></div><a href="#home">Explore Worlds</a><a href="#teacher?view=preview">All mission previews</a><a href="#teacher?view=controls">Control Panel</a>';main.prepend(bar);}
    const crumb=document.querySelector('.topbar .crumb');if(crumb)crumb.textContent='Grade 10 Science / Teacher mission preview';

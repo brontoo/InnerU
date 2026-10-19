@@ -133,6 +133,13 @@ try:
    teacher.evaluate('reward("activity1",999);save()')
    expected_title=parsed['world']['final'] if parsed['number']>len(parsed['world']['titles']) else parsed['world']['titles'][parsed['number']-1]
    check(expected_title.lower() in teacher.locator('main h1').inner_text().lower() and teacher.evaluate('localStorage.getItem("bodyquest-v1")')==before,mission_id+' preview shows the correct lesson and does not change saved account progress')
+  # Cold deep links load each system independently, also in reverse portal order.
+  firsts=[href for href in links if teacher.evaluate('(href)=>InneruMissionAccess.parse(href).number',href)==1]
+  for href in reversed(firsts):
+   parsed=teacher.evaluate('(href)=>InneruMissionAccess.parse(href)',href)
+   teacher.goto(ORIGIN+'/index.html?nosw=1'+href);teacher.wait_for_selector('.iu-teacher-preview-bar[data-preview-mission="'+parsed['world']['id']+'-1"]')
+   teacher.reload();teacher.wait_for_selector('.iu-teacher-preview-bar[data-preview-mission="'+parsed['world']['id']+'-1"]')
+   check(parsed['world']['titles'][0].lower() in teacher.locator('main h1').inner_text().lower() and teacher.evaluate('localStorage.getItem("bodyquest-v1")')==before,parsed['world']['id']+' cold preview link and refresh preserve the lesson and account record')
   teacher.locator('.iu-teacher-preview-bar a[href="#home"]').click();teacher.wait_for_selector('.explore-screen');teacher.locator('[data-teacher-view=dashboard]').click();teacher.wait_for_selector('[data-teacher-page=overview]')
   check(teacher.evaluate('localStorage.getItem("bodyquest-v1")')==before,'leaving preview restores the teacher’s original account record')
   check(sql('select jsonb_agg(to_jsonb(s) order by user_id) from public.student_progress s;').stdout==baseline and sql('select jsonb_agg(to_jsonb(s) order by class_code,system_id,mission_number) from public.class_mission_settings s;').stdout==settings,'all teacher previews leave every student’s database progress and lock settings unchanged')
