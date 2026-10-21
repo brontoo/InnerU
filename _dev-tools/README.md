@@ -134,8 +134,9 @@ appear in the Actions job summary.
 
 For a focused hosted loading diagnosis, run
 `gh workflow run critical-checks.yml --ref main -f loading_only=true`.
-This manual option skips the database suite; pull-request and push runs still
-execute every release check. Loading failures also appear in a GitHub annotation
+This manual option reports a separate **Loading diagnostics** status, skips the
+database suite, and cannot substitute for **Critical checks**. Pull-request and
+push runs still execute every release check. Loading failures also appear in a GitHub annotation
 so their final error lines remain readable when artifact downloads are unavailable.
 
 If failed checks should block merges, a repository administrator must configure
