@@ -81,16 +81,26 @@ try:
   check(not(set(shell)&deferred) and not any(u.endswith(('.glb','.webp','.png')) for u in shell),'installation precaches only the essential shell')
   o.goto(origin+'/index.html#home');o.wait_for_selector('.explore-screen');o.wait_for_load_state('networkidle')
   o.evaluate('location.hash="integumentary"');o.wait_for_selector('.integ-hero');o.locator('.skin-explorer').scroll_into_view_if_needed();o.wait_for_function('window.inneruSkinExplorerState?.().canvas',timeout=45000)
-  o.wait_for_load_state('networkidle');offline.set_offline(True)
+  o.wait_for_load_state('networkidle')
+  cached=o.evaluate('''async()=>{const keys=await caches.keys();return(await Promise.all(keys.map(async k=>(await(await caches.open(k)).keys()).map(r=>new URL(r.url).pathname)))).flat();}''')
+  check(not any(u.startswith('/excretory') for u in cached),'the offline miss fixture has never cached the excretory route')
+  # Chromium versions differ in applying page-level network emulation to worker
+  # fetches. Disconnect the worker's network too; keep its actual cache/fallback
+  # logic intact. Restore fetch before the online quota-failure scenario below.
+  worker=offline.service_workers[0]
+  worker.evaluate("()=>{self.__onlineFetch=self.fetch;self.__offlineRequests=[];self.fetch=(request)=>{self.__offlineRequests.push(typeof request==='string'?request:request.url);return Promise.reject(new TypeError('Disconnected local test network'));};}")
+  offline.set_offline(True)
   o.reload();o.wait_for_selector('.integ-hero');o.wait_for_function('window.inneruSkinExplorerState?.().canvas',timeout=45000)
   check(True,'visited anatomy route, Three.js and model dependencies remain usable after offline refresh')
   o.evaluate('location.hash="home"');o.wait_for_selector('.explore-screen');check(True,'previously visited home works offline')
-  o.evaluate('location.hash="excretory"');o.wait_for_selector('[data-route-retry]')
+  o.evaluate('location.hash="excretory"');o.wait_for_selector('[data-route-retry]',timeout=45000)
   check('not been saved' in o.locator('[role=alert]').inner_text(),'uncached offline route explains how to save it')
+  check(worker.evaluate("()=>self.__offlineRequests.some(url=>new URL(url,self.location.href).pathname.startsWith('/excretory'))"),'uncached route really attempts the disconnected worker network')
   check(o.evaluate('fetch("/api/auth?action=session").then(()=>false,()=>true)'),'offline accounts fail closed rather than replaying a cached session')
   cached=o.evaluate('''async()=>{const keys=await caches.keys();return(await Promise.all(keys.map(async k=>(await(await caches.open(k)).keys()).map(r=>new URL(r.url).pathname)))).flat();}''')
   check(not any(u.startswith('/api/') for u in cached),'runtime caches never contain account, authorization or learning APIs')
   offline.set_offline(False)
+  worker.evaluate("()=>{self.fetch=self.__onlineFetch;delete self.__onlineFetch;delete self.__offlineRequests;}")
   offline.service_workers[0].evaluate("()=>{Cache.prototype.put=async()=>{throw new Error('Local quota fixture');};}")
   o.locator('[data-route-retry]').click();o.wait_for_selector('.exc-world')
   check(True,'cache-write failure never prevents online content from loading')

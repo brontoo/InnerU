@@ -5,6 +5,12 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      loading_only:
+        description: Run only syntax and loading checks for diagnosis
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -33,13 +39,30 @@ jobs:
       - name: Check tracked JavaScript syntax
         run: git ls-files -z '*.js' | xargs -0 -n 1 node --check
       - name: Run critical suite sequentially
+        if: github.event_name != 'workflow_dispatch' || !inputs.loading_only
         env:
           INNERU_TEST_ARTIFACT_DIR: ${{ runner.temp }}/inneru-release-artifacts
         run: npm test
       - name: Check cold loading budget, routes and offline caching
         env:
           INNERU_TEST_ARTIFACT_DIR: ${{ runner.temp }}/inneru-release-artifacts/performance
-        run: npm run test:performance
+        run: |
+          mkdir -p "$INNERU_TEST_ARTIFACT_DIR"
+          log="$INNERU_TEST_ARTIFACT_DIR/console.log"
+          if npm run test:performance > "$log" 2>&1; then
+            cat "$log"
+          else
+            cat "$log"
+            python - <<'PY'
+          import os
+          from pathlib import Path
+          log = Path(os.environ['INNERU_TEST_ARTIFACT_DIR']) / 'console.log'
+          message = '\n'.join(log.read_text(errors='replace').splitlines()[-25:])
+          message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::error title=Loading check failed::' + message)
+          PY
+            exit 1
+          fi
       - name: Upload failure logs and screenshots
         if: failure()
         uses: actions/upload-artifact@v4

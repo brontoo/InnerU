@@ -86,6 +86,9 @@ direct routes and refresh, module reuse/retry, stale navigation, essential-only
 worker install, visited anatomy offline refresh and uncached offline guidance.
 API responses must never appear in the worker caches. See the measured baseline
 and limits in [README.md](../README.md#offline-and-performance).
+The offline fixture disconnects both the page and the worker's network fetch,
+while exercising the real worker cache/fallback code. It first verifies that the
+chosen missing route was never cached and restores network fetch before retry.
 
 `python _dev-tools/measure-loading.py [output.json]` records measurements without
 checking limits. Both commands honor the existing artifact and browser overrides.
@@ -128,6 +131,12 @@ and pushes to `main`, without secrets or deployment steps. It installs the pinne
 Playwright package and its Chromium, runs `npm test`, and uploads the temporary
 artifact directory **only on failure**, retaining it for seven days. Results also
 appear in the Actions job summary.
+
+For a focused hosted loading diagnosis, run
+`gh workflow run critical-checks.yml --ref main -f loading_only=true`.
+This manual option skips the database suite; pull-request and push runs still
+execute every release check. Loading failures also appear in a GitHub annotation
+so their final error lines remain readable when artifact downloads are unavailable.
 
 If failed checks should block merges, a repository administrator must configure
 GitHub branch protection/rulesets on `main` to require **Critical checks** from
