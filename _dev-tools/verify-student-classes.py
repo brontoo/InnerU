@@ -3,6 +3,7 @@ The two school email addresses are used only in this isolated local Auth fixture
 No real account, outbound email or production database is created/contacted.
 """
 import json,os,subprocess,uuid
+from playwright.sync_api import Error as PlaywrightError
 from pathlib import Path
 from test_support import playwright_session as sync_playwright, launch, new_context, artifact, CONTAINER, start_fixture
 ROOT=Path(__file__).resolve().parents[1];DB='inneru_school_class_check'
@@ -20,7 +21,10 @@ def check(v,m):
  global checks
  assert v,m
  checks+=1;print('PASS',m,flush=True)
-def session(p):return p.request.get(ORIGIN+'/api/auth?action=session').json()['user']
+def session(p,reset_marker=None):
+ # Retry only Playwright's ECONNRESET transport error on this read-only probe;
+ # HTTP/auth failures still fail normally, and signup/save requests are unchanged.
+ return p.request.get(ORIGIN+'/api/auth?action=session',max_retries=2,headers={'x-inneru-test-session-read':reset_marker} if reset_marker else {}).json()['user']
 def entry(p,role='student'):
  p.goto(ORIGIN+'/login.html?nosw=1');p.locator('[data-select-role='+role+']').click();p.wait_for_selector('#entry-email')
 def details(p,email,name,code=None,role='student'):
@@ -52,6 +56,13 @@ try:
    response=signup_api(probe,'class-fixture-invalid-'+uuid.uuid4().hex[:8]+'@example.com',**({'classCode':code} if code is not None else {}))
    check(response.status==400,'signup API rejects missing/invalid class '+str(code))
   check(probe.request.get(ORIGIN+'/__test/status').json()['users']==[],'invalid class requests never create Auth accounts')
+  marker='http-error-'+uuid.uuid4().hex
+  response=probe.request.get(ORIGIN+'/api/auth?action=signup',max_retries=2,headers={'x-inneru-test-session-read':marker})
+  check(response.status==405 and probe.request.get(ORIGIN+'/__test/status').json()['sessionReadAttempts'][marker]==1,'read retry policy does not retry HTTP errors or create a signup account')
+  marker='always-reset-'+uuid.uuid4().hex
+  try:session(probe,marker);raise AssertionError('Persistent transport failure was hidden')
+  except PlaywrightError:pass
+  check(probe.request.get(ORIGIN+'/__test/status').json()['sessionReadAttempts'][marker]==3,'persistent session disconnection fails after the bounded two retries')
   # Teacher onboarding has no class field and still requires owner approval.
   rt=page();details(rt,RIHAM,'Riham fixture',role='teacher');check(rt.locator('#entry-class').count()==0,'teacher signup has no student class selection');submit(rt);rt.wait_for_selector('[data-role-refresh]');r=session(rt);created.append(r['id'])
   check(r['role']=='student' and r['requestedRole']=='teacher' and r['classCode'] is None,'teacher signup and existing role approval remain unchanged')
@@ -71,6 +82,9 @@ try:
     p.locator('#gate-entry-form [type=submit]').click();p.locator('[data-avatar-back]').click();check(p.locator('#entry-class').input_value()==code,'returning from avatar selection retains the selected class');p.locator('#entry-password').fill(PASSWORD);p.locator('#entry-confirm').fill(PASSWORD)
    if n==6:p.screenshot(path=artifact('student-class-mobile.png'),full_page=True)
    submit(p);dashboard(p);u=session(p);created.append(u['id']);students.append((p,u,email))
+   if n==1:
+    marker='reset-once-'+uuid.uuid4().hex
+    check(session(p,marker)['id']==u['id'] and p.request.get(ORIGIN+'/__test/status').json()['sessionReadAttempts'][marker]==2,'a disconnected session probe recovers once and retains the authenticated student identity')
    expected=MARYAM if n<=4 else RIHAM
    check(u['classCode']==code and u['assignedTeacher']['email']==expected and u['assignedTeacher']['id']==(None if n<=4 else r['id']),code+' saves the canonical teacher assignment on the Auth-linked profile')
    check(p.url.endswith('#dashboard') and p.locator('a[href="#teacher"]').count()==0 and ('registration pending' in p.locator('[data-cloud-panel]').inner_text())==(n<=4),code+' stays in the student dashboard and shows accurate pending teacher status')

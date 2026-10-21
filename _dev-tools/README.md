@@ -108,6 +108,10 @@ outbound provider requests. Browser contexts abort external HTTP resources.
 Tests use fake local accounts; school teacher emails are matching fixture strings
 inside the isolated database only. No email is sent and no production service,
 student account, database permissions or data is changed.
+The class suite's read-only session probe allows two transport retries for
+`ECONNRESET`; it never retries signup/save requests or HTTP errors. Regression
+fixtures deliberately drop one session connection, reject an invalid HTTP method,
+and exhaust the retry limit to verify recovery, identity binding and failure.
 
 Each `npm test` run creates a randomly named, labelled `postgres:17-alpine`
 container with **no published port or mounted volume**. The existing

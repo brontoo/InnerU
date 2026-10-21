@@ -15,6 +15,7 @@ global.fetch=(input,options)=>{
  return originalFetch(input,options);
 };
 const users=new Map(),access=new Map(),refresh=new Map();let configured=true,legacySchema=false;
+const sessionReadAttempts=new Map();
 const limits=new Map(),authCounts={};
 function profileRows(rows){return legacySchema?rows.map(p=>Object.fromEntries(Object.entries(p).filter(([k])=>!['class_code','assigned_teacher_email','assigned_teacher_id'].includes(k)))):rows;}
 const send=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
@@ -66,11 +67,17 @@ const provider=http.createServer(async(req,res)=>{try{
  send(res,404,{});
  }catch(e){send(res,500,{error:'Fixture request failed.'});}});
 const site=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://local');
+ // Explicit test-header fault injection; never part of the production gateway.
+ const readMarker=req.headers['x-inneru-test-session-read'];
+ if(url.pathname==='/api/auth'&&readMarker){
+  const attempt=(sessionReadAttempts.get(readMarker)||0)+1;sessionReadAttempts.set(readMarker,attempt);
+  if(req.method==='GET'&&url.searchParams.get('action')==='session'&&(attempt===1||readMarker.startsWith('always-reset-'))){req.socket.destroy();return;}
+ }
  if(url.pathname==='/api/auth'){const previous=process.env.SUPABASE_URL;if(!configured)delete process.env.SUPABASE_URL;await handler(req,res);if(previous)process.env.SUPABASE_URL=previous;return;}
  if(url.pathname==='/api/owner'){await ownerHandler(req,res);return;}
  if(url.pathname==='/api/learning'){await learningHandler(req,res);return;}
  if(url.pathname==='/__test/approve-teacher'){const data=await input(req);if(dbContainer)sql("update public.profiles set role='teacher' where id="+quote(data.id));else for(const u of users.values())if(u.id===data.id)u.role='teacher';return send(res,200,{approved:true});}
- if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured});
+ if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured,sessionReadAttempts:Object.fromEntries(sessionReadAttempts)});
  if(url.pathname==='/__test/config'){configured=(await input(req)).enabled;return send(res,200,{configured});}
  if(url.pathname==='/__test/legacy-schema'){legacySchema=(await input(req)).enabled;return send(res,200,{legacySchema});}
  if(url.pathname==='/__test/auth-limit'){const data=await input(req);if(!['signup','login','session','refresh','resend','recover'].includes(data.action))return send(res,400,{});limits.set(data.action,{...data,remaining:data.remaining??1});return send(res,200,{configured:true});}
