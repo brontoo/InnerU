@@ -60,6 +60,17 @@ It adds persistent class-scoped system and mission controls, teacher-only previe
 and server validation of sequential student progress. Existing records are kept.
 See [MISSION-ACCESS.md](../_dev-tools/MISSION-ACCESS.md) for behavior and verification.
 
+## Owner assignment management
+
+After migration 007, apply **[008_owner_assignments.sql](migrations/008_owner_assignments.sql)**
+for the owner-only **School assignments** screen. It uses the existing `admin`
+role, retains current assignments and approval checks, and supports assignment,
+removal and explicit approval of registered verified teacher requests. Student
+classes, work and mission settings are preserved. No owner account is created.
+See [OWNER-MANAGEMENT.md](../_dev-tools/OWNER-MANAGEMENT.md) for the one-time owner
+designation, audit records, permissions and isolated verification. Routine changes
+then require no SQL. No privileged key is used by the application.
+
 ## Where to find a new user
 
 Email/password users appear in **Authentication → Users**. They will not appear
@@ -93,10 +104,11 @@ successful signup request. Do not manually insert password rows into `auth.users
 | `student_badges` | Achievements derived from completed tasks and mission gates |
 | `classrooms`, `enrollments` | Archived invitation data, retained for owner recovery; no longer used for access |
 | `teacher_feedback` | Assigned teachers' feedback on a specific submitted answer |
+| `staffing_audit` | Owner-only record of assignment/approval changes with before/after values |
 | `inneru_schema` | Installed database schema version |
 
 Students can read their own records. Teachers can read learning records only
-for students assigned to them by the fixed school-class mapping. Legacy enrollment
+for students assigned to them by the saved school-class mapping. Legacy enrollment
 records never grant access. Anonymous clients cannot read learner
 records. Direct writes are revoked; authenticated RPCs use the session's user
 ID and check authorization. All learning tables have row-level security enabled.
@@ -151,7 +163,8 @@ Preparing a shared device should use **Sign out**; account learning is not reset
 
 The ordered sources are `migrations/001_schema.sql`, `002_catalog.sql` and
 `003_functions.sql`, `004_roles_avatars.sql`, `005_student_classes.sql` and
-`006_automatic_rosters.sql` and `007_mission_access.sql`. `setup.sql` is their combined installer. Curriculum names
+`006_automatic_rosters.sql`, `007_mission_access.sql` and `008_owner_assignments.sql`.
+`setup.sql` is their combined installer. Curriculum names
 are captured in `catalog.json` from the actual learning model. After changing
 course content, review `_dev-tools/build-db-catalog.py`, regenerate the catalog
 seeds and combined installer, and apply the reviewed database update.
@@ -163,7 +176,7 @@ matching strings in isolated local test fixtures; no real account or email is cr
 `_dev-tools/verify-cloud-learning.py`. Local success does not validate production
 credentials, email delivery or whether the migration was run in Supabase.
 
-For the automatic six-check release gate, see
+For the automatic critical release gate, see
 [_dev-tools/README.md](../_dev-tools/README.md#automatic-critical-release-checks).
 After installing the documented test-only prerequisites, run `npm test`. It creates
 and cleans up a unique isolated `postgres:17-alpine` container, runs database

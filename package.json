@@ -10,7 +10,8 @@
     "dev:local": "node _dev-tools/serve-local.js",
     "test:performance": "node _dev-tools/run-performance-checks.js",
     "test:accessibility": "node _dev-tools/run-critical-checks.js learning-support",
-    "test:arabic-coverage": "node _dev-tools/run-critical-checks.js arabic-coverage"
+    "test:arabic-coverage": "node _dev-tools/run-critical-checks.js arabic-coverage",
+    "test:owner": "node _dev-tools/run-critical-checks.js owner"
   },
   "keywords": ["education", "anatomy", "science", "grade-10", "gamified-learning"],
   "license": "UNLICENSED"

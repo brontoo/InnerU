@@ -1,4 +1,3 @@
-/* Authored Modern Standard Arabic; English source keys. See ../README.md. */
 InneruLocale.register({
   "Language / اللغة": "اللغة / Language",
   "Interface language": "لغة الواجهة",
@@ -800,5 +799,7 @@ InneruLocale.register({
   "Account verification unavailable.": "التحقّق من الحساب غير متاح.",
   "Sign in to your dashboard.": "سجّل الدخول إلى لوحة متابعتك.",
   "Your dashboard stays closed until your account can be verified. Please check your connection and try again.": "تبقى لوحة المتابعة مغلقة حتى التحقّق من حسابك. تحقّق من الاتّصال وحاول مجددًا.",
-  "Dashboard access belongs to your signed-in account.": "يرتبط الوصول إلى لوحة المتابعة بحسابك المسجّل."
+  "Dashboard access belongs to your signed-in account.": "يرتبط الوصول إلى لوحة المتابعة بحسابك المسجّل.",
+  "School assignments": "إدارة الصفوف والمعلمين",
+  "No teacher assigned. Your class and saved learning are unchanged.": "لم يُعيَّن معلم. يبقى صفك وتعلمك المحفوظ كما هما."
 });

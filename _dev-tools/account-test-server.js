@@ -1,6 +1,7 @@
 /* Isolated test fixture only. Never deployed; production uses the real Auth API. */
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const handler=require('../api/auth.js'),root=path.resolve(__dirname,'..');
+const ownerHandler=require('../api/owner.js');
 const learningHandler=require('../api/learning.js'),{execFileSync}=require('node:child_process');
 const dbContainer=process.env.INNERU_DB_TEST_CONTAINER;
 const dbName=process.env.INNERU_DB_TEST_DATABASE||'postgres';
@@ -58,14 +59,15 @@ const provider=http.createServer(async(req,res)=>{try{
  if(url.pathname.startsWith('/rest/v1/rpc/')){
   if(!u)return send(res,401,{code:'bad_jwt'});
   if(!dbContainer)return send(res,404,{code:'PGRST202'});
-  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access','inneru_select_student_class','inneru_mission_catalog','inneru_mission_controls','inneru_set_mission_control','inneru_authorize_mission'].includes(name))return send(res,404,{});
+  const name=url.pathname.split('/').pop();if(!['inneru_state','inneru_save','inneru_classroom','inneru_create_class','inneru_join_class','inneru_feedback','inneru_request_teacher_access','inneru_select_student_class','inneru_mission_catalog','inneru_mission_controls','inneru_set_mission_control','inneru_authorize_mission','inneru_owner_staffing','inneru_owner_assign','inneru_owner_approve'].includes(name))return send(res,404,{});
   const params=Object.entries(data).map(([k,v])=>{if(!/^p_[a-z_]+$/.test(k))throw Error('Bad fixture parameter');return k+'=>'+(v===null?'null':typeof v==='object'?quote(JSON.stringify(v))+'::jsonb':typeof v==='number'||typeof v==='boolean'?String(v):quote(v));});
-  try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');const value=JSON.parse(result);if(legacySchema){if(name==='inneru_state')delete value.profile.classCode;if(name==='inneru_classroom')delete value.assignmentVersion;}return send(res,200,value);}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('42501')||details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('22023')||details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:['revision_conflict','teacher_locked','previous_required','class_required','teacher_preview_only'].find(code=>details.includes(code))||'fixture_database_error'});}
+  try{const result=sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select public.'+name+'('+params.join(',')+');');const value=JSON.parse(result);if(legacySchema){if(name==='inneru_state')delete value.profile.classCode;if(name==='inneru_classroom')delete value.assignmentVersion;}return send(res,200,value);}catch(e){const details=String(e.stderr||'');return send(res,400,{code:(details.includes('42501')||details.includes('permission denied')||details.includes('insufficient_privilege'))?'42501':details.includes('40001')?'40001':details.includes('22023')||details.includes('invalid_parameter_value')||details.includes('invalid parameter value')?'22023':'P0001',message:['revision_conflict','teacher_locked','previous_required','class_required','teacher_preview_only'].find(code=>details.includes(code))||'fixture_database_error'});}
  }
  send(res,404,{});
  }catch(e){send(res,500,{error:'Fixture request failed.'});}});
 const site=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://local');
  if(url.pathname==='/api/auth'){const previous=process.env.SUPABASE_URL;if(!configured)delete process.env.SUPABASE_URL;await handler(req,res);if(previous)process.env.SUPABASE_URL=previous;return;}
+ if(url.pathname==='/api/owner'){await ownerHandler(req,res);return;}
  if(url.pathname==='/api/learning'){await learningHandler(req,res);return;}
  if(url.pathname==='/__test/approve-teacher'){const data=await input(req);if(dbContainer)sql("update public.profiles set role='teacher' where id="+quote(data.id));else for(const u of users.values())if(u.id===data.id)u.role='teacher';return send(res,200,{approved:true});}
  if(url.pathname==='/__test/status')return send(res,200,{users:[...users.values()].map(u=>({id:u.id,email:u.email,data:u.data})),configured});

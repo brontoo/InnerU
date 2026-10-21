@@ -192,6 +192,17 @@ the home card, the dashboard and the capstone gate.
 * `review.js` holds the 54-item review pool
 * `capstone.js` holds the final-mission scenario and rubric
 
+## Owner teacher and class management
+
+Verified accounts explicitly designated with the existing `admin` role have a
+**School assignments** screen at `#owner`. Owners can review and confirm changes
+to the six class assignments and explicitly approve verified teacher requests.
+Assignment does not approve a teacher. Changes are audited; students keep their
+class, work and mission settings. API and database checks enforce owner access.
+Apply migration 008 and, if needed, designate the initial owner once as described
+in [OWNER-MANAGEMENT.md](_dev-tools/OWNER-MANAGEMENT.md). No new privileged key is
+required. The focused local check is `npm run test:owner`, also included in `npm test`.
+
 ## Learning support and Arabic
 
 The sign-in screen and portal top bar offer **Guided mode** and a language
@@ -203,7 +214,7 @@ available when speech is unavailable. Existing anatomy pronunciation and reduced
 motion remain available. Preferences are device-local and separate from scored
 progress; no database migration is required.
 
-Arabic uses RTL layout and 17 authored, route-specific message catalogues (7,204
+Arabic uses RTL layout and 18 authored, route-specific message catalogues (7,261
 entries). They cover navigation, sign-in/recovery, student and teacher dashboards,
 all six systems' lessons and activities, feedback, anatomy explanations, recall,
 connections, detective cases and information pages. Original scientific terms
@@ -274,8 +285,8 @@ were introduced.
 
 The optional learning-support layer adds local preferences, language selection,
 Guided instructions and browser speech controls. Its English-default cold
-measurement is 24,265 B gzip JS / 11,525 B gzip CSS / 18 requests on sign-in, and
-71,946 B gzip JS / 31,167 B gzip CSS / 48 requests on the first student dashboard.
+measurement is 24,269 B gzip JS / 11,525 B gzip CSS / 18 requests on sign-in, and
+72,127 B gzip JS / 31,167 B gzip CSS / 48 requests on the first student dashboard.
 Images and early model requests are unchanged. Arabic catalogues load only when
 Arabic is selected. Teacher answer cards request the matching curriculum catalogue
 for reference prompts, without loading that system’s lesson scripts or models. The

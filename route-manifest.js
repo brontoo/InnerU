@@ -1,5 +1,6 @@
 /* Ordered classic-script groups; styles retain their original cascade positions. */
 window.InneruRouteManifest={
+  "owner":{"scripts":["owner.js?v=owner-1"],"styles":[{"url":"owner.css?v=owner-1","order":39}]},
   "art": {
     "scripts": [
       "anatomy.js",

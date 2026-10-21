@@ -13,6 +13,11 @@ Email comparison is case insensitive. Students never choose a teacher or a role
 permission. Students still enter Student Dashboard; teachers enter Teacher
 Dashboard under the existing approved-role rules.
 
+These are the initial assignments. Migration 008 adds an owner-only management
+screen for staffing changes while retaining the same six class codes and student
+membership. Removing a teacher leaves the class and its students intact. Teacher
+approval remains separate from assignment. See [OWNER-MANAGEMENT.md](OWNER-MANAGEMENT.md).
+
 ## Activate in the existing Supabase project
 
 Run the complete [setup.sql](../supabase/setup.sql) in the project owner's

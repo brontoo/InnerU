@@ -31,6 +31,12 @@ browser profile can still inspect that browser's local storage.
 
 ## Teacher requests and owner approval
 
+Migration 008 adds an owner-only `#owner` screen for routine class assignments and
+explicit approval of verified teacher requests. It reuses the existing `admin`
+role; ordinary teacher approval never grants owner access. The old SQL helper
+below remains restricted to the database owner. See
+[OWNER-MANAGEMENT.md](OWNER-MANAGEMENT.md) for one-time setup and permissions.
+
 A teacher signup records `requested_role=teacher` while its effective role remains
 student until approved. Selecting the teacher card for a student account shows
 an explanation and a Request teacher access action, rather than silently opening

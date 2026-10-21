@@ -26,6 +26,7 @@
  function required(hash){
   const path=hash.replace(/^#/,'').split('?')[0],root=path.split('/')[0];
   if(['dashboard','badges','glossary'].includes(root))return [];
+  if(root==='owner')return ['owner'];
   if(root==='teacher')return ['teacher'];
   if(root==='review')return ['review'];
   if(root==='world'||root==='mission')return ['art','atlas','skeletal'];

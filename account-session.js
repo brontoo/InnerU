@@ -19,7 +19,7 @@
  function navigation(){
   if(!user)return;
   const teacher=InneruAccess.teacher(user);
-  document.querySelectorAll('.sidebar .navlink,main>footer nav a').forEach(a=>{const target=a.getAttribute('href')?.replace(/^#/,'').split(/[/?]/)[0];if(teacher?!['home','teacher','sources','privacy','about','attribution'].includes(target):target==='teacher')a.remove();});
+  document.querySelectorAll('.sidebar .navlink,main>footer nav a').forEach(a=>{const target=a.getAttribute('href')?.replace(/^#/,'').split(/[/?]/)[0];if(teacher?!['home','teacher','sources','privacy','about','attribution',...(user.role==='admin'?['owner']:[])].includes(target):target==='teacher')a.remove();});
   if(!teacher)document.querySelectorAll('a[href="#teacher"]').forEach(a=>a.remove());
   const label=document.querySelector('.sidebar .navlabel');if(label&&teacher)label.textContent='Your classroom';
   if(teacher){
@@ -27,10 +27,10 @@
    if(nav){
     if(!nav.hasAttribute('data-teacher-navigation')){
      nav.setAttribute('data-teacher-navigation','');nav.setAttribute('aria-label','Teacher workspace');
-     nav.innerHTML=[['home','world','Explore Worlds','#home'],['dashboard','dashboard','Dashboard','#teacher'],['preview','book','Mission Preview','#teacher?view=preview'],['board','badge','Achievements Board','#teacher?view=board']].map(([view,mark,title,href])=>`<a class="navlink" data-teacher-view="${view}" href="${href}">${icon(mark)}${e(title)}</a>`).join('');
+     nav.innerHTML=[['home','world','Explore Worlds','#home'],['dashboard','dashboard','Dashboard','#teacher'],['preview','book','Mission Preview','#teacher?view=preview'],['board','badge','Achievements Board','#teacher?view=board'],...(user.role==='admin'?[['owner','dashboard','School assignments','#owner']]:[])].map(([view,mark,title,href])=>`<a class="navlink" data-teacher-view="${view}" href="${href}">${icon(mark)}${e(title)}</a>`).join('');
     }
     const [path,query='']=location.hash.slice(1).split('?'),view=new URLSearchParams(query).get('view')||'overview';
-    const selected=path==='home'||!path||window.InneruMissionAccess?.teacherBrowseActive?'home':window.InneruMissionAccess?.teacherPreviewActive||view==='preview'?'preview':['board','achievements'].includes(view)&&!path.startsWith('teacher/student/')?'board':'dashboard';
+    const selected=path==='owner'?'owner':path==='home'||!path||window.InneruMissionAccess?.teacherBrowseActive?'home':window.InneruMissionAccess?.teacherPreviewActive||view==='preview'?'preview':['board','achievements'].includes(view)&&!path.startsWith('teacher/student/')?'board':'dashboard';
     nav.querySelectorAll('[data-teacher-view]').forEach(link=>{const active=link.dataset.teacherView===selected;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
    }
    document.querySelectorAll('.sidebar .sidebottom .navlink').forEach(a=>a.remove());

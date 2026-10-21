@@ -1,10 +1,10 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v52-guided-ar';
+const VERSION='inneru-v53-owner';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=guided-ar-1",
+  "./locale.js?v=owner-1",
   "./learning-support.js?v=guided-ar-1",
   "./learning-support.css?v=guided-ar-1",
   "./index.html",
@@ -28,7 +28,7 @@ const SHELL=[
   "./mission-access.css?v=teacher-workspace-2",
   "./learning-catalog.js?v=on-demand-1",
   "./account.js?v=auth-recovery-1",
-  "./access.js?v=teacher-workspace-2",
+  "./access.js?v=owner-1",
   "./app.js?v=on-demand-1",
   "./route-runtime.js?v=on-demand-1",
   "./learning-evidence.js?v=guided-ar-1",
@@ -40,11 +40,11 @@ const SHELL=[
   "./speech.js?v=guided-ar-1",
   "./learning-progress.js?v=on-demand-1",
   "./student-dashboard.js?v=on-demand-1",
-  "./account-session.js?v=teacher-workspace-2",
-  "./cloud-learning.js?v=guided-ar-1",
+  "./account-session.js?v=owner-1",
+  "./cloud-learning.js?v=owner-1",
   "./mission-access.js?v=guided-ar-1",
-  "./route-manifest.js?v=on-demand-1",
-  "./route-loader.js?v=on-demand-1",
+  "./route-manifest.js?v=owner-1",
+  "./route-loader.js?v=owner-1",
   "./pwa.js"
 ];
 const ASSET_RE=/\.(glb|gltf|bin|webp|png|jpe?g|svg|woff2?|ttf)$/i;

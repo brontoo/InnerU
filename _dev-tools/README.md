@@ -1,6 +1,6 @@
 # Automatic critical release checks
 
-`npm test` runs the same eight critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same nine critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
@@ -10,6 +10,7 @@
 | `verify-mission-access.py` | Persistent locks, sequence gates, teacher controls and all 45 read-only previews |
 | `verify-teacher-dashboard.py` | Assigned roster, actual student answers, versioned feedback, exports and individual records |
 | `verify-teacher-workspace.py` | Four teacher destinations, shared home, rankings and teacher-class isolation |
+| `verify-owner.py` | Owner authorization, audited assignments, teacher approval and class boundaries |
 | `verify-learning-support.py` | Guided mode, language/RTL, controlled speech, actual rewards, locks and mobile reflow |
 | `verify-arabic-coverage.py` | All mission previews, system pages, selected anatomy, instruction steps and populated teacher views |
 
@@ -61,8 +62,11 @@ The existing `npm run dev`, `npm start` and Windows launchers are unchanged.
 
 ## Guided mode, read-aloud and Arabic
 
+For owner staffing setup, permissions and the focused `npm run test:owner` command,
+see [OWNER-MANAGEMENT.md](OWNER-MANAGEMENT.md).
+
 `npm run test:accessibility` runs the new support regression alone, using its own
-isolated PostgreSQL container. `npm test` includes it after the existing six suites.
+isolated PostgreSQL container. `npm test` includes it alongside the other release suites.
 `npm run test:arabic-coverage` runs the strict catalogue audit alone. It is also
 included in `npm test`, writes the outstanding strings for each exercised view,
 and fails if any remain. Passing the audit establishes coverage of those states,
