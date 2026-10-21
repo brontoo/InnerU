@@ -138,6 +138,8 @@ This manual option reports a separate **Loading diagnostics** status, skips the
 database suite, and cannot substitute for **Critical checks**. Pull-request and
 push runs still execute every release check. Loading failures also appear in a GitHub annotation
 so their final error lines remain readable when artifact downloads are unavailable.
+Failed critical suites likewise report their name and final traceback lines in
+annotations, while preserving the full artifact log and failing exit code.
 
 If failed checks should block merges, a repository administrator must configure
 GitHub branch protection/rulesets on `main` to require **Critical checks** from

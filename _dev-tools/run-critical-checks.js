@@ -13,6 +13,12 @@ const available=[['accounts','Sign-in and signup'],['student-classes','Student c
 const selected=process.argv.slice(2);if(selected.some(name=>!available.some(row=>row[0]===name)))throw new Error('Unknown local verification suite.');
 const checks=selected.length?available.filter(row=>selected.includes(row[0])):available;
 const results=[];let active;
+function annotateFailure(label,file){
+ if(process.env.GITHUB_ACTIONS!=='true')return;
+ const escape=value=>String(value).replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A');
+ const message=fs.readFileSync(file,'utf8').split(/\r?\n/).slice(-30).join('\n').slice(-12000);
+ console.error('::error title='+escape(label).replace(/:/g,'%3A').replace(/,/g,'%2C')+'::'+escape(message||'Check failed; inspect its artifact log.'));
+}
 function stopActive(){
  if(!active?.pid)return;
  if(process.platform==='win32')spawnSync('taskkill',['/pid',String(active.pid),'/t','/f'],{stdio:'ignore'});
@@ -30,6 +36,7 @@ async function run(name,label){
   active.on('close',code=>{clearTimeout(timeout);resolve(code===0?0:1);});
  });
  await new Promise(resolve=>log.end(resolve));active=null;
+ if(code)annotateFailure(label,path.join(directory,'check.log'));
  const result={name,label,status:code?'FAIL':'PASS',seconds:Math.round((Date.now()-start)/1000)};results.push(result);console.log(result.status+': '+label+' ('+result.seconds+'s)');
 }
 function cleanup(){
