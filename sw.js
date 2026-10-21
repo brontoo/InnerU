@@ -1,6 +1,6 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v53-owner';
+const VERSION='inneru-v54-heart-anatomy';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
@@ -43,7 +43,7 @@ const SHELL=[
   "./account-session.js?v=owner-1",
   "./cloud-learning.js?v=owner-1",
   "./mission-access.js?v=guided-ar-1",
-  "./route-manifest.js?v=owner-1",
+  "./route-manifest.js?v=heart-anatomy-2",
   "./route-loader.js?v=owner-1",
   "./pwa.js"
 ];

@@ -12,7 +12,7 @@ window.InneruRouteManifest={
   "atlas": {
     "scripts": [
       "body-atlas-ui.js",
-      "anatomy-loader.js?v=on-demand-1"
+      "anatomy-loader.js?v=heart-anatomy-2"
     ],
     "styles": [
       {
@@ -93,7 +93,7 @@ window.InneruRouteManifest={
       "heart-lab-ui.js?v=guided-ar-1",
       "circulatory.js?v=guided-ar-1",
       "circ-map-art.js?v=on-demand-1",
-      "anatomy-loader.js?v=on-demand-1"
+      "anatomy-loader.js?v=heart-anatomy-2"
     ],
     "styles": [
       {

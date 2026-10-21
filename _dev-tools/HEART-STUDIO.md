@@ -55,6 +55,23 @@ lofted cavity surfaces. Selection preserves natural tissue colour, adds a teal
 edge and fades surrounding geometry to 3.5% opacity, disabling depth writes and
 clearcoat for ghosts. “Keep surrounding anatomy” increases context to 22%.
 
+The internal reconstruction follows the supplied frontal cutaway reference for
+orientation while retaining natural tissue colours and the portal's vessel
+colour convention. Its chamber profiles now join at the AV inlets, the RV
+narrows around a continuous curved septum, and the thicker LV ends in a closed
+myocardial apex. The wall texture is subtle rather than visibly striped.
+Low-relief trabeculae follow the endocardium; the RV includes a moderator band.
+
+Two LV and three RV papillary projections grow from the chamber lining.
+Branching chordal fans terminate on the moving AV leaflet margins. The mitral
+annulus is saddle shaped; AV annuli are oval. The anterior cut passes through
+near-side AV leaflet tissue as well as chamber walls, exposing the supports;
+restoring the wall restores these leaflet portions. The separate valve bench
+retains complete leaflets. Smooth tissue outflow tracts reach the semilunar
+annuli, with anterior windows at the great-artery roots for inspection. Venae
+cavae enter the RA, with the IVC behind the ventricular section. These are
+illustrative teaching surfaces, not a clinically validated segmented scan.
+
 Rendering is requested on interaction; automatic motion is suspended offscreen
 and when the document is hidden. System and app reduced motion stop automatic
 play while retaining manual phase and journey controls. Removal aborts listeners,
@@ -78,3 +95,23 @@ stored-state isolation, original reward deduplication, keyboard/ray controls,
 320/390/768-pixel layouts, disposal and non-WebGL fallback. The circulatory
 regression waits for the asynchronous system motion-preference event before
 checking its effect, then exercises all seven missions and their rewards.
+
+The reconstruction refinement passes 168 heart checks, including eight added
+geometry checks: actual papillary attachment to endocardium; chord endpoints
+following leaflet margins through four cycle phases; continuous septal margins;
+closed apical tissue; an RV moderator band; connected smooth outflows; mitral
+saddle/coaptation; and restoration of the sectioned AV leaflets. All 119 tracked
+JavaScript files also pass `node --check`. Loading checks continue to enforce
+on-demand anatomy dependencies and previously visited offline content. No new
+production image/model assets or dependencies are added; the credited external
+GLB, structure IDs, phase timing, routes, discovery rewards and lesson answers
+are preserved.
+
+Additional local-fixture regression results for this refinement: mission access
+113 checks, learning support 108 checks, strict Arabic coverage 199 views/states
+with zero untranslated occurrences, and loading/offline performance 44 checks
+all pass. Run the current protected-flow regressions with
+`node _dev-tools/run-critical-checks.js mission-access learning-support arabic-coverage`
+and `npm run test:performance`, using the verification guide's Python/browser
+prerequisites. The legacy circulatory-art harness above was not rerun for this
+refinement. No production service or account is used by these checks.

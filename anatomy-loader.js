@@ -17,7 +17,7 @@
   });
   imports.set(url,pending);
  }
- function start(){ensure('[data-atlas]','./body-atlas.js');ensure('#heart-canvas','./heart-explorer.js?v=guided-ar-1');}
+ function start(){ensure('[data-atlas]','./body-atlas.js');ensure('#heart-canvas','./heart-explorer.js?v=heart-anatomy-2');}
  new MutationObserver(start).observe(document.getElementById('app'),{childList:true,subtree:true});
  start();
 })();

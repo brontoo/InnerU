@@ -638,7 +638,6 @@ InneruLocale.register({
   "DBCLS BodyParts3D external heart": "قلب خارجي من DBCLS BodyParts3D",
   "Heart surface anatomy:": "تشريح سطح القلب:",
   "Four valves are separated and enlarged independently. Valve movement follows pressure gradients; the valve bench is not their anatomical arrangement in the heart.": "فُصلت أربعة صمّامات وكُبّر كلّ منها منفصلًا. تتبع حركة الصمّام تدرّج الضغط؛ ولا تمثّل منضدة الصمّامات ترتيبها التشريحي في القلب.",
-  "Original anatomical cutaway: anterior walls are removed to expose the cavities. Relative wall thickness, valve supports and vessel connections are represented; fine structures are enlarged for study.": "مقطع تشريحي أصلي: أُزيلت الجدران الأمامية لكشف التجاويف. تُمثَّل سماكة الجدران ودعامات الصمّامات ووصلات الأوعية نسبيًا؛ وكُبّرت التراكيب الدقيقة للدراسة.",
   "AV valve closure": "إغلاق الصمّامات الأذينية البطينية",
   "Isovolumetric contraction": "انقباض متساوي الحجم",
   "Semilunar valve closure": "إغلاق الصمّامات الهلالية",
@@ -681,5 +680,6 @@ InneruLocale.register({
   "MATCH CONFIRMED": "تأكّدت المطابقة",
   "ANTIGEN CONFLICT": "تعارض المستضدّات",
   "EXCHANGE SURFACE": "سطح التبادل",
-  "TOWARD HEART": "نحو القلب"
+  "TOWARD HEART": "نحو القلب",
+  "Anterior chamber walls and near-side AV valve tissue are cut away to expose connected chambers, the septum and valve supports. Fine structures are enlarged for study.": "أُزيلت الجدران الأمامية للحجرات وأجزاء نسيج الصمامات الأذينية البطينية القريبة من المشاهد لإظهار الحجرات المتصلة والحاجز ودعامات الصمامات. كُبّرت التراكيب الدقيقة لتسهيل دراستها."
 });
