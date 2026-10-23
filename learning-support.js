@@ -10,7 +10,7 @@
   'Choose an event to see what moves and where.':['Choose one event.','Use the picture and controls to see what moves.','Watch where it moves.','Explore all three events.']
  };
  const tr=s=>window.InneruLocale?.t(s)||s,source=el=>window.InneruLocale?.source(el)||el?.textContent||'';
- const selector='#skeletal-lab-body,.resp-activity-game,.integ-quest,#circ-lab,.exc-lab,.mq-panel,.bt-lab,.dd-bench,.cap-station,.cap-synthesis';
+ const selector='.ms-guidance,#skeletal-lab-body,.resp-activity-game,.integ-quest,#circ-lab,.exc-lab,.mq-panel,.bt-lab,.dd-bench,.cap-station,.cap-synthesis';
  function announce(text){const el=document.querySelector('[data-support-status]');if(el)el.textContent=tr(text);}
  function controls(){
   let box=document.querySelector('.learning-support');
@@ -24,6 +24,7 @@
  }
  function instructions(root){return [...root.querySelectorAll(':scope > p,:scope > .note,:scope > header p,.quest-intro,.ra-stage > p,.ra-stage .ra-task-instruction')].filter(el=>!el.closest('.iu-guidance,[role=status],[role=alert]')&&!el.querySelector('a,button,input,select,textarea,img,svg,canvas')&&source(el).trim());}
  function stepsFor(root,paragraphs){
+  if(root.matches('.ms-guidance'))return window.InneruMastery.guideSteps;
   const visual=root.querySelector('img,svg,canvas')||root.closest('main')?.querySelector('.skel-study-section figure,.resp-lesson figure');
   const steps=[visual?'Look at the diagram. You can use the existing controls to explore it.':'Read the instruction below. Take one step at a time.'];
   for(const p of paragraphs){const text=source(p).trim();if(plain[text]){steps.push(...plain[text]);continue;}for(const sentence of tr(text).split(/(?<=[.!?])\s+(?=[A-Z\u0600-\u06ff])/u)){const item=sentence.trim();if(item&&!steps.includes(item))steps.push(item);}}

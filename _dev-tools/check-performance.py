@@ -44,7 +44,7 @@ try:
    check(True,fragment+' direct route loads its own module')
   signed=new_context(browser,service_workers='block');sp=signed.new_page()
   response=sp.request.post(origin+'/api/auth?action=signup',data={'email':'routes-fixture@example.com','password':'Local-Routes-Fixture-123','name':'Explorer','avatarId':'atlas','classCode':'10G5'});assert response.ok,response.text()
-  for fragment,selector in [('daily','#daily-options'),('review','.rs-studio'),('badges','.sd-collection'),('dashboard','.sd-page')]:
+  for fragment,selector in [('daily','#daily-options'),('review','.rs-studio'),('badges','.sd-collection'),('dashboard','.sd-page'),('dashboard?view=mastery','[data-mastery]')]:
    sp.goto(origin+'/index.html?nosw=1#'+fragment);sp.wait_for_selector(selector)
    check(True,fragment+' signed-in direct route loads its own view')
   # Revisit a module in the same document: no second fetch or duplicate globals.

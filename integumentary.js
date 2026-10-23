@@ -81,7 +81,7 @@ function mission(n){
      const correct=Number(button.dataset.choice)===q[2],tries=Number(el.dataset.tries)||0;
      window.InneruEvidence?.record({id:'integumentary:'+n+':q'+i,system:'integumentary',mission:n,kind:'check',title:'Science check '+(i+1),prompt:q[0],answer:window.InneruEvidence.choiceText(button),expected:q[1][q[2]],correct,feedback:q[3]});
     if(!correct)el.dataset.tries=String(tries+1);
-     el.querySelector('.resp-feedback').textContent=correct?'✓ '+q[3]:(tries<1?'Try again. Use the science brief or ask for a clue.':'Look closely: '+q[3]);
+     el.querySelector('.resp-feedback').textContent=InneruRetry.text('integumentary:'+n+':q'+i,correct,q[3],el.querySelector('.resp-feedback'),tries+1);
      el.classList.toggle('resp-wrong',!correct);
      const pw=progress();if(correct)pw.weak=pw.weak.filter(x=>x!==weakId);else if(!pw.weak.includes(weakId))pw.weak.push(weakId);saveProgress();
      if(correct){button.classList.add('resp-correct');el.classList.add('is-secured');el.querySelectorAll('[data-choice]').forEach(b=>b.disabled=true);el.querySelector('.quest-check-reward').textContent=preview?'PRACTICE':'7 XP SAVED';step(`${n}-q${i}`,7);finish()}
@@ -103,7 +103,7 @@ function mastery(){
    el.querySelectorAll('button').forEach(button=>button.onclick=()=>{
      const good=Number(button.dataset.choice)===i%2;
      window.InneruEvidence?.record({id:'integumentary:final:'+i,system:'integumentary',kind:'final',title:'Final challenge decision '+(i+1),prompt:q[0],answer:window.InneruEvidence.choiceText(button),expected:window.InneruEvidence.choiceText(el.querySelector('[data-choice="'+(i%2)+'"]')),correct:good,feedback:q[3]});
-     el.querySelector('.resp-feedback').textContent=(good?'✓ ':'Try again. ')+q[3];el.classList.toggle('resp-wrong',!good);
+     el.querySelector('.resp-feedback').textContent=InneruRetry.text('integumentary:final:'+i,good,q[3],el.querySelector('.resp-feedback'));el.classList.toggle('resp-wrong',!good);
      if(good){button.classList.add('resp-correct');el.classList.add('is-secured');el.querySelectorAll('button').forEach(b=>b.disabled=true);el.querySelector('.quest-check-reward').textContent=preview?'PRACTICE':'8 XP SAVED';step('final-'+i,8);finish()}
    });
  });finish();

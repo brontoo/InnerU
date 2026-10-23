@@ -1,11 +1,11 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v54-heart-anatomy';
+const VERSION='inneru-v55-mastery';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=owner-1",
-  "./learning-support.js?v=guided-ar-1",
+  "./locale.js?v=mastery-1",
+  "./learning-support.js?v=mastery-1",
   "./learning-support.css?v=guided-ar-1",
   "./index.html",
   "./404.html",
@@ -39,12 +39,12 @@ const SHELL=[
   "./glossary.js?v=guided-ar-1",
   "./speech.js?v=guided-ar-1",
   "./learning-progress.js?v=on-demand-1",
-  "./student-dashboard.js?v=on-demand-1",
+  "./student-dashboard.js?v=mastery-1",
   "./account-session.js?v=owner-1",
   "./cloud-learning.js?v=owner-1",
   "./mission-access.js?v=guided-ar-1",
-  "./route-manifest.js?v=heart-anatomy-2",
-  "./route-loader.js?v=owner-1",
+  "./route-manifest.js?v=mastery-1",
+  "./route-loader.js?v=mastery-1",
   "./pwa.js"
 ];
 const ASSET_RE=/\.(glb|gltf|bin|webp|png|jpe?g|svg|woff2?|ttf)$/i;

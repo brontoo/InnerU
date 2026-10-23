@@ -44,6 +44,12 @@ const provider=http.createServer(async(req,res)=>{try{
   if(req.method==='PUT'){if(data.data)u.data={...u.data,...data.data};if(data.password)u.password=data.password;if(dbContainer&&data.data)sql('update auth.users set raw_user_meta_data='+quote(JSON.stringify(u.data))+'::jsonb where id='+quote(u.id));}
   return send(res,200,publicUser(u));
  }
+ if(url.pathname==='/rest/v1/teacher_feedback'){
+  if(!u)return send(res,401,{code:'bad_jwt'});
+  if(!dbContainer)return send(res,404,{code:'42P01'});
+  if(url.searchParams.get('student_id')!=='eq.'+u.id)return send(res,200,[]);
+  return send(res,200,JSON.parse(sql('set role authenticated;set request.jwt.claim.sub='+quote(u.id)+';select coalesce(jsonb_agg(to_jsonb(f)),\'[]\') from (select response_id,note,reviewed,submission_at,updated_at from public.teacher_feedback where student_id='+quote(u.id)+' order by updated_at desc) f;')));
+ }
  if(url.pathname==='/rest/v1/profiles'){
   if(!u)return send(res,401,{code:'bad_jwt'});
   if(url.searchParams.get('id')!=='eq.'+u.id)return send(res,200,[]);

@@ -20,7 +20,7 @@ module.exports=async(req,res)=>{
  try{
   if(!['GET','POST'].includes(req.method))return answer(res,405,{error:'Method not allowed.'});
   const action=new URL(req.url,'http://local').searchParams.get('action')||'state';
-  if((['state','classroom','mission-catalog','mission-controls'].includes(action))!==(req.method==='GET'))return answer(res,405,{error:'Method not allowed.'});
+  if((['state','classroom','mission-catalog','mission-controls','my-feedback'].includes(action))!==(req.method==='GET'))return answer(res,405,{error:'Method not allowed.'});
   if(req.method==='POST'&&((req.headers.origin&&req.headers.origin!==origin(req))||req.headers['sec-fetch-site']==='cross-site'))throw new AuthError('Open this action from InnerU.',403);
   const cfg=config();if(!cfg)throw new AuthError('The Supabase account service is not connected in Vercel.',503);
   const active=await session(req,res,cfg);if(!active)throw new AuthError('Sign in to save learning to your account.',401);
@@ -32,7 +32,14 @@ module.exports=async(req,res)=>{
    result=await rpc(cfg,active.token,'inneru_state');
    if(!Object.hasOwn(result?.profile||{},'classCode'))throw new AuthError('School class assignments need a database update. Ask the site owner to run the latest supabase/setup.sql in the Supabase SQL Editor. Your learning is safe on this device.',503);
   }
-  else if(action==='save'){
+  else if(action==='my-feedback'){
+   const user=await publicUser(active.user,cfg,active.token);
+   if(user.role!=='student')throw new AuthError('This action belongs to a student account.',403);
+   let response;try{response=await fetch(cfg.url+'/rest/v1/teacher_feedback?select=response_id,note,reviewed,submission_at,updated_at&order=updated_at.desc&student_id=eq.'+encodeURIComponent(active.user.id),{headers:{apikey:cfg.key,Authorization:'Bearer '+active.token},signal:AbortSignal.timeout(15000)});}catch{throw new AuthError('Teacher comments are unavailable. Try again when connected.',503);}
+   if(!response.ok)throw new AuthError('Teacher comments are unavailable. Try again when connected.',503);
+   const rows=await response.json();result=Object.create(null);
+   for(const row of rows)if(!Object.hasOwn(result,row.response_id))result[row.response_id]={note:row.note,reviewedAt:row.reviewed?row.updated_at:null,submissionAt:row.submission_at};
+  }else if(action==='save'){
    if(!Number.isSafeInteger(data.revision)||data.revision<0||!/^[-a-f0-9]{36}$/i.test(data.requestId||''))throw new AuthError('The learning save request is invalid.');
    let value;try{value=snapshot(data.snapshot);}catch(error){throw new AuthError(error.message);}
    result=await rpc(cfg,active.token,'inneru_save',{p_snapshot:value,p_revision:data.revision,p_request_id:data.requestId});

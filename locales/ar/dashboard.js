@@ -1,5 +1,7 @@
 /* Authored Modern Standard Arabic; English source keys. See ../README.md. */
 InneruLocale.register({
+  "Mastery": "التمكّن",
+  "Review recorded evidence for objectives in your assigned classes.": "راجع الأدلة المسجّلة للأهداف في صفوفك المسندة.",
   "YOUR INNERU LEARNING SPACE": "مساحة تعلّمك في InnerU",
   "Explore the worlds": "استكشف العوالم",
   "EVERY COMPLETED TASK COUNTS": "كلّ مهمّة مكتملة تُحدث فرقًا",

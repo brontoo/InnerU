@@ -1,5 +1,7 @@
 /* Ordered classic-script groups; styles retain their original cascade positions. */
 window.InneruRouteManifest={
+  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=mastery-1"],"styles":[]},
+  "mastery":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=mastery-1","mastery.js?v=mastery-1"],"styles":[{"url":"mastery.css?v=mastery-1","order":40}]},
   "owner":{"scripts":["owner.js?v=owner-1"],"styles":[{"url":"owner.css?v=owner-1","order":39}]},
   "art": {
     "scripts": [
@@ -45,7 +47,7 @@ window.InneruRouteManifest={
       "skeletal-map-art.js?v=framework-path-1",
       "rich-pages.js?v=guided-ar-1",
       "skeletal-activities.js?v=framework-path-1",
-      "skeletal-course.js?v=on-demand-1"
+      "skeletal-course.js?v=mastery-1"
     ],
     "styles": [
       {
@@ -64,7 +66,7 @@ window.InneruRouteManifest={
       "muscle-pair.js?v=arm-team-1",
       "muscle-learning.js?v=arm-team-1",
       "muscle-atlas-ui.js?v=guided-ar-1",
-      "muscle.js?v=guided-ar-1",
+      "muscle.js?v=mastery-1",
       "muscle-force.js?v=on-demand-1"
     ],
     "styles": [
@@ -91,7 +93,7 @@ window.InneruRouteManifest={
       "circ-studies.js?v=circ-route-1",
       "circ-route-quest.js?v=circ-route-1",
       "heart-lab-ui.js?v=guided-ar-1",
-      "circulatory.js?v=guided-ar-1",
+      "circulatory.js?v=mastery-1",
       "circ-map-art.js?v=on-demand-1",
       "anatomy-loader.js?v=heart-anatomy-2"
     ],
@@ -122,7 +124,7 @@ window.InneruRouteManifest={
   },
   "respiratory": {
     "scripts": [
-      "respiratory.js?v=guided-ar-1",
+      "respiratory.js?v=mastery-1",
       "resp-map-art.js?v=on-demand-1"
     ],
     "styles": [
@@ -149,7 +151,7 @@ window.InneruRouteManifest={
   },
   "integumentary": {
     "scripts": [
-      "integumentary.js?v=guided-ar-1",
+      "integumentary.js?v=mastery-1",
       "integ-map-art.js?v=on-demand-1"
     ],
     "styles": [
@@ -180,7 +182,7 @@ window.InneruRouteManifest={
   "excretory": {
     "scripts": [
       "excretory-art.js?v=guided-ar-1",
-      "excretory.js?v=guided-ar-1"
+      "excretory.js?v=mastery-1"
     ],
     "styles": [
       {
@@ -253,7 +255,7 @@ window.InneruRouteManifest={
   },
   "teacher": {
     "scripts": [
-      "teacher-dashboard.js?v=guided-ar-1"
+      "teacher-dashboard.js?v=mastery-1"
     ],
     "styles": [
       {

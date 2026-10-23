@@ -890,7 +890,7 @@ function wireBonus(n) {
             document.getElementById("exc-ph-feedback").textContent =
               b.dataset.ph === "correct"
                 ? "✓ Excreting H⁺ and conserving bicarbonate helps counter excess acidity. Bicarbonate supports buffering; reabsorbing it does not make blood more acidic."
-                : "Retaining hydrogen ions would worsen excess acidity. Try the other response.";
+                : InneruRetry.text("excretory:5:ph",false,"Retaining hydrogen ions would worsen excess acidity. Try the other response.",document.getElementById("exc-ph-feedback"));
             window.InneruEvidence?.record({id:'excretory:5:ph',system:'excretory',mission:5,kind:'activity',title:'Acid-base response',prompt:'Which kidney response helps when blood becomes too acidic?',answer:(window.InneruLocale?InneruLocale.source(b):b.textContent).trim(),expected:(window.InneruLocale?InneruLocale.source(document.querySelector('[data-ph="correct"]')):document.querySelector('[data-ph="correct"]').textContent).trim(),correct:b.dataset.ph==='correct'});
             if (b.dataset.ph === "correct") step("5-ph", 10);
           }),
@@ -920,7 +920,7 @@ function wireBonus(n) {
             document.getElementById("exc-treatment-feedback").textContent =
               b.dataset.treatment === "dialysis"
                 ? "✓ A dialyzer removes wastes and excess fluid from blood. A transplant supplies a donor kidney."
-                : "A transplant places a healthy donor kidney in the body. Try the external filtering treatment.";
+                : InneruRetry.text("excretory:6:treatment",false,"A transplant places a healthy donor kidney in the body. Try the external filtering treatment.",document.getElementById("exc-treatment-feedback"));
             window.InneruEvidence?.record({id:'excretory:6:treatment',system:'excretory',mission:6,kind:'activity',title:'Kidney treatment',prompt:'Choose the external filtering treatment.',answer:(window.InneruLocale?InneruLocale.source(b):b.textContent).trim(),expected:(window.InneruLocale?InneruLocale.source(document.querySelector('[data-treatment="dialysis"]')):document.querySelector('[data-treatment="dialysis"]').textContent).trim(),correct:b.dataset.treatment==='dialysis'});
             if (b.dataset.treatment === "dialysis") step("6-treatment", 10);
           }),
@@ -942,9 +942,7 @@ function wireQuestions(questions, n, finish, final = false) {
             (b.onclick = () => {
               const good = +b.dataset.choice === q[2];
               window.InneruEvidence?.record({id:'excretory:'+id,system:'excretory',mission:final?0:n,kind:final?'final':'check',title:final?'Final decision '+(i+1):'Science check '+(i+1),prompt:q[0],answer:(window.InneruLocale?InneruLocale.source(b):b.textContent).trim(),expected:q[1][q[2]],correct:good,feedback:q[3]});
-              el.querySelector(".resp-feedback").textContent = good
-                ? "✓ " + q[3]
-                : "Try again. " + q[3];
+              el.querySelector(".resp-feedback").textContent = InneruRetry.text('excretory:'+id,good,q[3],el.querySelector('.resp-feedback'));
               el.classList.toggle("resp-wrong", !good);
               if (!preview && !final) {
                 const p = progress();

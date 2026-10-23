@@ -1,9 +1,10 @@
 # Automatic critical release checks
 
-`npm test` runs the same nine critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same ten critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
+| `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
 | `verify-accounts.py` | Signup, sign-in, avatars, recovery, cookies and account isolation |
 | `verify-student-classes.py` | All six class choices, pending teacher linking and class permissions |
 | `verify-dashboard.py` | Real mission work, once-only XP, saved progress, badges and responsive student dashboard |
@@ -337,3 +338,8 @@ binding, isolated browser registers and the expanded avatar collection. See
 [ACCOUNT-ROLES.md](ACCOUNT-ROLES.md). The original public-dashboard harnesses
 contain cross-role/anonymous workflows that the new access policy supersedes.
 Use the role, account, database and cloud-learning suites for current behavior.
+
+Mastery checks can run alone with `node _dev-tools/run-critical-checks.js mastery`.
+They use the same local PostgreSQL fixture, fake accounts and browser setup. See
+[the mastery criteria](../README.md#evidence-based-mastery) for the explicit
+check-to-objective mapping and the limits of retained evidence. No migration is needed.

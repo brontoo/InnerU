@@ -25,16 +25,19 @@
  }
  function required(hash){
   const path=hash.replace(/^#/,'').split('?')[0],root=path.split('/')[0];
+  const help=root==='mission'||/^(muscle|respiratory|integumentary|excretory)\/mission\//.test(path)||/^(respiratory|integumentary|excretory)\/mastery$/.test(path)||/^circulatory\/(\d+|mastery|boss)$/.test(path)?['evidence-help']:[];
+  const mastery=new URLSearchParams(hash.split('?')[1]||'').get('view')==='mastery';
+  if(root==='dashboard'&&mastery)return ['mastery'];
   if(['dashboard','badges','glossary'].includes(root))return [];
   if(root==='owner')return ['owner'];
-  if(root==='teacher')return ['teacher'];
+  if(root==='teacher')return mastery?['mastery','teacher']:['teacher'];
   if(root==='review')return ['review'];
-  if(root==='world'||root==='mission')return ['art','atlas','skeletal'];
-  if(root==='muscle')return ['art','atlas','muscle'];
-  if(root==='circulatory')return ['art','circulatory',...(path.includes('/')?['circ-missions']:[])];
-  if(root==='respiratory')return ['art','atlas','respiratory',...(path.includes('/')?['resp-missions']:[])];
-  if(root==='integumentary')return ['art','atlas','integumentary',...(path.includes('/')?['integ-missions']:[])];
-  if(root==='excretory')return ['art','atlas','excretory'];
+  if(root==='world'||root==='mission')return [...help,'art','atlas','skeletal'];
+  if(root==='muscle')return [...help,'art','atlas','muscle'];
+  if(root==='circulatory')return [...help,'art','circulatory',...(path.includes('/')?['circ-missions']:[])];
+  if(root==='respiratory')return [...help,'art','atlas','respiratory',...(path.includes('/')?['resp-missions']:[])];
+  if(root==='integumentary')return [...help,'art','atlas','integumentary',...(path.includes('/')?['integ-missions']:[])];
+  if(root==='excretory')return [...help,'art','atlas','excretory'];
   if(root==='capstone'||root==='final')return ['final'];
   if(['detective','connect','daily'].includes(root))return ['art',root];
   return ['art','home'];

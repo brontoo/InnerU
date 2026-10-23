@@ -346,3 +346,158 @@ see `SOURCE-BACKUP.md` and `_export-manifest.json`. Since then the project has b
 restructured: the NaN fixes, the Cloudflare snippet removal, the recovered 3D assets,
 the six interactive labs, the capstone, review, teacher tools and the habit layer.
 The manifest describes the **original export**, not the current tree.
+
+## Evidence-based mastery
+
+Open **Mastery** from Student Dashboard, or the **Mastery** tab inside Teacher
+Dashboard. Teachers can filter their authorized roster by class, student, body
+system, mission, objective and evidence status. Results paginate at 45 objectives
+so a full teacher roster does not create an unbounded page. These are private account views;
+there is no public ranking or cross-class analytics endpoint.
+
+The authored [objective catalogue](mastery-catalog.js) groups existing assessment
+checks into one composite objective per mission/final (39 missions and six finals).
+It is an interpretation of those existing checks, not a new curriculum or a grade
+for every sub-concept. Explicit assessment IDs bind evidence to each objective;
+XP, badges, keys, completion, time spent and ungraded self-checks are never used.
+Named, recorded lab checks also appear as supporting assessment evidence. An
+unresolved error in one prevents Secure; correct first recorded lab responses
+can contribute to the two-distinct-check minimum, but never replace required
+core-check coverage. Route-bound ungraded submissions are shown for review only.
+
+- **Not enough evidence:** no matching boolean assessment result is recorded.
+  Ungraded submitted work and teacher comments can still be inspected.
+- **Developing:** at least one matched result exists, but checks are missing,
+  a latest result is incorrect, or independent evidence is limited.
+- **Secure in recorded checks:** all checks in a complete declared set are currently
+  correct, at least two distinct checks were correct on their first recorded
+  response, and no matched graded check has an unresolved wrong response. The
+  alternative existing circulatory final has its own complete set; partial sets
+  cannot be combined to manufacture coverage.
+
+“Secure” describes recorded checks only. It does **not** establish lasting mastery,
+unaided recall or transfer to unfamiliar situations. Corrected responses remain
+visible, but repeating the same question never becomes another independent check.
+Only the latest answer and up to four earlier attempts exist in the current data;
+when the first attempt has been discarded, its result is treated as unknown.
+The existing response store retains at most 600 responses. Older completion-only
+records are explicitly insufficient. Written work, a
+teacher's review flag and comments are not inferred grades. Comments identify
+whether they refer to the current submission or an earlier version.
+
+A first incorrect recorded check gives a supportive, mission-related review hint;
+original scientific explanations are available after a retry (the muscular
+activities retain their existing explicit **Show me** action). Cloud record restoration refreshes the view while retaining its filters, open
+evidence and keyboard focus; existing version-conflict choices remain explicit.
+The student evidence
+view likewise hides a first incorrect response's reference explanation until a
+retry or correct answer. Existing answers, reward amounts, once-only XP,
+completion requirements, locks and read-only teacher previews are unchanged.
+
+No database migration or additional configuration is required beyond the existing
+schema. The student-only `GET /api/learning?action=my-feedback` derives the student
+ID from the verified cookie session and reads `teacher_feedback` using that user's
+JWT and existing SELECT RLS policy. It cannot accept another student's ID. Teacher
+mastery reuses the existing approved, assigned-class `classroom` RPC, without a
+new teacher data endpoint. No service key, new grant or RLS change is introduced.
+
+Mastery code, its objective catalogue and stylesheet are deferred. Mission routes
+load only the shared catalogue/retry helper alongside their existing modules;
+initial login/dashboard do not fetch mastery or body-system code. The service
+worker caches optional files after use, while API responses remain uncached.
+Previously loaded views remain usable in an already verified offline session;
+a fresh private-page reload still requires the existing online identity check.
+Teacher comments require a connection and show an explicit fallback when unavailable.
+Mastery text is authored in Modern Standard Arabic in
+[locales/ar/mastery.js](locales/ar/mastery.js), with existing system catalogues for
+assessment prompts. Native disclosure controls, labeled filters, visible focus,
+RTL reflow, Guided instructions and user-activated read-aloud are retained.
+
+`npm test` includes `_dev-tools/verify-mastery.py`: pure evidence rules, real wrong
+answers/retries in all six systems, unchanged rewards, assigned-class and student
+isolation, real teacher comments, keyboard disclosures, Guided mode and mobile RTL.
+The strict Arabic audit also covers student and teacher mastery and evidence.
+`npm run test:performance` checks the new direct route under the unchanged initial
+loading budgets. Tests use isolated local fixtures only.
+
+### Mastery change scope
+
+The implementation changes these files; no migrations, image/model assets, new
+dependencies or deployment configuration are changed.
+
+- `404.html`
+- `README.md`
+- `_dev-tools/README.md`
+- `_dev-tools/account-test-server.js`
+- `_dev-tools/check-performance.py`
+- `_dev-tools/run-critical-checks.js`
+- `_dev-tools/verify-arabic-coverage.py`
+- `_dev-tools/verify-mastery.py`
+- `api/learning.js`
+- `circulatory.js`
+- `excretory.js`
+- `index.html`
+- `integumentary.js`
+- `learning-support.js`
+- `locale.js`
+- `locales/ar/dashboard.js`
+- `locales/ar/mastery.js`
+- `locales/ar/teacher.js`
+- `login.html`
+- `mastery-catalog.js`
+- `mastery-model.js`
+- `mastery.css`
+- `mastery.js`
+- `muscle.js`
+- `respiratory.js`
+- `retry-feedback.js`
+- `route-loader.js`
+- `route-manifest.js`
+- `skeletal-course.js`
+- `student-dashboard.js`
+- `sw.js`
+- `teacher-dashboard.js`
+
+### Mastery verification results
+
+Local verification on 22 October 2026 used the existing isolated PostgreSQL 17
+fixture, Playwright and the supported Chromium executable override (Chromium 154).
+No production credentials, accounts, outbound emails or production services were
+used. `npm test` passed all ten suites. The expanded mastery suite was rerun after
+the final presentation changes and passed 82 checks, including actual ungraded
+investigation work, sorting references and a fresh-device cloud-version restore.
+
+| Verification | Result |
+|---|---|
+| Accounts / signup | PASS — 46 checks |
+| Student classes / teacher assignment | PASS — 118 checks |
+| Student dashboard / progress | PASS — 65 checks |
+| Mission access / locks / previews | PASS — 113 checks |
+| Teacher responses / feedback | PASS — 74 checks |
+| Teacher workspace / class isolation | PASS — 89 checks |
+| Owner / approval / assignments | PASS — 94 checks |
+| Guided mode / accessibility / speech | PASS — 108 checks |
+| Strict Arabic UI coverage | PASS — zero gaps across 203 views/states |
+| Mastery / evidence / privacy / retry | PASS — 82 focused checks |
+| Loading / lazy routes / offline caching | PASS — 47 checks |
+| JavaScript syntax | PASS — all 124 tracked and new `.js` files |
+
+The existing loading limits were not relaxed:
+
+| Initial view | Gzip JS | Gzip CSS | Critical image bytes | Requests | 3D model bytes |
+|---|---:|---:|---:|---:|---:|
+| Sign-in | 24,365 | 11,525 | 428,514 | 18 | 0 |
+| Student dashboard | 72,474 | 31,167 | 2,113,950 | 48 | 0 |
+
+No mastery/system modules or models are requested on the initial dashboard.
+Scientific sorting/sequence references keep their original arrow direction, with
+isolated translated terms in the Arabic interface. Personal responses and teacher
+comments remain verbatim. The coverage audit measures portal-owned interface text,
+not translation of personal content.
+
+These checks cover keyboard operation, focus recovery, status announcements,
+contrast, 44px targets and RTL reflow down to 320px, alongside existing reduced
+motion checks. They are not a formal WCAG certification or physical-device audit.
+Speech uses a deterministic browser-synthesis fixture; real voice availability and
+pronunciation depend on the learner's device. Secure remains a description of
+recorded checks, without a claim of validated long-term retention.
