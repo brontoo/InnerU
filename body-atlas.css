@@ -34,7 +34,7 @@
 .body-atlas.muscular .body-atlas-hotspot:hover,.body-atlas.muscular .body-atlas-hotspot:focus-visible{transform:translate(-50%,-50%) scale(1.13);background:transparent;outline:2px solid #ffe9b9;outline-offset:-3px}
 .body-atlas.muscular .body-atlas-hotspot:hover:before,.body-atlas.muscular .body-atlas-hotspot:focus-visible:before{inset:12px;background:#f6dbb5}
 .body-atlas.muscular .body-atlas-hotspot[aria-pressed=true]:before{inset:11px;background:#f9d08d;box-shadow:0 0 0 5px #f5c88877,0 0 20px #ffd197}
-.body-atlas.muscular .body-atlas-parts button{flex:1 1 45%;min-width:0;text-align:left;padding:8px 10px;font-size:.84rem;line-height:1.28}
+.body-atlas.muscular .body-atlas-parts button{flex:1 1 45%;min-width:0;text-align:start;padding:8px 10px;font-size:.84rem;line-height:1.28}
 .body-atlas.muscular .body-atlas-more{border:1px solid #7ea5ab70;border-radius:10px;padding:0 12px 12px;background:#13394c70}
 .body-atlas.muscular .body-atlas-more summary{cursor:pointer;padding:10px 3px;font-size:.88rem;font-weight:700;color:#d5efeb}
 .body-atlas.muscular .body-atlas-more summary:focus-visible{outline:2px solid #f6d8a9;outline-offset:2px}

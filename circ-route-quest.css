@@ -1,5 +1,5 @@
 /* Scoped circulation route quest: organ studies + physiological, directed paths. */
-.circ-route-quest{container-type:inline-size;margin:16px 0 22px;border:1px solid #d1dcc7;border-radius:17px;background:linear-gradient(145deg,#fffaf0,#f2f4e4);padding:22px;color:#31595b;overflow:hidden;text-align:left}
+.circ-route-quest{container-type:inline-size;margin:16px 0 22px;border:1px solid #d1dcc7;border-radius:17px;background:linear-gradient(145deg,#fffaf0,#f2f4e4);padding:22px;color:#31595b;overflow:hidden;text-align:start}
 .crq-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
 .crq-heading .eyebrow{font-size:.6rem;letter-spacing:.12em;color:#8c8457}
 .crq-heading h3{font-size:clamp(1.3rem,2.1vw,1.9rem);line-height:1.3;letter-spacing:-.02em;color:#2c5659;margin:10px 0 12px}
@@ -69,7 +69,7 @@
 .crq-discovery progress::-moz-progress-bar{background:#7b9f5b;border-radius:7px}
 .crq-discovery p{font-size:.58rem;line-height:1.8;color:#7b865f;margin:10px 0 0}
 .crq-checkpoints{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:23px}
-.crq-checkpoints button{display:grid;grid-template-columns:20px minmax(0,1fr) 8px;align-items:center;gap:8px;min-width:0;min-height:57px;padding:10px 11px;background:#f9f8e9;border:1px solid #cad7b9;border-radius:9px;color:#5f7a54;text-align:left;font-size:.65rem;line-height:1.6}
+.crq-checkpoints button{display:grid;grid-template-columns:20px minmax(0,1fr) 8px;align-items:center;gap:8px;min-width:0;min-height:57px;padding:10px 11px;background:#f9f8e9;border:1px solid #cad7b9;border-radius:9px;color:#5f7a54;text-align:start;font-size:.65rem;line-height:1.6}
 .crq-checkpoints b{font-size:.57rem;color:#a08e51}
 .crq-checkpoints i{display:block;width:7px;height:7px;border:1px solid #adbe8c;border-radius:50%}
 .crq-checkpoints .is-discovered i{background:#83a767;border-color:#83a767}

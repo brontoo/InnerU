@@ -27,6 +27,8 @@ export function mountSkinExplorer(root) {
   let renderer,scene,camera,controls,model,resize,mutation,intersection,frame,environment,ground;
   let selection=null,mode="cutaway",process=null,detail=null,dermisPart=null,matrixOpacity=.24,separation=.55,spin=false,labels=true,playing=!reduced,disposed=false,visible=true,cameraGoal=null,lastTime=0,elapsed=0;
   let particles=[],outlines=[],labelButtons=[],needsRender=true;
+  // Localised captions can change size after the model has stopped rendering.
+  const labelResize=new ResizeObserver(()=>{needsRender=true;});
   const ghostMaterial=new THREE.MeshBasicMaterial({color:0x8c8680,transparent:true,opacity:.045,depthWrite:false,side:THREE.FrontSide});
   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
   const outlineMaterial=new THREE.ShaderMaterial({
@@ -133,23 +135,33 @@ export function mountSkinExplorer(root) {
 
   function updateLabels(){
     needsRender=true;
-    labelLayer.replaceChildren();labelButtons=[];
+    labelResize.disconnect();labelLayer.replaceChildren();labelButtons=[];
     if(!labels||detail)return;
     const names=selection==="Dermis"?dermisPart?[dermisPart]:["Papillary dermis","Reticular dermis","Sweat gland","Lymphatic vessels"]:selection?[selection]:process==="cooling"?["Sweat gland","Blood vessels"]:process==="touch"?["Touch receptors","Nerves"]:mode==="cutaway"?["Epidermis","Hair follicle","Sweat gland","Subcutaneous layer"]:MODES[mode].parts;
-    names.forEach(name=>{const b=document.createElement("button");b.type="button";b.className="skin-hotspot";b.textContent=name;b.setAttribute("aria-label","Examine "+name);b.onclick=()=>DERMIS_PARTS.some(p=>p.name===name)?selectDermal(name):select(name);labelLayer.append(b);labelButtons.push({button:b,name});});
+    names.forEach(name=>{const b=document.createElement("button");b.type="button";b.className="skin-hotspot";b.textContent=name;b.setAttribute("aria-label","Examine "+name);b.onclick=()=>DERMIS_PARTS.some(p=>p.name===name)?selectDermal(name):select(name);labelLayer.append(b);labelButtons.push({button:b,name});labelResize.observe(b);});
   }
   function positionLabels(){
     if(!camera)return;
     const width=stage.clientWidth,height=stage.clientHeight;
-    labelButtons.forEach(({button,name})=>{
+    const placed=[];
+    const captions=labelButtons.map(({button,name})=>{
       const point=new THREE.Vector3(...ANCHORS[name]);
       if(mode==="layers"){if(name==="Epidermis")point.y+=separation*.62;if(name==="Subcutaneous layer")point.y-=separation*.44;}
       point.project(camera);
-      const x=(point.x*.5+.5)*width,y=(-point.y*.5+.5)*height;
       button.hidden=point.z>1||point.z< -1||camera.position.z< -.1;
-      button.style.left=Math.max(12,Math.min(width-button.offsetWidth-12,x+12))+"px";
-      button.style.top=Math.max(50,Math.min(height-45,y-12))+"px";
-    });
+      return {button,x:Math.max(12,Math.min(width-button.offsetWidth-12,(point.x*.5+.5)*width+12)),
+        y:Math.max(50,Math.min(height-button.offsetHeight-12,(-point.y*.5+.5)*height-12)),
+        w:button.offsetWidth,h:button.offsetHeight};
+    }).filter(c=>!c.button.hidden).sort((a,b)=>a.y-b.y);
+    // Keep projected horizontal positions; move only colliding captions vertically.
+    for(const caption of captions){
+      const overlap=(y,p)=>caption.x<p.x+p.w+6&&caption.x+caption.w+6>p.x&&y<p.y+p.h+6&&y+caption.h+6>p.y;
+      const candidates=[caption.y,...placed.flatMap(p=>[p.y+p.h+6,p.y-caption.h-6]),50,height-caption.h-12];
+      const free=candidates.filter(y=>y>=50&&y<=height-caption.h-12&&!placed.some(p=>overlap(y,p))).sort((a,b)=>Math.abs(a-caption.y)-Math.abs(b-caption.y));
+      caption.y=free[0]??caption.y;
+      caption.button.style.left=caption.x+"px";caption.button.style.top=caption.y+"px";
+      placed.push(caption);
+    }
   }
 
   root.querySelectorAll("[data-part]").forEach(b=>b.onclick=()=>select(b.dataset.part));
@@ -181,7 +193,7 @@ export function mountSkinExplorer(root) {
   });
 
   const cleanup=()=>{
-    if(disposed)return;disposed=true;cancelAnimationFrame(frame);resize?.disconnect();mutation?.disconnect();intersection?.disconnect();controls?.dispose();clearOutlines();clearParticles();model?.meshes.forEach(m=>{m.userData.matrixMaterial?.dispose();if(m.userData.originalMaterial)m.material=m.userData.originalMaterial;});model?.dispose();environment?.dispose();ground?.geometry.dispose();ground?.material.dispose();outlineMaterial.dispose();ghostMaterial.dispose();renderer?.dispose();renderer?.domElement.remove();
+    if(disposed)return;disposed=true;cancelAnimationFrame(frame);labelResize.disconnect();resize?.disconnect();mutation?.disconnect();intersection?.disconnect();controls?.dispose();clearOutlines();clearParticles();model?.meshes.forEach(m=>{m.userData.matrixMaterial?.dispose();if(m.userData.originalMaterial)m.material=m.userData.originalMaterial;});model?.dispose();environment?.dispose();ground?.geometry.dispose();ground?.material.dispose();outlineMaterial.dispose();ghostMaterial.dispose();renderer?.dispose();renderer?.domElement.remove();
     if(window.inneruSkinExplorerState===report){delete window.inneruSkinExplorerState;delete window.inneruSkinExplorerDrawFrame;}
   };
   disposeCurrent=cleanup;

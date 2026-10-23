@@ -5,7 +5,7 @@
 .heart-lab-heading p { margin:0; font-size:.88rem; color:#c4dcdf!important; }
 .heart-lab-tag { border:1px solid #779fa4; border-radius:9px; font-size:.62rem; color:#aee2dc; letter-spacing:.09em; padding:12px; white-space:nowrap; }
 .heart-lab-modes { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; padding-bottom:16px; border-bottom:1px solid #739fa15c; margin-bottom:20px; }
-.heart-lab-modes button { text-align:left; color:#bdd7dc; background:#ffffff06; border:1px solid #739fa15c; border-radius:11px; padding:13px 15px; min-height:65px; font:inherit; font-size:.8rem; }
+.heart-lab-modes button { text-align:start; color:#bdd7dc; background:#ffffff06; border:1px solid #739fa15c; border-radius:11px; padding:13px 15px; min-height:65px; font:inherit; font-size:.8rem; }
 .heart-lab-modes small { display:block; margin-bottom:6px; font-size:.6rem; color:#96b8b9; letter-spacing:.1em; }
 .heart-lab-modes button[aria-selected=true] { background:#e1eee6; color:#174f57; border-color:#bfded0; }
 .heart-lab-modes button[aria-selected=true] small { color:#457e79; }
@@ -17,12 +17,12 @@
 .heart-view-label { position:absolute; left:17px; top:17px; right:12px; z-index:4; display:flex; flex-direction:column; align-items:flex-start; gap:9px; pointer-events:none; }
 .heart-view-label>span { color:#a6c6cb; font-size:.58rem; letter-spacing:.11em; }
 .heart-view-label b { font-size:.76rem; color:white; background:#147d7b; border:1px solid #77c5b9; border-radius:8px; padding:9px 12px; box-shadow:0 5px 20px #07233355; }
-.heart-lab .circ-heart-hotspot { background:#fbf3db; color:#1a5963; max-width:65%; white-space:normal; border-color:#a5c6ba; }
+.heart-lab .circ-heart-hotspot { transform:none; background:#fbf3db; color:#1a5963; max-width:65%; white-space:normal; border-color:#a5c6ba; }
 .heart-bench-labels { position:absolute; inset:0; z-index:5; pointer-events:none; }
 .heart-bench-labels button { position:absolute; transform:translate(-50%,65px); border:1px solid #7baaa4; border-radius:8px; background:#133d4be8; color:#ddede5; padding:7px 10px; min-height:42px; cursor:pointer; pointer-events:auto; font:inherit; white-space:nowrap; }
 .heart-bench-labels button:active { transform:translate(-50%,65px); }
 .heart-bench-labels button b { display:block; font-size:.65rem; }
-.heart-bench-labels button span { display:block; font-size:.55rem; color:#a9cdbd; margin-top:3px; }
+.heart-bench-labels button>span { display:block; font-size:.55rem; color:#a9cdbd; margin-top:3px; }
 @media(max-width:420px) { .heart-bench-labels button { transform:translate(-50%,35px); padding:6px; } .heart-bench-labels button:active { transform:translate(-50%,35px); } .heart-bench-labels button b { font-size:.55rem; } }
 .heart-lab .circ-heart-presets { margin:12px 0 8px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
 .heart-lab .circ-heart-presets button { font-size:.68rem; min-height:42px; padding:8px 4px; }

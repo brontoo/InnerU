@@ -1,6 +1,6 @@
 # Automatic critical release checks
 
-`npm test` runs the same nine critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same ten critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
@@ -13,6 +13,7 @@
 | `verify-owner.py` | Owner authorization, audited assignments, teacher approval and class boundaries |
 | `verify-learning-support.py` | Guided mode, language/RTL, controlled speech, actual rewards, locks and mobile reflow |
 | `verify-arabic-coverage.py` | All mission previews, system pages, selected anatomy, instruction steps and populated teacher views |
+| `verify-arabic-layout.py` | Rendered Arabic screens, clipped text, illustration collisions, responsive RTL and dialogs |
 
 The dashboard scripts use signed-in local fixtures, not the retired anonymous
 teacher/import interface. Existing progress-code formats are checked as data
@@ -337,3 +338,11 @@ binding, isolated browser registers and the expanded avatar collection. See
 [ACCOUNT-ROLES.md](ACCOUNT-ROLES.md). The original public-dashboard harnesses
 contain cross-role/anonymous workflows that the new access policy supersedes.
 Use the role, account, database and cloud-learning suites for current behavior.
+
+## Rendered Arabic layout
+
+`npm run test:arabic-layout` runs the layout regression alone. It is also part of
+`npm test` and the existing failure-only GitHub Actions artifact upload. See
+[ARABIC-LAYOUT.md](ARABIC-LAYOUT.md) for reproduced problems, viewport coverage,
+geometry exclusions and screenshot/report locations. This checks layout separately
+from translation completeness; it uses the same isolated fixtures and browser setup.

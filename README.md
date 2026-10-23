@@ -346,3 +346,11 @@ see `SOURCE-BACKUP.md` and `_export-manifest.json`. Since then the project has b
 restructured: the NaN fixes, the Cloudflare snippet removal, the recovered 3D assets,
 the six interactive labs, the capstone, review, teacher tools and the habit layer.
 The manifest describes the **original export**, not the current tree.
+
+### Arabic layout verification
+
+`npm run test:arabic-layout` checks rendered Arabic layouts, illustration/caption
+separation, RTL controls, popovers and narrow-screen reflow using local test accounts.
+It is included in `npm test`; no production credentials are used. See
+[_dev-tools/ARABIC-LAYOUT.md](_dev-tools/ARABIC-LAYOUT.md) for scope, review artifacts
+and known limits, and [_dev-tools/README.md](_dev-tools/README.md) for prerequisites.

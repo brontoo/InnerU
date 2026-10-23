@@ -24,7 +24,7 @@
 .bt-pace [aria-pressed=true] { background:#c5ead8; color:#1c5659; border-color:#d1ead5; font-weight:700; }
 .bt-weather { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #827f5b; background:#c9aa6510; color:#edddb0; border-radius:10px; min-height:62px; }
 .bt-weather>span:first-child { font-size:1.7rem; color:#d6b966; }
-.bt-weather>span:nth-child(2) { text-align:left; font-size:.8rem; font-weight:650; }
+.bt-weather>span:nth-child(2) { text-align:start; font-size:.8rem; font-weight:650; }
 .bt-weather small { display:block; margin-top:3px; font-size:.62rem; color:#b6c6a4; font-weight:400; }
 .bt-weather i { position:relative; display:block; width:32px; height:19px; margin-left:10px; border:1px solid #99b89b; border-radius:16px; background:#214550; }
 .bt-weather i:after { content:''; width:11px; height:11px; position:absolute; left:3px; top:3px; background:#9cb69c; border-radius:50%; transition:transform .2s; }
@@ -53,7 +53,7 @@
 .bt-prediction { margin-top:20px; }
 .bt-prediction>.bt-kicker { font-size:.53rem; color:#acbc91; }
 .bt-prediction-options { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
-.bt-prediction-options button { text-align:left; padding:11px 13px; min-height:56px; border-radius:9px; border:1px solid #6f9789; background:#1a4552; color:#c5dccd; font-size:.72rem; line-height:1.7; }
+.bt-prediction-options button { text-align:start; padding:11px 13px; min-height:56px; border-radius:9px; border:1px solid #6f9789; background:#1a4552; color:#c5dccd; font-size:.72rem; line-height:1.7; }
 .bt-prediction-options .bt-predict-right { background:#d1e9d2; color:#23554b; border-color:#d0e4b8; }
 .bt-prediction-options .bt-predict-retry { background:#614b43; color:#f4d6c4; border-color:#b49274; }
 [data-bt-prediction-feedback] { color:#bdd5b6; font-size:.72rem; line-height:1.8; margin:11px 0 0; }
@@ -82,7 +82,7 @@
 .bt-match-hint { font-size:.75rem; line-height:1.7; min-height:2em; color:#6f8e77; margin:0 0 18px; }
 .bt-mission .bt-docks { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
 .bt-mission .bt-dock { display:flex; flex-direction:column; align-items:stretch; gap:0; min-width:0; padding:15px; border:1px dashed #c2d4b9; border-radius:13px; background:#fffdf5; }
-.bt-dock-target { display:flex; align-items:center; gap:11px; border:0; background:transparent; width:100%; min-height:74px; padding:0 0 13px; text-align:left; color:#406e66; }
+.bt-dock-target { display:flex; align-items:center; gap:11px; border:0; background:transparent; width:100%; min-height:74px; padding:0 0 13px; text-align:start; color:#406e66; }
 .bt-dock-target img { width:77px; height:62px; object-fit:contain; background:#f6f0e4; border:1px solid #e2e3cd; border-radius:9px; flex-shrink:0; }
 .bt-dock-target>span { min-width:0; flex:1; }
 .bt-dock-target small { display:block; color:#8da181; font-size:.51rem; letter-spacing:.07em; margin-bottom:6px; }
@@ -103,7 +103,7 @@
 .bt-story { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:33px; padding:32px; background:linear-gradient(135deg,#ecf2e4,#f9faed); border:1px solid #ccd9bc; border-radius:21px; scroll-margin-top:24px; }
 .bt-story-intro>p { font-size:.85rem; color:#748975; line-height:1.85; margin:0 0 22px; }
 .bt-story-prompts { display:grid; gap:8px; }
-.bt-story-prompts button { display:flex; align-items:center; justify-content:space-between; gap:15px; border:1px solid #c0d0b3; background:#fbfcf0; color:#5d7e63; padding:11px 14px; min-height:44px; border-radius:8px; font-size:.74rem; text-align:left; }
+.bt-story-prompts button { display:flex; align-items:center; justify-content:space-between; gap:15px; border:1px solid #c0d0b3; background:#fbfcf0; color:#5d7e63; padding:11px 14px; min-height:44px; border-radius:8px; font-size:.74rem; text-align:start; }
 .bt-story-prompts button svg { width:17px; height:17px; flex-shrink:0; }
 .bt-story-prompts [aria-pressed=true] { color:#f7f6e5; background:#3c7869; border-color:#3c7869; }
 .bt-story-tip { font-size:.76rem; color:#748b71; line-height:1.9; border-left:2px solid #b8a474; padding-left:15px; margin:18px 0; }

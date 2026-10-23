@@ -31,7 +31,7 @@
 .ea-pin.ea-found:after { content:''; position:absolute; width:7px; height:7px; background:#7ed7b5; border:1px solid #fff; border-radius:50%; bottom:-1px; right:-1px; }
 .ea-details { padding:18px 20px; }
 .ea-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
-.ea-tabs button { display:flex; align-items:center; text-align:left; gap:8px; padding:9px 10px; min-height:44px; border:1px solid #c4d4cb; background:#fffdf7; color:#37626a; border-radius:9px; cursor:pointer; font:inherit; font-size:.75rem; }
+.ea-tabs button { display:flex; align-items:center; text-align:start; gap:8px; padding:9px 10px; min-height:44px; border:1px solid #c4d4cb; background:#fffdf7; color:#37626a; border-radius:9px; cursor:pointer; font:inherit; font-size:.75rem; }
 .ea-tabs b { font-size:.65rem; opacity:.65; }
 .ea-tabs [aria-pressed=true] { background:#176e72; color:white; border-color:#176e72; }
 .ea-note { padding:17px; margin:14px 0; background:#e6efe6; border-left:3px solid #23878a; border-radius:0 12px 12px 0; min-height:112px; }
@@ -45,7 +45,7 @@
 .ea-scope .exc-lab-diagram .ea-study { max-width:none; width:100%; }
 .ea-scope .exc-lab-diagram svg { width:100%; height:auto; max-height:none; }
 .ea-picture { width:100%; display:block; height:auto; }
-.ea-question-art { display:flex; align-items:center; gap:20px; width:100%; border:1px solid #e3dfcf; border-radius:13px; background:#f9f4e8; padding:0; overflow:hidden; text-align:left; cursor:pointer; margin:14px 0 20px; color:#36747b; font:inherit; }
+.ea-question-art { display:flex; align-items:center; gap:20px; width:100%; border:1px solid #e3dfcf; border-radius:13px; background:#f9f4e8; padding:0; overflow:hidden; text-align:start; cursor:pointer; margin:14px 0 20px; color:#36747b; font:inherit; }
 .ea-question-art .ea-picture { width:155px; height:110px; flex-shrink:0; }
 .ea-question-art>span { font-size:.75rem; padding:10px; }
 .ea-case-art { float:right; width:40%; margin:0 0 18px 20px; padding:0; overflow:hidden; border:1px solid #dbdacb; border-radius:13px; background:#f8f3e8; cursor:pointer; color:#37747b; font:inherit; }
