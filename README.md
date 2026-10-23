@@ -501,3 +501,11 @@ motion checks. They are not a formal WCAG certification or physical-device audit
 Speech uses a deterministic browser-synthesis fixture; real voice availability and
 pronunciation depend on the learner's device. Secure remains a description of
 recorded checks, without a claim of validated long-term retention.
+
+## Arabic layout verification
+
+`npm run test:arabic-layout` checks rendered Arabic layouts, illustration/caption
+separation, RTL controls, popovers and narrow-screen reflow using local test accounts.
+It is included in `npm test`; no production credentials are used. See
+[_dev-tools/ARABIC-LAYOUT.md](_dev-tools/ARABIC-LAYOUT.md) for scope, review artifacts
+and known limits, and [_dev-tools/README.md](_dev-tools/README.md) for prerequisites.

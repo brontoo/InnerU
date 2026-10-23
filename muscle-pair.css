@@ -6,7 +6,7 @@
 .arm-lab-medal{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:112px;height:94px;border:1px solid #d8c691;border-radius:18px;background:radial-gradient(circle,#fff8de,#f1ead2);color:#8c7748;font-size:8px;font-weight:700;letter-spacing:.07em;box-shadow:inset 0 0 0 5px #fff9e180}
 .arm-lab-medal b{font-size:28px;letter-spacing:-.02em;color:#8b7139;margin-bottom:4px}
 .arm-lab-missions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:22px}
-.arm-lab-missions button{border:1px solid #ccdcd2;border-radius:11px;padding:12px 13px;text-align:left;background:#f3f5ed;color:#46666c;font-size:12px;line-height:1.45;min-height:69px}
+.arm-lab-missions button{border:1px solid #ccdcd2;border-radius:11px;padding:12px 13px;text-align:start;background:#f3f5ed;color:#46666c;font-size:12px;line-height:1.45;min-height:69px}
 .arm-lab-missions button span{display:block;font-size:9px;letter-spacing:.08em;color:#789085;margin-bottom:7px}
 .arm-lab-missions button i{font-style:normal;color:#ac8c43;font-size:15px;line-height:1}
 .arm-lab .arm-lab-missions button[aria-pressed=true]{border-color:#428c7f;background:#e1eee3;color:#235d55;box-shadow:inset 0 -3px #448b7e}

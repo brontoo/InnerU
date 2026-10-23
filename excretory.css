@@ -372,7 +372,7 @@
   padding: 13px 8px;
   color: #677c77;
   font-size: 0.82rem;
-  text-align: left;
+  text-align:start;
 }
 .exc-explorer-tabs button small {
   font-size: 0.6rem;
@@ -1069,7 +1069,7 @@
   border-radius: 9px;
   padding: 13px 16px;
   color: #557464;
-  text-align: left;
+  text-align:start;
   font-size: 0.84rem;
 }
 .exc-checks .resp-choices button:hover:enabled {
@@ -1372,7 +1372,7 @@
 button.exc-hero-secondary {
   background: transparent;
   padding: 0;
-  text-align: left;
+  text-align:start;
 }
 .exc-selection-label {
   position: absolute;

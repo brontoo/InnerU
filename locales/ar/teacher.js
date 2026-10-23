@@ -378,5 +378,10 @@ InneruLocale.register({
   "Student records come from your assigned classes and their latest synced work.": "تأتي سجلات الطلبة من صفوفك المسندة وآخر أعمالهم المتزامنة.",
   "Classroom data stays in this browser. Imported work is a student snapshot, not a live connection to another device.": "تبقى بيانات الصفّ في هذا المتصفّح. العمل المستورد لقطة طالب وليس اتصالًا مباشرًا بجهاز آخر.",
   "Discovery League": "دوري الاكتشاف",
-  "Grade 10 Science /": "علوم الصفّ العاشر /"
+  "Grade 10 Science /": "علوم الصفّ العاشر /",
+  "EXPLORER PASSPORT / {class}": "جواز المستكشف / {class}",
+  "{person}’s discoveries": "اكتشافات {person}",
+  "{xp} XP · {done} missions complete · {total} badges": "نقاط الخبرة: {xp} · المهام المكتملة: {done} · الشارات: {total}",
+  "Mission completed · mission {mission}": "اكتملت المهمّة {mission}",
+  "Open learning record": "افتح سجلّ التعلّم"
 });

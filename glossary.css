@@ -6,7 +6,7 @@
 .term:focus-visible{outline:2px solid #0d7d78;outline-offset:2px;border-radius:3px}
 .term[aria-expanded=true]{border-bottom-color:#0d7d78;background:#e2f4f1}
 .term-pop{position:fixed;z-index:60;background:#fff;border:1px solid var(--line);border-radius:14px;
-  box-shadow:0 14px 40px #0b3b4826;padding:14px 16px;max-width:calc(100vw - 24px)}
+  box-shadow:0 14px 40px #0b3b4826;padding:14px 16px;max-width:calc(100vw - 24px);max-height:calc(100svh - 24px);overflow:auto}
 .term-pop[hidden]{display:none}
 .term-pop-word{font-size:1rem;color:#0b3b48}
 .term-pop-ar{display:block;color:#4f6b78;font-size:.86rem;margin-top:3px}

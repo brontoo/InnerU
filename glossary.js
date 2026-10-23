@@ -122,6 +122,7 @@
         <button class="btn line" type="button" id="term-pop-close">Close</button>
       </div>`;
     document.body.append(pop);
+    new ResizeObserver(positionPopover).observe(pop);
     pop.querySelector('#term-pop-close').onclick = close;
     return pop;
   }
@@ -133,6 +134,21 @@
     openBlock = null;
   }
 
+  // Re-measure after resizing or translated text reflow; screen coordinates stay LTR.
+  function positionPopover() {
+    if (!pop || pop.hidden || !openTerm?.isConnected) return;
+    const r = openTerm.getBoundingClientRect();
+    const width = Math.min(360, window.innerWidth - 24);
+    pop.style.width = width + 'px';
+    let left = Math.min(Math.max(12, r.left + r.width / 2 - width / 2), window.innerWidth - width - 12);
+    const height = pop.offsetHeight || 170;
+    let top = r.bottom + 10;
+    if (top + height > window.innerHeight - 12) top = Math.max(12, r.top - height - 10);
+    pop.style.left = left + 'px';
+    pop.style.top = Math.max(12, Math.min(top, window.innerHeight - height - 12)) + 'px';
+  }
+  window.addEventListener('resize', positionPopover);
+
   function open(span) {
     const entry = TERMS.find(t => t.key === span.dataset.termId);
     if (!entry) return;
@@ -141,19 +157,11 @@
     card.querySelector('.term-pop-ar').textContent = entry.arabic;
     card.querySelector('.term-pop-def').textContent = entry.definition;
     card.hidden = false;
-    const r = span.getBoundingClientRect();
-    const width = Math.min(360, window.innerWidth - 24);
-    card.style.width = width + 'px';
-    let left = Math.min(Math.max(12, r.left + r.width / 2 - width / 2), window.innerWidth - width - 12);
-    const height = card.offsetHeight || 170;
-    let top = r.bottom + 10;
-    if (top + height > window.innerHeight - 12) top = Math.max(12, r.top - height - 10);
-    card.style.left = left + 'px';
-    card.style.top = top + 'px';
     if (openTerm && openTerm !== span) openTerm.setAttribute('aria-expanded', 'false');
     openTerm = span;
     openBlock = span.closest('p, li, dd, blockquote, figcaption, td');
     span.setAttribute('aria-expanded', 'true');
+    positionPopover();
   }
 
   /* ---------------------------------------------------------------- marking */

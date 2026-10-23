@@ -62,7 +62,7 @@
 .cx-scale-note { color:#889080; font-size:.65rem; line-height:1.75; margin:12px 0 0; }
 .cx-lens-copy { min-width:0; }
 .cx-parts { display:grid; gap:8px; margin:14px 0 18px; }
-.cx-parts>button { display:flex; align-items:center; gap:12px; min-height:47px; text-align:left; border:1px solid #c5d6c1; border-radius:9px; padding:10px 13px; color:#4e766c; background:#fffdf3; font-size:.78rem; line-height:1.5; }
+.cx-parts>button { display:flex; align-items:center; gap:12px; min-height:47px; text-align:start; border:1px solid #c5d6c1; border-radius:9px; padding:10px 13px; color:#4e766c; background:#fffdf3; font-size:.78rem; line-height:1.5; }
 .cx-parts>button>b { font-size:.6rem; font-weight:500; letter-spacing:.07em; color:#86967c; }
 .cx-parts>button[aria-pressed=true] { background:#1b5d60; color:#fff8e9; border-color:#1b5d60; }
 .cx-parts>button[aria-pressed=true]>b { color:#b1d3b8; }

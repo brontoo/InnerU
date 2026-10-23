@@ -87,5 +87,15 @@ InneruLocale.register({
   "Back to the body map": "عُد إلى خريطة الجسم",
   "Back to the worlds →": "عُد إلى العوالم ←",
   "Keep the body alive": "أبقِ الجسم حيًا",
-  "← Body map": "خريطة الجسم ←"
+  "← Body map": "خريطة الجسم ←",
+  "{done}/{total} decisions": "القرارات: {done}/{total}",
+  "Every decision can be retried. A first wrong answer gives you a nudge, not the solution.": "يمكنك إعادة محاولة كلّ قرار. إذا أخطأت في المحاولة الأولى، فستحصل على تلميح يساعدك دون إظهار الحلّ.",
+  "WORLD 04 · OXYGEN": "العالم 04 · الأكسجين",
+  "WORLD 05 · TRANSPORT": "العالم 05 · النقل",
+  "WORLD 03 · POWER": "العالم 03 · القوّة",
+  "Revise this system in the Power pathway →": "راجع هذا الجهاز في مسار القوّة ←",
+  "WORLD 01 · BODY SHIELD": "العالم 01 · درع الجسم",
+  "WORLD 02 · FRAMEWORK": "العالم 02 · دعامة الجسم",
+  "WORLD 06 · FILTER": "العالم 06 · الترشيح",
+  "Your explanation": "تفسيرك"
 });
