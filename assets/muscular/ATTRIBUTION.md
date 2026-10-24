@@ -10,8 +10,8 @@ The source meshes were already present in InnerU's Git history before commit
 257a0eb removed the earlier muscular explorer assets. This release extracts the
 anatomical muscle meshes and the body template from that history. It removes the
 old silhouette, the old head and protected pelvic / upper-thigh template regions.
-The supported model adds original smooth mannequin features and opaque shorts.
-Additional superficial muscle regions follow the body surface; material shading,
+The supported model adds an original anatomical head, superficial facial context, a fitted closed body support and opaque navy shorts.
+Additional superficial muscle regions, fascia and extremity tendons follow the body surface; directional fiber shading,
 selection colors, procedural garments and the Achilles tendon are teaching
 reconstructions. See `muscle-model.js` and `_dev-tools/MUSCULAR-STUDIO.md`.
 

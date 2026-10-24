@@ -65,7 +65,7 @@ window.InneruRouteManifest={
       "muscle-visuals.js",
       "muscle-pair.js?v=arm-team-1",
       "muscle-learning.js?v=arm-team-1",
-      "muscle-atlas-ui.js?v=guided-ar-1",
+      "muscle-atlas-ui.js?v=muscle-reference-1",
       "muscle.js?v=mastery-1",
       "muscle-force.js?v=on-demand-1"
     ],
@@ -75,7 +75,7 @@ window.InneruRouteManifest={
         "order": 6
       },
       {
-        "url": "muscle-studio.css?v=muscle-studio-1",
+        "url": "muscle-studio.css?v=muscle-reference-1",
         "order": 7
       },
       {

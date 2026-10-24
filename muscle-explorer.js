@@ -1,10 +1,10 @@
 import * as THREE from './assets/three/three.module.js';
 import {OrbitControls} from './assets/three/OrbitControls.js';
-import {createMuscleModel} from './muscle-model.js?v=muscle-studio-1';
+import {createMuscleModel} from './muscle-model.js?v=muscle-reference-1';
 
 const {parts,tabs}=window.InnerUMuscleAtlas;
 let disposeCurrent=()=>{};
-const REGION_BOX={neck:[[-.23,.99,-.23],[.23,1.59,.30]],arms:[[-.70,-.22,-.28],[.70,1.04,.36]],core:[[-.40,.1,-.27],[.40,1.03,.36]],back:[[-.40,.08,-.30],[.40,1.30,.30]],legs:[[-.42,-1.87,-.34],[.42,.19,.36]]};
+const REGION_BOX={neck:[[-.23,.99,-.23],[.23,1.59,.30]],arms:[[-.90,-.5,-.28],[.90,1.08,.36]],core:[[-.46,.1,-.27],[.46,1.06,.36]],back:[[-.46,.08,-.30],[.46,1.31,.30]],legs:[[-.42,-1.87,-.34],[.42,.19,.36]]};
 const REGION_LABELS={all:['deltoid','pectoralis','biceps','rectus','rectus-femoris','tibialis'],neck:['neck'],arms:['deltoid','biceps','triceps','flexors','extensors'],core:['pectoralis','serratus','rectus','oblique'],back:['trapezius','latissimus','erectors'],legs:['rectus-femoris','vastus-lateralis','vastus-medialis','hamstrings','gastrocnemius','tibialis']};
 
 export function mountMuscleExplorer(root){
@@ -12,7 +12,7 @@ export function mountMuscleExplorer(root){
   const stage=root.querySelector('.muscle-studio-stage'),info=root.querySelector('.muscle-studio-info'),status=root.querySelector('.muscle-studio-status'),badge=root.querySelector('.muscle-studio-selected');
   const abort=new AbortController(),signal=abort.signal,reducedQuery=matchMedia('(prefers-reduced-motion: reduce)');
   const reduced=()=>reducedQuery.matches||document.body.classList.contains('motionoff');
-  let model,renderer,scene,camera,controls,resize,visibilityObserver,mutation,frame=0,disposed=false,visible=true,region='all',selection=null,labels=true,spin=false,needsRender=true,cameraGoal=null,lastFrame=0,loadingTimer,loading=false;
+  let model,renderer,scene,camera,controls,resize,labelResize,visibilityObserver,mutation,frame=0,disposed=false,visible=true,region='all',selection=null,labels=true,spin=false,needsRender=true,cameraGoal=null,lastFrame=0,loadingTimer,loading=false;
   let labelButtons=[],seen=new Set(),viewName='anterior',loadObserver,lastTick=0;
   const ghost=new THREE.MeshBasicMaterial({color:0x647c7b,transparent:true,opacity:.055,depthWrite:false,side:THREE.FrontSide});
   const baseGhost=new THREE.MeshBasicMaterial({color:0x758884,transparent:true,opacity:.025,depthWrite:false,side:THREE.FrontSide});
@@ -43,6 +43,7 @@ export function mountMuscleExplorer(root){
       mesh.material=active?mesh.userData.originalMaterial:ghost;mesh.castShadow=active;mesh.renderOrder=active?3:0;
       if(active){mesh.material.userData.baseColor||=mesh.material.color.clone();mesh.material.color.copy(selection?new THREE.Color(0x4b9989):mesh.material.userData.baseColor);mesh.material.emissive.setHex(selection?0x134f46:0);mesh.material.emissiveIntensity=selection?.13:0;}
     }
+    model.decorations.filter(m=>m.userData.surfaceContext).forEach(m=>{m.visible=!selection;});
     model.baseMeshes.forEach(m=>{m.userData.originalMaterial||=m.material;m.material=selection||region!=='all'?baseGhost:m.userData.originalMaterial;});
     // Garments are intentionally excluded from the anatomy fade. They write
     // depth and stay opaque, including in covered-region selection and zoom.
@@ -110,7 +111,7 @@ export function mountMuscleExplorer(root){
   on(stage,'pointerup',e=>{
     const start=down;down=null;if(!start||e.pointerId!==start.id||!model||e.target.closest('button')||Math.hypot(start.x-e.clientX,start.y-e.clientY)>7)return;
     const rect=stage.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);ray.setFromCamera(pointer,camera);
-    const hits=ray.intersectObjects([...model.garments,...model.decorations,...model.meshes],false);
+    const hits=ray.intersectObjects([...model.garments,...model.decorations.filter(m=>m.visible),...model.meshes],false);
     // Clothing and the mannequin's smooth face/hands/feet occlude hidden anatomy.
     const first=hits.find(h=>h.object.userData.garment||model.decorations.includes(h.object)||h.object.material!==ghost);
     if(!first||model.decorations.includes(first.object))return;
@@ -120,6 +121,7 @@ export function mountMuscleExplorer(root){
   on(stage,'wheel',()=>{cameraGoal=null;stopSpin();},{passive:true});
   function initLabels(){
     const layer=root.querySelector('.muscle-studio-labels');
+    labelResize=new ResizeObserver(()=>resume());
     for(const p of parts){
       const box=boundsFor(p.id),center=box.getCenter(new THREE.Vector3());
       // Label one side of paired anatomy, keeping the middle of the body clear.
@@ -127,7 +129,7 @@ export function mountMuscleExplorer(root){
       for(const m of candidates){const b=new THREE.Box3().setFromObject(m),c=b.getCenter(new THREE.Vector3());if(!best||c.x<best.center.x)best={box:b,center:c};}
       const anchor=best?best.center.clone():center.clone();anchor.z=p.view==='back'?(best?.box.min.z??box.min.z)-.012:(best?.box.max.z??box.max.z)+.012;
       if(p.id==='gluteal')anchor.set(-.18,-.12,-.29);
-      const button=document.createElement('button');button.type='button';button.textContent=p.name;button.className='muscle-studio-label';button.setAttribute('aria-label','Examine '+p.name);button.hidden=true;on(button,'pointerdown',e=>e.stopPropagation());on(button,'click',()=>select(p.id));layer.append(button);labelButtons.push({p,button,anchor});
+      const button=document.createElement('button');button.type='button';button.textContent=p.name;button.className='muscle-studio-label';button.setAttribute('aria-label','Examine '+p.name);button.hidden=true;on(button,'pointerdown',e=>e.stopPropagation());on(button,'click',()=>select(p.id));layer.append(button);labelResize.observe(button);labelButtons.push({p,button,anchor});
     }
   }
   function updateLabels(){
@@ -137,14 +139,25 @@ export function mountMuscleExplorer(root){
       const facing=p.view==='back'?camera.position.z<-.1:camera.position.z>.1;
       const show=labels&&facing&&(selection?selection===p.id:REGION_LABELS[region].includes(p.id));
       button.hidden=!show;if(!show)continue;
-      const v=anchor.clone().project(camera),x=(v.x*.5+.5)*stage.clientWidth,y=(-v.y*.5+.5)*stage.clientHeight;
-      const blocked=occupied.some(r=>Math.abs(r.x-x)<125&&Math.abs(r.y-y)<38);
-      if(v.z>1||v.z<0||x<30||x>stage.clientWidth-30||y<55||y>stage.clientHeight-65||blocked){button.hidden=true;continue;}
-      occupied.push({x,y});button.style.left=x+'px';button.style.top=y+'px';button.setAttribute('aria-pressed',String(selection===p.id));
+      const v=anchor.clone().project(camera),px=(v.x*.5+.5)*stage.clientWidth,py=(-v.y*.5+.5)*stage.clientHeight;
+      if(v.z>1||v.z<0||px<0||px>stage.clientWidth||py<0||py>stage.clientHeight){button.hidden=true;continue;}
+      // Caption size can change after Arabic or a font arrives. Bound the actual
+      // label box in model/screen coordinates; never mirror anatomical positions.
+      const w=button.offsetWidth,h=button.offsetHeight,minY=badge.hidden?55:badge.offsetTop+badge.offsetHeight+10;
+      const x=THREE.MathUtils.clamp(px,w/2+10,stage.clientWidth-w/2-10),y=THREE.MathUtils.clamp(py,minY+h/2,stage.clientHeight-60-h/2);
+      const rect={left:x-w/2,right:x+w/2,top:y-h/2,bottom:y+h/2};
+      const blocked=occupied.some(r=>rect.left<r.right+6&&rect.right>r.left-6&&rect.top<r.bottom+6&&rect.bottom>r.top-6);
+      if(blocked){button.hidden=true;continue;}
+      occupied.push(rect);button.style.left=x+'px';button.style.top=y+'px';button.setAttribute('aria-pressed',String(selection===p.id));
     }
   }
+  function removeLoading(){
+    const el=root.querySelector('.muscle-studio-loading');
+    if(el?.nextElementSibling?.classList.contains('support-read-controls'))el.nextElementSibling.remove();
+    el?.remove();
+  }
   function unavailable(){
-    root.querySelector('.muscle-studio-loading')?.remove();root.querySelector('.muscle-studio-fallback').hidden=false;root.querySelector('.muscle-studio-unavailable').hidden=false;
+    removeLoading();labelButtons.forEach(l=>{l.button.hidden=true;});root.querySelector('.muscle-studio-fallback').hidden=false;root.querySelector('.muscle-studio-unavailable').hidden=false;
     root.querySelectorAll('[data-muscle-action]').forEach(b=>{if(!['clear','reset'].includes(b.dataset.muscleAction))b.disabled=true;});
     stage.tabIndex=-1;stage.setAttribute('aria-label','Static front-view muscular anatomy illustration. Use the tabs and named structure buttons to explore.');
     status.textContent='3D is unavailable. All anatomy tabs and muscle descriptions remain available.';
@@ -164,7 +177,7 @@ export function mountMuscleExplorer(root){
   function motionChanged(){if(controls)controls.enableDamping=!reduced();if(reduced()){stopSpin();if(cameraGoal){camera.position.copy(cameraGoal.position);controls.target.copy(cameraGoal.target);cameraGoal=null;controls.update();}}resume();}
   on(reducedQuery,'change',motionChanged);
   on(document,'visibilitychange',()=>{if(document.hidden)stopRendering();else resume();});
-  function disposeRenderer(){stopRendering();resize?.disconnect();controls?.dispose();renderer?.dispose();renderer?.domElement.remove();renderer=null;model?.dispose();model=null;scene?.traverse(o=>{if(o.userData.studioGround){o.geometry.dispose();o.material.dispose();}});}
+  function disposeRenderer(){stopRendering();resize?.disconnect();labelResize?.disconnect();controls?.dispose();renderer?.dispose();renderer?.domElement.remove();renderer=null;model?.dispose();model=null;scene?.traverse(o=>{if(o.userData.studioGround){o.geometry.dispose();o.material.dispose();}});}
   function cleanup(){if(disposed)return;disposed=true;abort.abort();clearTimeout(loadingTimer);stopRendering();loadObserver?.disconnect();visibilityObserver?.disconnect();mutation?.disconnect();ghost.dispose();baseGhost.dispose();disposeRenderer();labelButtons.forEach(l=>l.button.remove());if(window.__inneruMuscleStudio?.root===root)window.__inneruMuscleStudio=null;}
   disposeCurrent=cleanup;
   const live={root,get model(){return model},get camera(){return camera},get controls(){return controls},get renderer(){return renderer},get disposed(){return disposed},
@@ -188,10 +201,11 @@ export function mountMuscleExplorer(root){
       on(renderer.domElement,'webglcontextlost',e=>{e.preventDefault();disposeRenderer();unavailable();});
       scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(35,stage.clientWidth/stage.clientHeight,.025,35);
       camera.position.set(.18,-.12,6.5);controls=new OrbitControls(camera,stage);controls.enablePan=false;controls.enableDamping=!reduced();controls.dampingFactor=.1;controls.minDistance=.62;controls.maxDistance=10;controls.minPolarAngle=.35;controls.maxPolarAngle=Math.PI-.35;controls.autoRotateSpeed=.8;controls.target.set(0,-.12,0);controls.update();
-      scene.add(new THREE.HemisphereLight(0xfff8eb,0x667f7d,2));
-      const key=new THREE.DirectionalLight(0xffead7,2.5);key.position.set(-3,5,5);scene.add(key);
-      const fill=new THREE.DirectionalLight(0xf2fffc,1.4);fill.position.set(4,1,3);scene.add(fill);
-      const rim=new THREE.DirectionalLight(0xb5e3df,1.5);rim.position.set(-2,3,-4);scene.add(rim);
+      scene.add(new THREE.HemisphereLight(0xfff6e8,0x655b52,.95));
+      const key=new THREE.DirectionalLight(0xfff0df,2.2);key.position.set(-3,5,5);scene.add(key);
+      const fill=new THREE.DirectionalLight(0xf2fffc,.85);fill.position.set(4,1,3);scene.add(fill);
+      const rear=new THREE.DirectionalLight(0xffeddb,1.8);rear.position.set(3,4,-5);scene.add(rear);
+      const rim=new THREE.DirectionalLight(0xc9e3e1,1.1);rim.position.set(-2,3,-4);scene.add(rim);
       loadingTimer=setTimeout(()=>{const el=root.querySelector('.muscle-studio-loading');if(el)el.textContent='Still preparing the model. You can explore the muscle descriptions now.';},12000);
       const built=await createMuscleModel();if(disposed){built.dispose();return;}model=built;scene.add(model.group);
       const missing=parts.filter(p=>!model.meshes.some(m=>m.userData.structure===p.id));if(missing.length)throw new Error('Missing muscle structures: '+missing.map(p=>p.id).join(', '));
@@ -199,7 +213,7 @@ export function mountMuscleExplorer(root){
       // heavy shadow maps on every rotation.
       const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d'),gradient=ctx.createRadialGradient(64,64,8,64,64,64);gradient.addColorStop(0,'rgba(41,70,65,.18)');gradient.addColorStop(1,'rgba(41,70,65,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,128,128);const shadowTexture=new THREE.CanvasTexture(canvas);
       const ground=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.8),new THREE.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false}));ground.rotation.x=-Math.PI/2;ground.position.set(0,-1.87,.02);ground.userData.studioGround=true;scene.add(ground);signal.addEventListener('abort',()=>shadowTexture.dispose(),{once:true});
-      clearTimeout(loadingTimer);root.querySelector('.muscle-studio-loading')?.remove();initLabels();applyVisual();explain();frameBox(selection?boundsFor(selection):regionBounds(),selection?find(selection).view:region==='back'?'back':'front',!!selection);
+      clearTimeout(loadingTimer);removeLoading();initLabels();applyVisual();explain();frameBox(selection?boundsFor(selection):regionBounds(),selection?find(selection).view:region==='back'?'back':'front',!!selection);
       resize=new ResizeObserver(()=>{if(!renderer||disposed)return;const w=stage.clientWidth,h=stage.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);frameBox(selection?boundsFor(selection):regionBounds(),viewName==='posterior'?'back':'front',!!selection);resume();});resize.observe(stage);
       visibilityObserver=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)resume();else stopRendering();},{rootMargin:'80px'});visibilityObserver.observe(stage);resume();
     }catch(e){if(disposed)return;console.error('Muscular anatomy:',e);clearTimeout(loadingTimer);disposeRenderer();unavailable();}

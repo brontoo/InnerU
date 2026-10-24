@@ -1,5 +1,7 @@
 /* Authored Modern Standard Arabic; English source keys. See ../README.md. */
 InneruLocale.register({
+  "Front view of a muscular anatomy model wearing opaque navy shorts, with visible muscle fibres and pale tendons.": "منظر أمامي لنموذج تشريحي عضلي يرتدي سروالًا كحليًا معتمًا، مع ألياف عضلية وأوتار فاتحة اللون.",
+  "Classroom anatomy model · major skeletal muscles and a tendon · facial muscles, hands and feet provide surface context. Shorts stay opaque in every view.": "نموذج تشريحي تعليمي · العضلات الهيكلية الرئيسية ووتر · تُظهر تفاصيل الوجه واليدين والقدمين مواضع الأنسجة السطحية. يظل السروال معتمًا في جميع أوضاع العرض.",
   "Compare muscle tissues by their structure, location and control.": "قارن الأنسجة العضلية بحسب تركيبها وموضعها وكيفية التحكّم بها.",
   "Use tendons and opposing muscles to turn contraction into movement.": "استخدم الأوتار والعضلات المتضادّة لتحويل الانقباض إلى حركة.",
   "Travel from a whole muscle to its contractile machinery.": "انتقل من العضلة كاملة إلى تراكيبها المسؤولة عن الانقباض.",
@@ -645,7 +647,7 @@ InneruLocale.register({
   "Anatomy & sources": "التشريح والمصادر",
   "Muscle meshes adapted from": "شبكات عضلية مقتبسة من",
   "DBCLS BodyParts3D 4.3": "DBCLS BodyParts3D 4.3",
-  ", CC BY-SA 2.1 Japan. Additional surface regions, fiber shading and garments are teaching reconstructions. Deep structures and parts beneath the shorts are simplified; this is an atlas for learning, not an exhaustive dissection.": "، بترخيص CC BY-SA 2.1 اليابان. مناطق السطح الإضافية وتظليل الألياف والملابس إعادة بناء تعليمية. التراكيب العميقة والأجزاء تحت السروال مبسّطة؛ فهذا أطلس تعلّم لا تشريح شامل.",
+  ", CC BY-SA 2.1 Japan. Additional surface regions, facial anatomy, fiber shading and garments are teaching reconstructions. Deep structures and parts beneath the shorts are simplified; this is an atlas for learning, not an exhaustive dissection.": "، بترخيص CC BY-SA 2.1 اليابان. مناطق السطح الإضافية وتفاصيل الوجه وتظليل الألياف والملابس إعادة بناء تعليمية. التراكيب العميقة والأجزاء تحت السروال مبسّطة؛ فهذا أطلس تعلّم لا تشريح شامل.",
   "Movement and attachment references:": "مراجع الحركة والارتباط:",
   "OpenStax Anatomy and Physiology 2e, Chapter 11": "OpenStax، التشريح ووظائف الأعضاء، الإصدار 2، الفصل 11",
   ". Anterior means front; posterior means back. The model’s right is on your left in the front view.": ". الأمامي يعني جهة الأمام؛ والخلفي جهة الخلف. يمين النموذج على يسارك في المنظر الأمامي.",

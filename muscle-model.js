@@ -1,5 +1,6 @@
 import * as THREE from './assets/three/three.module.js';
 import {GLTFLoader} from './assets/three/GLTFLoader.js';
+import {addSurfaceAnatomy,createSupportGeometries,mergeMuscleSurfaces,shapeReferencePose} from './muscle-reference-surfaces.js?v=muscle-reference-1';
 
 /* Anatomical atlas meshes plus original teaching surfaces and a closed garment.
    Coordinates are in the atlas's anatomical space: +z anterior, +y superior. */
@@ -10,29 +11,32 @@ function muscleId(name){
 }
 
 function fiberMaterial(id,box){
-  const tendon=id==='achilles',color=tendon?0xf1e2be:id==='pectoralis'?0xd18a78:id==='trapezius'||id==='latissimus'?0xc17a6e:0xce8474;
-  const m=new THREE.MeshPhysicalMaterial({color,roughness:tendon?.76:.57,metalness:0,clearcoat:.10,clearcoatRoughness:.75,side:THREE.DoubleSide});
+  const tendon=id==='achilles',color=tendon?0xe9dfc8:id==='pectoralis'?0xb9503c:id==='trapezius'||id==='latissimus'?0xae493a:0xb94e3c;
+  const m=new THREE.MeshPhysicalMaterial({color,roughness:tendon?.76:.64,metalness:0,clearcoat:.04,clearcoatRoughness:.8,side:THREE.DoubleSide});
   const ymin=box?.min.y??-2,range=Math.max(.02,(box?.max.y??2)-ymin);
   m.onBeforeCompile=shader=>{
     shader.uniforms.fiberMin={value:ymin};shader.uniforms.fiberRange={value:range};
     shader.vertexShader='varying vec3 musclePosition;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nmusclePosition=position;');
     shader.fragmentShader='varying vec3 musclePosition;\nuniform float fiberMin;\nuniform float fiberRange;\n'+shader.fragmentShader;
-    let phase='musclePosition.x * 640.0 + musclePosition.z * 490.0 + sin(musclePosition.y * 19.0) * 1.6';
-    if(['pectoralis','latissimus','serratus'].includes(id))phase='atan(musclePosition.y - 0.79, abs(musclePosition.x) - 0.36) * 135.0';
-    if(id==='oblique')phase='abs(musclePosition.x) * 440.0 + musclePosition.y * 310.0';
-    if(id==='trapezius')phase='abs(musclePosition.x) * 370.0 + musclePosition.y * 290.0';
+    let phase='musclePosition.x * 390.0 + musclePosition.z * 260.0 + sin(musclePosition.y * 14.0) * 1.1';
+    if(['pectoralis','latissimus','serratus'].includes(id))phase='atan(musclePosition.y - 0.84, abs(musclePosition.x) - 0.38) * 105.0';
+    if(id==='oblique')phase='abs(musclePosition.x) * 310.0 + musclePosition.y * 220.0';
+    if(id==='trapezius')phase='musclePosition.y > 0.92 ? abs(musclePosition.x)*330.0+musclePosition.y*220.0 : abs(musclePosition.x)*250.0-musclePosition.y*260.0';
+    if(id==='face')phase='musclePosition.y > 1.475 ? musclePosition.x*950.0 : musclePosition.y > 1.405 ? atan(musclePosition.y-1.432,abs(musclePosition.x)-.055)*65.0 : musclePosition.y > 1.36 ? abs(musclePosition.x)*520.0+musclePosition.y*380.0 : atan(musclePosition.y-1.331,musclePosition.x)*70.0';
     shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
       float phase=${phase};
-      float fade=1.0-smoothstep(0.5,2.8,fwidth(phase));
+      float fade=1.0-smoothstep(0.8,3.8,fwidth(phase));
       float fascicle=sin(phase)*0.5+0.5;
-      diffuseColor.rgb*=1.0-0.095*fade*pow(fascicle,9.0);
+      float bundle=sin(phase*.23+sin(musclePosition.y*11.0))*.5+.5;
+      diffuseColor.rgb*=1.0-.19*fade*pow(fascicle,5.0)-.055*pow(bundle,6.0);
+      diffuseColor.rgb+=vec3(.035,.022,.012)*fade*pow(1.0-fascicle,10.0);
       float along=clamp((musclePosition.y-fiberMin)/fiberRange,0.0,1.0);
-      float attachment=pow(abs(along*2.0-1.0),16.0)*${['biceps','triceps','rectus-femoris','gastrocnemius','soleus'].includes(id)?'.55':'.12'};
-      ${id==='rectus'?'attachment=max(attachment,pow(abs(cos((musclePosition.y-.18)*26.0)),36.0)*.62);':''}
-      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.88,0.79,0.64),attachment);
+      float attachment=pow(abs(along*2.0-1.0),12.0)*${['biceps','triceps','rectus-femoris','gastrocnemius','soleus','tibialis'].includes(id)?'.72':'.06'};
+      ${id==='pectoralis'?'attachment=max(attachment,(1.0-smoothstep(.015,.035,abs(musclePosition.x)))*.7);':''}
+      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.83,.77,.64),attachment);
     `);
   };
-  m.customProgramCacheKey=()=>id;
+  m.customProgramCacheKey=()=>id+'-reference-1';
   return m;
 }
 
@@ -103,14 +107,15 @@ function garment(group){
   ctx.strokeStyle='#a2a2a2';ctx.lineWidth=1;
   for(let i=0;i<128;i+=4){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,128);ctx.moveTo(0,i);ctx.lineTo(128,i);ctx.stroke();}
   const weave=new THREE.CanvasTexture(fabricCanvas);weave.wrapS=weave.wrapT=THREE.RepeatWrapping;weave.repeat.set(4,4);
-  const fabric=new THREE.MeshStandardMaterial({color:0x234b57,roughness:.96,metalness:0,bumpMap:weave,bumpScale:.0009,side:THREE.DoubleSide});
-  const trim=new THREE.MeshStandardMaterial({color:0x6faaa6,roughness:.8,side:THREE.DoubleSide});
+  const fabric=new THREE.MeshStandardMaterial({color:0x1c304e,roughness:.96,metalness:0,bumpMap:weave,bumpScale:.0009,side:THREE.DoubleSide});
+  const trim=new THREE.MeshStandardMaterial({color:0x304561,roughness:.8,side:THREE.DoubleSide});
   const garments=[];
-  function piece(name,rows,center=0,material=fabric,cap=false,fork=false){
+  function piece(name,rows,center=0,material=fabric,cap=false,fork=false,topCap=false){
     const n=80,p=[],uv=[],ix=[];
-    rows.forEach(([y,rx,rz],j)=>{for(let k=0;k<=n;k++){const t=k/n*Math.PI*2,fold=0;const x=fork&&j===0?.355*(center>0?Math.max(0,Math.cos(t)):Math.min(0,Math.cos(t))):center+(rx+fold)*Math.cos(t);p.push(x,y,.025+(rz+fold)*Math.sin(t));uv.push(k/n,j/(rows.length-1));}});
+    rows.forEach(([y,rx,rz],j)=>{for(let k=0;k<=n;k++){const t=k/n*Math.PI*2,fold=.003*Math.sin(t*12+j*.7)*Math.sin(Math.PI*j/(rows.length-1));const x=fork&&j===0?.355*(center>0?Math.max(0,Math.cos(t)):Math.min(0,Math.cos(t))):center+(rx+fold)*Math.cos(t);p.push(x,y,.025+(rz+fold)*Math.sin(t));uv.push(k/n,j/(rows.length-1));}});
     for(let j=0;j<rows.length-1;j++)for(let k=0;k<n;k++){const a=j*(n+1)+k,b=a+n+1;ix.push(a,b,a+1,b,b+1,a+1);}
     if(cap){const j=rows.length-1,offset=p.length/3;p.push(center,rows[j][0],.025);uv.push(.5,.5);for(let k=0;k<n;k++)ix.push(offset,j*(n+1)+k+1,j*(n+1)+k);}
+    if(topCap){const offset=p.length/3;p.push(center,rows[0][0],.025);uv.push(.5,.5);for(let k=0;k<n;k++)ix.push(offset,k,k+1);}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(ix);g.computeVertexNormals();
     const m=new THREE.Mesh(g,material);m.name=name;m.userData.garment=true;m.renderOrder=30;m.castShadow=true;m.receiveShadow=true;group.add(m);garments.push(m);return m;
   }
@@ -121,7 +126,7 @@ function garment(group){
     piece('Shorts · '+(s<0?'right':'left')+' leg',[[-.32,.1775,.28],[-.40,.18,.268],[-.51,.177,.239],[-.66,.17,.218]],s*.18,fabric,true,true);
     piece('Shorts · leg hem',[[-.635,.173,.222],[-.663,.173,.222]],s*.18,trim);
   }
-  piece('Shorts · waistband',[[.22,.318,.288],[.18,.323,.292]],0,trim);
+  piece('Shorts · waistband',[[.22,.318,.288],[.18,.323,.292]],0,trim,false,false,true);
   return{meshes:garments,texture:weave};
 }
 
@@ -135,7 +140,17 @@ export async function createMuscleModel(){
   if(loaded.some(r=>r.status==='rejected')){loaded.forEach(r=>{if(r.status==='fulfilled')release(r.value.scene)});throw new Error('Muscular atlas assets unavailable');}
   const [atlas,template]=loaded.map(r=>r.value),group=new THREE.Group(),meshes=[],baseMeshes=[],decorations=[],materials=new Map();
   group.name='Classroom muscular anatomy';group.updateMatrixWorld(true);
-  const body=worldGeometry(template.scene.children.find(o=>o.isMesh)),depth=bodyDepth(body);
+  const body=worldGeometry(template.scene.children.find(o=>o.isMesh)),sample=bodyDepth(body);
+  // The privacy-trimmed template has open lower-abdominal sections. Never let
+  // a posterior triangle become an anterior overlay (or vice versa).
+  function depth(x,y,side=1){
+    const z=sample(x,y,side);
+    if(Math.abs(x)<.31&&y>.14&&y<.95&&(z===null||z*side<.025)){
+      const r=.22+.055*Math.sin((y-.14)/.81*Math.PI);
+      return side*(r-.14*Math.abs(x));
+    }
+    return z;
+  }
   function add(id,geometry,name){
     geometry.computeBoundingBox();const m=fiberMaterial(id,geometry.boundingBox);materials.set(m.uuid,m);
     const mesh=new THREE.Mesh(geometry,m);mesh.name=name||id;mesh.userData.structure=id;mesh.userData.originalMaterial=m;mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);meshes.push(mesh);return mesh;
@@ -143,24 +158,14 @@ export async function createMuscleModel(){
   atlas.scene.updateMatrixWorld(true);
   atlas.scene.traverse(o=>{if(o.isMesh){const id=muscleId(o.name);if(id)add(id,worldGeometry(o),o.name);}});
   const isNeutral=v=>v.y>1.245||v.y<-1.68||(Math.abs(v.x)>.54&&v.y<.025);
-  const neutralMaterial=new THREE.MeshStandardMaterial({color:0xdcc5ac,roughness:.74,metalness:0});materials.set(neutralMaterial.uuid,neutralMaterial);
+  const neutralMaterial=new THREE.MeshStandardMaterial({color:0xc7ad90,roughness:.74,metalness:0});materials.set(neutralMaterial.uuid,neutralMaterial);
   const neutral=new THREE.Mesh(selectFaces(body,v=>isNeutral(v)&&v.y<1.10),neutralMaterial);neutral.name='Smooth mannequin · hands and feet';group.add(neutral);decorations.push(neutral);
-  function neutralShape(name,center,scale){const g=new THREE.SphereGeometry(1,48,40);g.scale(...scale);g.translate(...center);const m=new THREE.Mesh(g,neutralMaterial);m.name=name;group.add(m);decorations.push(m);return m;}
-  const head=neutralShape('Smooth mannequin · head',[0,1.41,.05],[.145,.21,.15]);
-  const hp=head.geometry.attributes.position;
-  for(let i=0;i<hp.count;i++){const y=hp.getY(i),t=THREE.MathUtils.clamp((y-1.22)/.21,0,1);hp.setX(i,hp.getX(i)*(.75+.25*t));}
-  head.geometry.computeVertexNormals();
-  neutralShape('Smooth mannequin · nose',[0,1.392,.198],[.018,.034,.019]);
-  for(const s of [-1,1])neutralShape('Smooth mannequin · ear',[s*.135,1.41,.045],[.016,.033,.025]);
-  const neckSupport=new THREE.Mesh(new THREE.CylinderGeometry(.078,.10,.235,48,8),neutralMaterial);neckSupport.name='Smooth mannequin · neck';neckSupport.position.set(0,1.225,.045);group.add(neckSupport);decorations.push(neckSupport);
-  const baseMaterial=fiberMaterial('body',body.boundingBox);baseMaterial.color.setHex(0xbc9280);materials.set(baseMaterial.uuid,baseMaterial);
-  const baseGeometry=selectFaces(body,v=>!isNeutral(v)&&v.y<1.14&&(v.y>.18||v.y<-.68||Math.abs(v.x)>.38),v=>{
-    const x=Math.abs(v.x),s=Math.sign(v.x)||1;
-    if(v.y<-.2){const center=s*.19;v.x=center+(v.x-center)*.88;v.z=.02+(v.z-.02)*.76;}
-    else if(x>.34&&v.y<.85){const center=s*(.39+(.75-v.y)*.20);v.x=center+(v.x-center)*.84;v.z*=.80;}
-    else{v.x*=.93;v.z=.02+(v.z-.02)*.79;}
-  });
-  const base=new THREE.Mesh(baseGeometry,baseMaterial);base.name='Continuous anatomical support';group.add(base);baseMeshes.push(base);
+  const baseMaterial=fiberMaterial('body',body.boundingBox);baseMaterial.color.setHex(0x974e3b);materials.set(baseMaterial.uuid,baseMaterial);
+  // A fitted closed support replaces the old template fragments, which were
+  // mismatched to the atlas arm pose and could form webs or wrist stubs.
+  for(const geometry of createSupportGeometries(THREE)){
+    const base=new THREE.Mesh(geometry,baseMaterial);base.name='Continuous anatomical support';group.add(base);baseMeshes.push(base);
+  }
   // Ribbons are curved grids sampled on the real body surface. Bundles are
   // simplified atlas regions; no interior organs or exposed bones are created.
   function ribbon(id,side,center,width,y0,y1,sign=1,offset=.008){
@@ -180,7 +185,11 @@ export async function createMuscleModel(){
     const neckCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(s*.064,1.035,.126),new THREE.Vector3(s*.086,1.13,.098),new THREE.Vector3(s*.12,1.25,.035)]);
     const neckGeometry=new THREE.TubeGeometry(neckCurve,32,.014,10,false);
     add('neck',neckGeometry,'Sternocleidomastoid '+(s<0?'right':'left'));
-    ribbon('rectus',1,.073,t=>.047+.008*Math.sin(t*Math.PI),.16,.68,s,.010);
+    // Separate bellies make the tendinous intersections real surface relief.
+    for(let segment=0;segment<4;segment++){
+      const y0=.18+segment*.125,y1=y0+.116;
+      ribbon('rectus',1,.061,t=>.046*(.92+.08*Math.sin(t*Math.PI)),y0,y1,s,.015);
+    }
     ribbon('oblique',1,t=>.20+.055*t,t=>.065-.026*t,.14,.62,s);
     ribbon('latissimus',-1,t=>.11+.12*t,t=>.065+.045*t,.13,.84,s);
     ribbon('erectors',-1,.046,.023,.17,.95,s,.015);
@@ -196,7 +205,10 @@ export async function createMuscleModel(){
   const linePoints=[];for(let i=0;i<32;i++){const y=.19+i/31*.48;linePoints.push(new THREE.Vector3(0,y,(depth(0,y,1)??.25)+.012));}
   const linea=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(linePoints),32,.003,5,false),new THREE.MeshStandardMaterial({color:0xead5b6,roughness:.8}));
   linea.userData.structure='rectus';linea.userData.originalMaterial=linea.material;group.add(linea);meshes.push(linea);materials.set(linea.material.uuid,linea.material);
+  addSurfaceAnatomy({THREE,group,add,depth,decorations,neutralMaterial,fiberMaterial,materials,surface:neutral,muscleMeshes:meshes});
   const shorts=garment(group);
+  mergeMuscleSurfaces(THREE,group,meshes,materials,fiberMaterial);
+  shapeReferencePose(THREE,group,smoothNormals);
   body.dispose();release(atlas.scene);release(template.scene);
   group.updateMatrixWorld(true);
   const bounds=new THREE.Box3().setFromObject(group);
