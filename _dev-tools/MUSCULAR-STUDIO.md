@@ -113,5 +113,10 @@ Changed files: `muscle-model.js`, new `muscle-reference-surfaces.js`,
 `route-manifest.js`, `locales/ar/muscle.js`, `locales/README.md`,
 `assets/muscular/classroom-model.webp`, `assets/muscular/ATTRIBUTION.md`,
 `_dev-tools/verify-muscle-studio.py` and this report. No migration or new dependency
-is required. Work is local on `feat/muscle-reference-model`; it has not been
-published or deployed.
+is required. The implementation was prepared on `feat/muscle-reference-model` before
+publication. Subsequent releases are recorded in GitHub commit/deployment history.
+
+Publication preparation on 24 October 2026 advances the essential shell to v56
+and versions both HTML entry points’ route manifest. Visited runtime assets remain
+cached; installed copies receive the new model module graph. Fresh studio (108),
+loading/offline (47) and JavaScript syntax (126 files) checks passed before push.
