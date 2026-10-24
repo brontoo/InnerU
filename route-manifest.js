@@ -65,18 +65,13 @@ window.InneruRouteManifest={
       "muscle-visuals.js",
       "muscle-pair.js?v=arm-team-1",
       "muscle-learning.js?v=arm-team-1",
-      "muscle-atlas-ui.js?v=muscle-reference-1",
-      "muscle.js?v=mastery-1",
+      "muscle.js?v=studio-removed-1",
       "muscle-force.js?v=on-demand-1"
     ],
     "styles": [
       {
         "url": "muscle.css?v=arm-team-1",
         "order": 6
-      },
-      {
-        "url": "muscle-studio.css?v=muscle-reference-1",
-        "order": 7
       },
       {
         "url": "muscle-learning.css",

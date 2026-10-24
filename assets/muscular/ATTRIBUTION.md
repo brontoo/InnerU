@@ -1,22 +1,15 @@
-# Muscular anatomy studio assets
+# Muscular activity assets
 
-The anatomical muscles and body support are adapted from **BodyParts3D 4.3**,
+The source muscles and the elbow model derive from **BodyParts3D 4.3**,
 © Database Center for Life Science (DBCLS), licensed under
 [Creative Commons Attribution–ShareAlike 2.1 Japan](https://creativecommons.org/licenses/by-sa/2.1/jp/).
 Original project: https://lifesciencedb.jp/bp3d/
 Download information: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
 
-The source meshes were already present in InnerU's Git history before commit
-257a0eb removed the earlier muscular explorer assets. This release extracts the
-anatomical muscle meshes and the body template from that history. It removes the
-old silhouette, the old head and protected pelvic / upper-thigh template regions.
-The supported model adds an original anatomical head, superficial facial context, a fitted closed body support and opaque navy shorts.
-Additional superficial muscle regions, fascia and extremity tendons follow the body surface; directional fiber shading,
-selection colors, procedural garments and the Achilles tendon are teaching
-reconstructions. See `muscle-model.js` and `_dev-tools/MUSCULAR-STUDIO.md`.
-
-These adapted model assets and `classroom-model.webp` (rendered from the same 3D
-model) are distributed under CC BY-SA 2.1 Japan. Changes are described above.
+`anatomical-muscles.glb` is retained as the source input for the independent elbow
+activity's reproducible extraction script. `movement-arm.glb` remains its unchanged
+runtime asset. The retired full-body studio, its body-support GLB and fallback
+render were removed on 24 October 2026; they are not part of the portal UI.
 
 ## Elbow movement activity
 

@@ -84,13 +84,8 @@ try:
      p.mouse.click(target['x'],target['y']);p.wait_for_timeout(60)
      actual=root.locator('.body-atlas-info > strong').inner_text().replace('_',' ');pronounce(p,root,actual).dispatch_event('click')
      check(actual!='Skull','clicking a skeletal mesh pronounces the individual bone rather than the region or explanatory paragraph')
-  # Modern muscular studio exposes all named muscles, including covered anatomy.
-  go(p,'muscle','.muscle-studio .structure-audio-button');root=p.locator('.muscle-studio');root.scroll_into_view_if_needed();p.wait_for_function('!!window.inneruMuscleExplorerState')
-  for part in p.evaluate('InnerUMuscleAtlas.parts.map(p=>({id:p.id,name:p.name}))'):
-   root.locator('[data-muscle-region="all"]').dispatch_event('click');root.locator('[data-muscle-part="'+part['id']+'"]').dispatch_event('click')
-   p.wait_for_function('(n)=>document.querySelector(".muscle-studio .structure-audio-name").textContent===n',arg=part['name'])
-   pronounce(p,root,part['name']).dispatch_event('click')
-  check(True,'all muscular structure labels are pronounced without movement, attachment or garment notes')
+  # The removed full-body studio must not reappear; retain the arm activity.
+  go(p,'muscle','.mq-landing');check(p.locator('.muscle-studio').count()==0,'removed muscular studio has no model details or pronunciation controls')
   arm=p.locator('.arm-lab');arm.locator('.structure-audio').wait_for()
   check(arm.locator('.structure-audio-button').is_disabled(),'the whole-arm activity title has no narration option')
   for key,name in [('biceps','Biceps brachii'),('triceps','Triceps brachii'),('tendons','Tendons'),('bones','Humerus, radius, ulna')]:

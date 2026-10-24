@@ -170,7 +170,7 @@ try:
         check(stored(pp)==baseline,'keyboard, mobile, reduced-motion and navigation tests also preserve preview storage')
 
         # Shared router regression: other system preview routes still work.
-        for path,selector in [('excretory/mission/3?preview=1','.exc-world'),('integumentary/mission/2?preview=1','.integ-mission'),('muscle','.muscle-studio')]:
+        for path,selector in [('excretory/mission/3?preview=1','.exc-world'),('integumentary/mission/2?preview=1','.integ-mission'),('muscle','.mq-landing')]:
             pp.evaluate('(path)=>location.hash=path',path);pp.wait_for_selector(selector)
             check(pp.locator(selector).count()==1,f'shared routing still opens {path}')
         check(stored(pp)==baseline,'other system previews and anatomy browsing preserve existing learner progress')

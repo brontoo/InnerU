@@ -209,13 +209,12 @@ all structure/view controls, animated function routes, keyboard access, mobile
 layout, reduced motion and the scientific fallback. See
 [SKIN-ANATOMY.md](SKIN-ANATOMY.md) for anatomical choices and rendering behavior.
 
-## Muscular anatomy studio
+## Removed muscular full-body studio
 
-Run `python3 _dev-tools/verify-muscle-studio.py` for the current muscular studio.
-It checks actual geometry, all 23 selections, garment coverage, rotation, mesh
-picking, anatomy descriptions, learner-progress preservation, route cleanup,
-mobile layout, reduced motion and fallback behavior. See
-[MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md) for anatomical and rendering choices.
+`python3 _dev-tools/verify-muscle-studio.py` now guards the removal of the full-body
+muscular studio in English and Arabic. It checks that no model/details or retired
+assets load, while the hero, learning sections, elbow activity and all seven
+mission cards and the final panel remain. See [MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md).
 
 ## Antagonistic elbow movement activity
 

@@ -181,7 +181,8 @@ try:
   modes={'world':'[data-view]','muscle':'[data-muscle-region]','respiratory':'[data-resp-mode]','integumentary':'[data-skin-mode]','circulatory':'[data-heart-mode]','excretory':'[data-explorer-tab]'}
   for world in worlds:
    root=world['route'].lstrip('#');go(teacher,root+'?preview=1');capture(teacher,root+'-world')
-   teacher.locator('canvas').first.wait_for(state='visible');teacher.wait_for_timeout(300)
+   if root=='muscle':check(teacher.locator('.muscle-studio').count()==0,'removed muscular full-body studio stays absent in Arabic teacher exploration')
+   else:teacher.locator('canvas').first.wait_for(state='visible');teacher.wait_for_timeout(300)
    for i in range(teacher.locator(modes[root]).count()):
     button=teacher.locator(modes[root]).nth(i)
     if button.is_visible() and button.is_enabled():button.click();teacher.wait_for_timeout(100);capture(teacher,root+'-anatomy-mode-'+str(i),(320,1440))

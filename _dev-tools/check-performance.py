@@ -30,7 +30,7 @@ try:
   browser=launch(pw);context=new_context(browser,service_workers='block',reduced_motion='reduce');p=context.new_page();errors=[];requests=[]
   p.on('pageerror',lambda e:errors.append(str(e)));p.on('request',lambda r:requests.append(r.url))
   # World landings are public anatomy exploration; mission authorization stays online.
-  worlds=[('world','.skeletal-map'),('muscle','.muscle-studio'),('respiratory','.resp-hero'),('integumentary','.integ-hero'),('circulatory','.heart-lab'),('excretory','.exc-world')]
+  worlds=[('world','.skeletal-map'),('muscle','.mq-landing'),('respiratory','.resp-hero'),('integumentary','.integ-hero'),('circulatory','.heart-lab'),('excretory','.exc-world')]
   for fragment,selector in worlds:
    p.goto(origin+'/index.html?nosw=1#'+fragment);p.wait_for_selector(selector)
    p.reload();p.wait_for_selector(selector)
