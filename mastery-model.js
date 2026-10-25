@@ -25,7 +25,8 @@
   const wrong=graded.some(r=>r.correct===false);
   const status=!graded.length?'insufficient':!wrong&&best.correct===best.total&&first>=2?'secure':'developing';
   const reason=status==='insufficient'?'No matched, automatically checked responses are recorded yet.':status==='secure'?'All checks in one complete set are correct, with at least two correct first recorded responses.':wrong?'A recorded check needs another look.':best.correct<best.total?'Some required checks are missing or not yet correct.':'Corrected answers show progress. More independent evidence is needed.';
-  return {entry,status,reason,...best,first,evidence};
+  const nextStep=status==='secure'?'Explain your reasoning to your teacher and revisit it later.':status==='insufficient'?'Try the available lesson checks. If older work has no saved answers, ask your teacher how to show your understanding.':!wrong&&best.correct===best.total?'Your corrections are recorded. A later, different assessment is needed for independent evidence. Ask your teacher about a follow-up; repeating these checks cannot meet this requirement.':'Review the mission diagram, then try the remaining checks.';
+  return {entry,status,reason,...best,first,evidence,nextStep,unresolved:wrong};
  }
  function evaluate(responses=[]){return catalog.map(entry=>objective(entry,Array.isArray(responses)?responses:[]));}
  window.InneruMasteryModel={evaluate,objective,firstCorrect};

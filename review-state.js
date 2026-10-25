@@ -20,7 +20,7 @@ const entry=id=>{const v=data().items[id];return v&&typeof v==='object'?v:null;}
 const boxOf=id=>entry(id)?Math.min(4,Math.max(0,Math.floor(Number(entry(id).b)||0))):0;
 const dueAt=id=>{const v=entry(id);if(!v)return 0;const t=Number(v.d)||((Number(v.t)||0)+INTERVALS[boxOf(id)]*DAY);return Number.isFinite(t)?t:0;};
 const isNew=id=>!entry(id),isDue=(id,now=Date.now())=>!isNew(id)&&dueAt(id)<=now;
-const dueLabel=time=>time<=Date.now()?'Ready now':new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(new Date(time));
+const dueLabel=time=>time<=Date.now()?'Ready now':InneruLearning.date(time,{month:'short',day:'numeric'});
 function stats(){const r=data(),now=Date.now(),future=ITEMS.map(i=>dueAt(i.id)).filter(t=>t>now).sort((a,b)=>a-b),days=future.length?Math.max(1,Math.ceil((future[0]-now)/DAY)):0;return {pool:ITEMS.length,due:ITEMS.filter(i=>isDue(i.id,now)).length,fresh:ITEMS.filter(i=>isNew(i.id)).length,seen:ITEMS.filter(i=>!isNew(i.id)).length,accuracy:r.answers?Math.round(r.correct/r.answers*100):null,next:days===1?'tomorrow':days?'in '+days+' days':'nothing scheduled yet',nextAt:future[0]||null,...r};}
 function flagged(){const rows=[];for(const w of WORLDS){const weak=w.slice?state[w.slice]?.weak:state.weak;for(const id of Array.isArray(weak)?weak:[]){const m=String(id).match(/^(?:m)?([1-8])(?:-|$)/);if(!m)continue;const n=+m[1],href=w.id==='world'?'#mission/'+n:w.id==='muscle'?'#muscle/mission/'+n:w.href+'/'+(w.id==='circ'?'':'mission/')+n;rows.push({world:w.id,label:w.name+' · mission '+n,href});}}return rows.filter((r,i)=>rows.findIndex(x=>x.href===r.href)===i);}
 return {DAY,INTERVALS,e,WORLDS,ITEMS,byId,world,image,arrow,localDay,data,entry,boxOf,dueAt,isNew,isDue,dueLabel,stats,flagged};})();

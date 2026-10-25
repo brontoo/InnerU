@@ -16,7 +16,7 @@
   let box=document.querySelector('.learning-support');
   const host=document.querySelector('.topbar')||document.querySelector('.gate-motion-tools')||document.querySelector('.gate-header')||document.querySelector('.gate-welcome');
   if(!host)return;
-  if(!box){box=document.createElement('div');box.className='learning-support';box.dataset.noTerms='';box.innerHTML='<label>Language / اللغة <select data-interface-language aria-label="Interface language"><option value="en" lang="en">English</option><option value="ar" lang="ar">العربية</option></select></label><button type="button" data-guided-toggle aria-pressed="false">Guided mode</button><span class="support-status" data-support-status role="status"></span>';host.append(box);
+  if(!box){box=document.createElement('div');box.className='learning-support';box.dataset.noTerms='';box.innerHTML='<label><span class="support-language-label">Language / اللغة</span> <select data-interface-language aria-label="Interface language"><option value="en" lang="en">English</option><option value="ar" lang="ar">العربية</option></select></label><button type="button" data-guided-toggle aria-pressed="false">Guided mode</button><span class="support-status" data-support-status role="status"></span>';host.append(box);
    box.querySelector('select').onchange=event=>InneruPreferences.set({language:event.target.value});
    box.querySelector('button').onclick=()=>InneruPreferences.set({guided:!InneruPreferences.get().guided});
   }

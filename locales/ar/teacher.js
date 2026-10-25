@@ -1,5 +1,18 @@
 /* Authored Modern Standard Arabic; English source keys. See ../README.md. */
 InneruLocale.register({
+  "submission": "عمل مقدَّم",
+  "objective": "هدف",
+  "Unreviewed submissions": "أعمال مقدّمة لم تُراجَع",
+  "Needs attention": "يحتاج إلى متابعة",
+  "Recorded errors, missing evidence and unreviewed submissions are separate signals. Points and completion are not used.": "الأخطاء المسجّلة ونقص الأدلة والأعمال التي لم تُراجَع مؤشرات منفصلة. لا تعتمد هذه المتابعة على النقاط أو الإكمال.",
+  "Unresolved incorrect checks": "اختبارات بإجابات غير صحيحة لم تُصحَّح",
+  "Objectives needing evidence": "أهداف تحتاج إلى أدلة",
+  "Submitted work awaiting review": "أعمال مقدّمة بانتظار المراجعة",
+  "submissions": "أعمال مقدّمة",
+  "objectives": "أهداف",
+  "Open matching records": "افتح السجلات المطابقة",
+  "No matching records in this class.": "لا توجد سجلات مطابقة في هذا الصف.",
+
   "Mastery": "التمكّن",
   "Review recorded evidence for objectives in your assigned classes.": "راجع الأدلة المسجّلة للأهداف في صفوفك المسندة.",
   "Dashboard": "لوحة التحكم",
@@ -100,7 +113,7 @@ InneruLocale.register({
   "See learning patterns across your assigned classes.": "اطّلع على أنماط التعلّم في صفوفك المسندة.",
   "Learning evidence from the latest synced records.": "أدلة التعلّم من أحدث السجلّات المتزامنة.",
   "RECORDED ACCURACY": "دقّة الإجابات المسجّلة",
-  "{correct} / {total} latest graded task responses correct": "الإجابات الصحيحة من أحدث المهام ذات الدرجات: {correct} / {total}",
+  "{correct} / {total} latest graded task responses correct": "الإجابات الصحيحة من أحدث المهام ذات الدرجات: {correct} من {total}",
   "CLASS CURIOSITY": "فضول الصفّ",
   "XP": "نقاط الخبرة",
   "Earned through completed learning tasks": "مكتسبة من خلال مهام التعلّم المكتملة",

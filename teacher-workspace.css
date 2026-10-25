@@ -1,5 +1,5 @@
 /* The teaching desk and Discovery League share the portal's ink, mint and violet. */
-.td-page[data-teacher-page]:not([data-teacher-page^="student-"])>.td-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;background:#fffefa;padding:8px;border:1px solid #d5e6e4;border-radius:18px;box-shadow:0 7px 24px #173c4710;margin:0 0 32px;overflow:visible}
+.td-page[data-teacher-page]:not([data-teacher-page^="student-"])>.td-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;background:#fffefa;padding:8px;border:1px solid #d5e6e4;border-radius:18px;box-shadow:0 7px 24px #173c4710;margin:0 0 32px;overflow:visible}
 .td-page>.td-tabs>a{justify-content:center;min-height:54px;padding:12px;border:0;border-radius:12px;color:#657b86;font-weight:600}
 .td-page>.td-tabs>a[aria-current="page"]{color:#fff;background:linear-gradient(115deg,#168e91,#145d70);box-shadow:0 5px 13px #137a7f24}
 .td-page>.td-tabs>a::after{display:none}.td-page>.td-tabs>a b{background:#d8f7ee;color:#145d70}
@@ -25,3 +25,8 @@
 
 /* On phones the mascot gets its own row, leaving long headings unobstructed. */
 @media(max-width:640px){.td-league-stage{flex-direction:column;gap:16px}.td-league-mascot{position:relative;inset:auto;order:-1;align-self:flex-end;flex:none}}
+
+/* Follow-up summaries use the already authorized roster and read-only evidence. */
+.td-attention-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.td-attention-grid>div{min-width:0;padding:16px;border:1px solid #c5dcd6;border-radius:12px;background:#f6fbf8}.td-attention h3{font-size:1rem;line-height:1.6}.td-attention p,.td-attention a{font-size:.875rem;line-height:1.7}.td-attention ul{list-style:none;padding:0}.td-attention li a{display:flex;justify-content:space-between;gap:12px;padding-block:8px;overflow-wrap:anywhere}.td-attention li a>b{min-width:0}.td-attention li a>span{flex-shrink:0}.td-attention svg{width:18px;height:18px;vertical-align:middle}
+.td-workspace-metrics .td-kicker,.td-workspace-metrics p,.td-desk-summary,.td-resource-grid small{font-size:.8rem;line-height:1.7}.td-workspace-metrics .td-kicker{letter-spacing:.03em}
+@media(max-width:1000px){.td-page[data-teacher-page]:not([data-teacher-page^="student-"])>.td-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.td-attention-grid{grid-template-columns:1fr}}

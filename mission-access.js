@@ -3,7 +3,7 @@
  'use strict';
  const L=window.InneruLearning,A=window.InneruAccount;
  const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let catalog=null,previewState=null,previewActive=false,browseActive=false,ticket=0,refreshing=null;
+ let catalog=null,accessError='',previewState=null,previewActive=false,browseActive=false,ticket=0,refreshing=null;
  async function api(action,values){
   const response=await fetch('/api/learning?action='+action,{method:values===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:values===undefined?{}:{'Content-Type':'application/json'},...(values===undefined?{}:{body:JSON.stringify(values)})});
   let data;try{data=await response.json();}catch{throw new Error('Mission access could not be checked. Please reconnect and try again.');}
@@ -30,7 +30,23 @@
  async function refresh(){
   if(!A.currentUser&&!InneruAccess.user)return null;
   if(refreshing)return refreshing;
-  refreshing=api('mission-catalog').then(data=>{catalog=data;decorate();return data;}).finally(()=>{refreshing=null;});return refreshing;
+  refreshing=api('mission-catalog').then(data=>{catalog=data;accessError='';decorate();return data;}).catch(error=>{catalog=null;accessError=error.message;decorate();throw error;}).finally(()=>{refreshing=null;});return refreshing;
+ }
+ function pathways(main){
+  const p=L.snapshot(),ordered=[p.recommended,...p.worlds.filter(w=>w.id!==p.recommended.id)];
+  main.querySelectorAll('[data-sd-continue]').forEach(link=>{
+   const id=link.dataset.sdContinue,worlds=id?p.worlds.filter(w=>w.id===id):ordered;
+   const candidates=worlds.flatMap(w=>(catalog?.systems.find(s=>s.id===w.id)?.missions||[]).filter(m=>m.allowed&&!m.completed).map(m=>({w,m})));
+   const next=candidates[0],complete=id&&worlds[0]?.key;
+   const href=next?normalRoute({world:next.w,number:next.m.number}):complete?worlds[0].route:'#home';
+   const label=next?(id?'Continue this system':p.tasks?'Continue your expedition':'Start your first mission'):complete?'Revisit this system':'Explore Worlds';
+   const reason=next||complete?'':accessError?'Mission access could not be checked. Reconnect and refresh this page.':!catalog?'Checking mission access…':'No unfinished mission is available here. Your teacher may need to unlock your next mission.';
+   link.setAttribute('href',href);link.removeAttribute('aria-disabled');link.classList.remove('iu-mission-locked');link.removeAttribute('title');delete link.dataset.missionLockReason;
+   const caption=link.querySelector('[data-sd-action-label]');if(caption&&(window.InneruLocale?InneruLocale.source(caption):caption.textContent)!==label)caption.textContent=label;
+   let note=link.nextElementSibling;
+   if(!note?.matches('[data-sd-pathway-status]')){note=document.createElement('p');note.dataset.sdPathwayStatus='';note.className='sd-note';note.setAttribute('role','status');link.after(note);}
+   if((window.InneruLocale?InneruLocale.source(note):note.textContent)!==reason)note.textContent=reason;
+  });
  }
  function gateFor(m){return catalog?.systems.find(w=>w.id===m.world.id)?.missions.find(row=>row.number===m.number);}
  const systemPath=href=>L.worlds.some(w=>w.route.slice(1)===href.replace(/^#/,'').split(/[/?]/)[0]);
@@ -48,7 +64,9 @@
    main.querySelectorAll('a[href="#dashboard"]').forEach(link=>{link.href='#teacher';if((window.InneruLocale?InneruLocale.source(link):link.textContent).includes('discoveries'))link.innerHTML='Your classroom ↗';});
    main.querySelectorAll('a[href="#detective"],a[href="#connect"],a[href="#final"]').forEach(link=>{link.href='#teacher?view=preview';});
   }
-  if(user.role!=='student'||!catalog)return;
+  if(user.role!=='student')return;
+  pathways(main);
+  if(!catalog)return;
   main.querySelectorAll('.skel-mode-bar,.resp-preview-bar,.integ-preview-bar,.exc-mode-banner').forEach(bar=>{const title=bar.querySelector('b,strong'),description=bar.querySelector('p');if(title)title.textContent='Your class mission pathway';if(description)description.textContent='Open the missions your teacher has unlocked, and complete each discovery before the next one.';});
   main.querySelectorAll('a[href^="#"]').forEach(link=>{
    const raw=link.getAttribute('href'),m=parse(raw);
@@ -93,6 +111,6 @@
  document.addEventListener('visibilitychange',recheck);
  window.addEventListener('focus',recheck);window.addEventListener('online',recheck);
  setInterval(()=>{if(parse())recheck();},30000);
- window.InneruMissionAccess={refresh,parse,get teacherPreviewActive(){return previewActive;},get teacherBrowseActive(){return browseActive;}};
+ window.InneruMissionAccess={refresh,parse,decorate,get teacherPreviewActive(){return previewActive;},get teacherBrowseActive(){return browseActive;}};
  route();
 })();

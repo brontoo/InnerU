@@ -1,7 +1,7 @@
 /* Ordered classic-script groups; styles retain their original cascade positions. */
 window.InneruRouteManifest={
-  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=mastery-1"],"styles":[]},
-  "mastery":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=mastery-1","mastery.js?v=mastery-1"],"styles":[{"url":"mastery.css?v=mastery-1","order":40}]},
+  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=usability-1"],"styles":[]},
+  "mastery":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=usability-1","mastery.js?v=usability-1"],"styles":[{"url":"mastery.css?v=mastery-1","order":40}]},
   "owner":{"scripts":["owner.js?v=owner-1"],"styles":[{"url":"owner.css?v=owner-1","order":39}]},
   "art": {
     "scripts": [
@@ -26,7 +26,7 @@ window.InneruRouteManifest={
   "home": {
     "scripts": [
       "home-core.js?v=on-demand-1",
-      "world-navigation.js?v=guided-ar-1",
+      "world-navigation.js?v=usability-1",
       "home-expedition.js?v=guided-ar-1"
     ],
     "styles": [
@@ -146,7 +146,7 @@ window.InneruRouteManifest={
   },
   "integumentary": {
     "scripts": [
-      "integumentary.js?v=mastery-1",
+      "integumentary.js?v=usability-1",
       "integ-map-art.js?v=on-demand-1"
     ],
     "styles": [
@@ -177,7 +177,7 @@ window.InneruRouteManifest={
   "excretory": {
     "scripts": [
       "excretory-art.js?v=guided-ar-1",
-      "excretory.js?v=mastery-1"
+      "excretory.js?v=usability-1"
     ],
     "styles": [
       {
@@ -250,7 +250,9 @@ window.InneruRouteManifest={
   },
   "teacher": {
     "scripts": [
-      "teacher-dashboard.js?v=mastery-1"
+      "mastery-catalog.js?v=mastery-1",
+      "mastery-model.js?v=usability-1",
+      "teacher-dashboard.js?v=usability-1"
     ],
     "styles": [
       {
@@ -258,7 +260,7 @@ window.InneruRouteManifest={
         "order": 0
       },
       {
-        "url": "teacher-workspace.css?v=teacher-workspace-2",
+        "url": "teacher-workspace.css?v=usability-1",
         "order": 38
       }
     ]

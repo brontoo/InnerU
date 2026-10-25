@@ -38,3 +38,6 @@ html[dir=rtl] :where(.gate-art-note,.td-mascot-note){font-family:Tahoma,Arial,sa
 html[dir=rtl] :where(.brand,.brandname,.gate-wordmark,.gate-footer-brand,.iu-avatar-art){direction:ltr;unicode-bidi:isolate}
 .gate-header .learning-support{grid-column:1 / -1;justify-content:center;margin-inline:auto}
 html[lang=ar] :where(.eyebrow,.td-kicker,.sd-kicker,.micro,.gate-role-label){font-size:max(.75rem,1em)}
+
+/* Compact phone controls retain native labels, visible language and Guided mode. */
+@media(max-width:700px){.topbar .crumb{flex-basis:100%;font-size:.8rem;line-height:1.5}.topbar .profile{gap:6px;min-width:0;flex:1}.topbar .profile .name{max-width:110px}.topbar .learning-support{gap:8px;padding:0;flex-basis:100%;width:100%;justify-content:space-between}.topbar .support-language-label{display:none}.topbar .learning-support select,.topbar .learning-support button{font-size:.78rem;padding:8px;min-height:44px}.topbar .learning-support label{flex-wrap:nowrap}.topbar .learning-support select{width:100px}.topbar .learning-support [data-guided-toggle]{flex:1}.topbar .learning-support .support-status{flex-basis:100%}body:has(.iu-account-menu) .topbar .reader-tools{flex-basis:auto;margin:0}.topbar .reader-tools button{min-height:44px}.topbar .xp,.topbar .profile .name{font-size:.78rem}}

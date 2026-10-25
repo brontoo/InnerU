@@ -87,7 +87,7 @@
     if(state.learning?.legacyFinals?.[info.system]&&info.mission===0&&['final','decision'].includes(info.kind))return;
     pending.set(id,xp);return oldReward(id,xp);
   };
-  window.InneruLearning={worlds,snapshot,describe,missionRoute,finalRoute,preview};
+  window.InneruLearning={date:(value,options)=>new Intl.DateTimeFormat('en-AE',{...options,timeZone:'Asia/Dubai'}).format(new Date(value)),worlds,snapshot,describe,missionRoute,finalRoute,preview};
   // Preserve live lesson references while synchronising another tab's save.
   function mergeSaved(target,source){
     for(const key of Object.keys(target)){if(key in source)continue;const value=target[key];if(Array.isArray(value))value.splice(0);else if(value&&typeof value==='object')mergeSaved(value,{});else delete target[key];}

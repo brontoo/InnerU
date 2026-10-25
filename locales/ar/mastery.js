@@ -1,5 +1,9 @@
 /* Authored Modern Standard Arabic. Objective and support copy; no activity logic. */
 InneruLocale.register({
+  "Your lesson checks and submitted explanations provide evidence. Completion and mastery are shown separately.": "تقدّم اختبارات الدرس وتفسيراتك المقدَّمة أدلة على تعلّمك. يُعرض إكمال المهمات وأدلة التمكّن بصورة منفصلة.",
+
+  "Your corrections are recorded. A later, different assessment is needed for independent evidence. Ask your teacher about a follow-up; repeating these checks cannot meet this requirement.": "سُجّلت تصحيحاتك. تحتاج إلى تقييم مختلف لاحقًا لتقديم دليل مستقل. اسأل معلّمك عن متابعة مناسبة؛ فتكرار هذه الاختبارات لا يحقّق هذا الشرط.",
+
   "Activity submission recorded. This response needs teacher review; no automatic grade was inferred.": "سُجّل العمل المقدَّم. تحتاج هذه الاستجابة إلى مراجعة المعلّم؛ ولم تُستنتَج لها درجة آلية.",
   "Activity submission captured. A teacher can review the recorded settings or written response; no automatic grade was inferred.": "سُجّل العمل المقدَّم. يمكن للمعلّم مراجعة الإعدادات المسجّلة أو الاستجابة المكتوبة؛ ولم تُستنتَج درجة آلية.",
   "Try the available lesson checks. If older work has no saved answers, ask your teacher how to show your understanding.": "جرّب اختبارات الدرس المتاحة. إذا لم يتضمّن عملك السابق إجابات محفوظة، فاسأل معلّمك كيف يمكنك إظهار فهمك.",
