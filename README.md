@@ -7,13 +7,9 @@ Connect the account service using [_dev-tools/ACCOUNT-SETUP.md](_dev-tools/ACCOU
 The illustrated entry includes twelve animated avatar choices and redirects authenticated
 accounts to their verified Student or Teacher Dashboard. Without the external configuration, account creation is unavailable.
 
-The muscular landing page has a **real-time rotatable 3D studio immediately below
-its hero**, with six region tabs and 23 selectable anatomical structures. Choosing
-a muscle turns toward it, highlights it in teal and fades surrounding anatomy.
-The mannequin has a smooth neutral head, hands and feet; opaque shorts cover the
-hips and upper thighs in every view, including covered-region selection. A render
-of the same mannequin and all anatomy descriptions remain available without
-WebGL. See [_dev-tools/MUSCULAR-STUDIO.md](_dev-tools/MUSCULAR-STUDIO.md).
+The muscular full-body studio has been removed in both languages. Its separate
+elbow activity and all lessons remain available. See the
+[removal regression notes](_dev-tools/MUSCULAR-STUDIO.md).
 
 The muscular foundation also includes a detailed **animated elbow lab**: real arm
 bones, two biceps heads, three triceps heads, fixed-length tendon routes, and three
@@ -48,8 +44,9 @@ are handled by the connected auth service; passwords and session tokens are not 
 in application localStorage.
 
 **Tap an underlined term** for a one-sentence definition with the Arabic word beside it.
-Audio is limited to pronouncing selected structure names inside the anatomy models;
-page narration and glossary audio are unavailable.
+Use **Listen / Stop** to read supported instructions and feedback, or pronounce
+selected anatomy structure names. Speech starts only after activation and depends
+on available browser voices. Glossary definitions remain readable on screen.
 
 ## Excretory expedition
 
@@ -165,8 +162,8 @@ InneruRouteModules.registerRenderer(function () {
 ```
 
 Core account, preview, glossary and accessibility wrappers continue to wrap the
-stable dispatcher. `speech.js` pronounces selected model structure names only;
-it does not narrate portal text. Do not add eager world imports to the shell or
+stable dispatcher. The shared speech controller handles user-activated structure
+pronunciation and supported instruction/feedback reading; nothing autoplays. Do not add eager world imports to the shell or
 have a deferred module call `route()` while it is loading.
 
 ### State
@@ -214,7 +211,7 @@ available when speech is unavailable. Existing anatomy pronunciation and reduced
 motion remain available. Preferences are device-local and separate from scored
 progress; no database migration is required.
 
-Arabic uses RTL layout and 18 authored, route-specific message catalogues (7,261
+Arabic uses RTL layout and 19 authored, route-specific message catalogues (7,543
 entries). They cover navigation, sign-in/recovery, student and teacher dashboards,
 all six systems' lessons and activities, feedback, anatomy explanations, recall,
 connections, detective cases and information pages. Original scientific terms
@@ -509,3 +506,53 @@ separation, RTL controls, popovers and narrow-screen reflow using local test acc
 It is included in `npm test`; no production credentials are used. See
 [_dev-tools/ARABIC-LAYOUT.md](_dev-tools/ARABIC-LAYOUT.md) for scope, review artifacts
 and known limits, and [_dev-tools/README.md](_dev-tools/README.md) for prerequisites.
+
+## Usability update — 25 October 2026
+
+Dashboard recommendations use the account’s authorized mission catalogue. If all
+unfinished missions are locked, the primary action offers Explore Worlds with an
+explanation. Failed access checks never imply that a mission is available.
+Teacher Overview separates unresolved incorrect objective checks, objectives
+needing evidence and unreviewed submissions, scoped to the selected assigned class.
+The linked evidence/feedback filters preserve that scope.
+
+Corrected answers remain recorded even when independent evidence is insufficient.
+Mastery now explains when a different later assessment is needed; repeating the
+same checks cannot meet the first-response criterion. No assessment, grading rule,
+reward, mission gate or database schema changed. Existing objectives are displayed
+consistently on authorized lesson/final pages.
+
+Teacher tabs use six desktop columns; narrow headers keep language and Guided
+controls visible. Important dashboard labels are larger. Arabic count phrases use
+“من” and isolated numeric fractions retain LTR order. Reset wording identifies its
+existing device/account effect before confirmation and cancellation returns focus.
+
+The six original explorer portraits are now individual, pixel-preserving WebP
+crops. The compact guide/friend sheet remains unchanged. Four scientific PNG plates
+are replaced by lossless WebP at the same dimensions. All visible decoded pixels
+and alpha match the original images; redundant originals are removed. See
+[_dev-tools/usability-image-proof.json](_dev-tools/usability-image-proof.json).
+
+Cold local Chromium/gzip measurements, same fixture and 1440 × 1000 viewport:
+
+| Response bodies | Before (`ac70682`) | After |
+|---|---:|---:|
+| Login JS | 24,400 B | 24,485 B |
+| Login CSS | 11,596 B | 11,850 B |
+| Login images / requests / early models | 428,514 B / 18 / 0 | unchanged |
+| Dashboard JS | 72,632 B | 73,360 B |
+| Dashboard CSS | 31,595 B | 32,063 B |
+| Dashboard images | 2,113,950 B | 826,150 B |
+| Dashboard requests / early models | 48 / 0 | unchanged |
+
+Initial dashboard image transfer falls approximately **61%**. Existing performance
+limits are unchanged. These are response-body measurements on local fixtures,
+not production Web Vitals. API responses still remain outside offline caches.
+
+`npm test` now includes 13 sequential suites, including focused usability and
+muscular-studio removal/preservation guards. Actions use Node 24-compatible action
+releases while the application checks continue on Node 22. No new dependency,
+configuration, migration or production service is required. Owners can separately
+configure GitHub to require **Critical checks** before merges to `main`; this work
+does not alter repository rules or deploy. See the full
+[implementation and verification notes](_dev-tools/USABILITY.md).

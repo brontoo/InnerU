@@ -1,3 +1,7 @@
+> Historical implementation report: counts and artifact paths below describe that
+> implementation snapshot. Current setup and release coverage are in [README.md](README.md);
+> the 25 October usability follow-up is documented in [USABILITY.md](USABILITY.md).
+
 # Guided mode, speech and Arabic presentation
 
 Work is on `feat/guided-arabic-accessibility`, based on local performance checkpoint

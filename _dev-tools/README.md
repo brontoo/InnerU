@@ -1,9 +1,11 @@
 # Automatic critical release checks
 
-`npm test` runs the same eleven critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same thirteen critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
+| `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
+| `verify-muscle-studio.py` | Removed full-body studio stays absent while the elbow activity and every lesson remain intact |
 | `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
 | `verify-accounts.py` | Signup, sign-in, avatars, recovery, cookies and account isolation |
 | `verify-student-classes.py` | All six class choices, pending teacher linking and class permissions |
@@ -96,9 +98,11 @@ chosen missing route was never cached and restores network fetch before retry.
 checking limits. Both commands honor the existing artifact and browser overrides.
 Do not add production credentials or run them against the deployed portal.
 
-The heart, muscle and skin studio harnesses now share the portable browser,
-loopback fixture and artifact helpers. They retain their real WebGL geometry,
-selection, material, responsive and fallback assertions. Their route-cleanup
+The heart and skin studio harnesses share the portable browser, loopback fixture
+and artifact helpers, retaining their WebGL geometry, selection, material,
+responsive and fallback assertions. The muscular harness now guards the full-body
+studio removal and preservation of the independent elbow activity; it runs in
+the default release gate. Their route-cleanup
 checks return to public Home; authenticated mission coverage lives in the
 critical release suite.
 
@@ -351,3 +355,6 @@ check-to-objective mapping and the limits of retained evidence. No migration is 
 [ARABIC-LAYOUT.md](ARABIC-LAYOUT.md) for reproduced problems, viewport coverage,
 geometry exclusions and screenshot/report locations. This checks layout separately
 from translation completeness; it uses the same isolated fixtures and browser setup.
+
+Current usability changes, screenshot scope and fresh check results are documented
+in [USABILITY.md](USABILITY.md). No new test dependency or database migration is required.
