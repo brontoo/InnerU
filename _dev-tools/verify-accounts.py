@@ -111,9 +111,9 @@ try:
   offline=new_context(browser, );q=offline.new_page();q.goto(ORIGIN+'/login.html');q.evaluate('navigator.serviceWorker.ready');q.wait_for_function('navigator.serviceWorker.controller!==null')
   q.wait_for_selector('.gate-role-grid');q.evaluate('fetch("/api/auth?action=session",{cache:"no-store"}).then(r=>r.json())')
   # Avatar sheets are runtime assets, not installation downloads.
-  q.evaluate('fetch("assets/avatars/explorers.webp").then(r=>r.arrayBuffer())')
+  q.evaluate('fetch("assets/avatars/atlas.webp").then(r=>r.arrayBuffer())')
   cached=q.evaluate('(async()=>{const keys=await caches.keys();const all=(await Promise.all(keys.map(async k=>(await(await caches.open(k)).keys()).map(r=>new URL(r.url).pathname)))).flat();return all})()')
-  check('/assets/avatars/explorers.webp' in cached and not any(x.startswith('/api/') for x in cached),'avatar artwork is cached while account API requests are excluded from the service worker')
+  check('/assets/avatars/atlas.webp' in cached and not any(x.startswith('/api/') for x in cached),'avatar artwork is cached while account API requests are excluded from the service worker')
   offline.set_offline(True)
   check(q.evaluate('fetch("/api/auth?action=session").then(()=>false,()=>true)'),'offline account requests fail clearly instead of replaying another session or cached HTML')
   offline.close()

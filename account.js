@@ -2,12 +2,12 @@
 (() => {
  'use strict';
  const avatars=[
-  {id:'nova',name:'Nova',tag:'Big ideas. Bright sparks.',col:0,row:0},
-  {id:'atlas',name:'Atlas',tag:'Always ready to explore.',col:1,row:0},
-  {id:'luna',name:'Luna',tag:'Curiosity looks good on you.',col:2,row:0},
-  {id:'neo',name:'Neo',tag:'A little courage. A big grin.',col:0,row:1},
-  {id:'pip',name:'Pip',tag:'Tiny robot. Giant questions.',col:1,row:1},
-  {id:'ember',name:'Ember',tag:'Clever paws. Curious mind.',col:2,row:1},
+  {id:'nova',name:'Nova',tag:'Big ideas. Bright sparks.'},
+  {id:'atlas',name:'Atlas',tag:'Always ready to explore.'},
+  {id:'luna',name:'Luna',tag:'Curiosity looks good on you.'},
+  {id:'neo',name:'Neo',tag:'A little courage. A big grin.'},
+  {id:'pip',name:'Pip',tag:'Tiny robot. Giant questions.'},
+  {id:'ember',name:'Ember',tag:'Clever paws. Curious mind.'},
   {id:'amira',name:'Amira',tag:'Guiding curious minds.',col:0,row:0,sheet:2},
   {id:'sami',name:'Sami',tag:'Every question matters.',col:1,row:0,sheet:2},
   {id:'noor',name:'Noor',tag:'A bright new discovery.',col:2,row:0,sheet:2},
@@ -41,7 +41,7 @@
   localStorage.setItem(PROFILE,JSON.stringify(next));return next;
  }
  function clearActive(userId){const current=readProfile();if(current?.authUserId&&current.authUserId!==userId)throw new Error('The active account changed in another tab. Please refresh.');archive(current);localStorage.setItem(PROFILE,JSON.stringify({name:'Explorer',xp:0,done:[],rewards:[],weak:[],level:current?.level||'Explorer',motion:!!current?.motion}));localStorage.removeItem(UNDO);}
- function portrait(id,extra=''){const a=avatar(id);return a?`<span class="iu-avatar-art ${a.sheet===2?'iu-avatar-sheet-2 ':''}${extra}" style="--avatar-col:${a.col};--avatar-row:${a.row}" aria-hidden="true"></span>`:'';}
+ function portrait(id,extra=''){const a=avatar(id);return a?`<span class="iu-avatar-art ${a.sheet===2?'iu-avatar-sheet-2 ':''}${extra}" style="${a.sheet===2?'--avatar-col:'+a.col+';--avatar-row:'+a.row:'--avatar-image:url(assets/avatars/'+a.id+'.webp)'}" aria-hidden="true"></span>`:'';}
  function markup(id,name='Explorer'){const a=avatar(id);return a?`<span class="avatar iu-profile-avatar" role="img" aria-label="${e(a.name)} avatar">${portrait(id)}</span>`:`<span class="avatar">${e(String(name).slice(0,1).toUpperCase())}</span>`;}
  function identityFields(profile){return {...(profile?.authUserId?{authUserId:profile.authUserId}:{}),...(avatar(profile?.avatarId)?{avatarId:profile.avatarId}:{})};}
  const destination=user=>['teacher','admin'].includes(user?.role)?'teacher':'dashboard';

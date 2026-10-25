@@ -1,0 +1,146 @@
+{
+  "sourceCommit": "ac70682",
+  "proof": "Decoded RGBA is identical; invisible RGB under zero alpha is normalized to zero.",
+  "images": [
+    {
+      "source": "assets/avatars/explorers.webp",
+      "crop": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "file": "assets/avatars/nova.webp",
+      "size": [
+        512,
+        512
+      ],
+      "visible_rgba_sha256": "c8ac547857489632617069c0e09f194c4832ba168616956113bb6ccd73883ff4",
+      "bytes": 264702
+    },
+    {
+      "source": "assets/avatars/explorers.webp",
+      "crop": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "file": "assets/avatars/atlas.webp",
+      "size": [
+        512,
+        512
+      ],
+      "visible_rgba_sha256": "0e297ac8b2bf101a57f0cb8b4758d50e55577fdc5309d642e311ab49be1fb251",
+      "bytes": 238478
+    },
+    {
+      "source": "assets/avatars/explorers.webp",
+      "crop": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "file": "assets/avatars/luna.webp",
+      "size": [
+        512,
+        512
+      ],
+      "visible_rgba_sha256": "323061cb661b5b9cb114e0ef964e0e7bf41b8a1c5a5093546eb0b6f33ae62c43",
+      "bytes": 221730
+    },
+    {
+      "source": "assets/avatars/explorers.webp",
+      "crop": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "file": "assets/avatars/neo.webp",
+      "size": [
+        512,
+        512
+      ],
+      "visible_rgba_sha256": "806fbcfd10662465cb09d45e34b82d53229c60a99cb72472500c870b834aa15c",
+      "bytes": 240464
+    },
+    {
+      "source": "assets/avatars/explorers.webp",
+      "crop": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "file": "assets/avatars/pip.webp",
+      "size": [
+        512,
+        512
+      ],
+      "visible_rgba_sha256": "8227405ba3187986a25577d1623db6ab85c902ec60beb2a127fc9279f7f414ab",
+      "bytes": 230372
+    },
+    {
+      "source": "assets/avatars/explorers.webp",
+      "crop": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "file": "assets/avatars/ember.webp",
+      "size": [
+        512,
+        512
+      ],
+      "visible_rgba_sha256": "fb7fe144c7de7ae4d5a521359721022d549fa9909f05ae528dbe2ae8eed42523",
+      "bytes": 279738
+    },
+    {
+      "source": "assets/integumentary-skin-cutaway.png",
+      "crop": null,
+      "file": "assets/integumentary-skin-cutaway.webp",
+      "size": [
+        1254,
+        1254
+      ],
+      "visible_rgba_sha256": "930d12074500506c0fbc8a43e94afa78163a2dc3fae9c4280fe361cd2ff8ac78",
+      "bytes": 2097456
+    },
+    {
+      "source": "assets/excretory-science-plate.png",
+      "crop": null,
+      "file": "assets/excretory-science-plate.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "visible_rgba_sha256": "79c214f443b921061eaef6687dd68e0b0e7c2180d916ff565a51ee9dd00e4d80",
+      "bytes": 1567324
+    },
+    {
+      "source": "assets/excretory-nephron-plate.png",
+      "crop": null,
+      "file": "assets/excretory-nephron-plate.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "visible_rgba_sha256": "c9208efe725f97bb636f1a674d2ce188aba002e8aaa6c8d167c584069e1d1459",
+      "bytes": 1625758
+    },
+    {
+      "source": "assets/excretory-kidney-cutaway.png",
+      "crop": null,
+      "file": "assets/excretory-kidney-cutaway.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "visible_rgba_sha256": "ac2221c4fe0abf08c5f7bb93938efaa6ac923aa4bbb94bc66a3939c790baad39",
+      "bytes": 1435640
+    }
+  ]
+}

@@ -31,7 +31,8 @@ classroom access follow the schema and policies documented in
 
 Original generated art in `assets/login` includes the adventure landscape,
 student explorer, teacher guide and transparent quest companion. The original six
-avatar portraits share `assets/avatars/explorers.webp`; six additional guides and
+avatar portraits use individual pixel-preserving WebP files (for example,
+`assets/avatars/atlas.webp`); six additional guides and
 friends use `assets/avatars/guides-and-friends.webp`. The teacher wears a simple
 lavender hijab in `assets/login/teacher-guide-hijab.webp`. Text, form controls and avatar identities remain HTML rather than
 being baked into the artwork.

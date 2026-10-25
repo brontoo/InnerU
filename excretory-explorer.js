@@ -187,8 +187,8 @@ export function mountExcretoryExplorer(root) {
     const fallbackImage = root.querySelector(".exc-model-fallback");
     fallbackImage.src =
       next === "nephron"
-        ? "assets/excretory-nephron-plate.png"
-        : "assets/excretory-kidney-cutaway.png";
+        ? "assets/excretory-nephron-plate.webp"
+        : "assets/excretory-kidney-cutaway.webp";
     fallbackImage.alt =
       next === "nephron"
         ? "Magnified nephron: glomerular tuft inside the capsule, convoluted tubules, loop of Henle, collecting duct and surrounding capillaries."
