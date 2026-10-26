@@ -1,6 +1,6 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v60-compact-audio';
+const VERSION='inneru-v61-body-quest-brand';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
@@ -11,14 +11,14 @@ const SHELL=[
   "./404.html",
   "./manifest.webmanifest",
   "./login.html",
-  "./login.css?v=auth-recovery-1",
+  "./login.css?v=body-quest-1",
   "./login.js?v=guided-ar-1",
-  "./favicon.svg",
-  "./inneru-mark.svg",
-  "./inneru-mark-light.svg",
+  "./favicon.svg?v=3",
+  "./inneru-mark.svg?v=3",
+  "./inneru-logo.svg?v=body-quest-1",
   "./habit.css",
   "./glossary.css",
-  "./style.css",
+  "./style.css?v=body-quest-1",
   "./exhibit.css",
   "./student-dashboard.css?v=usability-1",
   "./structure-audio.css?v=names-only-1",
@@ -29,7 +29,7 @@ const SHELL=[
   "./learning-catalog.js?v=on-demand-1",
   "./account.js?v=usability-1",
   "./access.js?v=owner-1",
-  "./app.js?v=usability-1",
+  "./app.js?v=body-quest-1",
   "./route-runtime.js?v=on-demand-1",
   "./learning-evidence.js?v=guided-ar-1",
   "./a11y.js?v=classroom-theme-2",
@@ -43,7 +43,7 @@ const SHELL=[
   "./account-session.js?v=owner-1",
   "./cloud-learning.js?v=owner-1",
   "./mission-access.js?v=usability-1",
-  "./route-manifest.js?v=usability-1",
+  "./route-manifest.js?v=body-quest-1",
   "./route-loader.js?v=mastery-1",
   "./pwa.js"
 ];

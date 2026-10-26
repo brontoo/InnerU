@@ -25,13 +25,13 @@ window.InneruRouteManifest={
   },
   "home": {
     "scripts": [
-      "home-core.js?v=on-demand-1",
+      "home-core.js?v=body-quest-1",
       "world-navigation.js?v=usability-1",
-      "home-expedition.js?v=guided-ar-1"
+      "home-expedition.js?v=body-quest-1"
     ],
     "styles": [
       {
-        "url": "welcome.css",
+        "url": "welcome.css?v=body-quest-1",
         "order": 10
       },
       {
@@ -239,7 +239,7 @@ window.InneruRouteManifest={
   },
   "review": {
     "scripts": [
-      "review.js?v=on-demand-1"
+      "review.js?v=body-quest-1"
     ],
     "styles": [
       {

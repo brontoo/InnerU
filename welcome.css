@@ -19,3 +19,7 @@ html[lang="ar"] .welcome-slogan{line-height:1.65;letter-spacing:0}
 
 .explore-screen .welcome-cta svg{width:22px;height:22px;flex:none}
 html[dir="rtl"] .explore-screen .welcome-cta svg{transform:scaleX(-1)}
+
+/* Keep the shared navy/coral wordmark legible on the dark welcome artwork. */
+.explore-screen .welcome-art img{width:92%;padding:18px;border-radius:20px;background:#fff8ec;opacity:1}
+@media(max-width:760px){.explore-screen .welcome-art{width:154px;aspect-ratio:260/134}.explore-screen .welcome-art img{padding:8px;border-radius:12px}}

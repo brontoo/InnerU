@@ -10,7 +10,7 @@
   "theme_color": "#0b3b48",
   "lang": "en",
   "icons": [
-    { "src": "inneru-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "inneru-mark.svg?v=3", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "favicon.svg?v=3", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }
