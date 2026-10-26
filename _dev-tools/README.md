@@ -4,7 +4,7 @@
 
 | Script | Release coverage |
 |---|---|
-| `verify-pronunciation.py` | Arabic reading parts, 71 glossary terms, 45 previews, anatomy names, voice discovery/fallback, cancellation, privacy and offline audio UI |
+| `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |
 | `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
 | `verify-muscle-studio.py` | Removed full-body studio stays absent while the elbow activity and every lesson remain intact |
 | `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
@@ -315,9 +315,9 @@ backups, legacy imports, reset/undo, and responsive records. See
 Run `npm run test:audio` for the focused local audio audit (also included in
 `npm test`). It uses the same isolated database fixtures, Playwright Chromium,
 artifact directory and network restrictions as the other release checks.
-It covers Arabic reading parts, every glossary term and teacher lesson preview,
+It covers compact instruction reading, teacher lesson previews,
 selected anatomical names, Guided instructions, actual feedback, keyboard use,
-voice discovery/fallback, cancellation, privacy, responsive controls and offline
+voice discovery/native language resolution, cancellation, privacy, responsive controls and offline
 restore. It records `arabic-audio-requests.json` and screenshots.
 
 Speech requests are intercepted to verify the exact text, language, voice policy

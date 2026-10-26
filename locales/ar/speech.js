@@ -20,11 +20,9 @@ window.InneruSpeechArabic={
  'InnerU':'إنر يو'
 };
 InneruLocale.register({
- 'Retry audio':'أعِد تحميل أدوات الصوت',
- 'Listen to a part':'استمع إلى جزء من الصفحة',
- 'Choose a part to listen to':'اختر الجزء الذي تريد الاستماع إليه',
+ 'Arabic audio is unavailable on this device. Enable an Arabic text-to-speech voice in your device settings, then try again.':'الصوت العربي غير متاح على هذا الجهاز. فعّل صوتًا عربيًا لتحويل النص إلى كلام في إعدادات جهازك، ثم حاول مجددًا.',
  'Preparing read-aloud…':'جارٍ تجهيز القراءة الصوتية…',
- 'Nothing to read in this part. Choose another part.':'لا يوجد نص للقراءة في هذا الجزء. اختر جزءًا آخر.',
+ 'There is no visible text to read here.':'لا يوجد نص ظاهر للقراءة هنا.',
  'Arabic reading text is not ready. Wait for the translation, then try again.':'النص العربي غير جاهز للقراءة. انتظر اكتمال الترجمة، ثم حاول مجددًا.',
  'Audio controls could not load. Reconnect and try again.':'تعذّر تحميل أدوات الصوت. أعِد الاتصال، ثم حاول مجددًا.'
 });

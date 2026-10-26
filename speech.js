@@ -17,16 +17,10 @@
  function load(){
   if(window.InneruSpeechCore)return Promise.resolve(InneruSpeechCore);
   if(pending)return pending;
-  pending=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='speech-core.js?v=arabic-audio-1';let timer;
+  pending=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='speech-core.js?v=compact-audio-1';let timer;
    const fail=()=>{clearTimeout(timer);script.remove();pending=null;reject(new Error('Audio controls could not load. Reconnect and try again.'));};
    script.onload=()=>{clearTimeout(timer);resolve(window.InneruSpeechCore);};script.onerror=fail;timer=setTimeout(fail,15000);document.body.append(script);
   });return pending;
- }
- function loadError(){
-  if(document.documentElement.lang!=='ar'||document.querySelector('.speech-load-notice'))return;
-  const host=document.querySelector('main.main,#entry-main');if(!host)return;
-  const notice=document.createElement('p');notice.className='support-status speech-load-notice';notice.setAttribute('role','status');const message=document.createElement('span');message.textContent=tr('Audio controls could not load. Reconnect and try again.');const retry=document.createElement('button');retry.type='button';retry.className='btn';retry.textContent=tr('Retry audio');notice.append(message,retry);host.prepend(notice);
-  retry.onclick=()=>{retry.disabled=true;const hash=location.hash;load().then(core=>{const focused=notice.contains(document.activeElement);notice.remove();core.refresh();if(focused&&hash===location.hash)document.querySelector('.speech-parts select')?.focus();}).catch(()=>{retry.disabled=false;});};
  }
  function stop(){++serial;if(!active)return;const old=active;active=null;old.abort.abort();try{engine?.cancel();}catch{}old.button?.setAttribute('aria-pressed','false');old.reset?.();if(old.status)old.status.textContent='';}
  function start(options){
@@ -48,9 +42,9 @@
  let queued=false;function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;refresh();});}
  if(typeof layout==='function'){const previous=layout;layout=function(...args){stop();const value=previous(...args);schedule();return value;};}
  const app=document.getElementById('app');if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
- window.InneruSpeech={stop,read(element,button,status,part){if(part&&!element?.contains(part))return;if(!element?.isConnected||!element.matches('[data-iu-guide-text],[data-support-reader]')||element.closest('input,textarea,[data-iu-private]'))return;start({element,button,status,part});},changed(target){if(active&&(!active.element.isConnected||window.InneruSpeechCore?.changed(active,target)))stop();}};
+ window.InneruSpeech={stop,read(element,button,status){if(!element?.isConnected||!element.matches('[data-iu-guide-text],[data-support-reader]')||element.closest('input,textarea,[data-iu-private]'))return;start({element,button,status});},changed(target){if(active&&(!active.element.isConnected||window.InneruSpeechCore?.changed(active,target)))stop();}};
  window.addEventListener('hashchange',stop);window.addEventListener('pagehide',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});document.addEventListener('keydown',event=>{if(event.key==='Escape')stop();});document.addEventListener('inneru-instruction-change',stop);
- function ready(core){core?.refresh();const notice=document.querySelector('.speech-load-notice');if(notice){const focused=notice.contains(document.activeElement);notice.remove();if(focused)document.querySelector('.speech-parts select')?.focus();}}
- function language(){stop();for(const e of roots.values())e.status.textContent=supported?'':'Pronunciation is unavailable in this browser.';schedule();if(document.documentElement.lang==='ar')load().then(ready).catch(loadError);}
- document.addEventListener('inneru-preferences-change',language);document.addEventListener('inneru-language-ready',()=>{if(document.documentElement.lang==='ar')load().then(ready).catch(loadError);});refresh();language();
+ function ready(core){core?.refresh();}
+ function language(){stop();for(const e of roots.values())e.status.textContent=supported?'':'Pronunciation is unavailable in this browser.';schedule();if(document.documentElement.lang==='ar')load().then(ready).catch(()=>{});}
+ document.addEventListener('inneru-preferences-change',language);document.addEventListener('inneru-language-ready',()=>{if(document.documentElement.lang==='ar')load().then(ready).catch(()=>{});});refresh();language();
 })();

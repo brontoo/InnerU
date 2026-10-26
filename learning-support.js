@@ -52,7 +52,7 @@
  function readers(){
   document.querySelectorAll('[data-support-reader]').forEach(el=>{if(el.nextElementSibling?.classList.contains('support-read-controls'))el.nextElementSibling.hidden=el.classList.contains('iu-guided-instruction-hidden');});
   document.querySelectorAll('#main .feedback,#main [role=status],#main [role=alert],#main [aria-live],#entry-error,[data-support-instruction],.gate-panel-intro,.resp-mission-header > p,.skel-mission-intro,.exc-mission-header > p').forEach(el=>{
-   if(el.closest('.learning-support,.iu-guidance,.structure-audio,.support-read-controls,.speech-parts,.speech-local,.speech-load-notice')||el.dataset.supportReader||!source(el).trim()||!el.parentElement)return;
+   if(el.closest('.learning-support,.iu-guidance,.body-atlas,.arm-lab,.exc-explorer,.heart-lab,.structure-audio,.support-read-controls,.speech-local,.speech-load-notice')||el.dataset.supportReader||!source(el).trim()||!el.parentElement)return;
    el.dataset.supportReader='1';const box=document.createElement('div');box.className='support-read-controls';box.dataset.noTerms='';const b=document.createElement('button');b.type='button';b.textContent='Listen / Stop';b.setAttribute('aria-pressed','false');b.setAttribute('aria-label','Listen to this instruction or feedback / Stop');const status=document.createElement('span');status.className='support-status';status.setAttribute('role','status');box.append(b,status);const placement=el.matches('.anatomy-tooltip')?el.closest('.anatomy-stage'):el;(placement||el).after(box);b.onclick=()=>InneruSpeech.read(el,b,status);
   });
  }

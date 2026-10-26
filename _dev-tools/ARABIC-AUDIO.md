@@ -1,156 +1,93 @@
-# Arabic audio audit
+# Arabic audio — compact controls
 
-The Arabic interface offers **استمع إلى جزء من الصفحة** (Listen to a part)
-with a native heading/term selector. Choose a section, then activate
-**استمع / أوقف**. There is no autoplay and no saved audio recording.
+The page-wide “Listen to a part” dropdown was removed after user feedback. It is
+not rendered on sign-in, student/teacher/owner screens, system pages or lessons.
+Audio download errors no longer insert a page-wide retry panel either.
 
-## Scope and behaviour
+Anatomy studios have one existing **Pronounce structure** control beside their
+selected-structure description. Generic status/feedback readers are excluded
+from anatomy roots, so loading messages, canvas tooltips and anatomical info
+cannot generate duplicate Listen buttons. Models, lesson content and assessment
+logic are unchanged.
 
-- Sign-in, signup and recovery; student dashboard/mastery and teacher views;
-  owner staffing; Home, review, glossary, daily practice, detective, connections,
-  capstone, achievements and information routes have selectable reading parts.
-- All 71 glossary entries have individual destinations. The inline glossary and
-  open non-credential dialogs also have their own Listen / Stop control.
-- Activities retain their existing Guided instruction reader. Visible feedback
-  using `aria-live` now receives the same explicit reading control as `role=status`
-  feedback. No question, answer value, reward or completion rule was changed.
-- Named skeletal, respiratory, skin/dermal, heart and excretory selections, plus
-  the retained elbow activity, have selected-structure pronunciation. The removed
-  full-body muscular studio stays removed. No model or lesson was recreated.
-- Page reading uses the current visible DOM between the selected heading and
-  the next visible heading. Closed details, hidden answers, fields/values, marked
-  private work, account identities and the audio controls themselves are excluded.
-  It does not translate student responses or teacher feedback.
-- A single controller prevents overlapping speech. Stop, Escape, route/language/
-  instruction changes, selected-structure changes, hidden tabs and changed spoken
-  content cancel pending voice discovery and current speech. Adding audio controls
-  or updating an unrelated section does not cancel the selected passage.
+Existing instruction/feedback and Guided **Listen / Stop** controls remain, as do
+compact readers inside open glossary definitions and non-credential dialogs.
+Nothing autoplays. Escape, route/language/instruction changes, structure changes
+and hidden tabs cancel pending and active speech. Hidden answers, private work
+and field values are not speech targets. Pronunciation aliases only read the
+written letters/digits of abbreviations; they add no unseen definitions or hints.
 
-## Arabic voice and pronunciation policy
+## Windows Chrome and Arabic voice discovery
 
-The controller waits briefly for asynchronously installed voices, including when
-an English voice appears before an Arabic voice. It selects UAE Arabic first,
-Saudi Arabic second, then another Arabic voice. Within that preference, a local
-voice is preferred. Generic `ar` language tags are accepted. Arabic never falls
-back to an English voice. Missing engines/voices and synthesis failures produce
-an Arabic status message while all text remains visible.
+An empty/incomplete `speechSynthesis.getVoices()` list does not conclusively prove
+that the browser's native engine cannot speak Arabic. The controller waits for
+late voices, selects an explicitly available Arabic voice where possible, and
+otherwise asks the native engine to resolve `utterance.lang = 'ar-SA'` without
+assigning an English voice. It reports reading only after native `onstart`.
 
-`locales/ar/speech.js` supplies authored speech-only vowel marks for selected
-anatomy names (including الأُذَيْن، البُطَيْن، الأَبْهَر، الحالِب، الإِحْلِيل
-and الكُبَيْبَة). Scientific abbreviations remain letters/digits: ATP becomes
-«إيه تي بي», O₂ becomes «أو اثنان», CO₂ becomes «سي أو اثنان». These are
-reading aids, not unseen definitions or assessment hints. Written formulas,
-answers, evidence and visible glossary definitions are unchanged. Long passages
-are split into bounded utterances without omitting their text.
+If native synthesis actually fails, the activated control displays an Arabic
+message explaining that an Arabic text-to-speech voice must be enabled in device
+settings. The portal cannot install Windows voices and does not claim that a
+mocked speech request proves audible pronunciation.
 
-`speech.js` keeps a small shared controller; `speech-core.js`/`speech-core.css`
-load for Arabic or the first explicit English read. Default English login and
-initial dashboard do not download that additional engine or stylesheet. The
-service worker caches these resources and the Arabic pronunciation catalogue on
-first use, not installation. Previously visited Arabic sign-in retains its
-controls offline. Offline synthesis still depends on an installed local voice.
-A failed audio-module download offers an explicit retry without starting speech.
+For Windows Chrome:
 
-## Repeatable verification
+1. Open Windows **Settings → Time & language → Speech**.
+2. Under **Manage voices → Add voices**, install an Arabic speech voice if offered.
+   Depending on Windows version, the download may instead be under
+   **Language & region → Arabic → Language options → Text-to-speech**.
+3. Fully close and reopen Chrome, then activate an instruction or structure reader.
 
-Use the prerequisites in [README.md](README.md), then:
+Availability depends on the Windows edition/language packages and the browser's
+native engine. Installing a keyboard language alone does not establish that its
+speech voice is installed. No paid service, external TTS API, prerecorded audio
+assets or new production dependency is used.
+
+## Verification
+
+Use the existing Python/Playwright/Docker prerequisites in [README.md](README.md):
 
 ```sh
 npm run test:audio
 npm run test:accessibility
 npm run test:arabic-coverage
-npm run test:arabic-layout
 npm run test:performance
-# All critical suites, including the audio audit:
-npm test
 ```
 
-`verify-pronunciation.py` uses isolated local PostgreSQL/Auth fixtures and
-intercepts browser synthesis. It checks recorded text and voice requests for all
-71 glossary entries, all 45 teacher lesson/final previews and their Guided
-instructions, retained anatomical selections, student/teacher/owner pages,
-actual incorrect-answer feedback, private-text exclusions, voice discovery and
-fallback, keyboard activation, cancellation, chunk completion, retry and offline
-restore. Student state and database snapshots must remain unchanged by reading.
-Controls are checked at 320, 390, 768 and 1440 CSS pixels. It writes
-`arabic-audio-requests.json`, responsive screenshots and glossary screenshots to
-the configured `INNERU_TEST_ARTIFACT_DIR`. CI runs it sequentially in `npm test`
-and uploads artifacts on failure. No production services or real accounts are used.
+The audio audit uses isolated local accounts/database fixtures. It checks removal
+of the page-wide bar, single anatomy controls, real named selections, all 45
+teacher mission/final previews with Guided reading, live feedback, glossary and
+dialog reading, unchanged saved learning, late/empty/English-only voice lists,
+native Arabic language delegation, actual synthesis errors, cancellation,
+privacy, chunking, compact mobile controls, module retry and offline reuse.
+The fake engine records text/language/voice requests; acoustic review on real
+Windows Chrome remains necessary.
 
-## Device listening required
+Artifacts include `arabic-audio-requests.json`, screenshots and local fixture logs
+under the configured `INNERU_TEST_ARTIFACT_DIR`. The supplementary native-browser
+probe verifies the genuine error/fallback when no voices are installed and checks
+the skin studio at 1440px and 390px with no duplicate readers. No production
+accounts or Supabase data are used. No migration or privileged key is required.
 
-Automated speech interception proves text/locale selection and application
-behaviour, **not acoustic correctness**. This environment's native Chromium
-reports speech-synthesis support but has no installed voices; its real no-voice
-fallback was exercised. There was no native Arabic audio output to listen to.
-Conditional activity states beyond those exercised by the audio, accessibility
-and Arabic coverage suites are not an exhaustive acoustic review.
+## Correction verification — 26 October 2026
 
-Before classroom rollout, listen with the actual Arabic voice on representative
-Windows/Edge, Android/Chrome and iOS/Safari devices:
+- Focused audio audit: 793 assertions and 165 speech requests passed. A subsequent
+  targeted native-engine probe also verified Arabic language delegation,
+  Windows voice guidance, network-error distinction and reporting only after
+  native `onstart`.
+- Guided/accessibility regression: 108 assertions passed.
+- Mission access/progression/teacher preview regression: passed.
+- Strict Arabic coverage: zero untranslated occurrences across 187 states.
+- Loading/offline/performance budget: all 49 checks passed with unchanged limits.
+- JavaScript syntax: all 124 tracked files passed `node --check`.
+- Rendered skin studio: checked at 1440px and 390px, with no page-wide bar,
+  no duplicate anatomy readers and no horizontal overflow. Screenshots:
+  `/tmp/inneru-compact-skin-desktop.png` and
+  `/tmp/inneru-compact-skin-mobile.png`.
 
-1. Select Arabic and activate a sign-in section; confirm Arabic delivery and
-   that typed credentials are never spoken.
-2. Read an instruction and its feedback in each of the six systems. Verify
-   pauses, RTL section selection, Guided Next/Back cancellation and no autoplay.
-3. Listen to glossary definitions and the selected anatomical terms listed above;
-   verify vowel distinctions with an Arabic-speaking science teacher.
-4. Check ATP, ADH, O₂, CO₂, pH and ions as written letters/numbers. Confirm that
-   no extra definition or answer hint is introduced.
-5. Stop, switch language/route/structure and retry; ensure speech never overlaps.
-6. Try a device without an Arabic voice and an offline device with a local
-   Arabic voice. Confirm clear fallback text and readable instructions.
-
-Record device, browser, voice name, term and issue before adjusting pronunciation
-aliases. Do not claim every browser voice has been acoustically approved.
-
-## Verification results — 26 October 2026
-
-- Full `npm test`: all 14 sequential suites passed, including accounts, class
-  assignment, progression, mission access, teacher/owner boundaries, mastery,
-  Guided support, Arabic coverage and rendered layout.
-- Final expanded `npm run test:audio`: 1,239 assertions passed; 310 Arabic
-  speech requests captured, including signup avatars, dialogs, offline restore
-  and English/Arabic round trips. The final Guided follow-up also passed all
-  108 assertions.
-- Arabic coverage: zero untranslated occurrences across 187 exercised states.
-- Arabic layout: 475 assertions passed across 450 viewport/states, including
-  keyboard focus, dialogs, RTL and physical anatomy control direction.
-- `npm run test:performance`: 49 checks passed without increasing any budget;
-  optional reader code/styles are absent from the cold English entry/dashboard.
-- `node --check`: all 124 tracked JavaScript files passed.
-- Native-browser no-voice fallback: passed; no installed voices were available
-  for acoustic listening. The automated voice fixture does not claim otherwise.
-
-Final cold English measurements (gzip for code/styles and transferred image bytes):
-
-| View | JS bytes | CSS bytes | Images bytes | Requests | Early models |
-|---|---:|---:|---:|---:|---:|
-| Sign-in | 24,441 | 11,850 | 428,514 | 18 | 0 |
-| Initial student dashboard | 73,316 | 32,063 | 826,150 | 48 | 0 |
-
-Release logs/screenshots are in `/tmp/inneru-audio-release`, loading measurements
-in `/tmp/inneru-audio-budget`, and the final expanded audio audit artifacts in
-`/tmp/inneru-audio-final-verified`. The final Guided regression is in
-`/tmp/inneru-audio-followup/learning-support`. These are workspace artifacts,
-not production assets. The local run used Node.js 24.19 and the documented
-preinstalled-Chromium 154 override; CI retains Node.js 22 and Playwright Chromium.
-
-No database migration, account configuration, privileged key or production-data
-change is required. Learners need a browser/OS Arabic voice for actual synthesis;
-local voices are needed for offline synthesis. Nothing was pushed or deployed.
-
-## Files changed
-
-- Reader behaviour and appearance: `speech.js`, `speech-core.js`,
-  `speech-core.css`, `learning-support.js`.
-- Arabic loading/data: `locale.js`, `locales/ar/speech.js`.
-- Consistent entry/cache versions: `index.html`, `404.html`, `login.html`, `sw.js`.
-- Repeatable verification: `package.json`, `_dev-tools/run-critical-checks.js`,
-  `_dev-tools/verify-pronunciation.py`, `_dev-tools/verify-learning-support.py`,
-  `_dev-tools/check-performance.py`.
-- Documentation: `README.md`, `locales/README.md`, `_dev-tools/README.md`,
-  `_dev-tools/LEARNING-SUPPORT.md`, `_dev-tools/STRUCTURE-AUDIO.md`, and this report.
-
-Authentication/server code, database schema/policies, learning-evidence/progress
-logic, assessment content, illustrations and 3D assets are unchanged.
+Logs/artifacts are under `/tmp/inneru-compact-audio`,
+`/tmp/inneru-compact-regression` and `/tmp/inneru-compact-loading` in this workspace.
+The native Chromium probe had no installed voices and displayed the truthful
+Arabic voice-setup message. Windows Chrome acoustic playback could not be tested
+from this Linux environment. The complete 14-suite release gate was not rerun
+locally for this focused correction; it remains the GitHub Actions push gate.

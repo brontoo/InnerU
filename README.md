@@ -211,18 +211,16 @@ available when speech is unavailable. Existing anatomy pronunciation and reduced
 motion remain available. Preferences are device-local and separate from scored
 progress; no database migration is required.
 
-In Arabic, **Listen to a part** offers the current page's visible headings and
-all 71 glossary terms. Instruction/feedback controls, open glossary definitions,
-dialogs and selected anatomy names share one cancelable reader. The browser uses
-an Arabic voice (UAE, then Saudi, then other Arabic); it never reads Arabic with
-an English fallback. Missing voices and failed audio downloads have visible
-messages. Scientific abbreviations are spoken as letters/digits, with no extra
-assessment hints. Arabic vowel cues improve selected anatomy names without
-changing visible text. Voice quality still requires listening on the target
-device; see [the Arabic audio audit](_dev-tools/ARABIC-AUDIO.md). The additional
-reader engine/styles load on demand and are cached after use, not precached.
+Audio stays beside the relevant instruction, feedback or selected anatomical
+structure. The page-wide reading dropdown has been removed. Arabic synthesis
+selects an available Arabic voice or lets the browser resolve the Arabic language
+when its voice list is incomplete. Native synthesis failures explain how to enable
+an Arabic text-to-speech voice in device settings. Windows Chrome may need an
+Arabic Windows speech component and a browser restart; the portal cannot install
+that voice. Scientific pronunciation cues add no assessment hints. See
+[the Arabic audio notes](_dev-tools/ARABIC-AUDIO.md).
 
-Arabic uses RTL layout and 20 authored, route-specific message catalogues (7,550
+Arabic uses RTL layout and 20 authored, route-specific message catalogues (7,548
 entries). They cover navigation, sign-in/recovery, student and teacher dashboards,
 all six systems' lessons and activities, feedback, anatomy explanations, recall,
 connections, detective cases and information pages. Original scientific terms
