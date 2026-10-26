@@ -1,25 +1,28 @@
-/* InnerU welcome: the Discovery U leads the scene without anatomical imagery. */
-.inneru-welcome{position:relative;isolation:isolate;display:flex;align-items:center;min-height:384px;margin:0 0 26px;padding:44px clamp(30px,5vw,70px);overflow:hidden;border:1px solid #7bd8d12b;border-radius:25px;color:#fff;background:radial-gradient(ellipse 58% 105% at 82% 55%,#176c7380,transparent 75%),linear-gradient(117deg,#0b2035 4%,#10374a 70%,#0d3d48 100%);box-shadow:0 22px 45px #153e4a20,inset 0 1px #ffffff14}.inneru-welcome:before{content:"";position:absolute;inset:17px;border:1px solid #a2e8e51c;border-radius:18px;pointer-events:none}.inneru-welcome:after{content:"";position:absolute;width:420px;height:420px;inset-inline-end:-140px;top:-235px;border:1px solid #8ddbd229;border-radius:50%;pointer-events:none}.welcome-copy{position:relative;z-index:2;max-width:680px;min-width:0}.welcome-kicker{display:flex;align-items:center;gap:13px;font-size:.76rem;font-weight:700;letter-spacing:.13em;color:#a8d7dc}.welcome-kicker-line{width:27px;height:1px;background:#77caca;flex:none}.inneru-welcome h1{margin:25px 0 10px;max-width:660px;font-size:clamp(3rem,5vw,5.2rem);font-weight:800;letter-spacing:-.055em;line-height:1.04;color:#fff}.inneru-welcome h1 em{display:block;font-style:normal;color:#92e6d9}.welcome-slogan{margin:0;font-size:clamp(1.2rem,1.7vw,1.55rem);line-height:1.35;font-weight:550;letter-spacing:-.02em;color:#edf8f8}.welcome-instruction{margin:23px 0 22px;font-size:1rem;line-height:1.5;color:#c2dce1}.welcome-cta{display:inline-flex;align-items:center;justify-content:center;gap:22px;min-height:50px;padding:12px 21px;border:1px solid #c1fff1;border-radius:10px;background:#b5f0e4;color:#10333f;font:inherit;font-size:.94rem;font-weight:800;cursor:pointer;box-shadow:0 9px 24px #031f3152;transition:transform .2s,background .2s,box-shadow .2s}.welcome-cta:hover{transform:translateY(-2px);background:#d4fff4;box-shadow:0 12px 27px #031f3170}.welcome-cta:focus-visible{outline:3px solid #fff;outline-offset:4px}.welcome-cta span{font-size:1.2rem;line-height:1}.welcome-art{position:absolute;z-index:1;inset-inline-end:3%;top:1%;width:min(43%,440px);height:98%;display:grid;place-items:center;pointer-events:none}.welcome-art-light{position:absolute;width:100%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#6fe0d624 5%,#6fe0d60c 43%,transparent 72%);box-shadow:0 0 0 1px #b0efe71a,0 0 0 35px #a5ebe809,0 0 0 75px #a5ebe806}.welcome-art img{position:relative;width:65%;height:auto;max-height:87%;opacity:.64;filter:drop-shadow(0 20px 30px #061f3855)}@media(max-width:1100px){.inneru-welcome{min-height:365px;padding:36px}.welcome-copy{max-width:65%}.inneru-welcome h1{font-size:clamp(2.8rem,5vw,4.3rem)}.welcome-art{inset-inline-end:0;width:39%}}@media(max-width:760px){.inneru-welcome{min-height:360px;padding:29px 25px 31px}.inneru-welcome:before{inset:12px}.welcome-copy{max-width:100%}.welcome-kicker{font-size:.72rem;gap:9px}.welcome-kicker-line{width:18px}.inneru-welcome h1{font-size:clamp(2.85rem,10vw,4.3rem);margin:20px 0 9px}.welcome-instruction{margin:19px 0}.welcome-art{width:210px;height:210px;inset-inline-end:-65px;top:15px;opacity:.22}.welcome-art img{width:70%}}@media(max-width:390px){.welcome-kicker{font-size:.68rem;letter-spacing:.05em}.inneru-welcome h1{font-size:2.7rem}.welcome-art{inset-inline-end:-105px;opacity:.16}}@media(prefers-reduced-motion:reduce){.welcome-cta{transition:none}.welcome-cta:hover{transform:none}}
-/* Give the welcome copy and mark their own space, in either reading direction. */
-.explore-screen .inneru-welcome{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:clamp(24px,4vw,64px);padding:clamp(28px,4vw,58px);min-height:390px}
-.explore-screen .welcome-copy{max-width:none}
-.explore-screen .welcome-art{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:1;max-width:340px;justify-self:center}
-.explore-screen .welcome-art img{width:68%;max-height:none}
-html[lang="ar"] .inneru-welcome h1{font-size:clamp(2.7rem,4.8vw,4.8rem);line-height:1.35;letter-spacing:0;margin-block:18px 10px}
-html[lang="ar"] .welcome-kicker{letter-spacing:0;flex-wrap:wrap}
-html[lang="ar"] .welcome-slogan{line-height:1.65;letter-spacing:0}
-@media(max-width:640px){
- .explore-screen .inneru-welcome{grid-template-columns:minmax(0,1fr);gap:18px;padding:28px 24px;text-align:center}
- .explore-screen .welcome-art{grid-row:1;width:88px;opacity:1}
- .explore-screen .welcome-art-light{box-shadow:0 0 0 1px #b0efe71a,0 0 0 14px #a5ebe809}
- .explore-screen .welcome-kicker{justify-content:center;font-size:.72rem}
- .explore-screen .inneru-welcome h1{font-size:clamp(2.4rem,9vw,3.5rem);margin-block-start:16px}
- .explore-screen .welcome-cta{width:100%;gap:12px}
-}
-
-.explore-screen .welcome-cta svg{width:22px;height:22px;flex:none}
-html[dir="rtl"] .explore-screen .welcome-cta svg{transform:scaleX(-1)}
-
-/* Keep the shared navy/coral wordmark legible on the dark welcome artwork. */
-.explore-screen .welcome-art img{width:92%;padding:18px;border-radius:20px;background:#fff8ec;opacity:1}
-@media(max-width:760px){.explore-screen .welcome-art{width:154px;aspect-ratio:260/134}.explore-screen .welcome-art img{padding:8px;border-radius:12px}}
+/* Body Quest welcome: real bilingual copy beside decorative adventure artwork. */
+.explore-screen .inneru-welcome{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:center;gap:0;margin-block:0 26px;overflow:hidden;border:1px solid #d9e5df;border-radius:26px;background:#fff8ec;color:#0b3144;box-shadow:0 16px 40px #153e4a12}
+.explore-screen .welcome-copy{position:relative;z-index:1;min-width:0;padding:clamp(28px,3.7vw,52px);padding-inline-end:clamp(12px,2vw,28px)}
+.explore-screen .welcome-logo{display:block;width:156px;max-width:60%;height:auto;margin-block-end:16px;direction:ltr}
+.explore-screen .welcome-kicker{color:#526d7b;font-size:.65rem;font-weight:700;line-height:1.8;letter-spacing:.16em}
+.explore-screen .inneru-welcome h1{margin:18px 0 12px;font-size:clamp(2.5rem,4.25vw,4.8rem);font-weight:800;line-height:1.06;letter-spacing:-.055em;color:#0b3144}
+.explore-screen .inneru-welcome h1 em{display:block;color:#cf5145;font-style:normal}
+.explore-screen .welcome-slogan{margin:0;font-size:clamp(1.05rem,1.45vw,1.4rem);font-weight:700;line-height:1.45;letter-spacing:-.02em;color:#143d4e}
+.explore-screen .welcome-instruction{margin:16px 0 20px;color:#456575;font-size:.92rem;line-height:1.7}
+.explore-screen .welcome-cta{display:inline-flex;align-items:center;justify-content:center;gap:20px;min-height:50px;max-width:100%;padding:13px 22px;border:1px solid #075260;border-radius:12px;background:#075260;color:#fffdf7;font:inherit;font-size:.92rem;font-weight:800;line-height:1.5;cursor:pointer;box-shadow:0 8px 20px #0b3b4820;transition:transform .2s,background .2s}
+.explore-screen .welcome-cta:hover{background:#063f49;transform:translateY(-2px)}
+.explore-screen .welcome-cta:focus-visible{outline:3px solid #0b7188;outline-offset:4px}
+.explore-screen .welcome-cta svg{width:21px;height:21px;flex:none}
+.explore-screen .welcome-worlds{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(4px,1vw,10px);width:100%;max-width:300px;margin-block-start:22px}
+.explore-screen .welcome-worlds>span{display:grid;place-items:center;aspect-ratio:1;max-width:44px;border-radius:50%;background:#f4e8d5;color:var(--quest-color)}
+.explore-screen .welcome-worlds svg{display:block;width:70%;height:70%}
+.explore-screen .welcome-art{position:relative;isolation:isolate;min-width:0;width:100%;align-self:center}
+.explore-screen .welcome-scene{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:contain}
+.explore-screen .welcome-art:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,#fff8ec,transparent 13%),linear-gradient(to bottom,#fff8ec,transparent 9%),linear-gradient(to top,#fff8ec,transparent 9%)}
+html[dir=rtl] .explore-screen .welcome-art:after{background:linear-gradient(to left,#fff8ec,transparent 13%),linear-gradient(to bottom,#fff8ec,transparent 9%),linear-gradient(to top,#fff8ec,transparent 9%)}
+html[dir=rtl] .explore-screen .welcome-cta svg{transform:scaleX(-1)}
+html[lang=ar] .explore-screen .welcome-kicker{letter-spacing:0;font-size:.78rem}
+html[lang=ar] .explore-screen .inneru-welcome h1{font-size:clamp(2.4rem,4vw,4.5rem);line-height:1.3;letter-spacing:0;margin-block:14px 10px}
+html[lang=ar] .explore-screen .welcome-slogan{letter-spacing:0;line-height:1.65}
+@media(max-width:1050px) and (min-width:901px){.explore-screen .inneru-welcome{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.explore-screen .welcome-copy{padding:28px 20px}.explore-screen .inneru-welcome h1{font-size:clamp(2.35rem,4vw,3.2rem)}.explore-screen .welcome-logo{width:132px}.explore-screen .welcome-kicker{letter-spacing:.08em}}
+@media(max-width:900px){.explore-screen .inneru-welcome{grid-template-columns:minmax(0,1fr);border-radius:22px}.explore-screen .welcome-copy{padding:28px 24px 12px}.explore-screen .welcome-logo{display:none}.explore-screen .inneru-welcome h1{font-size:clamp(2.5rem,8.5vw,3.6rem);margin-block:14px 10px}.explore-screen .welcome-cta{width:100%;gap:12px}.explore-screen .welcome-instruction{margin-block:12px 18px}.explore-screen .welcome-worlds{max-width:280px;margin-block-start:20px}.explore-screen .welcome-art:after,html[dir=rtl] .explore-screen .welcome-art:after{background:linear-gradient(to bottom,#fff8ec,transparent 12%)}html[lang=ar] .explore-screen .inneru-welcome h1{font-size:clamp(2.4rem,8.5vw,3.5rem)}}
+@media(prefers-reduced-motion:reduce){.explore-screen .welcome-cta{transition:none}.explore-screen .welcome-cta:hover{transform:none}}
+body.motionoff .explore-screen .welcome-cta{transition:none}body.motionoff .explore-screen .welcome-cta:hover{transform:none}

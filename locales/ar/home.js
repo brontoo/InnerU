@@ -1,5 +1,7 @@
 /* Authored Modern Standard Arabic; English source keys. See ../README.md. */
 InneruLocale.register({
+  "YOUR NEXT DISCOVERY STARTS HERE": "هنا يبدأ اكتشافك التالي",
+  "Student explorers and a robot discover the human body together.": "طلاب مستكشفون وروبوت يتعرّفون إلى جسم الإنسان معًا.",
   "· Explore the body systems and preview lessons. Student progress stays unchanged.": "· استكشف أجهزة الجسم وعاين الدروس. يبقى تقدّم الطلاب دون تغيير.",
   "THE HUMAN BODY, DISCOVERED": "اكتشف جسم الإنسان",
   "Explore What’s": "اكتشف ما",

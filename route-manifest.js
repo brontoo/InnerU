@@ -25,13 +25,13 @@ window.InneruRouteManifest={
   },
   "home": {
     "scripts": [
-      "home-core.js?v=body-quest-1",
+      "home-core.js?v=adventure-welcome-1",
       "world-navigation.js?v=usability-1",
       "home-expedition.js?v=body-quest-1"
     ],
     "styles": [
       {
-        "url": "welcome.css?v=body-quest-1",
+        "url": "welcome.css?v=adventure-welcome-1",
         "order": 10
       },
       {

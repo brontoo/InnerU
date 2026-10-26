@@ -220,7 +220,7 @@ Arabic Windows speech component and a browser restart; the portal cannot install
 that voice. Scientific pronunciation cues add no assessment hints. See
 [the Arabic audio notes](_dev-tools/ARABIC-AUDIO.md).
 
-Arabic uses RTL layout and 20 authored, route-specific message catalogues (7,548
+Arabic uses RTL layout and 20 authored, route-specific message catalogues (7,550
 entries). They cover navigation, sign-in/recovery, student and teacher dashboards,
 all six systems' lessons and activities, feedback, anatomy explanations, recall,
 connections, detective cases and information pages. Original scientific terms

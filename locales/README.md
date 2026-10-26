@@ -8,7 +8,7 @@ All Arabic entries are explicit Modern Standard Arabic text. There is no remote
 translation service, translated placeholder generator, or translation of student
 writing, emails, passwords or names.
 
-The 20 catalogues contain 7,548 authored entries across the portal, all six systems,
+The 20 catalogues contain 7,550 authored entries across the portal, all six systems,
 anatomy, feedback, recall, connections, detective investigations and information
 pages. Unknown messages retain English with a language annotation where possible;
 an English fallback is never counted as Arabic coverage. Original scientific
