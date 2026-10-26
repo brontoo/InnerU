@@ -51,8 +51,8 @@
  }
  function readers(){
   document.querySelectorAll('[data-support-reader]').forEach(el=>{if(el.nextElementSibling?.classList.contains('support-read-controls'))el.nextElementSibling.hidden=el.classList.contains('iu-guided-instruction-hidden');});
-  document.querySelectorAll('#main .feedback,#main [role=status],#main [role=alert],#entry-error,[data-support-instruction],.gate-panel-intro,.resp-mission-header > p,.skel-mission-intro,.exc-mission-header > p').forEach(el=>{
-   if(el.closest('.learning-support,.iu-guidance,.structure-audio,.support-read-controls')||el.dataset.supportReader||!source(el).trim()||!el.parentElement)return;
+  document.querySelectorAll('#main .feedback,#main [role=status],#main [role=alert],#main [aria-live],#entry-error,[data-support-instruction],.gate-panel-intro,.resp-mission-header > p,.skel-mission-intro,.exc-mission-header > p').forEach(el=>{
+   if(el.closest('.learning-support,.iu-guidance,.structure-audio,.support-read-controls,.speech-parts,.speech-local,.speech-load-notice')||el.dataset.supportReader||!source(el).trim()||!el.parentElement)return;
    el.dataset.supportReader='1';const box=document.createElement('div');box.className='support-read-controls';box.dataset.noTerms='';const b=document.createElement('button');b.type='button';b.textContent='Listen / Stop';b.setAttribute('aria-pressed','false');b.setAttribute('aria-label','Listen to this instruction or feedback / Stop');const status=document.createElement('span');status.className='support-status';status.setAttribute('role','status');box.append(b,status);const placement=el.matches('.anatomy-tooltip')?el.closest('.anatomy-stage'):el;(placement||el).after(box);b.onclick=()=>InneruSpeech.read(el,b,status);
   });
  }
@@ -63,7 +63,7 @@
  document.addEventListener('inneru-language-load-error',()=>{announce('Arabic text could not load. Check your connection and try selecting Arabic again.');const status=document.querySelector('[data-support-status]');if(status){status.dataset.languageError='';const retry=document.createElement('button');retry.type='button';retry.dataset.localeRetry='';retry.textContent=tr('Retry Arabic');retry.onclick=()=>InneruLocale.refresh();status.append(retry);}});
  document.addEventListener('inneru-preference-storage-unavailable',()=>announce('This browser cannot save preferences. Your selection works until you close this page.'));
  new MutationObserver(changes=>{for(const change of changes)window.InneruSpeech?.changed(change.target);if(changes.some(c=>![...roots.values()].some(e=>e.box.contains(c.target))&&!c.target.closest?.('.learning-support,.support-read-controls')))schedule();}).observe(document.body,{childList:true,subtree:true});
- document.addEventListener('click',event=>{const button=event.target.closest('button,a,[role=tab],.term');if(button?.closest(selector)&&!button.closest('[data-iu-guide-listen],.structure-audio,.support-read-controls'))InneruSpeech.stop();},true);
+ document.addEventListener('click',event=>{const button=event.target.closest('button,a,[role=tab],.term');if(button?.closest(selector)&&!button.closest('[data-iu-guide-listen],.structure-audio,.support-read-controls,.speech-local'))InneruSpeech.stop();},true);
  document.addEventListener('change',event=>{if(event.target.closest(selector))InneruSpeech.stop();},true);
  window.addEventListener('hashchange',()=>{InneruSpeech.stop();schedule();});refresh();
 })();

@@ -1,42 +1,26 @@
-# Anatomy pronunciation and instruction reading
+# Anatomy pronunciation
 
-The audio control appears beside the selected-structure information in the skin,
-skeletal, muscular, respiratory, heart and excretory anatomy studios, including
-the 3D opposing-muscle arm activity. Students
-choose anatomy with the model or its structure buttons and explicitly press
-**Pronounce structure**. Only that structure's name is passed to browser speech
-synthesis. Selecting a structure does not play audio automatically.
+Selected-structure **Pronounce structure** controls remain in the skeletal,
+respiratory, skin, heart and excretory studios and the independent elbow
+activity. The removed full-body muscular model and its controls stay removed.
+Selection alone never starts audio. Model controls and lesson logic are unchanged.
 
-The former page reader, speed control and arbitrary-text `inneruSpeech.speakText`
-API remain removed. The current accessibility branch also offers explicit
-instruction/feedback **Listen / Stop** controls and Guided steps. They share the
-same cancellation mechanism and use browser English/Arabic voices. See
-[LEARNING-SUPPORT.md](LEARNING-SUPPORT.md) for the current scope and tests.
-Nothing autoplays; user writing and account inputs are not speech targets.
+`speech.js` resolves the selected anatomical name from semantic selection flags
+and the live information panel, including detailed dermis and internal heart
+structures. Mesh-name underscores become spaces. Arabic uses the authored locale
+name and speech-only pronunciation cues; English uses the existing English name.
+The public reader accepts marked DOM content, not arbitrary text or text fields.
 
-`speech.js` resolves the current anatomy name from the model's selected-structure
-panel and semantic selection flags. The anatomy control does not accept arbitrary text from a caller or text selection.
-The separate instruction reader accepts only marked instruction/feedback elements,
-never an arbitrary string, input or textarea. Mesh-name
-underscores are converted to spaces for anatomical pronunciation. Detailed dermal
-parts and internal heart structures use the same names as their selection panels.
+The instruction reader, Arabic section/glossary reader and anatomy controls share
+one cancellation/voice controller. Changing selection, instruction, language or
+route; hiding the tab; pressing Escape; or pressing the active button stops audio.
+Reading cannot save an answer, award XP, complete a mission or change a lock.
+Native browser voices and missing-voice explanations are described in the
+[Arabic audio audit](ARABIC-AUDIO.md).
 
-Changing the selection, resetting it, leaving the page, hiding the tab, or pressing
-Escape stops speech. The button also stops an active pronunciation. Audio does
-not save a preference, answer, XP or achievement. A suitable local English or Arabic voice is preferred
-when available; actual voice availability and synthesis are supplied by the browser
-and operating system. Missing engines and synthesis errors are explained beside
-the control. The anatomy remains explorable without audio.
-
-`structure-audio.css` scopes styling to these controls. The service-worker shell
-(version 52) includes the new CSS and updated speech/glossary scripts. Browser
-voices may require installation or network access on some devices.
-
-Run `npm run test:accessibility` for the current instruction-reading policy,
-selected-language voices, cancellation, missing engines, keyboard activation and
-unchanged learning credits. Existing anatomy-studio checks cover real structure
-selection, model controls and scientific geometry. The older
-`verify-pronunciation.py` harness still assumes anonymous lesson access and the
-retired no-instruction-audio policy; it is not the current release gate.
-Intercepted speech requests verify application behaviour, not the acoustic quality
-of an operating-system voice.
+Run `npm run test:audio` for the current pronunciation/reading policy and
+`npm run test:accessibility` for Guided instruction and keyboard regressions.
+Both are included in `npm test`. The audio harness now uses the same portable
+local fixtures and installed Playwright Chromium as the release suite. Its
+intercepted utterances verify text and language selection, not acoustic quality.
+Existing studio harnesses still cover actual geometry and structure selection.

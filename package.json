@@ -9,6 +9,7 @@
     "test": "node _dev-tools/run-critical-checks.js",
     "dev:local": "node _dev-tools/serve-local.js",
     "test:performance": "node _dev-tools/run-performance-checks.js",
+    "test:audio": "node _dev-tools/run-critical-checks.js pronunciation",
     "test:accessibility": "node _dev-tools/run-critical-checks.js learning-support",
     "test:arabic-coverage": "node _dev-tools/run-critical-checks.js arabic-coverage",
     "test:owner": "node _dev-tools/run-critical-checks.js owner",

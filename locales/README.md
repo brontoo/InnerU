@@ -8,7 +8,7 @@ All Arabic entries are explicit Modern Standard Arabic text. There is no remote
 translation service, translated placeholder generator, or translation of student
 writing, emails, passwords or names.
 
-The 19 catalogues contain 7,543 authored entries across the portal, all six systems,
+The 20 catalogues contain 7,550 authored entries across the portal, all six systems,
 anatomy, feedback, recall, connections, detective investigations and information
 pages. Unknown messages retain English with a language annotation where possible;
 an English fallback is never counted as Arabic coverage. Original scientific
@@ -45,3 +45,11 @@ curriculum reference cards currently displayed.
 The service worker caches them on first use. English source messages stay in the
 existing activity files; importing a catalogue must never render an activity,
 answer a question, award credit or change permission checks.
+
+`ar/speech.js` contains shared Arabic audio labels plus a separate, speech-only
+pronunciation map. Keep scientific abbreviations as their written letters and
+digits; do not expand them into definitions that could supply an assessment
+answer. Vowel marks may disambiguate existing Arabic anatomy names. These
+aliases affect spoken text only, never visible answers, evidence or scoring.
+All Arabic voices come from the browser/operating system; authors must listen on
+representative devices before claiming acoustic correctness.

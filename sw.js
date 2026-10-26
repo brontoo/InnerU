@@ -1,11 +1,11 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v58-usability';
+const VERSION='inneru-v59-arabic-audio';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=usability-1",
-  "./learning-support.js?v=usability-1",
+  "./locale.js?v=arabic-audio-1",
+  "./learning-support.js?v=arabic-audio-1",
   "./learning-support.css?v=usability-1",
   "./index.html",
   "./404.html",
@@ -37,7 +37,7 @@ const SHELL=[
   "./review-state.js?v=usability-1",
   "./habit.js?v=cloud-learning-1",
   "./glossary.js?v=guided-ar-1",
-  "./speech.js?v=guided-ar-1",
+  "./speech.js?v=arabic-audio-1",
   "./learning-progress.js?v=usability-1",
   "./student-dashboard.js?v=usability-1",
   "./account-session.js?v=owner-1",

@@ -21,6 +21,7 @@ for name,limits in budget.items():
  for kind in ['js','css','images']:check(results[name]['bytes'][kind]<=limits[kind],f'{name} {kind}: {results[name]["bytes"][kind]} <= {limits[kind]} bytes')
  check(results[name]['requests']<=limits['requests'],f'{name} request budget')
  urls=set(results[name]['requested'])
+ check(not any('/speech-core.' in url for url in urls),name+' defers the optional Arabic reader engine and styles')
  check(not(urls&deferred),name+' fetches no deferred system or route code/styles')
  check(not any(url.endswith(('.glb','.gltf','.bin')) or '/assets/three/' in url or 'explorer.js' in url for url in urls),name+' fetches no Three.js, viewer or 3D model')
 

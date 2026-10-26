@@ -1,9 +1,10 @@
 # Automatic critical release checks
 
-`npm test` runs the same thirteen critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same fourteen critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
+| `verify-pronunciation.py` | Arabic reading parts, 71 glossary terms, 45 previews, anatomy names, voice discovery/fallback, cancellation, privacy and offline audio UI |
 | `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
 | `verify-muscle-studio.py` | Removed full-body studio stays absent while the elbow activity and every lesson remain intact |
 | `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
@@ -130,7 +131,7 @@ of the expected image are accepted.
 
 The runner prints each suite's result, continues after a failed check, writes a
 JSON summary, and exits nonzero if any suite fails. Each suite has a six-minute
-limit. Logs, screenshots and database/fixture output go under a fresh directory
+limit; the broader Arabic audio and rendered-layout audits have ten minutes. Logs, screenshots and database/fixture output go under a fresh directory
 in the OS temporary folder by default. Set `INNERU_TEST_ARTIFACT_DIR` to choose a
 root directory (use a fresh directory per run); each suite gets its own subfolder.
 The path is printed at startup. Browser failures capture available pages before
@@ -309,16 +310,20 @@ student snapshot collection, individual progress and achievements, feedback,
 backups, legacy imports, reset/undo, and responsive records. See
 [TEACHER-DASHBOARD.md](TEACHER-DASHBOARD.md) for the browser classroom data model.
 
-## Anatomy pronunciation
+## Arabic audio and anatomy pronunciation
 
-Run `python3 _dev-tools/verify-pronunciation.py` to verify structure-only audio in
-all six anatomy studios, detailed dermis and heart selections, cancellation,
-keyboard access, unsupported speech engines, and the absence of narration on
-other pages and glossary definitions. Speech requests are intercepted to check
-the exact utterance text without relying on installed voices or an audio device.
-See [STRUCTURE-AUDIO.md](STRUCTURE-AUDIO.md) for scope and device behavior.
-The former page reader and its arbitrary-text API have been removed. Native
-browser voices provide pronunciation; voice availability depends on the device.
+Run `npm run test:audio` for the focused local audio audit (also included in
+`npm test`). It uses the same isolated database fixtures, Playwright Chromium,
+artifact directory and network restrictions as the other release checks.
+It covers Arabic reading parts, every glossary term and teacher lesson preview,
+selected anatomical names, Guided instructions, actual feedback, keyboard use,
+voice discovery/fallback, cancellation, privacy, responsive controls and offline
+restore. It records `arabic-audio-requests.json` and screenshots.
+
+Speech requests are intercepted to verify the exact text, language, voice policy
+and unchanged learning state. This cannot establish acoustic pronunciation
+quality. See [ARABIC-AUDIO.md](ARABIC-AUDIO.md) for the device listening checklist
+and [STRUCTURE-AUDIO.md](STRUCTURE-AUDIO.md) for retained anatomical controls.
 
 ## Account database and cloud learning
 

@@ -1,6 +1,7 @@
 > Historical implementation report: counts and artifact paths below describe that
 > implementation snapshot. Current setup and release coverage are in [README.md](README.md);
 > the 25 October usability follow-up is documented in [USABILITY.md](USABILITY.md).
+> Current Arabic audio coverage and device limits are in [ARABIC-AUDIO.md](ARABIC-AUDIO.md).
 
 # Guided mode, speech and Arabic presentation
 
