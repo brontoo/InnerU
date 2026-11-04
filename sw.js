@@ -1,6 +1,6 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v62-adventure-welcome';
+const VERSION='inneru-v63-design-foundation';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
@@ -18,7 +18,7 @@ const SHELL=[
   "./inneru-logo.svg?v=body-quest-1",
   "./habit.css",
   "./glossary.css",
-  "./style.css?v=body-quest-1",
+  "./style.css?v=design-foundation-1",
   "./exhibit.css",
   "./student-dashboard.css?v=usability-1",
   "./structure-audio.css?v=names-only-1",
@@ -40,7 +40,7 @@ const SHELL=[
   "./speech.js?v=compact-audio-1",
   "./learning-progress.js?v=usability-1",
   "./student-dashboard.js?v=usability-1",
-  "./account-session.js?v=owner-1",
+  "./account-session.js?v=design-foundation-1",
   "./cloud-learning.js?v=owner-1",
   "./mission-access.js?v=usability-1",
   "./route-manifest.js?v=adventure-welcome-1",

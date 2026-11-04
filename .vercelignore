@@ -11,6 +11,7 @@ push-updates.cmd
 
 # recovery / documentation
 README.md
+docs/
 SOURCE-BACKUP.md
 _recovery-tools/
 _download-report.txt

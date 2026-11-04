@@ -1,9 +1,21 @@
 # Automatic critical release checks
 
-`npm test` runs the same fourteen critical checks as GitHub Actions, **sequentially**:
+The Phase 1 shared shell check is included in `npm test`, or run
+`npm run test:design-foundation` with the same prerequisites below. It uses local
+student/teacher/owner fixtures and captures English/Arabic sign-in and dashboard
+screens at 320, 390, 768 and 1440px. It checks navigation reflow, one current
+destination, accessible navigation names, 44px targets, visible keyboard focus,
+secondary route selection and unchanged learning state. Screenshots and geometry
+go to that suite's artifact directory. `--capture-baseline` is a standalone
+review option for recording an older checkout; it omits new-convention assertions.
+See [the Phase 1 report](../docs/PHASE-1-IMPLEMENTATION-REPORT.md) for before/after
+artifacts and scope. These checks are not a full screen-reader/WCAG certification.
+
+`npm test` runs the same fifteen critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
+| `verify-design-foundation.py` | English/Arabic shared shell, mobile navigation, current destinations, target sizes, focus and unchanged learning state |
 | `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |
 | `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
 | `verify-muscle-studio.py` | Removed full-body studio stays absent while the elbow activity and every lesson remain intact |

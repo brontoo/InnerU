@@ -1,13 +1,8 @@
 """Check elbow anatomy, movement learning and the three discovery challenges."""
-import functools,http.server,threading,json,math
-from pathlib import Path
-from playwright.sync_api import sync_playwright
-ROOT=Path(__file__).resolve().parents[1]
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def log_message(self,*args):pass
-server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Handler,directory=str(ROOT)))
-threading.Thread(target=server.serve_forever,daemon=True).start()
-BASE=f'http://127.0.0.1:{server.server_port}/?nosw=1#muscle'
+import json,math
+from test_support import playwright_session as sync_playwright,launch,new_context,artifact,start_fixture
+proc,origin=start_fixture()
+BASE=origin+'/index.html?nosw=1#muscle'
 checks=0;errors=[]
 def check(value,message):
     global checks
@@ -19,8 +14,8 @@ def ready(page):
     page.goto(BASE);page.locator('.arm-lab').scroll_into_view_if_needed();page.wait_for_function('window.__inneruArmView?.state().frames>0',timeout=60000)
 try:
     with sync_playwright() as p:
-        browser=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
-        ctx=browser.new_context(viewport={'width':1510,'height':1100});page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
+        browser=launch(p)
+        ctx=new_context(browser,service_workers='block',viewport={'width':1510,'height':1100});page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
         page.on('console',lambda m:errors.append(m.text) if m.type=='error' and any(w in m.text for w in ['Shader Error','WebGLProgram']) else None)
         ready(page);saved=page.evaluate("localStorage.getItem('bodyquest-v1')")
         check(page.locator('#mq-pairs.arm-lab').count()==1 and page.locator('#mq-pair-view').count()==0,'old paired-muscle animation is replaced in its original lesson location')
@@ -101,11 +96,11 @@ try:
         check(math.dist([-1.43,.55,1.56],page.evaluate('__inneruArmView.camera.position.toArray()'))<.01,'reset view restores the anatomical teaching view')
         page.locator('.arm-lab-science summary').click()
         check('lengthening' in page.locator('.arm-lab-science').inner_text() and 'brachialis' in page.locator('.arm-lab-science').inner_text(),'scientific notes explain other flexors and loaded lengthening contractions')
-        page.locator('[data-arm-quest="0"]').click();page.locator('[data-arm-answer="0"]').click();pose(page,110);page.locator('.arm-lab').screenshot(path='/tmp/arm-lab-challenge-final.png')
-        page.evaluate('window.oldArmModel=window.__inneruArmView.model;location.hash="muscle/mission/1"');page.wait_for_selector('.mq-panel')
+        page.locator('[data-arm-quest="0"]').click();page.locator('[data-arm-answer="0"]').click();pose(page,110);page.locator('.arm-lab').screenshot(path=artifact('arm-lab-challenge-final.png'))
+        page.evaluate('window.oldArmModel=window.__inneruArmView.model;location.hash="home"');page.wait_for_selector('.explore-screen')
         check(page.evaluate('window.__inneruArmView===null&&window.__inneruArmLab===null&&oldArmModel.group.children.length===0'),'route changes release both the animation controller and 3D resources')
 
-        mobile=browser.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True,reduced_motion='reduce');phone=mobile.new_page();phone.on('pageerror',lambda e:errors.append(str(e)));ready(phone)
+        mobile=new_context(browser,service_workers='block',viewport={'width':390,'height':844},is_mobile=True,has_touch=True,reduced_motion='reduce');phone=mobile.new_page();phone.on('pageerror',lambda e:errors.append(str(e)));ready(phone)
         check(phone.evaluate('document.documentElement.scrollWidth<=innerWidth'),'mobile activity has no horizontal overflow')
         phone.locator('[data-arm-move=flex]').click()
         check(state(phone)['angle']==120 and not state(phone)['playing'],'reduced motion shows the completed flexed pose without automatic animation')
@@ -113,9 +108,9 @@ try:
         check(state(phone)['stars']==1,'the movement challenge works on a touch-size screen')
         rect=phone.locator('.arm-lab-stage').bounding_box();check(rect['y']+rect['height']>0 and rect['y']<500,'mobile anatomy remains visible beside the movement controls while scrolling')
         check(phone.locator('[data-arm-move=flex]').bounding_box()['height']>=44,'mobile movement buttons remain accessible touch targets')
-        phone.locator('.arm-lab').screenshot(path='/tmp/arm-lab-mobile-final.png');mobile.close()
+        phone.locator('.arm-lab').screenshot(path=artifact('arm-lab-mobile-final.png'));mobile.close()
 
-        fallback=browser.new_context(viewport={'width':1300,'height':1000},reduced_motion='reduce');fallback.add_init_script('window.WebGLRenderingContext=undefined');f=fallback.new_page();f.on('pageerror',lambda e:errors.append(str(e)));f.goto(BASE);f.locator('.arm-lab').scroll_into_view_if_needed()
+        fallback=new_context(browser,service_workers='block',viewport={'width':1300,'height':1000},reduced_motion='reduce');fallback.add_init_script('window.WebGLRenderingContext=undefined');f=fallback.new_page();f.on('pageerror',lambda e:errors.append(str(e)));f.goto(BASE);f.locator('.arm-lab').scroll_into_view_if_needed()
         check(f.locator('.arm-lab-svg svg').is_visible() and f.locator('.arm-lab canvas').count()==0,'devices without WebGL get the interactive scientific illustration')
         lengths=[]
         for angle in [0,60,120]:pose(f,angle);lengths.append(f.evaluate("[...document.querySelectorAll('[data-arm-tendon]')].map(p=>p.getTotalLength())"))
@@ -124,9 +119,9 @@ try:
         check(state(f)['stars']==1 and '110' in f.locator('.arm-lab-svg svg').get_attribute('aria-label'),'fallback movement and discovery rewards remain fully interactive')
         f.locator('[data-arm-part=tendons]').click();check(f.locator('.arm-lab-anatomy h4').inner_text()=='The connection that carries the pull','fallback supports anatomical inspection')
         fallback.close()
-        failed=browser.new_context();failed.route('**/movement-arm.glb',lambda r:r.abort());f=failed.new_page();f.goto(BASE);f.locator('.arm-lab').scroll_into_view_if_needed();f.wait_for_function("document.querySelector('.arm-lab-render-note').textContent.includes('3D unavailable')")
+        failed=new_context(browser,service_workers='block',);failed.route('**/movement-arm.glb',lambda r:r.abort());f=failed.new_page();f.goto(BASE);f.locator('.arm-lab').scroll_into_view_if_needed();f.wait_for_function("document.querySelector('.arm-lab-render-note').textContent.includes('3D unavailable')")
         check(f.locator('.arm-lab-svg svg').is_visible(),'an unavailable anatomical asset falls back without losing the activity');failed.close()
         check(not errors,'no JavaScript or WebGL shader errors during normal use')
         browser.close()
     print(json.dumps({'checks':checks,'result':'PASS','attachmentError':anatomy['contactError'],'tendonConnectionError':anatomy['connectionError']},indent=2),flush=True)
-finally:server.shutdown();server.server_close()
+finally:proc.terminate();proc.wait(timeout=10)

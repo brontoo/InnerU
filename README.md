@@ -1,6 +1,10 @@
 # InnerU — Explore What's Inside
 
 Interactive, gamified human-body learning for **Grade 10 Science** at **Um Al-Emarat School**.
+Phase 1 engineering/design notes: [repository audit](docs/INNERU-ENHANCEMENT-AUDIT.md),
+[shared design system](docs/INNERU-DESIGN-SYSTEM.md),
+[scientific visual audit](docs/SCIENTIFIC-VISUAL-AUDIT.md) and
+[implementation/verification report](docs/PHASE-1-IMPLEMENTATION-REPORT.md).
 The learning portal uses plain HTML / CSS / JavaScript with no build step or framework.
 Email/password accounts use the Vercel Node function in `api/auth.js` and Supabase Auth.
 Connect the account service using [_dev-tools/ACCOUNT-SETUP.md](_dev-tools/ACCOUNT-SETUP.md).
