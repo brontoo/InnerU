@@ -22,7 +22,8 @@ for name,limits in budget.items():
  check(results[name]['requests']<=limits['requests'],f'{name} request budget')
  urls=set(results[name]['requested'])
  check(not any('/speech-core.' in url for url in urls),name+' defers the optional Arabic reader engine and styles')
- check(not(urls&deferred),name+' fetches no deferred system or route code/styles')
+ allowed={'/'+url.split('?')[0] for url in manifest.get('student',{}).get('scripts',[])} if name=='dashboard' else set()
+ check(not(urls&(deferred-allowed)),name+' fetches only its permitted initial route modules')
  check(not any(url.endswith(('.glb','.gltf','.bin')) or '/assets/three/' in url or 'explorer.js' in url for url in urls),name+' fetches no Three.js, viewer or 3D model')
 
 proc,origin=start_fixture()

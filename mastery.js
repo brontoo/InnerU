@@ -64,7 +64,7 @@
    if(!restored&&saved.card){const heading=[...root.querySelectorAll('[data-ms-objective]')].find(el=>el.dataset.msObjective===saved.card)?.querySelector('h3');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}}
   }
   update(preserved?'restore':undefined);restoring=false;restore(preserved,false);
-  if(!preserved){const query=new URLSearchParams(location.hash.split('?')[1]||'');let applied=false;for(const key of ['class','student','system','status'])if(query.has(key)&&controls[key]&&[...controls[key].options].some(o=>o.value===query.get(key))){controls[key].value=query.get(key);applied=true;}if(applied)update('restore');}
+  if(!preserved){const query=new URLSearchParams(location.hash.split('?')[1]||'');let applied=false;for(const key of ['class','student','system','mission','objective','status'])if(query.has(key)&&controls[key]&&[...controls[key].options].some(o=>o.value===query.get(key))){controls[key].value=query.get(key);applied=true;}if(applied)update('restore');}
   return {snapshot,restore,refresh(){const saved=snapshot();prepared=records.map(r=>({...r,results:M.evaluate(r.responses)}));update('refresh');restore(saved);}};
  }
  async function student(){

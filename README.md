@@ -5,6 +5,7 @@ Phase 1 engineering/design notes: [repository audit](docs/INNERU-ENHANCEMENT-AUD
 [shared design system](docs/INNERU-DESIGN-SYSTEM.md),
 [scientific visual audit](docs/SCIENTIFIC-VISUAL-AUDIT.md) and
 [implementation/verification report](docs/PHASE-1-IMPLEMENTATION-REPORT.md).
+Student experience: [Phase 2 implementation, screenshots and validation](docs/PHASE-2-STUDENT-EXPERIENCE.md).
 The learning portal uses plain HTML / CSS / JavaScript with no build step or framework.
 Email/password accounts use the Vercel Node function in `api/auth.js` and Supabase Auth.
 Connect the account service using [_dev-tools/ACCOUNT-SETUP.md](_dev-tools/ACCOUNT-SETUP.md).
@@ -117,8 +118,9 @@ Always work through `start-work.cmd` (or `dev.cmd`): the 3D labs use ES modules 
 ### The shell
 
 `index.html` and its byte-identical fallback `404.html` load only the shared
-shell, account/role checks, progress services, student dashboard and accessibility
-styles. There is no build step and scripts remain ordered classic globals.
+shell, account/role checks, progress services, student-dashboard styles and
+accessibility layers. The dashboard/achievement interface and existing objective
+metadata load through the ordered `student` route group on first use. There is no build step and scripts remain ordered classic globals.
 
 * `learning-catalog.js` contains shared mission names and achievement metadata.
   `app.js` contains shared state, layout and dispatch primitives. Activity bodies
@@ -241,7 +243,7 @@ placeholder. Passing it is not a full linguistic or WCAG certification. See
 ## Offline and performance
 
 `sw.js` installs only the essential HTML, shared JS/CSS, manifest and small brand
-icons (39 shell URLs). It does **not** precache body-system modules, Three.js,
+icons (42 shell URLs). It does **not** precache body-system modules, Three.js,
 models, avatar sheets, mission images or Home artwork. Same-origin route code and
 assets enter `inneru-visited-v1` on first use. Code uses network-first with cached
 fallback. Cache-write failure does not block a successful online response. Large
@@ -300,8 +302,8 @@ measurement is 24,269 B gzip JS / 11,525 B gzip CSS / 18 requests on sign-in, an
 Images and early model requests are unchanged. Arabic catalogues load only when
 Arabic is selected. Teacher answer cards request the matching curriculum catalogue
 for reference prompts, without loading that system’s lesson scripts or models. The
-login JS/request limits below include these new controls; dashboard limits stay
-unchanged. These are local gzip measurements, not production CDN measurements.
+login JS/request limits include these controls. The current dashboard limits
+include the Phase 2 interface and objective metadata described below. These are local gzip measurements, not production CDN measurements.
 
 ### Repeatable loading check and budget
 
@@ -316,14 +318,24 @@ python _dev-tools/measure-loading.py
 
 The same performance command runs in GitHub Actions after `npm test`. It fails
 if any budget in [_dev-tools/performance-budget.json](_dev-tools/performance-budget.json)
-is exceeded, or if initial login/dashboard fetches deferred route scripts/styles,
-Three.js, a viewer module or a 3D model. Budgets deliberately allow modest growth
+is exceeded, or if login fetches route modules, or dashboard fetches modules
+outside its declared `student` group. Three.js, viewers and 3D models are forbidden
+on both initial pages. Budgets deliberately allow modest growth
 above the measured result while remaining far below the baseline:
 
 | Page | Gzip JS | Gzip CSS | Initial image bytes | Requests |
 |---|---:|---:|---:|---:|
 | Login | 24 KiB | 12 KiB | 440 KiB | 18 |
-| First signed-in dashboard | **72 KiB** | **34 KiB** | **2,200 KiB** | **48** |
+| First signed-in dashboard | **80 KiB** | **36 KiB** | **2,200 KiB** | **50** |
+
+Phase 2 raises only the dashboard limits from 72 to 80 KiB JS, 34 to 36 KiB
+CSS and 48 to 50 requests. The interface reuses the existing objective catalog
+and mastery evidence model, loaded with the dashboard through one ordered group;
+it does not load any body-system activities. The large welcome portrait is replaced
+by the actual stored account avatar and existing system plates. The measured
+comparison, image reduction, rationale and complete tests are in
+[the Phase 2 report](docs/PHASE-2-STUDENT-EXPERIENCE.md). Login and image limits
+are unchanged; no models or duplicate production artwork are added.
 
 The check also opens and refreshes all six system routes with their mission-card
 artwork, exercises other direct routes, checks module reuse, failed-load retry and

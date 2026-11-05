@@ -1,7 +1,8 @@
 /* Ordered classic-script groups; styles retain their original cascade positions. */
 window.InneruRouteManifest={
-  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=usability-1"],"styles":[]},
-  "mastery":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=usability-1","mastery.js?v=usability-1"],"styles":[{"url":"mastery.css?v=mastery-1","order":40}]},
+  "student":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=usability-1","student-dashboard.js?v=student-experience-2"],"styles":[]},
+  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=student-experience-2"],"styles":[{"url":"mission-navigation.css?v=student-experience-2","order":41}]},
+  "mastery":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=usability-1","mastery.js?v=student-experience-2"],"styles":[{"url":"mastery.css?v=mastery-1","order":40}]},
   "owner":{"scripts":["owner.js?v=owner-1"],"styles":[{"url":"owner.css?v=owner-1","order":39}]},
   "art": {
     "scripts": [

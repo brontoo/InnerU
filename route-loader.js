@@ -28,7 +28,8 @@
   const help=root==='mission'||/^(muscle|respiratory|integumentary|excretory)\/mission\//.test(path)||/^(respiratory|integumentary|excretory)\/mastery$/.test(path)||/^circulatory\/(\d+|mastery|boss)$/.test(path)?['evidence-help']:[];
   const mastery=new URLSearchParams(hash.split('?')[1]||'').get('view')==='mastery';
   if(root==='dashboard'&&mastery)return ['mastery'];
-  if(['dashboard','badges','glossary'].includes(root))return [];
+  if(['dashboard','badges'].includes(root))return ['student'];
+  if(root==='glossary')return [];
   if(root==='owner')return ['owner'];
   if(root==='teacher')return mastery?['mastery','teacher']:['teacher'];
   if(root==='review')return ['review'];

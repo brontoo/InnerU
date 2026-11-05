@@ -6,9 +6,9 @@
     "requests": 18
   },
   "dashboard": {
-    "js": 73728,
-    "css": 34816,
+    "js": 81920,
+    "css": 36864,
     "images": 2252800,
-    "requests": 48
+    "requests": 50
   }
 }

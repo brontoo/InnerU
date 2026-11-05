@@ -11,10 +11,11 @@ review option for recording an older checkout; it omits new-convention assertion
 See [the Phase 1 report](../docs/PHASE-1-IMPLEMENTATION-REPORT.md) for before/after
 artifacts and scope. These checks are not a full screen-reader/WCAG certification.
 
-`npm test` runs the same fifteen critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same sixteen critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
+| `verify-student-experience.py` | Six-system student cards, authorized next actions, real evidence/due priorities, cloud choice, 45-mission totals and six mission headers |
 | `verify-design-foundation.py` | English/Arabic shared shell, mobile navigation, current destinations, target sizes, focus and unchanged learning state |
 | `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |
 | `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
@@ -375,3 +376,14 @@ from translation completeness; it uses the same isolated fixtures and browser se
 
 Current usability changes, screenshot scope and fresh check results are documented
 in [USABILITY.md](USABILITY.md). No new test dependency or database migration is required.
+
+## Phase 2 student experience
+
+`npm run test:student-experience` uses the same isolated prerequisites and browser
+helpers as the release gate. It captures English/Arabic dashboards at 320, 390,
+768, 1024, 1440 and 1680px, the card grid, Continue Learning and mission navigation.
+It checks real incorrect work, due review, missing historical evidence, teacher
+locks, reconnection, cloud-version choice, read-only inspection and the 45-item
+denominator. Historical data is explicitly seeded only in the isolated test
+database. `--capture-baseline` records the older interface without new assertions.
+See [PHASE-2-STUDENT-EXPERIENCE.md](../docs/PHASE-2-STUDENT-EXPERIENCE.md).

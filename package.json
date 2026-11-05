@@ -13,6 +13,7 @@
     "test:accessibility": "node _dev-tools/run-critical-checks.js learning-support",
     "test:arabic-coverage": "node _dev-tools/run-critical-checks.js arabic-coverage",
     "test:owner": "node _dev-tools/run-critical-checks.js owner",
+    "test:student-experience": "node _dev-tools/run-critical-checks.js student-experience",
     "test:design-foundation": "node _dev-tools/run-critical-checks.js design-foundation",
     "test:arabic-layout": "node _dev-tools/run-critical-checks.js arabic-layout"
   },

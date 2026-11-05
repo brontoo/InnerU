@@ -22,13 +22,16 @@
   document.querySelectorAll('.sidebar .navlink,main>footer nav a').forEach(a=>{const target=a.getAttribute('href')?.replace(/^#/,'').split(/[/?]/)[0];if(teacher?!['home','teacher','sources','privacy','about','attribution',...(user.role==='admin'?['owner']:[])].includes(target):target==='teacher')a.remove();});
   if(!teacher)document.querySelectorAll('a[href="#teacher"]').forEach(a=>a.remove());
   if(!teacher){
-   const nav=document.querySelector('.sidebar>nav');if(nav)nav.setAttribute('aria-label','Your expedition');
+   const nav=document.querySelector('.sidebar>nav');if(nav){nav.setAttribute('aria-label','Your expedition');const review=document.querySelector('.sidebar .sidebottom a[href="#review"]');if(review&&!nav.querySelector('a[href="#review"]'))nav.insertBefore(review,nav.querySelector('a[href="#detective"]'));}
    const path=location.hash.slice(1).split(/[/?]/)[0]||'home';
    const destination=['world','mission','integumentary','muscle','respiratory','circulatory','excretory'].includes(path)?'home':path;
    document.querySelectorAll('.sidebar a.navlink').forEach(link=>{
     const active=link.getAttribute('href')==='#'+destination;
     link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
    });
+   const current=document.querySelector('.sidebar a.navlink[aria-current=page]'),world=window.InneruLearning?.worlds.find(w=>w.route.slice(1)===path||path==='mission'&&w.id==='skeletal');
+   const title=world?world.name+' System':['final','capstone'].includes(path)?'Final mission':current?(window.InneruLocale?InneruLocale.source(current):current.textContent).trim():null;
+   const crumb=document.querySelector('.topbar .crumb');if(title&&crumb)crumb.innerHTML='<span>Grade 10 Science</span><span aria-hidden="true"> / </span><span>'+e(title)+'</span>';
   }
   const label=document.querySelector('.sidebar .navlabel');if(label&&teacher)label.textContent='Your classroom';
   if(teacher){

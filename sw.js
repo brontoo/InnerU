@@ -1,10 +1,10 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v63-design-foundation';
+const VERSION='inneru-v64-student-experience';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=adventure-welcome-1",
+  "./locale.js?v=student-experience-2",
   "./learning-support.js?v=compact-audio-1",
   "./learning-support.css?v=usability-1",
   "./index.html",
@@ -20,7 +20,7 @@ const SHELL=[
   "./glossary.css",
   "./style.css?v=design-foundation-1",
   "./exhibit.css",
-  "./student-dashboard.css?v=usability-1",
+  "./student-dashboard.css?v=student-experience-2",
   "./structure-audio.css?v=names-only-1",
   "./account.css?v=usability-1",
   "./cloud-learning.css?v=account-panel-bottom-1",
@@ -39,12 +39,11 @@ const SHELL=[
   "./glossary.js?v=guided-ar-1",
   "./speech.js?v=compact-audio-1",
   "./learning-progress.js?v=usability-1",
-  "./student-dashboard.js?v=usability-1",
-  "./account-session.js?v=design-foundation-1",
+  "./account-session.js?v=student-experience-2",
   "./cloud-learning.js?v=owner-1",
-  "./mission-access.js?v=usability-1",
-  "./route-manifest.js?v=adventure-welcome-1",
-  "./route-loader.js?v=mastery-1",
+  "./mission-access.js?v=student-experience-2",
+  "./route-manifest.js?v=student-experience-2",
+  "./route-loader.js?v=student-experience-2",
   "./pwa.js"
 ];
 const ASSET_RE=/\.(glb|gltf|bin|webp|png|jpe?g|svg|woff2?|ttf)$/i;

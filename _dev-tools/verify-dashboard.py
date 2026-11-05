@@ -35,9 +35,9 @@ try:
   check(p.locator('.sd-hero a').get_attribute('href')=='#mission/1','a fresh learner is sent to the first accessible mission')
   for wid in ['integumentary','skeletal','muscle','respiratory','circ','excretory']:
    p.locator(f'[data-sd-world="{wid}"]').click()
-   check(p.locator('#sd-world-panel').get_attribute('aria-labelledby')=='sd-tab-'+wid and p.locator('#sd-world-panel img').get_attribute('src').endswith('.webp'),wid+' has a selectable anatomical progress panel')
-  p.locator('[data-sd-world="excretory"]').focus();p.keyboard.press('ArrowRight');check(p.locator('[data-sd-world="integumentary"]').get_attribute('aria-selected')=='true','system tabs wrap with the arrow keys')
-  p.keyboard.press('End');check(p.locator('[data-sd-world="excretory"]').get_attribute('aria-selected')=='true','End selects the final system');p.keyboard.press('Home')
+   check(p.locator('#sd-world-panel').get_attribute('aria-labelledby')=='sd-tab-'+wid and p.locator('#sd-world-panel img').get_attribute('src').endswith('.webp'),wid+' has an inspectable anatomical progress panel')
+  p.locator('[data-sd-world="excretory"]').focus();p.keyboard.press('ArrowRight');check(p.locator('[data-sd-world="integumentary"]').get_attribute('aria-expanded')=='true','mission-detail controls wrap with the arrow keys')
+  p.keyboard.press('End');check(p.locator('[data-sd-world="excretory"]').get_attribute('aria-expanded')=='true','End selects the final system');p.keyboard.press('Home')
   p.locator('[data-sd-badge="skeletal-mission-1"]').click();check('Complete mission 1' in p.locator('dialog').inner_text() and p.locator('dialog').is_visible(),'locked badges expose their exact completion requirement')
   p.keyboard.press('Escape');check(p.locator('[data-sd-badge="skeletal-mission-1"]').evaluate('el=>el===document.activeElement'),'closing an achievement returns focus to its opener')
   go(p,'badges','.sd-collection');check(p.locator('.sd-badge-grid .sd-badge').count()==49,'the achievement collection uses the same 49 requirements as the dashboard')

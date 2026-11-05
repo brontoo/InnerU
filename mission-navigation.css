@@ -1,0 +1,16 @@
+/* Navigation only: existing lesson controls still decide correctness/completion. */
+.iu-mission-navigation{background:var(--iu-surface,#fff);border:1px solid var(--iu-border,#d7e3e6);border-radius:var(--iu-radius-card,16px);padding:20px 24px;margin-block-end:24px;box-shadow:var(--iu-shadow-card);min-inline-size:0}
+.iu-mission-navigation .iu-mission-trail{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-block-end:12px;margin-block-end:12px;border-block-end:1px solid var(--iu-border,#d7e3e6);font-size:.82rem;color:var(--iu-muted,#57717e);line-height:1.7}
+.iu-mission-trail a{display:inline-flex;align-items:center;min-block-size:44px;color:var(--iu-action-hover,#06676a);font-weight:650;text-underline-offset:4px}
+.iu-mission-trail bdi{margin-inline-start:auto;padding:4px 10px;border-radius:99px;background:var(--iu-selected,#e2f1ee);color:var(--iu-action-hover,#06676a);font-size:.8rem}
+.iu-mission-navigation>strong{font-size:.78rem;color:var(--iu-action-hover,#06676a)}
+.iu-mission-navigation>p{max-inline-size:80ch;line-height:1.8;font-size:.9rem;margin-block:8px;color:var(--iu-text,#183044)}
+.iu-mission-navigation .iu-mission-position{font-size:.82rem;color:var(--iu-muted,#57717e)}
+.iu-mission-jumps{display:flex;flex-wrap:wrap;gap:8px;margin-block-start:16px}
+.iu-mission-jumps button{min-block-size:44px;border:1px solid var(--iu-control-border,#718b95);border-radius:var(--iu-radius-control,10px);background:var(--iu-surface-soft,#f4f8f7);color:var(--iu-action-hover,#06676a);padding:9px 14px;font:inherit;font-size:.82rem;line-height:1.6;text-align:start}
+.iu-mission-jumps button:hover{background:var(--iu-selected,#e2f1ee)}
+@media(max-width:540px){.iu-mission-navigation{padding:16px}.iu-mission-jumps{display:grid;grid-template-columns:1fr}.iu-mission-jumps button{text-align:center}.iu-mission-trail bdi{margin-inline-start:0}.iu-mission-navigation .iu-mission-trail{gap:8px}}
+@media print{.iu-mission-jumps,.iu-mission-trail{display:none}}
+.iu-mission-evidence{margin-block-start:12px;border-block-start:1px solid var(--iu-border,#d7e3e6)}
+.iu-mission-evidence summary{cursor:pointer;min-block-size:44px;padding-block:12px;color:var(--iu-action-hover,#06676a);font-size:.82rem;font-weight:600;line-height:1.6}
+.iu-mission-evidence p{font-size:.85rem;line-height:1.8;color:var(--iu-muted,#57717e)}

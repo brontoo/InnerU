@@ -223,3 +223,14 @@ InneruLocale.register({
   "Not yet. Compare the affected process with the job of each treatment model.": "لم تصل إلى الإجابة بعد. قارن العملية المتأثرة بوظيفة كل نموذج علاجي.",
   "Not yet. Review the waste route and nephron diagrams before trying again.": "لم تصل إلى الإجابة بعد. راجع رسمَي مسار الفضلات والنفرون قبل المحاولة مجددًا."
 });
+
+InneruLocale.register({
+  "Mission navigation and objective": "التنقّل في المهمّة وهدفها",
+  "Current lesson": "الدرس الحالي",
+  "Completed in your saved record": "مكتملة في سجلّك المحفوظ",
+  "Complete the required lesson tasks to finish this mission.": "أكمل مهام الدرس المطلوبة لإنهاء هذه المهمّة.",
+  "Explore the activity": "استكشف النشاط",
+  "Check your understanding": "تحقّق من فهمك",
+  "Open the written response": "افتح الاستجابة الكتابية"
+});
+InneruLocale.register({"About learning evidence":"عن أدلة التعلّم"});

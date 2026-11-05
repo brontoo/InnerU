@@ -131,3 +131,84 @@ InneruLocale.register({
   "Save feedback": "احفظ الملاحظة",
   "No submitted answers saved yet.": "لا توجد إجابات مرسلة محفوظة بعد."
 });
+
+/* Phase 2: learner navigation and evidence-led dashboard. User writing stays verbatim. */
+InneruLocale.register({
+  "Learning shortcuts": "اختصارات التعلّم",
+  "Learning evidence": "أدلة التعلّم",
+  "YOUR HUMAN-BODY EXPEDITION": "رحلتك في جسم الإنسان",
+  "Welcome back,": "أهلًا بعودتك،",
+  "Your journey through the human body continues.": "تستمر رحلتك لاكتشاف جسم الإنسان.",
+  "Class": "الصف",
+  "YOUR NEXT STEP": "خطوتك التالية",
+  "Continue Learning": "تابع التعلّم",
+  "Learning overview": "لمحة عن تعلّمك",
+  "{number} regular missions": "المهمّات الأساسية المكتملة: {number}",
+  "{number} system finals": "الاختبارات الختامية المكتملة: {number}",
+  "CURRENT XP LEVEL": "مستوى نقاط الخبرة الحالي",
+  "{number} XP to next level": "نقاط الخبرة المطلوبة للمستوى التالي: {number}",
+  "REVIEW QUESTIONS DUE": "أسئلة المراجعة المستحقّة",
+  "Explore your next System Key": "استكشف مفتاح جهازك التالي",
+  "Start spaced practice": "ابدأ المراجعة المتباعدة",
+  "CONTINUE YOUR LEARNING": "تابع رحلة تعلّمك",
+  "Your next whole-body discovery": "اكتشافك التالي يجمع أجهزة الجسم",
+  "Choose an available discovery": "اختر اكتشافًا متاحًا",
+  "Mission {number}": "المهمّة {number}",
+  "Final challenge": "التحدّي الختامي",
+  "Activity saved in this mission": "لديك نشاط محفوظ في هذه المهمّة",
+  "Ready to begin": "جاهزة للبدء",
+  "Open the lesson to read its learning objective.": "افتح الدرس لقراءة هدف التعلّم.",
+  "Your six System Keys bring the body systems together.": "تجمع مفاتيحك الستّة أجهزة الجسم معًا.",
+  "Explore a system or revisit your learning evidence while your next mission becomes available.": "استكشف جهازًا أو راجع أدلة تعلّمك إلى أن تصبح مهمّتك التالية متاحة.",
+  "MY LEARNING PRIORITIES": "أولويات تعلّمي",
+  "A clear next step.": "خطوة تالية واضحة.",
+  "Suggested from your saved work and available lessons.": "اقتراحات تستند إلى عملك المحفوظ والدروس المتاحة لك.",
+  "Continue your open mission": "تابع مهمّتك المتاحة",
+  "Explore the body systems": "استكشف أجهزة الجسم",
+  "Your teacher has opened this mission and its prerequisites are complete.": "أتاح معلّمك هذه المهمّة، وقد أكملت متطلّباتها السابقة.",
+  "Your six System Keys are saved. Choose your next challenge or practice.": "حُفظت مفاتيح أجهزتك الستّة. اختر تحدّيك التالي أو نشاط مراجعة.",
+  "You can explore the systems while you wait for an available mission.": "يمكنك استكشاف الأجهزة أثناء انتظار إتاحة مهمّة لك.",
+  "Review a recorded check": "راجع اختبارًا محفوظًا",
+  "A saved check needs another look. Open the evidence and its related lesson.": "يحتاج اختبار محفوظ إلى مراجعة. افتح أدلته والدرس المرتبط به.",
+  "Previously attempted questions are due for spaced practice.": "حان موعد مراجعة أسئلة حاولت الإجابة عنها سابقًا.",
+  "review questions due": "أسئلة مراجعة مستحقّة",
+  "Add evidence for a completed lesson": "أضف أدلة لدرس مكتمل",
+  "Completion is saved, but relevant assessment evidence is missing.": "حُفظ إكمال الدرس، لكن أدلة التقييم المرتبطة به غير متوفّرة.",
+  "Explore your learning evidence": "استعرض أدلة تعلّمك",
+  "Read the checks behind your learning priorities.": "اطّلع على الاختبارات التي تستند إليها أولويات تعلّمك.",
+  "No saved checks are available for recommendations yet.": "لا توجد اختبارات محفوظة يمكن الاستناد إليها في الاقتراحات بعد.",
+  "of {number} achievements earned": "من أصل {number} إنجازًا مكتسبًا",
+  "EXPLORE THE HUMAN BODY": "استكشف جسم الإنسان",
+  "Six systems. One connected story.": "ستّة أجهزة. قصّة مترابطة واحدة.",
+  "Explore a system or open its mission details. Progress includes the system final.": "استكشف جهازًا أو افتح تفاصيل مهمّاته. يشمل التقدّم الاختبار الختامي للجهاز.",
+  "Protect the body from the outside world.": "احمِ الجسم من مؤثّرات العالم الخارجي.",
+  "Build. Protect. Move.": "ابنِ. احمِ. تحرّك.",
+  "Discover how muscles create movement.": "اكتشف كيف تُحدث العضلات الحركة.",
+  "Follow oxygen from the lungs to the blood.": "تتبّع الأكسجين من الرئتين إلى الدم.",
+  "Travel through the body’s delivery network.": "انطلق عبر شبكة النقل في الجسم.",
+  "Discover how the body clears waste.": "اكتشف كيف يتخلّص الجسم من الفضلات.",
+  "System Key earned": "اكتسبت مفتاح الجهاز",
+  "System Key not earned yet": "لم تكتسب مفتاح الجهاز بعد",
+  "Explore this system": "استكشف هذا الجهاز",
+  "Explore / Continue": "استكشف / تابع",
+  "Mission details": "تفاصيل المهمّات",
+  "Mission progress and requirements": "تقدّم المهمّات ومتطلّباتها"
+});
+InneruLocale.register({
+  "Open your saved responses and learning evidence.": "افتح استجاباتك المحفوظة وأدلة تعلّمك.",
+  "See final challenge requirements": "اطّلع على متطلّبات التحدّي الختامي"
+});
+InneruLocale.register({
+  "Choose your saved version": "اختر نسختك المحفوظة",
+  "Two saved versions need your choice before you continue learning.": "توجد نسختان محفوظتان؛ اختر النسخة التي تريد متابعة التعلّم بها.",
+  "BODY SHIELD / INTEGUMENTARY SYSTEM": "درع الجسم / الجهاز اللحافي",
+  "POWER / MUSCULAR SYSTEM": "قوة الحركة / الجهاز العضلي",
+  "OXYGEN / RESPIRATORY SYSTEM": "الأكسجين / الجهاز التنفسي",
+  "TRANSPORT / CIRCULATORY SYSTEM": "النقل / الجهاز الدوري",
+  "BALANCE / EXCRETORY SYSTEM": "التوازن / الجهاز الإخراجي",
+  "Complete mission {number}: {name}.": "أكمل المهمّة {number}: {name}."
+});
+InneruLocale.register({
+  "Explore the science glossary": "استكشف مسرد المصطلحات العلمية",
+  "Use the glossary to understand scientific words. Your priorities will use saved lesson checks as you learn.": "استخدم المسرد لفهم المصطلحات العلمية. ستستند أولوياتك إلى اختبارات الدروس المحفوظة أثناء تعلّمك."
+});
