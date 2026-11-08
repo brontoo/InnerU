@@ -67,6 +67,36 @@ try:
   check(own(t['id'],"select count(*) from public.class_mission_settings where class_code='10G1';").stdout.strip()=='0' and own(m['id'],"select count(*) from public.class_mission_settings where class_code='10G1';").stdout.strip()!='0','settings RLS does not expose another teacher’s classes')
   check(authorize(student,'skeletal',1).status==403,'a class starts locked until its teacher explicitly unlocks a system')
   for system in ['integumentary','skeletal','muscle','respiratory','circ','excretory']:assert controls(teacher,'10G5',system,0,True).ok
+  # Exercise every displayed setting, not just one representative skeletal lesson.
+  teacher.locator('.td-tabs a[href="#teacher?view=controls"]').click();teacher.wait_for_selector('[data-teacher-page=controls]')
+  systems=api(teacher,'mission-controls').json()['classes'][0]['systems']
+  check(sum(len(s['missions']) for s in systems)==45 and sum(m['isFinal'] for s in systems for m in s['missions'])==6,'teacher controls include all 39 regular missions and six system finals')
+  check(teacher.locator('[data-control-number="0"]').count()==6 and teacher.locator('[data-control-number]').count()==51,'all six system controls and 45 mission controls are visible')
+  before_controls=sql('select jsonb_agg(to_jsonb(s) order by user_id) from public.student_progress s;').stdout
+  def toggle(system,number,unlocked):
+   selector='[data-control-system-id="'+system+'"][data-control-number="'+str(number)+'"]'
+   teacher.locator(selector).focus();teacher.keyboard.press('Enter')
+   teacher.wait_for_function('args=>{const b=document.querySelector(args.selector);return b&&!b.disabled&&b.dataset.controlOpen===args.expected;}',arg={'selector':selector,'expected':str(not unlocked).lower()})
+   assert teacher.locator(selector).evaluate('b=>b===document.activeElement'),'keyboard focus lost after saving '+system+' '+str(number)
+  for system in systems:
+   sid=system['id']
+   toggle(sid,0,False)
+   check(all(not m['teacherUnlocked'] for s in api(student,'mission-catalog').json()['systems'] if s['id']==sid for m in s['missions']),sid+' system control locks every included mission')
+   teacher.reload();teacher.wait_for_selector('[data-teacher-page=controls]')
+   check(teacher.locator('[data-control-system-id="'+sid+'"][data-control-number="0"]').get_attribute('data-control-open')=='true',sid+' system lock persists after refresh')
+   toggle(sid,0,True)
+   for mission in system['missions']:
+    number=mission['number']
+    toggle(sid,number,False)
+    gate=authorize(student,sid,number)
+    check(gate.status==403 and gate.json()['code']=='teacher_locked',mission['id']+' teacher control prevents student access')
+    toggle(sid,number,True)
+    gate=authorize(student,sid,number)
+    check(gate.ok if number==1 else gate.status==403 and gate.json()['code']=='previous_required',mission['id']+' unlock retains the original student prerequisites and keyboard focus')
+   teacher.reload();teacher.wait_for_selector('[data-teacher-page=controls]')
+   check(teacher.locator('[data-control-system="'+sid+'"] [data-control-open="false"]').count()==len(system['missions'])+1,sid+' system and every mission setting persist after refresh')
+  check(sql('select jsonb_agg(to_jsonb(s) order by user_id) from public.student_progress s;').stdout==before_controls,'changing every system and mission control leaves all student progress, answers and rewards unchanged')
+  navigate(teacher,'teacher','[data-teacher-page=overview]')
   controls(teacher,'10G6','skeletal',0,True);controls(maryam,'10G1','skeletal',0,True)
   check(authorize(student,'skeletal',1).ok and authorize(student,'skeletal',2).status==403,'the first mission is available and later missions require prior completion')
   check(authorize(student,'skeletal',8).status==403,'the final challenge requires all preceding missions')

@@ -253,7 +253,7 @@ window.InneruRouteManifest={
     "scripts": [
       "mastery-catalog.js?v=mastery-1",
       "mastery-model.js?v=usability-1",
-      "teacher-dashboard.js?v=usability-1"
+      "teacher-dashboard.js?v=teacher-controls-3"
     ],
     "styles": [
       {

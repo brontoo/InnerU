@@ -8,12 +8,16 @@ missions are preserved. Reapplying the installer also preserves teacher settings
 
 ## Teacher workspace
 
-Home (`#teacher`) contains the welcome and summary metrics. Class overview shows
-system completion patterns. Classes & students provides the class-filtered
-register and individual records. Answers & feedback contains the review desk.
-Achievements contains the badge cabinet. Control Panel manages mission access.
-Mission previews lists all 39 lessons and six system finals. Each view has its
-own route, heading and content; the welcome hero appears only on Home.
+The four main teacher destinations are Explore Worlds (`#home`), Dashboard
+(`#teacher`), Mission Preview (`#teacher?view=preview`) and Achievements Board
+(`#teacher?view=board`). Dashboard contains distinct Overview, Students, Missions,
+Feedback, Analytics and Mastery views.
+
+Open **Dashboard → Missions** (`#teacher?view=controls`) to manage access. Choose
+the assigned class with **Manage class**, then lock/unlock any of the six systems,
+39 regular missions or six final challenges: **51 separate settings per class**.
+Teachers can use the same controls in English and Arabic. Saving retains keyboard
+focus on the changed setting, including when its Lock/Unlock action changes.
 
 The Control Panel uses the existing six-system order and the teacher's assigned
 classes. The class selector changes the scope of edits. A system toggle controls
@@ -68,8 +72,24 @@ Run `python3 _dev-tools/verify-mission-access.py` with the existing local Docker
 Chromium and Playwright setup. The suite uses a separate PostgreSQL database and
 a fake Auth provider. School emails are only matching strings in that local
 fixture; it never creates a real account or sends email. It covers distinct
-navigation and Home, canonical class scopes, system and individual controls,
+navigation and Home, canonical class scopes, keyboard lock/unlock of all 51 settings,
+student gate enforcement for every mission/final, unchanged progress/rewards,
 refresh/new-session persistence, all 45 previews, progress preservation,
 prerequisites, forged snapshots, direct RPC/table access, installer reapplication
 and responsive layouts. The role and cloud-learning suites provide regression
 coverage for login, identity, account switching, offline work and conflicts.
+
+Verified 8 November 2026 with isolated local fixtures:
+
+- `npm test -- mission-access`: 224 assertions passed, including keyboard
+  lock/unlock of all six systems and 45 missions/finals, refresh persistence,
+  student access enforcement, previews and unchanged learning records.
+- `npm test -- teacher-workspace owner learning-support`: all three suites
+  passed (class isolation/navigation, owner approval boundaries, Arabic/Guided
+  mode and accessibility behavior).
+- `npm run test:performance`: all 49 checks passed; 124 tracked JavaScript files
+  passed `node --check`. HTML entry points remain identical.
+
+No SQL, permissions, authentication or lesson-content changes are needed for
+this keyboard fix. The production controls RPC was also checked anonymously:
+it exists and denies access; no production class setting was read or changed.
