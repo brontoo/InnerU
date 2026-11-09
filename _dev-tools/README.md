@@ -20,7 +20,7 @@ artifacts and scope. These checks are not a full screen-reader/WCAG certificatio
 | `verify-design-foundation.py` | English/Arabic shared shell, mobile navigation, current destinations, target sizes, focus and unchanged learning state |
 | `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |
 | `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
-| `verify-muscle-studio.py` | Removed full-body studio stays absent while the elbow activity and every lesson remain intact |
+| `verify-muscle-studio.py` | Optional on-demand muscular rotation, RTL/keyboard access, retry/offline recovery and preserved elbow/mission learning |
 | `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
 | `verify-accounts.py` | Signup, sign-in, avatars, recovery, cookies and account isolation |
 | `verify-student-classes.py` | All six class choices, pending teacher linking and class permissions |
@@ -228,12 +228,15 @@ all structure/view controls, animated function routes, keyboard access, mobile
 layout, reduced motion and the scientific fallback. See
 [SKIN-ANATOMY.md](SKIN-ANATOMY.md) for anatomical choices and rendering behavior.
 
-## Removed muscular full-body studio
+## Optional muscular 3D viewer
 
-`python3 _dev-tools/verify-muscle-studio.py` now guards the removal of the full-body
-muscular studio in English and Arabic. It checks that no model/details or retired
-assets load, while the hero, learning sections, elbow activity and all seven
-mission cards and the final panel remain. See [MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md).
+`npm test -- muscle-studio` verifies the compact rotational atlas in English and
+Arabic, model downloads only after opening, camera/keyboard controls, reduced
+motion, small-screen reflow, unchanged learning, retry and WebGL fallbacks,
+resource cleanup/reuse, and offline refresh. The earlier rejected studio and
+its details remain retired; the independent elbow activity is preserved.
+See [MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md) for source licenses and the optional
+reproducible asset build. Asset-build tools are not needed to run the app or its tests.
 
 ## Antagonistic elbow movement activity
 

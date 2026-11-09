@@ -58,9 +58,11 @@ try:
         check(state(page)['phase']=='flex','bend button animates the actual elbow through intermediate angles')
         page.locator('[data-arm-pause]').click();a=state(page)['angle'];page.wait_for_timeout(250)
         check(not state(page)['playing'] and abs(state(page)['angle']-a)<.01,'pause stops the animation at its current pose')
-        page.locator('[data-arm-move=flex]').click();page.wait_for_function('inneruArmLabState().angle>110',timeout=15000);page.locator('[data-arm-pause]').click()
+        # Pause in the same browser task as the angle observation. A separate
+        # protocol click can arrive after the animation has finished and disabled Pause.
+        page.locator('[data-arm-move=flex]').click();page.wait_for_function('''()=>{if(inneruArmLabState().angle<=110)return false;document.querySelector('[data-arm-pause]').click();return true;}''',timeout=15000)
         check(state(page)['angle']>110,'movement continues from the paused angle')
-        page.locator('[data-arm-move=extend]').click();page.wait_for_function('inneruArmLabState().phase==="extend"&&inneruArmLabState().angle<100',timeout=15000);page.locator('[data-arm-pause]').click()
+        page.locator('[data-arm-move=extend]').click();page.wait_for_function('''()=>{const s=inneruArmLabState();if(s.phase!=="extend"||s.angle>=100)return false;document.querySelector('[data-arm-pause]').click();return true;}''',timeout=15000)
         check(state(page)['angle']<100,'extension smoothly reverses the motion')
         pose(page,200);check(state(page)['angle']==130,'elbow flexion clamps at its 130-degree limit')
         pose(page,-20);check(state(page)['angle']==0,'extension does not hyperextend past zero degrees')
