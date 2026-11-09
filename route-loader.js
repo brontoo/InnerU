@@ -39,7 +39,7 @@
   if(root==='respiratory')return [...help,'art','atlas','respiratory',...(path.includes('/')?['resp-missions']:[])];
   if(root==='integumentary')return [...help,'art','atlas','integumentary',...(path.includes('/')?['integ-missions']:[])];
   if(root==='excretory')return [...help,'art','atlas','excretory'];
-  if(root==='capstone'||root==='final')return ['final'];
+  if(root==='capstone'||root==='final')return ['evidence-help','final'];
   if(['detective','connect','daily'].includes(root))return ['art',root];
   return ['art','home'];
  }

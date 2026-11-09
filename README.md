@@ -6,6 +6,7 @@ Phase 1 engineering/design notes: [repository audit](docs/INNERU-ENHANCEMENT-AUD
 [scientific visual audit](docs/SCIENTIFIC-VISUAL-AUDIT.md) and
 [implementation/verification report](docs/PHASE-1-IMPLEMENTATION-REPORT.md).
 Student experience: [Phase 2 implementation, screenshots and validation](docs/PHASE-2-STUDENT-EXPERIENCE.md).
+Mission presentation: [consistent bilingual openings and verification](_dev-tools/MISSION-OPENINGS.md).
 The learning portal uses plain HTML / CSS / JavaScript with no build step or framework.
 Email/password accounts use the Vercel Node function in `api/auth.js` and Supabase Auth.
 Connect the account service using [_dev-tools/ACCOUNT-SETUP.md](_dev-tools/ACCOUNT-SETUP.md).

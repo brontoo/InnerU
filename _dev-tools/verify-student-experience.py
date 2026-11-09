@@ -89,7 +89,7 @@ try:
                 button.click()
                 check(student.evaluate('document.activeElement!==document.body'), 'mission jump moves keyboard focus to existing content')
             check(student.evaluate('JSON.stringify(state)') == saved, 'mission navigation never completes tasks or awards XP')
-            check(student.locator('.iu-mission-trail a').get_attribute('href') == '#dashboard', 'shared mission trail returns to the student dashboard')
+            check(student.locator('.iu-mission-trail a[href="#dashboard"]').count() == 1, 'shared mission trail has one return to the student dashboard')
             for route, selector in [('muscle/mission/1','.mq-panel'),('respiratory/mission/1','.resp-question'),('integumentary/mission/1','.integ-quest'),('circulatory/1','.circ-question'),('excretory/mission/1','.exc-lab')]:
                 go(student, route, selector)
                 student.wait_for_selector('.iu-mission-navigation')

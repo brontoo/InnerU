@@ -44,7 +44,10 @@ try:
   for route,selector in [('home','.explore-screen'),('dashboard','.sd-page'),('dashboard?view=mastery','[data-mastery]'),('badges','.sd-collection'),('glossary','.glossary-page'),('review','.rs-studio'),('daily','#daily-options'),('detective','.dd-page'),('connect','.bt-mission'),('capstone','#main'),('about','#main'),('privacy','#main'),('sources','.sourcelist'),('attribution','#main')]:
    go(student,route,selector)
   go(student,'badges','.sd-collection');student.locator('[data-sd-badge="skeletal-mission-1"]').click();student.wait_for_selector('dialog[open] .speech-local button');listen(student,student.locator('dialog[open] .speech-local button'),'achievement details dialog');student.keyboard.press('Escape')
-  go(student,'mission/1','[data-skel-question]');student.locator('.term').first.click();student.wait_for_selector('#term-pop:not([hidden]) .speech-local button');listen(student,student.locator('#term-pop .speech-local button'),'inline glossary');student.screenshot(path=artifact('arabic-glossary-popover-audio.png'));student.keyboard.press('Escape')
+  go(student,'mission/1','[data-skel-question]')
+  briefing=student.locator('.iu-mission-briefing')
+  if briefing.count() and briefing.get_attribute('open') is None:briefing.locator(':scope > summary').click()
+  student.locator('.term').first.click();student.wait_for_selector('#term-pop:not([hidden]) .speech-local button');listen(student,student.locator('#term-pop .speech-local button'),'inline glossary');student.screenshot(path=artifact('arabic-glossary-popover-audio.png'));student.keyboard.press('Escape')
   # Every existing authorized teacher lesson/final, with no assessment interaction.
   teacher.goto(f.origin+'/index.html?nosw=1#teacher');teacher.wait_for_function('window.InneruSpeechCore');baseline=f.sql('select jsonb_agg(to_jsonb(p) order by user_id) from public.student_progress p;')
   worlds=teacher.evaluate('InneruLearning.worlds.map(w=>({id:w.id,route:w.route,titles:w.titles,final:w.final}))')

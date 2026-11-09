@@ -11,10 +11,11 @@ review option for recording an older checkout; it omits new-convention assertion
 See [the Phase 1 report](../docs/PHASE-1-IMPLEMENTATION-REPORT.md) for before/after
 artifacts and scope. These checks are not a full screen-reader/WCAG certification.
 
-`npm test` runs the same sixteen critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same seventeen critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
+| `verify-mission-openings.py` | Shared title/objective/status, all 45 bilingual previews, student/teacher/owner roles, native activity navigation and unchanged learning |
 | `verify-student-experience.py` | Six-system student cards, authorized next actions, real evidence/due priorities, cloud choice, 45-mission totals and six mission headers |
 | `verify-design-foundation.py` | English/Arabic shared shell, mobile navigation, current destinations, target sizes, focus and unchanged learning state |
 | `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |

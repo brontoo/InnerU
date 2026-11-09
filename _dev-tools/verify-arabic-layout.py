@@ -153,7 +153,10 @@ try:
   go(student,'home');student.locator('[data-iu-keys]').first.click();capture(student,'system-key-dialog');student.keyboard.press('Escape')
   go(student,'dashboard');student.locator('.iu-account-menu>summary').click();capture(student,'account-menu',(320,768,1440));student.keyboard.press('Escape')
   go(student,'badges');student.locator('[data-sd-badge]').first.click();capture(student,'badge-dialog');student.keyboard.press('Escape')
-  go(student,'mission/1');student.locator('.term').first.focus();student.keyboard.press('Enter');student.wait_for_selector('#term-pop:not([hidden])');capture(student,'glossary-popover');capture(student,'glossary-popover-short',(320,),568);student.keyboard.press('Escape')
+  go(student,'mission/1')
+  briefing=student.locator('.iu-mission-briefing')
+  if briefing.count() and briefing.get_attribute('open') is None:briefing.locator(':scope > summary').click()
+  student.locator('.term').first.focus();student.keyboard.press('Enter');student.wait_for_selector('#term-pop:not([hidden])');capture(student,'glossary-popover');capture(student,'glossary-popover-short',(320,),568);student.keyboard.press('Escape')
   for route,selector in [('detective','[data-dd-act-case]'),('connect','[data-bt-system]')]:
    go(student,route)
    for i in range(student.locator(selector).count()):

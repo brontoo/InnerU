@@ -1,16 +1,31 @@
-/* Navigation only: existing lesson controls still decide correctness/completion. */
-.iu-mission-navigation{background:var(--iu-surface,#fff);border:1px solid var(--iu-border,#d7e3e6);border-radius:var(--iu-radius-card,16px);padding:20px 24px;margin-block-end:24px;box-shadow:var(--iu-shadow-card);min-inline-size:0}
-.iu-mission-navigation .iu-mission-trail{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-block-end:12px;margin-block-end:12px;border-block-end:1px solid var(--iu-border,#d7e3e6);font-size:.82rem;color:var(--iu-muted,#57717e);line-height:1.7}
-.iu-mission-trail a{display:inline-flex;align-items:center;min-block-size:44px;color:var(--iu-action-hover,#06676a);font-weight:650;text-underline-offset:4px}
-.iu-mission-trail bdi{margin-inline-start:auto;padding:4px 10px;border-radius:99px;background:var(--iu-selected,#e2f1ee);color:var(--iu-action-hover,#06676a);font-size:.8rem}
-.iu-mission-navigation>strong{font-size:.78rem;color:var(--iu-action-hover,#06676a)}
-.iu-mission-navigation>p{max-inline-size:80ch;line-height:1.8;font-size:.9rem;margin-block:8px;color:var(--iu-text,#183044)}
-.iu-mission-navigation .iu-mission-position{font-size:.82rem;color:var(--iu-muted,#57717e)}
-.iu-mission-jumps{display:flex;flex-wrap:wrap;gap:8px;margin-block-start:16px}
-.iu-mission-jumps button{min-block-size:44px;border:1px solid var(--iu-control-border,#718b95);border-radius:var(--iu-radius-control,10px);background:var(--iu-surface-soft,#f4f8f7);color:var(--iu-action-hover,#06676a);padding:9px 14px;font:inherit;font-size:.82rem;line-height:1.6;text-align:start}
-.iu-mission-jumps button:hover{background:var(--iu-selected,#e2f1ee)}
-@media(max-width:540px){.iu-mission-navigation{padding:16px}.iu-mission-jumps{display:grid;grid-template-columns:1fr}.iu-mission-jumps button{text-align:center}.iu-mission-trail bdi{margin-inline-start:0}.iu-mission-navigation .iu-mission-trail{gap:8px}}
-@media print{.iu-mission-jumps,.iu-mission-trail{display:none}}
-.iu-mission-evidence{margin-block-start:12px;border-block-start:1px solid var(--iu-border,#d7e3e6)}
-.iu-mission-evidence summary{cursor:pointer;min-block-size:44px;padding-block:12px;color:var(--iu-action-hover,#06676a);font-size:.82rem;font-weight:600;line-height:1.6}
-.iu-mission-evidence p{font-size:.85rem;line-height:1.8;color:var(--iu-muted,#57717e)}
+/* One mission opening; original activities, art and completion controls stay intact. */
+.iu-mission-opening{background:var(--iu-surface,#fff);border:1px solid var(--iu-border,#d7e3e6);border-radius:var(--iu-radius-card,16px);padding:20px 24px;margin-block:0 24px;box-shadow:var(--iu-shadow-card);min-inline-size:0;color:var(--iu-text,#183044)}
+.iu-mission-opening .iu-mission-trail{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;margin:0 0 12px;padding:0 0 8px;border-block-end:1px solid var(--iu-border,#d7e3e6);font-size:.82rem;line-height:1.6}
+.iu-mission-trail a{display:inline-flex;align-items:center;min-block-size:44px;margin:0;color:var(--iu-action-hover,#06676a);text-underline-offset:4px;font-weight:600}
+.iu-mission-trail bdi{margin-inline-start:auto;padding:4px 10px;border-radius:99px;background:var(--iu-selected,#e2f1ee);color:var(--iu-action-hover,#06676a);font-size:.82rem}
+.iu-mission-opening .iu-opening-heading{display:block;position:static;min-block-size:0;padding:0;margin:0;background:none;border:0;border-radius:0;box-shadow:none;text-align:start}
+.iu-mission-opening .iu-opening-heading h1{font-size:clamp(1.65rem,2.6vw,2.45rem)!important;line-height:1.35;letter-spacing:normal;margin-block:8px 0!important;color:var(--iu-navy,#14283d);max-inline-size:100%;overflow-wrap:break-word}
+.iu-mission-opening .iu-opening-heading>.skel-mission-emblem,.iu-mission-opening .iu-opening-heading>.cap-hero-art{display:none}
+.iu-mission-opening .iu-opening-heading>.exc-fragment{display:inline-flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;inline-size:auto;min-inline-size:0;min-block-size:0;padding:0;margin-block:8px 0;background:none;border:0;box-shadow:none}
+.iu-mission-opening .exc-fragment>span{display:none}.iu-mission-opening .exc-fragment b,.iu-mission-opening .exc-fragment small{font-size:.8rem;margin:0}
+.iu-mission-opening .iu-opening-heading.quest-finale-hero{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:16px;align-items:center}
+.iu-mission-opening .quest-finale-hero>img{inline-size:120px;block-size:auto;max-block-size:140px;object-fit:contain;margin:0}
+.iu-opening-objective{margin-block:16px 10px;max-inline-size:80ch;line-height:1.75}
+.iu-opening-objective>strong{font-size:.8rem;color:var(--iu-action-hover,#06676a)}
+.iu-mission-opening .iu-opening-objective>p{font-size:1rem;margin-block:4px;color:var(--iu-text,#183044);line-height:1.75}
+.iu-mission-opening .iu-mission-position{font-size:.85rem;line-height:1.7;margin-block:12px;padding:8px 12px;background:var(--iu-surface-soft,#f4f8f7);border-radius:var(--iu-radius-control,10px)}
+.iu-mission-opening .iu-opening-preview{display:flex;align-items:center;flex-wrap:wrap;gap:4px 16px;padding:10px 12px;margin-block:12px;background:var(--iu-surface-soft,#f4f8f7);border:1px solid var(--iu-border,#d7e3e6);border-radius:10px}
+.iu-opening-preview>div{flex:1 1 260px}.iu-opening-preview b{font-size:.78rem}.iu-mission-opening .iu-opening-preview p{font-size:.85rem;line-height:1.65;margin:4px 0}
+.iu-opening-preview>a{display:inline-flex;align-items:center;min-block-size:44px;font-size:.82rem;line-height:1.6}
+.iu-mission-opening .iu-mission-jumps{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-block:16px;padding:0;border:0;background:none;box-shadow:none}
+.iu-mission-opening .iu-mission-jumps button{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:8px;inline-size:auto;block-size:auto;min-block-size:44px;min-inline-size:0;padding:10px 12px;border:1px solid var(--iu-control-border,#718b95);border-radius:var(--iu-radius-control,10px);background:var(--iu-surface-soft,#f4f8f7);color:var(--iu-action-hover,#06676a);font:inherit;font-size:.85rem;line-height:1.6;text-align:center;white-space:normal}
+.iu-mission-opening .iu-mission-jumps button:first-child{background:var(--iu-action,#087e80);border-color:var(--iu-action,#087e80);color:white}
+.iu-mission-opening .iu-mission-jumps button:hover{background:var(--iu-selected,#e2f1ee);color:var(--iu-action-hover,#06676a)}
+.iu-mission-opening .iu-mission-jumps button>b{font-size:.8rem;inline-size:auto;block-size:auto;min-inline-size:0;padding:0;background:none;color:inherit}
+.iu-mission-opening>details{border-block-start:1px solid var(--iu-border,#d7e3e6);margin:0;line-height:1.8}
+.iu-mission-opening>details>summary{cursor:pointer;min-block-size:44px;padding-block:10px;color:var(--iu-action-hover,#06676a);font-size:.85rem;font-weight:600}
+.iu-mission-opening>details p{font-size:.9rem;line-height:1.8;max-inline-size:80ch;color:var(--iu-text,#183044)}
+.iu-mission-opening .iu-mission-pathway>nav{margin-block:12px}
+.iu-mission-opening .iu-mission-pathway>.skel-mode-bar,.iu-mission-opening .iu-mission-pathway>.resp-preview-bar,.iu-mission-opening .iu-mission-pathway>.integ-preview-bar,.iu-mission-opening .iu-mission-pathway>.exc-mode-banner{padding:12px;margin-block:8px 12px}
+@media(max-width:540px){.iu-mission-opening{padding:16px}.iu-mission-opening .iu-mission-trail{gap:4px 12px}.iu-mission-trail bdi{margin-inline-start:0}.iu-mission-opening .iu-mission-jumps{grid-template-columns:repeat(2,minmax(0,1fr))}.iu-mission-opening .iu-mission-jumps button:only-child{grid-column:1/-1}.iu-mission-opening .iu-opening-heading.quest-finale-hero{grid-template-columns:minmax(0,1fr) 80px}.iu-mission-opening .quest-finale-hero>img{inline-size:80px}.iu-opening-objective{margin-block-start:12px}}
+@media print{.iu-mission-opening .iu-mission-trail,.iu-mission-opening .iu-mission-jumps{display:none}}

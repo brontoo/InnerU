@@ -234,3 +234,9 @@ InneruLocale.register({
   "Open the written response": "افتح الاستجابة الكتابية"
 });
 InneruLocale.register({"About learning evidence":"عن أدلة التعلّم"});
+InneruLocale.register({
+  "Mission briefing": "تمهيد المهمّة",
+  "Mission map and access": "خريطة المهمّات وإتاحتها",
+  "Mission sections": "أقسام المهمّة",
+  "Not completed yet · finish the required lesson tasks.": "لم تكتمل بعد · أكمل مهامّ الدرس المطلوبة."
+});
