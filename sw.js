@@ -1,6 +1,6 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v66-mission-openings';
+const VERSION='inneru-v67-login-framing';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
@@ -11,7 +11,7 @@ const SHELL=[
   "./404.html",
   "./manifest.webmanifest",
   "./login.html",
-  "./login.css?v=body-quest-1",
+  "./login.css?v=portrait-framing-1",
   "./login.js?v=guided-ar-1",
   "./favicon.svg?v=3",
   "./inneru-mark.svg?v=3",

@@ -22,12 +22,41 @@ def logout(p):
  p.wait_for_selector('.iu-account-menu');p.locator('.iu-account-menu summary').click();p.locator('[data-account-logout]').click();p.wait_for_url('**/login.html');p.wait_for_selector('.gate-role-grid')
 def signin(p,email='amina@example.com',password='Correct-Horse-123'):
  p.locator('#entry-email').fill(email);p.locator('#entry-password').fill(password);p.locator('#gate-entry-form [type=submit]').click()
+# Head bounds measured from the original artwork, as fractions of each image.
+# Test the rendered crop: ordinary page-overflow checks cannot detect a cut-off portrait.
+PORTRAITS="""()=>[...document.querySelectorAll('.gate-role-visual>img')].every((img,index)=>{
+ const head=index===0?[.20,.045,.48,.42]:[.335,.034,.59,.39];
+ const frame=img.parentElement.getBoundingClientRect(),box=img.getBoundingClientRect();
+ const scale=Math.max(box.width/img.naturalWidth,box.height/img.naturalHeight);
+ const width=img.naturalWidth*scale,height=img.naturalHeight*scale;
+ const position=getComputedStyle(img).objectPosition.split(' ').map(parseFloat);
+ const x=box.left+(box.width-width)*position[0]/100,y=box.top+(box.height-height)*position[1]/100;
+ return x+head[0]*width>=frame.left+1&&x+head[2]*width<=frame.right-1&&
+        y+head[1]*height>=frame.top+1&&y+head[3]*height<=frame.bottom-1;
+})"""
 try:
  with sync_playwright() as pw:
   browser=launch(pw)
   context=new_context(browser, viewport={'width':1680,'height':1100},service_workers='block');p=context.new_page();p.on('pageerror',lambda e:errors.append(str(e)))
   p.goto(ENTRY);p.wait_for_selector('.gate-role-grid')
   check(p.locator('.gate-role').count()==2 and p.locator('.gate-scene').evaluate('e=>e.complete&&e.naturalWidth>0'),'the illustrated student/teacher adventure entry is preserved')
+  p.emulate_media(reduced_motion='reduce')
+  for lang in ['en','ar']:
+   p.locator('[data-interface-language]').select_option(lang)
+   p.wait_for_function('(lang)=>document.documentElement.lang===lang',arg=lang)
+   for width,height in [(1920,800),(1680,1100),(1280,720),(768,950),(641,950),(640,950),(390,950),(320,950)]:
+    p.set_viewport_size({'width':width,'height':height})
+    p.wait_for_function('Array.from(document.querySelectorAll(".gate-role-visual>img")).every(i=>i.complete&&i.naturalWidth>0)')
+    check(p.evaluate(PORTRAITS) and p.evaluate('document.documentElement.scrollWidth<=innerWidth'),f'{lang} {width}px role cards keep both full heads inside their frames without page overflow')
+    if width in [1280,768,320]:p.locator('.gate-role-grid').screenshot(path=artifact(f'account-role-framing-{lang}-{width}.png'))
+  p.locator('[data-interface-language]').select_option('en');p.wait_for_function('document.documentElement.lang==="en"')
+  p.set_viewport_size({'width':1280,'height':720});p.emulate_media(reduced_motion='no-preference')
+  for role_name in ['student','teacher']:
+   p.locator('.gate-role-'+role_name).hover();p.wait_for_timeout(750)
+   check(p.evaluate(PORTRAITS),role_name+' hover preserves full portrait headroom')
+   p.locator('[data-select-role='+role_name+']').focus();p.wait_for_timeout(400)
+   check(p.evaluate(PORTRAITS),role_name+' keyboard focus preserves full portrait headroom')
+  p.mouse.move(0,0);p.locator('[data-select-role=teacher]').blur();p.set_viewport_size({'width':1680,'height':1100})
   p.evaluate('localStorage.setItem("bodyquest-v1",JSON.stringify({name:"Amina",xp:88,done:[1],rewards:["activity1"],weak:[],level:"Explorer",motion:false}))')
   role(p);p.locator('[data-auth-mode="signup"]').first.click()
   p.locator('#entry-email').fill('not-an-email');p.locator('#entry-password').fill('Correct-Horse-123');p.locator('#entry-confirm').fill('Correct-Horse-123');p.locator('#gate-entry-form [type=submit]').click()
