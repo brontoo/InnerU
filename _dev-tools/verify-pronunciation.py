@@ -63,8 +63,8 @@ try:
    go(teacher,route,'.td-page')
   owner.goto(f.origin+'/index.html?nosw=1#owner');owner.wait_for_function('window.InneruSpeechCore');check(owner.locator('.speech-parts').count()==0,'owner has no page-wide reader')
   owner.locator('#owner-10G5').select_option('');owner.locator('[data-owner-form] [type=submit]').click();owner.wait_for_selector('dialog[open] .speech-local button');listen(owner,owner.locator('dialog[open] .speech-local button'),'owner removal confirmation without saving');owner.keyboard.press('Escape')
-  # Every named structure in the five retained anatomical studios plus the elbow.
-  for route,root_selector,button_selector in [('world','[data-atlas=skeletal]','.body-atlas-parts [data-part]'),('respiratory','[data-atlas=respiratory]','.body-atlas-parts [data-part]'),('integumentary','[data-skin-explorer]','.body-atlas-parts [data-part]'),('muscle','.arm-lab','[data-arm-part]'),('excretory','.exc-explorer','[data-structure]'),('circulatory','.heart-lab','[data-heart-structure]')]:
+  # Every named structure in the six anatomical viewers plus the elbow.
+  for route,root_selector,button_selector in [('world','[data-atlas=skeletal]','.body-atlas-parts [data-part]'),('respiratory','[data-atlas=respiratory]','.body-atlas-parts [data-part]'),('integumentary','[data-skin-explorer]','.body-atlas-parts [data-part]'),('muscle','.muscle-rotator','[data-muscle-select]'),('muscle','.arm-lab','[data-arm-part]'),('excretory','.exc-explorer','[data-structure]'),('circulatory','.heart-lab','[data-heart-structure]')]:
    go(teacher,route,root_selector+' .structure-audio-button');root=teacher.locator(root_selector);check(root.locator('.support-read-controls').count()==0,route+' anatomy has only its structure pronunciation control')
    modes=['organs','kidney','nephron','flow'] if route=='excretory' else ['chambers','valves','support','vessels','conduction'] if route=='circulatory' else [None]
    for mode in modes:
@@ -72,7 +72,7 @@ try:
     parts=root.locator(button_selector);check(parts.count()>0,route+' '+str(mode)+' exposes actual anatomy selections')
     for i in range(parts.count()):
      part=parts.nth(i);part.dispatch_event('click')
-     if route=='muscle' and part.get_attribute('data-arm-part') not in ['biceps','triceps','tendons','bones']:
+     if root_selector=='.arm-lab' and part.get_attribute('data-arm-part') not in ['biceps','triceps','tendons','bones']:
       check(root.locator('.structure-audio-button').is_disabled(),'whole-arm overview remains a reading part rather than an invented anatomy name');continue
      teacher.wait_for_function('(s)=>!document.querySelector(s+" .structure-audio-button").disabled',arg=root_selector);teacher.wait_for_timeout(50)
      row=listen(teacher,root.locator('.structure-audio-button'),route+' structure '+str(mode)+'/'+str(i));label=root.locator('.structure-audio-name').inner_text();plain=lambda s:re.sub('[\u064b-\u065f\u0670\u2066-\u2069]','',s)

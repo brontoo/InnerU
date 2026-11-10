@@ -1,11 +1,11 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v68-muscle-rotation';
+const VERSION='inneru-v69-muscle-sidebar';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=muscle-rotation-1",
-  "./learning-support.js?v=compact-audio-1",
+  "./locale.js?v=muscle-sidebar-1",
+  "./learning-support.js?v=muscle-sidebar-1",
   "./learning-support.css?v=usability-1",
   "./index.html",
   "./404.html",
@@ -37,12 +37,12 @@ const SHELL=[
   "./review-state.js?v=usability-1",
   "./habit.js?v=cloud-learning-1",
   "./glossary.js?v=guided-ar-1",
-  "./speech.js?v=compact-audio-1",
+  "./speech.js?v=muscle-sidebar-1",
   "./learning-progress.js?v=usability-1",
   "./account-session.js?v=student-experience-2",
   "./cloud-learning.js?v=owner-1",
   "./mission-access.js?v=student-experience-2",
-  "./route-manifest.js?v=muscle-rotation-1",
+  "./route-manifest.js?v=muscle-sidebar-1",
   "./route-loader.js?v=mission-opening-1",
   "./pwa.js"
 ];

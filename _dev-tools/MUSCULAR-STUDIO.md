@@ -3,7 +3,8 @@
 The muscular landing page has a compact **Explore muscles in 3D** section after
 its existing hero. It replaces neither the lesson sequence nor the independent
 elbow movement activity. The previous "Meet your movement makers" studio,
-region tabs, discovery counts and structure-detail interface remain retired.
+region tabs and discovery counts remain retired. A right-hand controls/profile panel
+now reuses the portal's existing descriptions for 17 major muscles.
 
 The reference informs warm red muscular tissue, pale connective tissue and an
 anatomical whole-body presentation. The actual geometry is a complete open atlas,
@@ -87,3 +88,39 @@ release checks still apply. These asset-build packages are not test or runtime d
 No database migration, credentials, server configuration or production data change
 is required. Asset-build tools are optional and separate from production/test
 runtime dependencies.
+
+## Right-side controls and muscle profiles — 10 November 2026
+
+On desktop the physical model remains on the left and the control/detail panel
+stays on the right in both English and Arabic. At widths up to 1100px the panel
+stacks below the model. It contains the existing view/turn/zoom/reset/spin tools,
+17 keyboard-selectable muscle profiles (location, main function, movement,
+everyday example and tissue type), a selected region label, Focus structure,
+Show all, and the same single pronunciation control used by the other anatomy
+viewers. Details remain readable before opening 3D or when WebGL is unavailable.
+
+The descriptions reuse the existing muscular facts in `body-atlas.js`; authored
+Arabic is maintained in `locales/ar/muscle.js`. The pronunciation adapter uses the
+shared local browser speech engine and stops the previous name on selection.
+No page-wide reader or duplicate instruction/audio bars are inserted here.
+
+Selecting a profile or focusing moves the camera and its label only. Both
+`rotational-atlas.glb` and its WebP poster are byte-for-byte unchanged. The GLB
+SHA-256 remains `52066023e390604bd3daef4883ea1ec812792547c8697cf8a2d9917af839645d`.
+The focused browser test also hashes the mounted geometry buffers and checks
+materials/transforms before and after using the new controls. No model rebuild,
+new anatomy asset, lesson, reward, progress, database or permission change is made.
+
+Source/cache version changes deliver the panel and its translations to existing
+installations; the atlas stays on demand and reuses its existing runtime cache.
+
+Sidebar verification: 167 focused viewer checks passed, including all 17 Arabic
+profiles, physical right-side placement, mobile stacking, bounded labels, keyboard
+selection, camera focus, shared pronunciation and unchanged model buffers/assets.
+The expanded audio suite passed 866 checks across 182 spoken parts, including
+every new muscle name. Teacher workspace (89), Guided/read-aloud (108), strict
+Arabic coverage (zero gaps across 187 sampled views/states) and all 49 loading/
+offline checks passed. The initial dashboard remains within its existing budgets:
+81,069 compressed JavaScript bytes, 35,763 CSS bytes and zero model downloads.
+An additional context-loss/retry check confirmed that profile selection, label
+visibility and saved learning survive recovery.

@@ -233,8 +233,9 @@ layout, reduced motion and the scientific fallback. See
 `npm test -- muscle-studio` verifies the compact rotational atlas in English and
 Arabic, model downloads only after opening, camera/keyboard controls, reduced
 motion, small-screen reflow, unchanged learning, retry and WebGL fallbacks,
-resource cleanup/reuse, and offline refresh. The earlier rejected studio and
-its details remain retired; the independent elbow activity is preserved.
+resource cleanup/reuse, and offline refresh. The earlier rejected model and
+region-tab studio remain retired; the right-side panel reuses 17 existing muscle
+profiles and shared pronunciation. The independent elbow activity is preserved.
 See [MUSCULAR-STUDIO.md](MUSCULAR-STUDIO.md) for source licenses and the optional
 reproducible asset build. Asset-build tools are not needed to run the app or its tests.
 

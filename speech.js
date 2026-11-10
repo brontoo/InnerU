@@ -8,6 +8,7 @@
  const source=el=>(window.InneruLocale?InneruLocale.source(el):el?.textContent||'').trim().replace(/_/g,' ').replace(/\s+/g,' ');
  const pressed=(root,key)=>root.querySelector(key+'[aria-pressed="true"]');
  const configs=[
+  {root:'.muscle-rotator',info:'.muscle-rotator-info',name(root,info){return pressed(root,'[data-muscle-select]')?source(info.querySelector('h3')):'';}},
   {root:'[data-skin-explorer]',info:'.body-atlas-info',name(root,info){const part=pressed(root,'[data-part]'),dermal=pressed(root,'[data-dermis-part]'),name=source(info.querySelector('h3'));return part&&name===(dermal?.dataset.dermisPart||part.dataset.part)?name:'';}},
   {root:'.arm-lab',info:'.arm-lab-anatomy',name(root){return {biceps:'Biceps brachii',triceps:'Triceps brachii',tendons:'Tendons',bones:'Humerus, radius, ulna'}[pressed(root,'[data-arm-part]')?.dataset.armPart]||'';}},
   {root:'.exc-explorer',info:'.exc-structure-info',name(root,info){const part=pressed(root,'[data-structure]'),name=source(info.querySelector('h3'));return part&&name===part.dataset.structure?name:'';}},

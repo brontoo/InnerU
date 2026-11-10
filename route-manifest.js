@@ -66,7 +66,7 @@ window.InneruRouteManifest={
       "muscle-visuals.js",
       "muscle-pair.js?v=arm-team-1",
       "muscle-learning.js?v=arm-team-1",
-      "muscle-rotator.js?v=rotation-1",
+      "muscle-rotator.js?v=sidebar-1",
       "muscle.js?v=rotation-1",
       "muscle-force.js?v=on-demand-1"
     ],
@@ -83,7 +83,7 @@ window.InneruRouteManifest={
         "url": "muscle-pair.css?v=arm-team-1",
         "order": 9
       },
-      {"url":"muscle-rotator.css?v=rotation-1","order":12}
+      {"url":"muscle-rotator.css?v=sidebar-1","order":12}
     ]
   },
   "circulatory": {

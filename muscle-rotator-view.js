@@ -16,11 +16,25 @@ export async function mountMuscleRotator(root){
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(32,1,.01,30);
  const spin=root.querySelector('[data-muscle-spin]'),status=root.querySelector('.muscle-rotator-status');
  const meshes=[],materials=[],textures=[];
+ const label=root.querySelector('.muscle-rotator-label');
+ let selected=null,labels=root.querySelector('[data-muscle-labels]').getAttribute('aria-pressed')==='true',focused=false,fullMin=.8,fullMax=8;
+ function updateLabel(){
+  if(!selected||!labels){label.hidden=true;return;}
+  const point=new THREE.Vector3(...selected.point),normal=new THREE.Vector3(...(selected.view==='back'?[0,0,-1]:selected.view==='side'?[1,0,0]:[0,0,1]));
+  const facing=camera.position.clone().sub(controls.target).normalize().dot(normal);
+  point.project(camera);label.hidden=facing<.1||point.z>1||Math.abs(point.x)>1||Math.abs(point.y)>1;
+  if(label.hidden)return;
+  const text=tr(selected.name);if(label.textContent!==text)label.textContent=text;
+  const half=label.offsetWidth/2+10;
+  label.style.left=THREE.MathUtils.clamp((point.x+1)*stage.clientWidth/2,half,stage.clientWidth-half)+'px';
+  label.style.top=THREE.MathUtils.clamp((1-point.y)*stage.clientHeight/2,label.offsetHeight*1.15+10,stage.clientHeight-10)+'px';
+ }
  function dispose(){
   if(disposed)return;disposed=true;abort.abort();cancelAnimationFrame(frame);frame=0;
   resize?.disconnect();intersection?.disconnect();mutation?.disconnect();controls?.dispose();
   for(const mesh of meshes)mesh.geometry.dispose();for(const material of materials)material.dispose();for(const item of textures)item.dispose();
   renderer?.dispose();renderer?.domElement.remove();delete root.dataset.muscleReady;
+  label.hidden=true;
   root.querySelector('.muscle-rotator-controls').hidden=true;stage.tabIndex=-1;
   if(window.__inneruMuscleRotator?.root===root)window.__inneruMuscleRotator=null;
  }
@@ -29,6 +43,7 @@ export async function mountMuscleRotator(root){
   frame=0;if(disposed||!visible||document.hidden||!model)return;
   const moved=controls.update(Math.min(.05,previous?(now-previous)/1000:1/60));previous=now;
   renderer.render(scene,camera);
+  updateLabel();
   if(controls.autoRotate||moved)request();
  }
  function setSpin(value){controls.autoRotate=!!value&&!reduced();spin.setAttribute('aria-pressed',String(controls.autoRotate));request();}
@@ -36,7 +51,17 @@ export async function mountMuscleRotator(root){
  let distance=3;
  function view(name){
   setSpin(false);const theta={front:0,back:Math.PI,side:Math.PI/2}[name]??0;
+  focused=false;controls.minDistance=fullMin;controls.maxDistance=fullMax;
   controls.enableDamping=false;controls.target.set(0,0,0);camera.position.set(Math.sin(theta)*distance,0,Math.cos(theta)*distance);controls.update();active(name);request();
+ }
+ function focus(){
+  if(!selected)return;setSpin(false);focused=true;
+  const theta={front:0,back:Math.PI,side:Math.PI/2}[selected.view],span=selected.span;
+  const width=selected.view==='side'?span[2]:span[0];
+  const close=Math.max(.18,Math.max(span[1],width/camera.aspect)/(2*Math.tan(THREE.MathUtils.degToRad(16)))*1.3);
+  controls.minDistance=.1;controls.maxDistance=fullMax;controls.target.set(...selected.point);
+  camera.position.copy(controls.target).add(new THREE.Vector3(Math.sin(theta)*close,0,Math.cos(theta)*close));
+  controls.update();active('');request();
  }
  function turn(sign){
   setSpin(false);const offset=camera.position.clone().sub(controls.target),polar=new THREE.Spherical().setFromVector3(offset);
@@ -78,7 +103,7 @@ export async function mountMuscleRotator(root){
   function fit(){
    const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight);camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height);
    distance=Math.max(size.y/(2*Math.tan(THREE.MathUtils.degToRad(16))),size.x/(2*Math.tan(THREE.MathUtils.degToRad(16))*camera.aspect))*1.12;
-   controls.minDistance=size.y*.55;controls.maxDistance=distance*2.5;
+   fullMin=size.y*.55;fullMax=distance*2.5;controls.minDistance=focused ? .1 : fullMin;controls.maxDistance=fullMax;
   }
   fit();view('front');stage.prepend(renderer.domElement);
   on(controls,'change',request);on(controls,'start',()=>{setSpin(false);active('');});
@@ -93,10 +118,14 @@ export async function mountMuscleRotator(root){
   root.querySelectorAll('[data-muscle-turn]').forEach(b=>on(b,'click',()=>turn(b.dataset.muscleTurn==='left'?-1:1)));
   root.querySelectorAll('[data-muscle-zoom]').forEach(b=>on(b,'click',()=>zoom(b.dataset.muscleZoom==='in'?1:-1)));
   on(root.querySelector('[data-muscle-reset]'),'click',()=>view('front'));on(spin,'click',()=>setSpin(!controls.autoRotate));
+  on(root,'muscle-rotator-selection',event=>{selected=event.detail;view(selected?.view||'front');});
+  on(root.querySelector('[data-muscle-focus]'),'click',focus);
+  on(root.querySelector('[data-muscle-labels]'),'click',()=>{labels=!labels;root.querySelector('[data-muscle-labels]').setAttribute('aria-pressed',String(labels));request();});
+  on(document,'inneru-language-ready',request);
   function motion(){if(reduced())setSpin(false);spin.disabled=reduced();spin.title=reduced()?tr('Automatic rotation is off while reduced motion is enabled.'):tr('Auto rotate');}
   motion();on(media,'change',motion);on(document,'inneru-preferences-change',motion);on(document,'inneru-language-ready',motion);
   const motionObserver=new MutationObserver(motion);motionObserver.observe(document.body,{attributes:true,attributeFilter:['class']});signal.addEventListener('abort',()=>motionObserver.disconnect(),{once:true});
-  resize=new ResizeObserver(()=>{const offset=camera.position.clone().sub(controls.target),old=distance;fit();camera.position.copy(controls.target).add(offset.multiplyScalar(distance/old));controls.update();renderer.render(scene,camera);request();});resize.observe(stage);
+  resize=new ResizeObserver(()=>{const offset=camera.position.clone().sub(controls.target),old=distance;fit();camera.position.copy(controls.target).add(offset.multiplyScalar(distance/old));controls.update();renderer.render(scene,camera);updateLabel();request();});resize.observe(stage);
   intersection=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible){previous=0;request();}else{cancelAnimationFrame(frame);frame=0;}},{rootMargin:'50px'});intersection.observe(stage);
   on(document,'visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else{previous=0;request();}});
   on(renderer.domElement,'webglcontextlost',event=>{event.preventDefault();dispose();status.textContent=tr('The 3D view stopped. The anatomy illustration remains available. Try opening the model again.');root.dispatchEvent(new Event('muscle-rotator-unavailable'));});
