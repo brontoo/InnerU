@@ -1,5 +1,13 @@
 /* Authored Modern Standard Arabic; English source keys. See ../README.md. */
 InneruLocale.register({
+  "Loading anatomical heart structures…": "جارٍ تحميل التراكيب التشريحية للقلب…",
+  "The cutaway removes near-side tissue to reveal the chambers. Restore the front wall to see complete structures. Use Valve mechanics to explore movement.": "يكشف المقطع حجرات القلب بإزالة الأنسجة القريبة من المشاهد. أعد الجدار الأمامي لرؤية التراكيب كاملة. استخدم «آليات الصمّامات» لاستكشاف حركتها.",
+  "Explore valve movement": "استكشف حركة الصمّامات",
+  "Retry 3D anatomy": "أعد تحميل التشريح ثلاثي الأبعاد",
+  "Internal anatomy: registered BodyParts3D chambers, valve leaflets and papillary muscles. The curved cut preserves the apex. Small support regions and electrical pathways are teaching annotations.": "التشريح الداخلي: حجرات القلب ووريقات الصمّامات والعضلات الحليمية من أطلس BodyParts3D المتحاذي. يحافظ القطع المنحني على قمة القلب. أُضيفت مناطق دعم صغيرة ومسارات كهربائية توضيحية للتعليم.",
+  "Surface and internal anatomy: DBCLS BodyParts3D · CC BY-SA 2.1 Japan ↗": "التشريح الخارجي والداخلي: DBCLS BodyParts3D · ترخيص CC BY-SA 2.1 اليابان ↗",
+  "Internal chambers and valve supports use registered atlas meshes. Valve mechanics and blood journey remain separate teaching reconstructions.": "تستخدم الحجرات الداخلية ودعامات الصمّامات شبكات الأطلس التشريحي المتحاذية. أما آليات الصمّامات ورحلة الدم فهما نموذجان تعليميان منفصلان.",
+
   "POSTERIOR · SURFACE ANATOMY": "خلفي · تشريح سطحي",
   "POSTERIOR · OPEN ANTERIOR CUTAWAY": "خلفي · مقطع أمامي مفتوح",
   "POSTERIOR · VALVE MECHANICS": "خلفي · آليات الصمّامات",

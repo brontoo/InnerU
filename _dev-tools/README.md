@@ -20,7 +20,7 @@ artifacts and scope. These checks are not a full screen-reader/WCAG certificatio
 | `verify-design-foundation.py` | English/Arabic shared shell, mobile navigation, current destinations, target sizes, focus and unchanged learning state |
 | `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |
 | `verify-usability.py` | Authorized recommendations, accurate reset scope, evidence follow-up, assigned-class attention and compact RTL layouts |
-| `verify-heart-studio.py` | Actual cardiac geometry, named coronary highlighting, bilingual controls and preserved discovery rewards |
+| `verify-heart-studio.py` | Registered internal atlas, named coronary highlighting, bilingual controls, offline retry and preserved discovery rewards |
 | `verify-muscle-studio.py` | Optional on-demand muscular rotation, RTL/keyboard access, retry/offline recovery and preserved elbow/mission learning |
 | `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
 | `verify-accounts.py` | Signup, sign-in, avatars, recovery, cookies and account isolation |

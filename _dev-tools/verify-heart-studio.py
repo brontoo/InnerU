@@ -14,14 +14,14 @@ def saved(p):return p.evaluate("localStorage.getItem('bodyquest-v1')")
 def state(p):return json.loads(saved(p))
 def mode(p,name):
  p.locator(f'[data-heart-mode="{name}"]').click();p.wait_for_function('name=>window.inneruHeartExplorerState().mode===name',arg=name)
- p.locator('#heart-canvas').scroll_into_view_if_needed();p.wait_for_timeout(80)
+ p.locator('#heart-canvas').scroll_into_view_if_needed();p.wait_for_function('name=>{const s=inneruHeartExplorerState();return !s.renderer||!document.querySelector("#heart-fallback").hidden||s.mode===name&&s.meshes>0&&(name!=="cutaway"||s.anatomy?.kind==="registered-atlas")}',arg=name);p.wait_for_timeout(80)
 def group(p,name):p.locator(f'[data-heart-group="{name}"]').click()
 def choose(p,key):p.locator(f'#heart-structure-list [data-heart-structure="{key}"]').click()
 def frame(p):return p.evaluate('window.inneruHeartExplorerSnapshot()')
 try:
  with sync_playwright() as pw:
   b=launch(pw)
-  p=new_context(b, service_workers='block',viewport={'width':1680,'height':1100}).new_page();p.on('pageerror',lambda e:errors.append(str(e)))
+  p=new_context(b, service_workers='block',viewport={'width':1680,'height':1100}).new_page();p.on('pageerror',lambda e:errors.append(str(e)));requests=[];p.on('request',lambda r:requests.append(r.url))
   p.goto(BASE+'#home',wait_until='domcontentloaded');p.evaluate("localStorage.setItem('bodyquest-v1',JSON.stringify({name:'Anatomist',xp:0,rewards:[],done:[],weak:[],motion:false,circ:{done:[],steps:[],mastery:false,boss:false,heartExplored:[]}}))")
   p.goto(BASE+'#circulatory',wait_until='domcontentloaded');p.wait_for_function('window.inneruHeartExplorerState?.().canvas',timeout=30000)
   root_path=Path(__file__).resolve().parents[1]
@@ -31,8 +31,9 @@ try:
   check(p.locator('.heart-lab-modes [role="tab"]').count()==4,'four complete anatomy investigation views are available')
   check(live(p)['canvas'],'a real WebGL heart is rendered')
   baseline=saved(p)
+  check(not any('/heart-interior.glb' in url or '/heart-atlas-cutaway.js' in url for url in requests),'surface-only viewing never fetches the internal atlas or its preparation module')
   # Invariants come from the actual geometry, not only UI descriptions.
-  anatomy=p.evaluate('''async()=>{const {createHeartAnatomy,HEART_STRUCTURES}=await import('./heart-anatomy.js?v=heart-science-1');const m=createHeartAnatomy();const all=new Set(m.meshes.flatMap(x=>x.userData.ids));const result={all:Object.entries(HEART_STRUCTURES).filter(([,f])=>!f.surfaceOnly).every(([k])=>all.has(k)),count:m.meshes.length,finite:m.meshes.every(x=>[...x.geometry.attributes.position.array,...x.geometry.attributes.normal.array].every(Number.isFinite)),lv:m.chambers.lv.wall,rv:m.chambers.rv.wall,counts:Object.fromEntries(m.valves.map(v=>[v.id,v.leaflets.length])),chordal:m.valves.filter(v=>v.chords.length).map(v=>v.id),fossa:m.meshes.some(x=>x.userData.heartId==='fossa'&&x.userData.closedDepression),fourPV:m.meshes.filter(x=>x.userData.heartId==='veins'&&x.geometry.type==='TubeGeometry').length/2,phases:[]};for(const phase of [0,.42,.65,.86]){m.setPhase(phase);result.phases.push(m.valves.map(v=>[v.id,v.open]));}new Set(m.meshes.map(x=>x.geometry)).forEach(g=>g.dispose());new Set(m.meshes.map(x=>x.material)).forEach(g=>g.dispose());m.textures.forEach(t=>t.dispose());return result;}''')
+  anatomy=p.evaluate('''async()=>{const {createHeartAnatomy,HEART_STRUCTURES}=await import('./heart-anatomy.js?v=atlas-inside-1');const m=createHeartAnatomy();const all=new Set(m.meshes.flatMap(x=>x.userData.ids));const result={all:Object.entries(HEART_STRUCTURES).filter(([,f])=>!f.surfaceOnly).every(([k])=>all.has(k)),count:m.meshes.length,finite:m.meshes.every(x=>[...x.geometry.attributes.position.array,...x.geometry.attributes.normal.array].every(Number.isFinite)),lv:m.chambers.lv.wall,rv:m.chambers.rv.wall,counts:Object.fromEntries(m.valves.map(v=>[v.id,v.leaflets.length])),chordal:m.valves.filter(v=>v.chords.length).map(v=>v.id),fossa:m.meshes.some(x=>x.userData.heartId==='fossa'&&x.userData.closedDepression),fourPV:m.meshes.filter(x=>x.userData.heartId==='veins'&&x.geometry.type==='TubeGeometry').length/2,phases:[]};for(const phase of [0,.42,.65,.86]){m.setPhase(phase);result.phases.push(m.valves.map(v=>[v.id,v.open]));}new Set(m.meshes.map(x=>x.geometry)).forEach(g=>g.dispose());new Set(m.meshes.map(x=>x.material)).forEach(g=>g.dispose());m.textures.forEach(t=>t.dispose());return result;}''')
   check(anatomy['all'],'all 26 internal anatomical structures have actual geometry')
   check(anatomy['count']>=190 and anatomy['finite'],'the detailed model has finite surfaces, cords, muscle ridges and vessel geometry')
   check(anatomy['lv']>anatomy['rv']*2.5,'the left ventricular wall is substantially thicker than the right')
@@ -44,7 +45,7 @@ try:
    values=dict(anatomy['phases'][i]);av=1 if i==0 else 0;semi=1 if i==2 else 0
    check(values['mitral']==av and values['tricuspid']==av and values['aortic']==semi and values['pulmonary']==semi,phase_name+' has the correct open/closed valve relationships')
   detailed=p.evaluate("""async()=>{
-   const {createHeartAnatomy}=await import('./heart-anatomy.js?v=heart-science-1');
+   const {createHeartAnatomy}=await import('./heart-anatomy.js?v=atlas-inside-1');
    const THREE=await import('./assets/three/three.module.js'),m=createHeartAnatomy();m.root.updateMatrixWorld(true);
    const result={supports:m.valves.filter(v=>v.isAV).map(v=>[v.id,v.papillarySupports.length]),anchored:true,cordDistance:0,septalGap:0,closedApices:m.meshes.filter(x=>x.userData.closedApex).length,moderator:m.meshes.filter(x=>x.userData.moderatorBand).map(x=>x.userData.ids),outflows:[],coaptation:0};
    const nearest=(point,meshes)=>{let distance=Infinity;for(const mesh of meshes){const positions=mesh.geometry.attributes.position;for(let i=0;i<positions.count;i++)distance=Math.min(distance,point.distanceTo(new THREE.Vector3().fromBufferAttribute(positions,i).applyMatrix4(mesh.matrixWorld)));}return distance;};
@@ -67,7 +68,7 @@ try:
   check(detailed['saddleHeight']>.05 and detailed['coaptation']<1e-6,'the mitral annulus is saddle-shaped and its two closed free edges coapt')
   check(detailed['sectioned'] and detailed['restored'],'the anatomical section removes near-side AV leaflet tissue and restores it with the front wall')
   connections=p.evaluate("""async()=>{
-   const {createHeartAnatomy}=await import('./heart-anatomy.js?v=heart-science-1'),THREE=await import('./assets/three/three.module.js'),m=createHeartAnatomy();m.root.updateMatrixWorld(true);
+   const {createHeartAnatomy}=await import('./heart-anatomy.js?v=atlas-inside-1'),THREE=await import('./assets/three/three.module.js'),m=createHeartAnatomy();m.root.updateMatrixWorld(true);
    let ringGap=0;const bridges=m.meshes.filter(x=>x.userData.atrioventricularBridge);
    for(const bridge of bridges){const valve=m.valves.find(v=>v.id===bridge.userData.toValve),positions=bridge.geometry.attributes.position;for(let i=0;i<=48;i++){const point=new THREE.Vector3().fromBufferAttribute(positions,i*9),theta=(bridge.userData.front?0:Math.PI)+Math.PI*i/48,hinge=new THREE.Vector3(valve.radius*Math.cos(theta),valve.annularSaddle*Math.cos(2*theta),valve.radius*Math.sin(theta));valve.group.localToWorld(hinge);ringGap=Math.max(ringGap,point.distanceTo(hinge));}}
    const idsCorrect=m.meshes.filter(x=>x.userData.smoothOutflow).every(x=>!x.userData.ids.includes(x.userData.toValve));
@@ -81,7 +82,20 @@ try:
   check(segments[2]['start'][1]>.21>segments[2]['end'][1] and segments[8]['start'][1]>.24>segments[8]['end'][1],'filling paths pass downward through the AV valves')
   check(segments[4]['start'][1]<.47<segments[4]['end'][1] and segments[10]['start'][1]<.48<segments[10]['end'][1],'ejection paths pass upward through the correct semilunar roots')
 
-  mode(p,'cutaway');check(live(p)['meshes']>=190,'Inside the heart loads the internal reconstruction')
+  mode(p,'cutaway');check(live(p)['anatomy']['kind']=='registered-atlas','Inside the heart loads the registered atlas rather than the old procedural reconstruction')
+  atlas=live(p);parts=atlas['atlasParts'];check(atlas['anatomy']['geometryFinite'],'all actual atlas, section, cord and overlay vertices and normals remain finite')
+  expected_cavities={'ra':'FJ2424','rv':'FJ2423','la':'FJ2425','lv':'FJ2422'}
+  for chamber,source in expected_cavities.items():
+   check(any(x['id']==chamber and x['source']==source and x['positions']>0 for x in parts),chamber+' uses its actual registered cavity surface')
+  for valve,sources in {'mitral':{'FJ2420','FJ2432'},'tricuspid':{'FJ2421','FJ2433','FJ2436'},'aortic':{'FJ2426','FJ2431','FJ2435'},'pulmonary':{'FJ2417','FJ2427','FJ2434'}}.items():
+   check({x['source'] for x in parts if x['id']==valve}==sources,valve+' retains the source leaflet/cusp geometry and correct leaflet count')
+  check({x['source'] for x in parts if x['id']=='papillary'}=={'FJ2418','FJ2419','FJ2429','FJ2430','FJ2437'},'all five papillary surfaces come from the anatomical atlas')
+  check(all(x['source'] in {'FJ2420','FJ2421','FJ2432','FJ2433','FJ2436'} for x in parts if x['id']=='chordae'),'chordae are the attached source tissue, without invented cords on semilunar valves')
+  check(all(atlas['anatomy']['sections'][key]['triangles']>0 for key in ['wallSection','raSection','laSection']),'actual wall intersections close the cut surfaces without filling the chamber openings')
+  check(min(x['bounds']['min'][1] for x in parts if x['source']=='FJ2428' and not x['front'])<-.49,'the registered ventricular apex remains in the retained cutaway')
+  check(p.locator('#heart-valve-controls').is_hidden() and p.locator('#heart-valve-bench').is_visible(),'the static reference pose links clearly to the separate valve-motion investigation')
+  check(sum('/heart-interior.glb' in url for url in requests)==1,'the internal atlas downloads once on first opening')
+  p.locator('#heart-canvas').screenshot(path=artifact('atlas-inside-en.png'))
   normal=frame(p)
   groups={'chambers':['ra','rv','la','lv'],'valves':['tricuspid','mitral','pulmonary','aortic'],'support':['septum','atrialseptum','myocardium','chordae','papillary','trabeculae','pectinate','fossa'],'conduction':['san','avnode','his','purkinje'],'vessels':['aorta','superior','inferior','arteries','veins','coronary']}
   for category,ids in groups.items():
@@ -90,7 +104,7 @@ try:
     choose(p,key);check(live(p)['selection']==key and live(p)['selectedMeshes']>0,key+' selects actual anatomy')
     check(p.locator('#heart-selected-label').is_visible() and 'Selected' in p.locator('#heart-selected-label').inner_text(),key+' is clearly identified on the model')
     check(p.locator('#circ-vessel-info h3').count()==1,key+' has anatomical explanation and close-observation guidance')
-  check(saved(p)==baseline,'all new internal explorations leave XP and persisted progress unchanged')
+  check(saved(p)==baseline,'all new internal explorations leave XP and persisted progress unchanged');check(sum('/heart-interior.glb' in url for url in requests)==1,'category changes reuse the loaded internal atlas')
   group(p,'chambers');choose(p,'lv');isolated=frame(p)
   check(isolated['opaque']>100 and isolated['opaque']<normal['opaque']*.75,'only the selected structure stays opaque in the actual rendered framebuffer')
   check(isolated['faint']>200,'other anatomy is transparent on the rendered canvas')
@@ -99,6 +113,7 @@ try:
   check(live(p)['selection'] is None and p.locator('#heart-selected-label').is_hidden(),'reset clears the anatomical selection')
   p.locator('#heart-shell').click();check(not live(p)['opened'],'the anterior chamber wall can be restored')
   closed=frame(p);p.locator('#heart-shell').click();check(live(p)['opened'] and frame(p)!=closed,'removing the anterior wall reveals the interior again')
+  check(all(x['visible'] for x in live(p)['atlasParts'] if x['front'] and x['source'] in {'FJ2418','FJ2419','FJ2429','FJ2430','FJ2437','FJ2420','FJ2421','FJ2432','FJ2433','FJ2436'})==False,'the anatomical cut also removes near-side AV support tissue')
   # Mouse ray casting and keyboard control.
   p.locator('#heart-canvas').scroll_into_view_if_needed();box=p.locator('#heart-canvas').bounding_box()
   for x,y in [(.65,.65),(.35,.60),(.65,.55)]:
@@ -164,7 +179,7 @@ try:
     choose(p,key);p.wait_for_timeout(35);check(p.locator('#circ-vessel-info h3').evaluate('e=>/[\u0600-\u06ff]/.test(e.textContent)'),'Arabic '+key+' has its authored anatomical name at '+str(width)+'px')
    check(p.evaluate('document.documentElement.scrollWidth<=innerWidth') and p.locator('#heart-focus').is_enabled(),str(width)+'px Arabic external anatomy fits and retains manual focus')
    p.locator('.heart-lab').screenshot(path=artifact('heart-ar-'+str(width)+'.png'))
-   mode(p,'cutaway');p.locator('#heart-canvas').screenshot(path=artifact('cutaway-ar-'+str(width)+'.png'))
+   mode(p,'cutaway');p.locator('#heart-canvas').screenshot(path=artifact('cutaway-ar-'+str(width)+'.png'));check(not p.evaluate('InneruLocale.coverage(document.querySelector(".heart-lab"))'),str(width)+'px atlas labels, reference-pose guidance and attribution have complete Arabic text')
   mode(p,'surface');group(p,'external');choose(p,'sinus');p.wait_for_function('document.querySelector("#heart-view-label").textContent.includes("خلفي")');check('خلفي' in p.locator('.heart-lab-orientation').inner_text(),'Arabic posterior orientation and guidance identify the actual selected view')
   check(saved(p)==before_ar,'Arabic names, camera controls and all new selections preserve the existing learning record')
   p.locator('[data-interface-language]').select_option('en')
@@ -173,15 +188,30 @@ try:
   no=new_context(b, service_workers='block',);no.add_init_script("HTMLCanvasElement.prototype.getContext=function(){return null}")
   q=no.new_page();q.goto(BASE+'#circulatory',wait_until='domcontentloaded');q.wait_for_selector('#heart-fallback',state='visible');check(q.locator('#heart-error').is_visible(),'non-WebGL devices receive an anatomical fallback illustration')
   mode(q,'cutaway');group(q,'valves');choose(q,'mitral');check('leaflets' in q.locator('#circ-vessel-info').inner_text(),'fallback still explains internal valve anatomy')
-  q.locator('#heart-cycle').fill('65');check(q.locator('#heart-cycle-label').inner_text()=='Ejection','fallback preserves manual scientific phase investigation')
+  mode(q,'valves');q.locator('#heart-cycle').fill('65');check(q.locator('#heart-cycle-label').inner_text()=='Ejection','fallback preserves manual scientific phase investigation')
+  retry_context=new_context(b,service_workers='block',reduced_motion='reduce');retry=retry_context.new_page();attempts=[]
+  def fail_first_internal(route):
+   attempts.append(1)
+   if len(attempts)==1:route.abort()
+   else:route.continue_()
+  retry.route('**/heart-interior.glb',fail_first_internal);retry.goto(BASE+'#circulatory');retry.locator('#heart-canvas').scroll_into_view_if_needed();retry.wait_for_function('window.inneruHeartExplorerState?.().meshes>0');retry_before=saved(retry)
+  retry.locator('[data-heart-mode=cutaway]').click();retry.wait_for_selector('#heart-retry',state='visible');check(retry.locator('#heart-fallback').is_visible(),'a failed internal atlas fetch preserves the anatomical illustration and clear retry control')
+  retry.locator('#heart-retry').click();retry.wait_for_function('inneruHeartExplorerState().anatomy?.kind==="registered-atlas"')
+  check(len(attempts)==2 and retry.locator('#heart-canvas canvas').count()==1,'retry recovers the actual internal atlas without duplicate canvases')
+  check(saved(retry)==retry_before,'atlas failure and retry preserve the learner record')
+  retry.locator('[data-heart-mode=surface]').click();retry.locator('[data-heart-mode=cutaway]').click();retry.locator('[data-heart-mode=valves]').click();retry.wait_for_function('inneruHeartExplorerState().mode==="valves"&&inneruHeartExplorerState().valves.length===4');retry.wait_for_timeout(150)
+  check(retry.locator('#heart-fallback').is_hidden() and live(retry)['mode']=='valves','a stale anatomical load cannot replace the latest valve investigation')
+  retry_context.close()
   # Both imported GLBs and the new preparation module must survive true offline refresh.
   offline=new_context(b,reduced_motion='reduce');o=offline.new_page();o.goto(ORIGIN+'/index.html#circulatory')
   o.evaluate('navigator.serviceWorker.ready');o.wait_for_function('navigator.serviceWorker.controller!==null')
   o.locator('#heart-canvas').scroll_into_view_if_needed();o.wait_for_function('window.inneruHeartExplorerState?.().meshes>0 && document.querySelector("#heart-fallback").hidden')
   o.wait_for_function('caches.match("/assets/heart-surface-details.glb").then(Boolean)')
+  mode(o,'cutaway');o.wait_for_function('caches.match("/assets/heart-interior.glb").then(Boolean)');mode(o,'surface')
   worker=offline.service_workers[0];worker.evaluate("()=>{self.fetch=()=>Promise.reject(new TypeError('Disconnected local test network'));}")
   offline.set_offline(True);o.reload();o.locator('#heart-canvas').scroll_into_view_if_needed();o.wait_for_function('window.inneruHeartExplorerState?.().meshes>0 && document.querySelector("#heart-fallback").hidden')
   group(o,'external');choose(o,'sinus');check(live(o)['selectedMeshes']>0,'previously visited heart and its new coronary segments remain selectable after offline refresh')
+  mode(o,'cutaway');check(live(o)['anatomy']['kind']=='registered-atlas','the actual internal atlas and curved dissection reopen after a genuinely offline refresh')
   offline.close()
   check(not errors,'no uncaught browser errors: '+str(errors));b.close()
  print(f'{checks} checks passed.',flush=True)

@@ -41,3 +41,39 @@ internal cutaway and enlarged valve bench are separate teaching reconstructions,
 not registered patient-specific anatomy. Material colours and fine structures
 are adapted for visibility. These limitations also apply to the interactive
 highlighted views.
+
+## Registered internal atlas
+
+`heart-interior.glb` contains 20 additional BodyParts3D structures, with the same
+DBCLS attribution, CC BY-SA 2.1 Japan license, pinned source revision and coordinate
+registration described above. Each node retains its primary OBJ header's anatomical
+name; SHA-256 checksums of the inputs are embedded in GLB provenance metadata.
+
+- Four cavities: FJ2422 (LV), FJ2423 (RV), FJ2424 (RA), FJ2425 (LA).
+- Mitral valve with attached chordal tissue: FJ2420, FJ2432.
+- Tricuspid valve with attached chordal tissue: FJ2421, FJ2433, FJ2436.
+- Aortic cusps: FJ2426, FJ2431, FJ2435.
+- Pulmonary cusps: FJ2417, FJ2427, FJ2434.
+- Papillary structures: FJ2418, FJ2419, FJ2429, FJ2430, FJ2437.
+
+Primary source names are retained rather than the secondary manifest's occasionally
+different papillary names. The displayed ventricular/atrial walls and great vessels
+reuse `anatomical-heart.glb`; no second copy of that asset is deployed. This
+registered atlas replaces the procedural chamber geometry in **Inside the heart**.
+
+Rebuild using NumPy (asset build only):
+
+```sh
+python3 _dev-tools/build-heart-interior.py --source /path/to/obj-directory
+```
+
+Adaptations in `heart-atlas-cutaway.js`: curved anterior-oblique dissection;
+section closure from actual wall intersections; superficial root windows; natural
+teaching materials; and selection partitions on existing tissue. Cavity envelopes
+appear when inspecting their chamber. Lower chordal tissue remains part of the
+original leaflet geometry, with a separate teaching selection region. Septal,
+fossa and chordal selection boundaries are instructional regions, not clinical
+segmentations. Small endocardial ridge and conduction overlays are teaching
+annotations registered to the atlas, not additional scanned tissue. The atlas
+is a fixed reference pose. The original animated valve bench and blood-flow
+reconstruction remain separate, clearly labelled teaching investigations.

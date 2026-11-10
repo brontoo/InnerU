@@ -15,7 +15,7 @@ window.InneruRouteManifest={
   "atlas": {
     "scripts": [
       "body-atlas-ui.js",
-      "anatomy-loader.js?v=heart-science-1"
+      "anatomy-loader.js?v=atlas-inside-1"
     ],
     "styles": [
       {
@@ -90,10 +90,10 @@ window.InneruRouteManifest={
     "scripts": [
       "circ-studies.js?v=circ-route-1",
       "circ-route-quest.js?v=circ-route-1",
-      "heart-lab-ui.js?v=heart-science-1",
+      "heart-lab-ui.js?v=atlas-inside-1",
       "circulatory.js?v=mastery-1",
       "circ-map-art.js?v=on-demand-1",
-      "anatomy-loader.js?v=heart-science-1"
+      "anatomy-loader.js?v=atlas-inside-1"
     ],
     "styles": [
       {
@@ -101,7 +101,7 @@ window.InneruRouteManifest={
         "order": 16
       },
       {
-        "url": "heart-lab.css?v=heart-studio-1",
+        "url": "heart-lab.css?v=atlas-inside-1",
         "order": 17
       },
       {
