@@ -8,8 +8,8 @@ the accessible markup, `heart-anatomy.js` creates the internal geometry, and
 Four investigation tabs:
 
 1. Surface anatomy: major vessels and coronary vessels, with the original six
-   discovery rewards. Imported glTF node names are normalised before matching;
-   GLTFLoader replaces spaces with underscores.
+   discovery rewards. Source IDs, rather than display names, identify each imported vessel.
+   Named external coronary branches can also be selected individually.
 2. Inside the heart: removable anterior walls, four cavities, distinct wall
    thicknesses, AV and semilunar valves, chordae, papillary muscles, trabeculae,
    pectinate muscles, interatrial/interventricular septa and a closed fossa ovalis.
@@ -20,11 +20,13 @@ Four investigation tabs:
    active segment. Oxygenation changes after the off-model lung exchange, not
    within a heart chamber. Systemic gas exchange is also outside the model.
 
-There are 26 selectable structures in five categories. The enlarged electrical
+There are 34 selectable structures in six categories: 26 internal structures
+and eight external landmarks. The enlarged electrical
 pathway includes SA node, AV node, AV bundle/branches and a subendocardial
-Purkinje network. New anatomical discoveries and blood-journey practice are
-transient and never write saved XP, keys or mission state. Existing six surface
-vessels retain their once-only 10 XP rewards.
+Purkinje network. Internal discoveries, appendages and blood-journey practice are transient.
+The six original surface discoveries retain their once-only 10 XP rewards;
+all six named coronary branches/veins share the original coronary discovery.
+No new reward IDs, mission state or completion rules are introduced.
 
 Anatomical conventions and limits:
 
@@ -96,22 +98,56 @@ stored-state isolation, original reward deduplication, keyboard/ray controls,
 regression waits for the asynchronous system motion-preference event before
 checking its effect, then exercises all seven missions and their rewards.
 
-The reconstruction refinement passes 168 heart checks, including eight added
-geometry checks: actual papillary attachment to endocardium; chord endpoints
-following leaflet margins through four cycle phases; continuous septal margins;
-closed apical tissue; an RV moderator band; connected smooth outflows; mitral
-saddle/coaptation; and restoration of the sectioned AV leaflets. All 119 tracked
-JavaScript files also pass `node --check`. Loading checks continue to enforce
-on-demand anatomy dependencies and previously visited offline content. No new
-production image/model assets or dependencies are added; the credited external
-GLB, structure IDs, phase timing, routes, discovery rewards and lesson answers
-are preserved.
+## Surface and cutaway refinement
 
-Additional local-fixture regression results for this refinement: mission access
-113 checks, learning support 108 checks, strict Arabic coverage 199 views/states
-with zero untranslated occurrences, and loading/offline performance 44 checks
-all pass. Run the current protected-flow regressions with
-`node _dev-tools/run-critical-checks.js mission-access learning-support arabic-coverage`
-and `npm run test:performance`, using the verification guide's Python/browser
-prerequisites. The legacy circulatory-art harness above was not rerun for this
-refinement. No production service or account is used by these checks.
+`heart-surface.js` maps the atlas source IDs to LAD, RCA, LCA and coronary
+sinus; FJ6164 is a duplicate LAD export and is hidden. The added 155,008-byte
+`heart-surface-details.glb` supplies the missing circumflex and great cardiac
+vein segments from the same licensed atlas, registered against the existing
+left coronary mesh. See [source IDs, license and rebuild instructions](../assets/heart-surface-ATTRIBUTION.md).
+The base GLB is unchanged. Atrial appendages reuse regions of its existing
+atrial tissue; these are teaching selection regions, not clinical segmentations.
+The displayed IVC is shortened and an original schematic proximal common carotid
+branch completes the three arch branches. No reference image is republished.
+
+The AV annular tissue now bridges each atrium and ventricle to its actual valve
+ring. Papillary tips retain their chamber selection IDs. Selecting a semilunar
+valve selects its valve tissue without misidentifying the muscular outflow as
+valve. Selected leaflets use the same animated surface for their outline.
+Pulmonary bifurcation passes posteriorly; twelve separate journey segments
+cross the appropriate chamber/valve passages during the correct phase.
+
+Outline culling accounts for the base atlas's inward triangle winding so its
+selected tissue keeps its natural colour. Named surface selections use a teal outline, fade
+surroundings and offer focus while retaining the chosen viewing direction.
+Labels, explanations and controls are authored in English and Arabic.
+All extra modules and the additional GLB load only when the heart viewer opens;
+the service worker caches them on first use, never in the initial app shell.
+
+Run protected-flow regressions with:
+
+```sh
+node _dev-tools/run-critical-checks.js mission-access dashboard teacher-workspace learning-support arabic-coverage pronunciation
+npm run test:performance
+```
+
+Checks use local fixtures, no production account or service. Geometry checks
+cannot establish clinical validity: the model is for school anatomy exploration.
+
+Verification for this refinement (10 November 2026): 240 heart checks; 65 student
+progress/dashboard checks; 224 mission access/control checks; 89 teacher workspace
+checks; 108 learning-support checks; 899 Arabic audio-policy checks covering 190
+spoken parts; zero Arabic gaps across 188 audited views/states; 49 loading/offline
+checks; and syntax checks for all 128 JavaScript files. Screenshots cover all
+four views, individual external selections, and Arabic at 320/390/768/1440px.
+The optional asset rebuild reproduces the checked-in GLB byte-for-byte.
+
+The initial signed-in dashboard transfers 81,069 compressed JS bytes, 35,763 CSS
+bytes and 712,327 image bytes, with no 3D model requested. The additional coronary
+GLB is 155,008 bytes and loads with the heart viewer. Offline verification forces
+the worker's network fetch to fail before refreshing and selecting coronary
+anatomy again. Test fixtures block outbound browser requests and use isolated
+PostgreSQL, never production accounts or services. Native speech is stubbed for
+text/voice-policy verification; device-specific acoustic quality is not certified.
+The historical static-server circulatory-art harness was not run: current
+protected-flow suites above cover this change without its retired account setup.

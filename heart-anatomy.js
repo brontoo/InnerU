@@ -1,7 +1,7 @@
 import * as THREE from './assets/three/three.module.js';
 
 /* Patient-left +X, superior +Y, anterior +Z. Original teaching reconstruction.
-   Internal geometry is intentionally independent of the credited surface scan. */
+   Internal geometry is intentionally independent of the credited surface atlas. */
 export const HEART_STRUCTURES = {
   ra:{title:'Right atrium',group:'chambers',point:[-.65,.65,-.16],text:'Receives systemic venous blood through the superior and inferior venae cavae and coronary sinus. Blood passes through the tricuspid valve into the right ventricle.',look:'Find the thin atrial wall, pectinate ridges and the fossa ovalis on the septal side.'},
   rv:{title:'Right ventricle',group:'chambers',point:[-.48,-.42,-.12],text:'Pumps blood through the pulmonary valve into the pulmonary trunk and lungs. Its wall is thinner than the left ventricular wall because pulmonary resistance is lower.',look:'Follow the trabeculae, papillary muscles and chordae toward the tricuspid valve. The outflow tract leads upward to the pulmonary valve.'},
@@ -25,6 +25,15 @@ export const HEART_STRUCTURES = {
   arteries:{title:'Pulmonary arteries',group:'vessels',point:[-.20,1.02,.16],names:['Pulmonary trunk','Left pulmonary artery','Right pulmonary artery'],surfacePoint:[.28,.43,.30],view:'anterior',text:'The pulmonary trunk leaves the right ventricle through the pulmonary valve, then branches toward the two lungs. It carries oxygen-poor blood.',look:'The trunk is anterior to the aortic root. The branches head toward lungs, not into the left atrium.'},
   veins:{title:'Pulmonary veins',group:'vessels',point:[.92,.78,-.44],names:['Left pulmonary veins','Right pulmonary veins'],surfacePoint:[.38,.28,-.30],view:'posterior',text:'Four pulmonary veins normally return oxygen-rich blood from the lungs to the posterior left atrium.',look:'Veins are defined by flow toward the heart. Pulmonary veins carry more oxygenated blood than pulmonary arteries.'},
   coronary:{title:'Coronary vessels',group:'vessels',point:[.58,-.05,.39],names:['Coronary arteries','Coronary veins'],surfacePoint:[.37,-.25,.40],view:'anterior',text:'Coronary arteries supply the myocardium. Cardiac veins drain it, largely through the coronary sinus into the right atrium.',look:'Heart muscle needs its own circulation; chamber blood is not its main oxygen supply.'},
+  rauricle:{title:'Right auricle',group:'external',surfaceOnly:true,point:[-.70,.86,.16],surfacePoint:[-.25,.31,.29],view:'anterior',text:'The right auricle is the muscular atrial appendage of the right atrium. It projects forward and contains pectinate muscles.',look:'Identify the anterior pouch of the right atrium; an auricle is not a separate fifth chamber.'},
+  lauricle:{title:'Left auricle',group:'external',surfaceOnly:true,point:[.82,.85,.12],surfacePoint:[.44,.31,.20],view:'left',text:'The left auricle is the muscular appendage of the mainly posterior left atrium. It projects toward the front beside the pulmonary trunk.',look:'Distinguish the appendage from the pulmonary artery and the veins entering the left atrium.'},
+  lca:{title:'Left coronary artery',group:'external',surfaceOnly:true,rewardParent:'coronary',point:[.22,.50,.1],surfacePoint:[.19,.32,0],view:'anterior',text:'The left main coronary artery arises from the left aortic sinus and divides into the anterior interventricular and circumflex branches.',look:'Find the short main trunk near the aortic root, before it divides. It supplies heart muscle, not a heart chamber.'},
+  rca:{title:'Right coronary artery',group:'external',surfaceOnly:true,rewardParent:'coronary',point:[-.65,.30,.25],surfacePoint:[-.23,.08,.32],view:'anterior',text:'The right coronary artery arises from the right aortic sinus and follows the right atrioventricular groove.',look:'Trace it between the right atrium and right ventricle. Coronary branching patterns vary between people.'},
+  lad:{title:'Left anterior descending artery',group:'external',surfaceOnly:true,rewardParent:'coronary',point:[.35,-.30,.4],surfacePoint:[.38,-.08,.44],view:'anterior',text:'The LAD, also called the anterior interventricular artery, descends in the anterior interventricular groove toward the apex.',look:'Follow its course between the ventricles. It arises from the left coronary artery, not directly from a ventricle.'},
+  lcx:{title:'Circumflex artery',group:'external',surfaceOnly:true,rewardParent:'coronary',point:[.75,.25,-.25],surfacePoint:[.35,.17,-.20],view:'left',text:'The circumflex branch of the left coronary artery follows the left atrioventricular groove around the left side toward the back of the heart.',look:'Turn toward the posterior surface to distinguish its curved course from the descending LAD.'},
+  greatvein:{title:'Great cardiac vein',group:'external',surfaceOnly:true,rewardParent:'coronary',point:[.47,-.15,.4],surfacePoint:[.43,-.09,.40],view:'anterior',text:'The great cardiac vein begins in the anterior interventricular groove, accompanies the LAD, and curves toward the coronary sinus.',look:'Its anterior interventricular segment is a vein beside an artery; the two are separate vessels.'},
+  sinus:{title:'Coronary sinus',group:'external',surfaceOnly:true,rewardParent:'coronary',point:[.12,.28,-.5],surfacePoint:[.08,-.17,-.25],view:'posterior',text:'The coronary sinus lies in the posterior atrioventricular groove and collects much of the venous drainage from the myocardium before opening into the right atrium.',look:'View the back of the heart. The coronary sinus is not an artery and does not open into the left atrium.'},
+
   san:{title:'Sinoatrial node',group:'conduction',point:[-.74,.99,-.08],text:'The SA node near the superior vena cava–right atrial junction normally initiates the heartbeat. Excitation spreads through the atria.',look:'The gold marker is enlarged. The normal pacemaker is specialised tissue, not a visible yellow bead.'},
   avnode:{title:'Atrioventricular node',group:'conduction',point:[-.08,.33,-.11],text:'The AV node in the inferior interatrial septal region delays conduction before excitation reaches the ventricles.',look:'The schematic signal proceeds from atria to AV node to AV bundle; blood and electrical signals follow different pathways.'},
   his:{title:'AV bundle & bundle branches',group:'conduction',point:[.04,-.05,-.12],text:'The AV bundle crosses the insulating fibrous skeleton and divides into right and left bundle branches along the interventricular septum.',look:'The conduction pathway enters the ventricles through the septum, not through the valve leaflets.'},
@@ -78,7 +87,7 @@ export function createHeartAnatomy(mode='cutaway') {
     for(const inner of [false,true]){
       const g=new THREE.TubeGeometry(curve,36,1,24,false),p=g.attributes.position;
       for(let i=0;i<=36;i++){const t=i/36,center=curve.getPointAt(t),radius=THREE.MathUtils.lerp(startRadius,endRadius,t)-(inner?.025:0);for(let j=0;j<=24;j++){const k=i*25+j,v=new THREE.Vector3().fromBufferAttribute(p,k).sub(center).multiplyScalar(radius).add(center);p.setXYZ(k,v.x,v.y,v.z);}}
-      g.computeVertexNormals();const front=openTube(g,curve,1),extra={ids:[id,valveId],smoothOutflow:true,fromChamber:id,toValve:valveId};
+      g.computeVertexNormals();const front=openTube(g,curve,1),extra={ids:[id,'myocardium'],smoothOutflow:true,fromChamber:id,toValve:valveId};
       add(g,id,inner?C.inner:C.muscle,extra);fronts.push(add(front,id,inner?C.inner:C.muscle,{...extra,front:true}));
     }
   }
@@ -91,10 +100,10 @@ export function createHeartAnatomy(mode='cutaway') {
   // only the thick-walled LV continues to the cardiac apex. Dimensions are
   // illustrative proportions, not measurements of an individual patient's heart.
   const chambers={
-    lv:{top:.24,bottom:-1.40,wall:.15,knots:[[0,.50,.34,.44,-.07],[.23,.55,.38,.46,-.07],[.52,.49,.35,.51,-.07],[.80,.30,.25,.60,-.06],[1,.025,.025,.66,-.035]]},
-    rv:{top:.20,bottom:-1.18,wall:.05,knots:[[0,.45,.30,-.49,.05],[.23,.49,.32,-.58,.10],[.55,.43,.29,-.39,.10],[.82,.23,.19,.10,.04],[1,.025,.025,.44,-.02]]},
-    ra:{top:1.10,bottom:.22,wall:.034,knots:[[0,.035,.035,-.57,-.08],[.20,.36,.26,-.55,-.07],[.59,.40,.28,-.50,-.02],[1,.36,.27,-.49,.05]]},
-    la:{top:1.08,bottom:.25,wall:.035,knots:[[0,.035,.035,.46,-.30],[.22,.38,.28,.47,-.28],[.60,.40,.28,.46,-.22],[1,.40,.27,.44,-.07]]}
+    lv:{top:.24,bottom:-1.40,wall:.15,knots:[[0,.49,.38,.46,-.08],[.23,.55,.38,.46,-.07],[.52,.49,.35,.51,-.07],[.80,.30,.25,.60,-.06],[1,.025,.025,.66,-.035]]},
+    rv:{top:.20,bottom:-1.18,wall:.05,knots:[[0,.47,.32,-.48,.06],[.23,.49,.32,-.58,.10],[.55,.43,.29,-.39,.10],[.82,.23,.19,.10,.04],[1,.025,.025,.44,-.02]]},
+    ra:{top:1.10,bottom:.22,wall:.034,knots:[[0,.035,.035,-.57,-.08],[.20,.36,.26,-.55,-.07],[.59,.40,.28,-.50,-.02],[1,.31,.24,-.55,.01]]},
+    la:{top:1.08,bottom:.25,wall:.035,knots:[[0,.035,.035,.46,-.30],[.22,.38,.28,.47,-.28],[.60,.40,.28,.46,-.22],[1,.30,.235,.48,-.08]]}
   };
   function sectionAt(c,y){return interpolate(c.knots,THREE.MathUtils.clamp((c.top-y)/(c.top-c.bottom),0,1));}
   function chamber(id,c){
@@ -145,7 +154,7 @@ export function createHeartAnatomy(mode='cutaway') {
         const curve=new THREE.CatmullRomCurve3([V(base),V(base).lerp(V(head),.5).add(new THREE.Vector3(0,0,.014)),V(head)]),g=new THREE.TubeGeometry(curve,24,1,16,false),p=g.attributes.position;
         for(let j=0;j<=24;j++){const center=curve.getPointAt(j/24),r=.072*(1-j/24)+.027*(j/24)+.012*Math.sin(Math.PI*j/24);for(let k=0;k<=16;k++){const n=j*17+k,v=new THREE.Vector3().fromBufferAttribute(p,n).sub(center).multiplyScalar(r).add(center);p.setXYZ(n,v.x,v.y,v.z);}}
         g.computeVertexNormals();const muscle=local(g,'papillary',C.muscle,{ids:['papillary',id==='mitral'?'lv':'rv'],valve:id,anchoredToEndocardium:!bench,base:base.slice(),head:head.slice()});
-        const tip=local(new THREE.SphereGeometry(.029,16,10),'papillary',C.muscle,{valve:id});tip.position.copy(V(head));muscles.push(head);papillarySupports.push(muscle);
+        const tip=local(new THREE.SphereGeometry(.029,16,10),'papillary',C.muscle,{ids:['papillary',id==='mitral'?'lv':'rv'],valve:id});tip.position.copy(V(head));muscles.push(head);papillarySupports.push(muscle);
       }
       // Each leaflet receives a small fan from neighbouring papillary groups.
       // A primary cord divides into three fine secondary cords near its leaflet.
@@ -159,8 +168,8 @@ export function createHeartAnatomy(mode='cutaway') {
   function leafletPoint(v,index,u,t,open){
     const theta=-Math.PI/2+TAU*(index+u)/v.count,r=v.radius,hinge=new THREE.Vector3(Math.cos(theta)*r,v.annularSaddle*Math.cos(2*theta),Math.sin(theta)*r);
     if(v.isAV){
-      const commissure=Math.pow(Math.abs(2*u-1),3),radial=r*(.80+.20*commissure),closed=v.count===2?new THREE.Vector3(0,0,Math.sin(theta)*r):new THREE.Vector3(Math.cos(theta)*r*.012,0,Math.sin(theta)*r*.012);
-      const free=closed.lerp(new THREE.Vector3(Math.cos(theta)*radial,-.20*Math.pow(Math.sin(Math.PI*u),.65),Math.sin(theta)*(v.count===2?r:radial)),open),p=hinge.lerp(free,t);p.y+=.025*(1-open)*Math.sin(Math.PI*t)*Math.sin(Math.PI*u);return p;
+      const commissure=Math.pow(Math.abs(2*u-1),3),radial=r*(.62+.38*commissure),closed=v.count===2?new THREE.Vector3(0,0,Math.sin(theta)*r):new THREE.Vector3(Math.cos(theta)*r*.012,0,Math.sin(theta)*r*.012);
+      const free=closed.lerp(new THREE.Vector3(Math.cos(theta)*radial,-.11*Math.pow(Math.sin(Math.PI*u),.65),Math.sin(theta)*(v.count===2?r:radial)),open),p=hinge.lerp(free,t);p.y+=.025*(1-open)*Math.sin(Math.PI*t)*Math.sin(Math.PI*u);return p;
     }
     const radial=r*(1-(.988*(1-open)+.12*open)*t),y=.12*open*t*Math.sin(Math.PI*u)+.085*(1-open)*Math.sin(Math.PI*t)*Math.sin(Math.PI*u);
     return new THREE.Vector3(Math.cos(theta)*radial,y,Math.sin(theta)*radial);
@@ -181,6 +190,24 @@ export function createHeartAnatomy(mode='cutaway') {
       }
     }
 
+    // Myocardial/fibrous AV junctions meet the actual leaflet annuli. Only
+    // their annular openings connect atria and ventricles; no floating valve cuffs.
+    for(const [atrium,ventricle,id,radius] of [['ra','rv','tricuspid',.285],['la','lv','mitral',.245]]){
+      const c=chambers[ventricle],[rx,rz,cx,cz]=interpolate(c.knots,0),center=valvePoints[id];
+      for(const front of [false,true]){
+        const pos=[],uv=[],idx=[],around=48,radial=8;
+        for(let i=0;i<=around;i++)for(let j=0;j<=radial;j++){
+          const theta=(front?0:Math.PI)+Math.PI*i/around,t=j/radial;
+          const inner=new THREE.Vector3(center[0]+radius*Math.cos(theta),center[1]+(id==='mitral'?.024*Math.cos(2*theta):0),center[2]+radius*.82*Math.sin(theta));
+          const outer=new THREE.Vector3(cx+(rx-c.wall)*Math.cos(theta),center[1],cz+(rz-c.wall)*Math.sin(theta));
+          const p=inner.lerp(outer,t);pos.push(p.x,p.y,p.z);uv.push(i/around,t);
+        }
+        for(let i=0;i<around;i++)for(let j=0;j<radial;j++){const k=i*(radial+1)+j;idx.push(k,k+radial+1,k+1,k+1,k+radial+1,k+radial+2);}
+        const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+        const m=add(g,ventricle,C.inner,{ids:[atrium,ventricle,'myocardium'],atrioventricularBridge:true,fromAtrium:atrium,toVentricle:ventricle,toValve:id,front});if(front)fronts.push(m);
+      }
+    }
+
     const septalPositions=[],septalUV=[],septalIndices=[],septalSections=80;
     for(let i=0;i<=septalSections;i++){
       const y=.20-1.38*i/septalSections,[rrx,rrz,rcx,rcz]=sectionAt(chambers.rv,y),[lrx,lrz,lcx,lcz]=sectionAt(chambers.lv,y);
@@ -194,7 +221,7 @@ export function createHeartAnatomy(mode='cutaway') {
     const ia=new THREE.Shape();ia.moveTo(-.14,.25);ia.lineTo(-.14,.96);ia.quadraticCurveTo(-.06,1.05,.03,.93);ia.lineTo(.03,.26);ia.closePath();septum('atrialseptum',ia,.21,-.26);
     const fossa=ellipsoid('fossa',[-.155,.65,-.125],[.009,.12,.081],0xdca48b);fossa.userData.closedDepression=true;
     const limbus=add(new THREE.TorusGeometry(.098,.011,8,36),'fossa',C.cut,{detail:false});limbus.position.set(-.158,.65,-.125);limbus.rotation.y=Math.PI/2;limbus.scale.set(1,1.3,1);
-    const rightValve=valve('tricuspid',valvePoints.tricuspid,.255,3,true);valve('mitral',valvePoints.mitral,.245,2,true);valve('pulmonary',valvePoints.pulmonary,.143,3,false);valve('aortic',valvePoints.aortic,.132,3,false);
+    const rightValve=valve('tricuspid',valvePoints.tricuspid,.285,3,true);valve('mitral',valvePoints.mitral,.245,2,true);valve('pulmonary',valvePoints.pulmonary,.143,3,false);valve('aortic',valvePoints.aortic,.132,3,false);
     const papillaryBase=V(rightValve.papillarySupports[0].userData.base).multiply(rightValve.group.scale).add(rightValve.group.position),bandY=papillaryBase.y+.06,[brx,brz,bcx,bcz]=sectionAt(chambers.rv,bandY);
     tube('trabeculae',[[bcx+brx-chambers.rv.wall,bandY,bcz-.025],[papillaryBase.x*.48,bandY-.035,bcz+.035],papillaryBase.toArray()],.021,C.muscle,{ids:['trabeculae','rv'],moderatorBand:true});
     outflow('rv','pulmonary',[[-.30,-.05,.06],[-.29,.20,.11],valvePoints.pulmonary],.19,.143);
@@ -203,9 +230,9 @@ export function createHeartAnatomy(mode='cutaway') {
     vessel('inferior',[[-.78,-.35,-.46],[-.78,.05,-.46],[-.71,.42,-.26]],.125,C.vein);
     vessel('aorta',[[.16,.48,-.24],[.16,1.07,-.22],[.25,1.48,-.24],[.51,1.62,-.43],[.70,1.35,-.65],[.70,.87,-.73]],.135,C.artery,.20);
     [[[.12,1.35,-.23],[-.08,1.77,-.22],[-.25,1.98,-.20]],[[.31,1.56,-.30],[.29,1.98,-.28]],[[.54,1.55,-.46],[.70,1.86,-.49],[.88,1.94,-.54]]].forEach(p=>vessel('aorta',p,.048,C.artery));
-    vessel('arteries',[[-.23,.47,.15],[-.22,.85,.24],[-.08,1.15,.17],[.16,1.21,-.05]],.145,C.vein,.27);
-    vessel('arteries',[[.02,1.18,.10],[.53,1.17,-.19],[1.16,1.14,-.32]],.10,C.vein);
-    vessel('arteries',[[-.02,1.18,.10],[-.56,1.19,-.19],[-1.12,1.12,-.31]],.10,C.vein);
+    vessel('arteries',[[-.23,.47,.15],[-.25,.83,.22],[-.17,1.08,.06],[.02,1.11,-.18]],.145,C.vein,.27);
+    vessel('arteries',[[.02,1.11,-.18],[.56,1.09,-.32],[1.16,1.02,-.42]],.10,C.vein);
+    vessel('arteries',[[.02,1.11,-.18],[-.55,1.07,-.40],[-1.12,1.00,-.46]],.10,C.vein);
     for(const side of [-1,1])for(const level of [.54,.87])vessel('veins',[[side*1.16,level,-.42],[side*.78,level,-.43],[.48,level*.8+.16,-.40]],.062,C.artery);
     // Coronary vessels occupy the external surface and are hidden with the removed wall.
     for(const [pts,col] of [[[[.17,.55,-.19],[.41,.34,.25],[.73,.12,.34],[.89,-.35,.24]],C.artery],[[[.40,.31,.25],[.13,-.10,.36],[.19,-.60,.31],[.57,-1.23,.06]],C.artery],[[[.58,-1.12,.08],[.27,-.56,.36],[.19,-.09,.39],[.57,.21,.30],[.72,.29,-.10],[.49,.32,-.52],[-.10,.31,-.47],[-.59,.34,-.20]],C.vein]])tube('coronary',pts,.016,col,{externalDetail:true});
@@ -233,7 +260,22 @@ export function createHeartAnatomy(mode='cutaway') {
   setOpened(true);setElectrical(false);
   const anchors=Object.fromEntries(Object.entries(HEART_STRUCTURES).map(([id,s])=>[id,V(s.point)]));
   if(mode==='valves')valves.forEach(v=>anchors[v.id]=v.group.position.clone());
+  const routeSegments=[
+    [[-.78,1.55,-.12],[-.73,1.06,-.14],[-.58,.77,-.11]],
+    [[-.58,.77,-.11],[-.55,.50,-.04],[-.55,.32,.01]],
+    [[-.55,.32,.01],valvePoints.tricuspid,[-.55,.05,.01]],
+    [[-.55,.05,.01],[-.52,-.44,.10],[-.29,-.73,-.10],[-.20,-.10,.09],[-.23,.34,.15]],
+    [[-.23,.34,.15],valvePoints.pulmonary,[-.24,.64,.18]],
+    [[-.24,.64,.18],[-.25,.83,.22],[-.17,1.08,.06],[.02,1.11,-.18],[-.55,1.07,-.40],[-1.12,1.00,-.46]],
+    [[1.14,.87,-.42],[.78,.87,-.43],[.48,.856,-.40]],
+    [[.48,.856,-.40],[.48,.62,-.22],[.48,.35,-.08]],
+    [[.48,.35,-.08],valvePoints.mitral,[.48,.08,-.08]],
+    [[.48,.08,-.08],[.51,-.50,-.21],[.61,-1.04,-.16],[.26,-.45,-.21],[.16,.35,-.24]],
+    [[.16,.35,-.24],valvePoints.aortic,[.16,.68,-.23]],
+    [[.16,.68,-.23],[.16,1.07,-.22],[.25,1.48,-.24],[.51,1.62,-.43],[.70,1.35,-.65],[.70,.87,-.73]]
+  ].map(points=>new THREE.CatmullRomCurve3(points.map(V)));
   const routes={
+    segments:routeSegments,
     poor:new THREE.CatmullRomCurve3([[-.78,1.55,-.12],[-.71,.71,-.10],[-.55,.21,.01],[-.52,-.44,-.10],[-.29,-.73,-.10],[-.20,-.23,.09],[-.23,.47,.15],[-.17,.99,.20],[.02,1.18,.1],[-1.10,1.12,-.31]].map(V)),
     rich:new THREE.CatmullRomCurve3([[1.14,.87,-.42],[.52,.74,-.4],[.48,.24,-.08],[.51,-.50,-.21],[.61,-1.04,-.16],[.26,-.45,-.21],[.16,.48,-.24],[.16,1.12,-.22],[.50,1.61,-.43],[.7,.88,-.73]].map(V))
   };

@@ -66,7 +66,7 @@ try:
   # Every named structure in the six anatomical viewers plus the elbow.
   for route,root_selector,button_selector in [('world','[data-atlas=skeletal]','.body-atlas-parts [data-part]'),('respiratory','[data-atlas=respiratory]','.body-atlas-parts [data-part]'),('integumentary','[data-skin-explorer]','.body-atlas-parts [data-part]'),('muscle','.muscle-rotator','[data-muscle-select]'),('muscle','.arm-lab','[data-arm-part]'),('excretory','.exc-explorer','[data-structure]'),('circulatory','.heart-lab','[data-heart-structure]')]:
    go(teacher,route,root_selector+' .structure-audio-button');root=teacher.locator(root_selector);check(root.locator('.support-read-controls').count()==0,route+' anatomy has only its structure pronunciation control')
-   modes=['organs','kidney','nephron','flow'] if route=='excretory' else ['chambers','valves','support','vessels','conduction'] if route=='circulatory' else [None]
+   modes=['organs','kidney','nephron','flow'] if route=='excretory' else ['chambers','valves','support','vessels','external','conduction'] if route=='circulatory' else [None]
    for mode in modes:
     if mode:root.locator(('[data-explorer-tab="'+mode+'"]') if route=='excretory' else '[data-heart-group="'+mode+'"]').click();teacher.wait_for_timeout(100)
     parts=root.locator(button_selector);check(parts.count()>0,route+' '+str(mode)+' exposes actual anatomy selections')
