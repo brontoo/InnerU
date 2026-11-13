@@ -87,8 +87,11 @@ try:
     check(session(p,marker)['id']==u['id'] and p.request.get(ORIGIN+'/__test/status').json()['sessionReadAttempts'][marker]==2,'a disconnected session probe recovers once and retains the authenticated student identity')
    expected=MARYAM if n<=4 else RIHAM
    check(u['classCode']==code and u['assignedTeacher']['email']==expected and u['assignedTeacher']['id']==(None if n<=4 else r['id']),code+' saves the canonical teacher assignment on the Auth-linked profile')
+   p.locator('.sd-account-details>summary').click()  # Inspect the intentionally disclosed sharing details.
    check(p.url.endswith('#dashboard') and p.locator('a[href="#teacher"]').count()==0 and ('registration pending' in p.locator('[data-cloud-panel]').inner_text())==(n<=4),code+' stays in the student dashboard and shows accurate pending teacher status')
    check(p.locator('[data-cloud-join]').count()==0 and 'Class code' not in p.locator('[data-cloud-panel]').inner_text() and code in p.locator('.iu-cloud-assignment').inner_text(),code+' shows its saved class assignment without asking for an invitation code')
+   if n==1:
+    p.evaluate("InneruPreferences.set({language:'ar'})");p.wait_for_function('InneruLocale.has("Account registration pending")');check(not p.evaluate('InneruLocale.coverage(document.querySelector("[data-cloud-panel]"))'),'pending assigned-teacher details have authored Arabic coverage');p.evaluate("InneruPreferences.set({language:'en'})")
    save_work(p)
    check(sql('select total_xp from public.student_progress where user_id='+q(u['id'])).stdout.strip()=='50' and sql('select count(*) from public.student_badges where user_id='+q(u['id'])).stdout.strip()=='1',code+' retains linked progress, answers, XP and earned badges')
   approve(rt,RIHAM);data=roster(rt)

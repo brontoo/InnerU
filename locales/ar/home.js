@@ -107,3 +107,11 @@ InneruLocale.register({
   "Enter the Transport Network →": "ادخل شبكة النقل ←",
   "Explore this system": "استكشف هذا الجهاز"
 });
+
+InneruLocale.register({
+  "YOUR LEARNING HOME": "مساحتك للتعلّم",
+  "Your progress has a home.": "لتقدّمك مساحة خاصّة.",
+  "See your saved missions, learning evidence and next lesson in Student Dashboard.": "اطّلع على مهمّاتك المحفوظة وأدلّة تعلّمك ودرسك التالي في لوحة الطالب.",
+  "Explore the anatomy and lesson activities. Your personal progress is in Student Dashboard.": "استكشف التشريح وأنشطة الدروس. تجد تقدّمك الشخصي في لوحة الطالب.",
+  "Explore the system": "استكشف الجهاز"
+});

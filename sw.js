@@ -1,10 +1,10 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v73-provider-errors';
+const VERSION='inneru-v74-progress-home';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=entry-errors-1",
+  "./locale.js?v=progress-home-1",
   "./learning-support.js?v=muscle-sidebar-1",
   "./learning-support.css?v=usability-1",
   "./index.html",
@@ -20,7 +20,7 @@ const SHELL=[
   "./glossary.css",
   "./style.css?v=design-foundation-1",
   "./exhibit.css",
-  "./student-dashboard.css?v=student-experience-2",
+  "./student-dashboard.css?v=progress-home-1",
   "./structure-audio.css?v=names-only-1",
   "./account.css?v=usability-1",
   "./cloud-learning.css?v=account-panel-bottom-1",
@@ -40,10 +40,10 @@ const SHELL=[
   "./speech.js?v=muscle-sidebar-1",
   "./learning-progress.js?v=usability-1",
   "./account-session.js?v=student-experience-2",
-  "./cloud-learning.js?v=owner-1",
-  "./mission-access.js?v=student-experience-2",
-  "./route-manifest.js?v=atlas-inside-1",
-  "./route-loader.js?v=mission-opening-1",
+  "./cloud-learning.js?v=progress-home-1",
+  "./mission-access.js?v=progress-home-1",
+  "./route-manifest.js?v=progress-home-1",
+  "./route-loader.js?v=progress-home-1",
   "./pwa.js"
 ];
 const ASSET_RE=/\.(glb|gltf|bin|webp|png|jpe?g|svg|woff2?|ttf)$/i;

@@ -16,7 +16,7 @@ try:
   b=launch(pw);teacher,t=f.account(b,'riham.hassan@moe.sch.ae','Riham local');other,mt=f.account(b,'sf.alhammadi@moe.sch.ae','Maryam local');p,u=f.account(b,'mastery-local@example.com','Explorer local','10G5');outside,ou=f.account(b,'mastery-outside@example.com','Outside local','10G1');f.unlock(teacher)
   p.add_init_script("""(()=>{window.__speech={calls:[],cancelled:0};class U{constructor(text){this.text=text;}}window.SpeechSynthesisUtterance=U;Object.defineProperty(window,'speechSynthesis',{value:{getVoices:()=>[{lang:'en-GB',localService:true},{lang:'ar-AE',localService:true}],speak:u=>window.__speech.calls.push({text:u.text,lang:u.lang}),cancel:()=>window.__speech.cancelled++},configurable:true});})();""")
   p.on('pageerror' ,lambda e:errors.append(str(e)));teacher.on('pageerror',lambda e:errors.append(str(e)))
-  f.open(p,'dashboard','.sd-page');before=local(p);p.locator('a[href="#dashboard?view=mastery"]').click();p.wait_for_selector('[data-ms-objective]')
+  f.open(p,'dashboard','.sd-page');before=local(p);p.locator('.sd-topline a[href="#dashboard?view=mastery"]').click();p.wait_for_selector('[data-ms-objective]')
   check('Mastery' in p.title(),'student mastery has a descriptive page title')
   check(p.locator('[data-ms-objective]').count()==45,'all 39 missions and six finals have an explicit objective')
   check(p.locator('[data-ms-status=insufficient]').count()==45,'fresh or unrecorded work has insufficient evidence, never inferred mastery')

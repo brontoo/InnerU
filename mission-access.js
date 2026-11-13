@@ -117,6 +117,6 @@
  document.addEventListener('visibilitychange',recheck);
  window.addEventListener('focus',recheck);window.addEventListener('online',recheck);
  setInterval(()=>{if(parse())recheck();},30000);
- window.InneruMissionAccess={refresh,parse,decorate,recommend,get teacherPreviewActive(){return previewActive;},get teacherBrowseActive(){return browseActive;}};
+ window.InneruMissionAccess={refresh,parse,decorate,recommend,availability:(id,number)=>{const m=catalog?.systems.find(s=>s.id===id)?.missions.find(m=>m.number===number);return m?{allowed:m.allowed,completed:m.completed,reason:m.reason}:null;},get teacherPreviewActive(){return previewActive;},get teacherBrowseActive(){return browseActive;}};
  route();
 })();

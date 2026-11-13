@@ -23,7 +23,7 @@ try:
   for page in [p,teacher,maryam]:page.on('pageerror',lambda error:errors.append(str(error)))
   control('respiratory',True);go(p,'dashboard','.sd-page');refresh()
   check(p.locator('.sd-hero [data-sd-continue]').get_attribute('href')=='#respiratory/mission/1','a non-skeletal unlocked mission becomes the primary recommendation')
-  check(p.locator('.sd-plan [data-sd-continue]').get_attribute('href')=='#respiratory/mission/1','learning-plan recommendation uses the same authorized mission')
+  check(p.locator('.sd-hero [data-sd-continue]').count()==1 and p.locator('.sd-plan [data-sd-continue]').count()==0,'the authorized continuation is primary once, without a duplicate plan action')
   p.locator('[data-sd-world=respiratory]').click();check(p.locator('[data-sd-resume]').get_attribute('href')=='#respiratory/mission/1','system resume respects authorized access')
   p.locator('[data-sd-world=skeletal]').click();check(p.locator('[data-sd-resume]').get_attribute('href')=='#home' and 'unlock' in p.locator('[data-sd-resume] + [data-sd-pathway-status]').inner_text(),'locked system offers exploration with a visible explanation')
   control('respiratory',False);refresh();check(p.locator('.sd-hero [data-sd-continue]').get_attribute('href')=='#home' and 'unlock' in p.locator('.sd-hero [data-sd-pathway-status]').inner_text(),'all locked systems produce a useful fallback instead of a disabled start action')

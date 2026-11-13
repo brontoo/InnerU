@@ -398,5 +398,16 @@ helpers as the release gate. It captures English/Arabic dashboards at 320, 390,
 It checks real incorrect work, due review, missing historical evidence, teacher
 locks, reconnection, cloud-version choice, read-only inspection and the 45-item
 denominator. Historical data is explicitly seeded only in the isolated test
-database. `--capture-baseline` records the older interface without new assertions.
+database. `--capture-baseline` captures the checked-out interface without the newer assertions.
 See [PHASE-2-STUDENT-EXPERIENCE.md](../docs/PHASE-2-STUDENT-EXPERIENCE.md).
+
+## Student progress home
+
+`npm test -- student-experience dashboard mastery usability` checks the focused
+progress-home flows, exact-record versus genuine saved-version conflicts,
+evidence limits, teacher locks, rewards, keyboard access and English/Arabic
+layouts. The complete `npm test` release gate also retains account/class/owner
+isolation, pronunciation and broader Arabic accessibility checks. Full collection
+code is now loaded only for `#badges` through the existing route loader. See
+[the implementation and verification report](../docs/STUDENT-PROGRESS-HOME.md)
+for the hierarchy, data limits and screenshots. No migration or new setup is needed.

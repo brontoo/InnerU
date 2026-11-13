@@ -1,0 +1,163 @@
+{
+  "date": "2026-11-13",
+  "branch": "improve/student-progress-home",
+  "startingMain": "9035757",
+  "deployed": false,
+  "migrationRequired": false,
+  "releaseCommand": "npm test",
+  "releaseResults": [
+    {
+      "name": "mission-openings",
+      "label": "Consistent bilingual mission openings and role-safe activity navigation",
+      "status": "PASS",
+      "seconds": 119
+    },
+    {
+      "name": "student-experience",
+      "label": "Student experience, evidence priorities and accessible navigation",
+      "status": "PASS",
+      "seconds": 46
+    },
+    {
+      "name": "design-foundation",
+      "label": "Shared design foundation, bilingual navigation and keyboard access",
+      "status": "PASS",
+      "seconds": 20
+    },
+    {
+      "name": "pronunciation",
+      "label": "Arabic audio coverage, scientific names and voice fallback",
+      "status": "PASS",
+      "seconds": 200
+    },
+    {
+      "name": "usability",
+      "label": "Available pathways, honest mastery guidance and class-scoped attention",
+      "status": "PASS",
+      "seconds": 13
+    },
+    {
+      "name": "muscle-studio",
+      "label": "Optional muscular rotation and preserved elbow learning",
+      "status": "PASS",
+      "seconds": 97
+    },
+    {
+      "name": "heart-studio",
+      "label": "Heart anatomy, named selection and preserved discovery rewards",
+      "status": "PASS",
+      "seconds": 66
+    },
+    {
+      "name": "mastery",
+      "label": "Evidence-based mastery, feedback and isolation",
+      "status": "PASS",
+      "seconds": 21
+    },
+    {
+      "name": "accounts",
+      "label": "Sign-in and signup",
+      "status": "PASS",
+      "seconds": 41
+    },
+    {
+      "name": "auth-recovery",
+      "label": "Student account access, connection recovery and confirmation",
+      "status": "PASS",
+      "seconds": 19
+    },
+    {
+      "name": "student-classes",
+      "label": "Student classes and teacher assignment",
+      "status": "PASS",
+      "seconds": 71
+    },
+    {
+      "name": "dashboard",
+      "label": "Student progress and dashboard",
+      "status": "PASS",
+      "seconds": 17
+    },
+    {
+      "name": "mission-access",
+      "label": "Mission locks, progression, previews and controls",
+      "status": "PASS",
+      "seconds": 75
+    },
+    {
+      "name": "teacher-dashboard",
+      "label": "Teacher roster, student work and feedback",
+      "status": "PASS",
+      "seconds": 20
+    },
+    {
+      "name": "teacher-workspace",
+      "label": "Teacher workspace, isolation and navigation",
+      "status": "PASS",
+      "seconds": 24
+    },
+    {
+      "name": "owner",
+      "label": "Owner access, teacher approval and class assignments",
+      "status": "PASS",
+      "seconds": 24
+    },
+    {
+      "name": "learning-support",
+      "label": "Guided mode, Arabic presentation and controlled read-aloud",
+      "status": "PASS",
+      "seconds": 52
+    },
+    {
+      "name": "arabic-coverage",
+      "label": "Strict Arabic coverage audit",
+      "status": "PASS",
+      "seconds": 128
+    },
+    {
+      "name": "arabic-layout",
+      "label": "Rendered Arabic layout and artwork separation",
+      "status": "PASS",
+      "seconds": 417
+    }
+  ],
+  "finalContrastFollowup": [
+    {
+      "name": "student-experience",
+      "label": "Student experience, evidence priorities and accessible navigation",
+      "status": "PASS",
+      "seconds": 62
+    }
+  ],
+  "finalContrastArtifacts": "/tmp/inneru-progress-home/contrast-verified",
+  "releaseArtifacts": "/tmp/inneru-progress-home/release-final",
+  "performanceCommand": "npm run test:performance",
+  "performanceChecksPassed": 49,
+  "coldLoading": {
+    "login": {
+      "requests": 18,
+      "bytes": {
+        "js": 24551,
+        "css": 11676,
+        "images": 431251,
+        "models": 0
+      }
+    },
+    "dashboard": {
+      "requests": 44,
+      "bytes": {
+        "js": 81780,
+        "css": 35795,
+        "images": 317563,
+        "models": 0
+      }
+    }
+  },
+  "performanceArtifacts": "/tmp/inneru-progress-home/performance-complete",
+  "screenshots": "docs/screenshots/student-progress-home/",
+  "manualLimitations": [
+    "No physical-device testing",
+    "No manual screen-reader or acoustic pronunciation review",
+    "Not every conditional lesson-feedback branch was manually inspected"
+  ]
+}

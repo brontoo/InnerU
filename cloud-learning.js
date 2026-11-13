@@ -14,6 +14,7 @@
   let data;try{data=await response.json();}catch{throw new Error('Cloud learning is not available on this deployment. Your work is saved on this device.');}
   if(!response.ok){const error=new Error(data.error||'Cloud learning is unavailable. Your local work is safe.');error.status=response.status;throw error;}return data;
  }
+ function sameRecord(a,b){if(a===b)return true;if(!a||!b||typeof a!=='object'||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b))return false;const keys=Object.keys(a);return keys.length===Object.keys(b).length&&keys.every(k=>Object.hasOwn(b,k)&&sameRecord(a[k],b[k]));}
  function status(){if(ready&&user?.role!=='student')return 'Teacher classroom connected';return conflict?'Choose a saved version':busy?'Saving to your account…':problem?'Saved on this device · cloud needs attention':ready?(meta.dirty?'Saved on this device · waiting to sync':'Saved to your account'):'Connecting cloud learning…';}
  function paint(){
   document.querySelectorAll('[data-cloud-status]').forEach(n=>{n.textContent=status();});
@@ -25,14 +26,14 @@
   route();
  }
  async function start(next){
-  if(user?.id===next.id&&ready)return;const ticket=++generation;user=next;ready=false;problem='';
+  if(user?.id===next.id&&ready)return;const ticket=++generation;user=next;ready=false;problem='';conflict=null;
   try{
    meta=JSON.parse(localStorage.getItem(key())||'null')||{revision:0,dirty:meaningful(state)};
    const before=signature(),result=await api('state');if(ticket!==generation)return;info=result;
    if(user.role!=='student'){ready=true;meta.dirty=false;persist();paint();renderPanel();return;}
-   const remote=result.progress;
-   if(remote.snapshot&&((meta.dirty||signature()!==before)&&remote.revision!==meta.revision)){conflict=remote;ready=true;problem='';}
-   else if(remote.snapshot&&!meta.dirty&&signature()===before){replace(remote.snapshot);meta.revision=remote.revision;meta.dirty=false;ready=true;}
+   const remote=result.progress,identical=remote.snapshot&&sameRecord(payload(),remote.snapshot);
+   if(remote.snapshot&&((meta.dirty||signature()!==before)&&remote.revision!==meta.revision)&&!identical){conflict=remote;ready=true;problem='';}
+   else if(remote.snapshot&&(identical||!meta.dirty&&signature()===before)){if(!identical)replace(remote.snapshot);meta.revision=remote.revision;meta.dirty=false;ready=true;}
    else{meta.revision=remote.revision;ready=true;meta.dirty=true;}
    persist();paint();renderPanel();if(meta.dirty&&!conflict)schedule();
   }catch(error){problem=error.message;paint();renderPanel();}
@@ -50,14 +51,15 @@
    }else meta.dirty=true;
    persist();
   }catch(error){problem=error.message;
-   if(error.status===409){delete meta.requestId;const result=await api('state');conflict=result.progress;persist();}
+   if(error.status===409){delete meta.requestId;const result=await api('state');if(sameRecord(payload(),result.progress.snapshot)){meta.revision=result.progress.revision;meta.dirty=false;problem='';persist();return;}conflict=result.progress;persist();}
    throw error;
   }finally{busy=false;promise=null;paint();renderPanel();if(meta.dirty&&!problem&&!conflict)schedule();}})();return promise;
  }
  function renderPanel(force=false){
   const host=document.querySelector('.td-page,.sd-page');if(!host||!user)return;
-  let panel=host.querySelector('[data-cloud-panel]');if(!force&&panel&&(panel.contains(document.activeElement)||panel.querySelector('[data-cloud-student-detail]'))){paint();return;}if(!panel){panel=document.createElement('section');panel.className='iu-cloud-panel';panel.dataset.cloudPanel='';host.append(panel);}
-  panel.innerHTML=`<div class="iu-cloud-heading"><div><span class="iu-cloud-kicker">YOUR INNERU ACCOUNT</span><h2>Learning, kept together.</h2><p data-cloud-status role="status">${E(status())}</p></div><button type="button" data-cloud-retry>Sync now ↻</button></div>${problem?`<p class="iu-cloud-notice" role="status">${E(problem)}</p>`:''}${conflict?'<div class="iu-cloud-notice"><b>There is another saved version.</b><p>Choose the record to continue with. A recovery copy of this device’s record is kept before replacement.</p><button type="button" data-cloud-use="remote">Use cloud record</button><button type="button" data-cloud-use="local">Use this device’s record</button></div>':''}${ready?`<p class="iu-cloud-small">${E(info.profile.role==='student'?'Student account':'Approved '+info.profile.role+' account')} · ${E(info.profile.role==='student'?(info.profile.classCode||'Class selection needed'):'Your assigned classes and students')}</p>${info.profile.role==='student'?`<div class="iu-cloud-assignment"><b>${E(info.profile.classCode||'Class selection needed')}</b>${info.profile.assignedTeacher?.email?`<span>Teacher: ${E(info.profile.assignedTeacher.name)}${info.profile.assignedTeacher.pending?' · Account registration pending':''}</span><small>Your progress, answers and achievements are shared with your assigned teacher automatically.</small>`:info.profile.classCode?'<small>No teacher assigned. Your class and saved learning are unchanged.</small>':'<a href="login.html?class=1">Choose your class</a>'}</div>`:'<div data-cloud-classroom><button type="button" data-cloud-open-classroom>Open cloud classroom</button></div>'}`:''}<p class="iu-cloud-small">${user.role==='student'?'Offline work stays on this device until it syncs. Your assigned teacher can see your synced learning, answers and achievements.':'Your classroom shows only students assigned to you. Teacher feedback is saved with your account.'}</p>`;
+  let panel=host.querySelector('[data-cloud-panel]');if(!force&&panel&&(panel.contains(document.activeElement)||panel.querySelector('[data-cloud-student-detail]'))){paint();return;}if(!panel){panel=document.createElement('section');panel.className='iu-cloud-panel';panel.dataset.cloudPanel='';(host.querySelector('[data-sd-sync-slot]')||host).append(panel);}
+  const compact=host.matches('.sd-progress-home')&&window.InneruStudentSync;panel.classList.toggle('iu-cloud-compact',!!compact);
+  panel.innerHTML=compact?InneruStudentSync.markup({status:status(),problem,conflict,ready,info}):`<div class="iu-cloud-heading"><div><span class="iu-cloud-kicker">YOUR INNERU ACCOUNT</span><h2>Learning, kept together.</h2><p data-cloud-status role="status">${E(status())}</p></div><button type="button" data-cloud-retry>Sync now ↻</button></div>${problem?`<p class="iu-cloud-notice" role="status">${E(problem)}</p>`:''}${conflict?'<div class="iu-cloud-notice"><b>There is another saved version.</b><p>Choose the record to continue with. A recovery copy of this device’s record is kept before replacement.</p><button type="button" data-cloud-use="remote">Use cloud record</button><button type="button" data-cloud-use="local">Use this device’s record</button></div>':''}${ready?`<p class="iu-cloud-small">${E(info.profile.role==='student'?'Student account':'Approved '+info.profile.role+' account')} · ${E(info.profile.role==='student'?(info.profile.classCode||'Class selection needed'):'Your assigned classes and students')}</p>${info.profile.role==='student'?`<div class="iu-cloud-assignment"><b>${E(info.profile.classCode||'Class selection needed')}</b>${info.profile.assignedTeacher?.email?`<span>Teacher: ${E(info.profile.assignedTeacher.name)}${info.profile.assignedTeacher.pending?' · Account registration pending':''}</span><small>Your progress, answers and achievements are shared with your assigned teacher automatically.</small>`:info.profile.classCode?'<small>No teacher assigned. Your class and saved learning are unchanged.</small>':'<a href="login.html?class=1">Choose your class</a>'}</div>`:'<div data-cloud-classroom><button type="button" data-cloud-open-classroom>Open cloud classroom</button></div>'}`:''}<p class="iu-cloud-small">${user.role==='student'?'Offline work stays on this device until it syncs. Your assigned teacher can see your synced learning, answers and achievements.':'Your classroom shows only students assigned to you. Teacher feedback is saved with your account.'}</p>`;
   panel.querySelector('[data-cloud-retry]').onclick=async()=>{try{if(!ready){user=null;await start(A.currentUser);}else await flush();}catch{}paint();};
   panel.querySelectorAll('[data-cloud-use]').forEach(b=>b.onclick=async()=>{if(b.dataset.cloudUse==='remote'){replace(conflict.snapshot);meta.dirty=false;}else meta.dirty=true;meta.revision=conflict.revision;delete meta.requestId;conflict=null;problem='';persist();renderPanel(true);if(meta.dirty)await flush().catch(()=>{});});
   panel.querySelector('[data-cloud-open-classroom]')?.addEventListener('click',()=>classroom(panel.querySelector('[data-cloud-classroom]')));

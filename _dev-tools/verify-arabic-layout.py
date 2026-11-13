@@ -132,7 +132,8 @@ try:
   go(student,'home')
   student.locator('[data-label-system="0"]').focus();student.keyboard.press('Enter')
   check(student.locator('[data-system="0"]').get_attribute('aria-pressed')=='true' and student.locator('[data-label-system="0"]').get_attribute('aria-pressed')=='true' and student.locator('.iu-expedition').get_attribute('data-world')=='0','keyboard body-map selection keeps the card and gallery synchronized')
-  check('من' in student.locator('[data-card="0"] .progress-meta').inner_text(),'Arabic mission counts use an unambiguous completed-of-total phrase')
+  check(student.locator('.explore-screen .progress-meta').count()==0,'student browsing leaves personal mission progress in the dashboard')
+  go(student,'dashboard');check('من' in student.locator('[data-sd-card=integumentary] .sd-card-meta').inner_text(),'Arabic dashboard mission counts use an unambiguous completed-of-total phrase');go(student,'home')
   for i in range(6):
    student.locator('[data-system="'+str(i)+'"]').first.click();student.wait_for_timeout(120);capture(student,'home-selected-system-'+str(i),(320,1440))
   # A separate, explicitly historical local fixture reaches the six-key capstone.

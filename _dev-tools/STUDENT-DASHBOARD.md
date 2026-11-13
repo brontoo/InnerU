@@ -1,3 +1,7 @@
+> For the current progress-home layout, saved-record disclosures and validation,
+> see [Student progress home](../docs/STUDENT-PROGRESS-HOME.md). The shared
+> ledger and reward rules documented below remain unchanged.
+
 # Student dashboard and completion-based achievements
 
 `learning-progress.js` provides a shared, read-only snapshot of six world states,

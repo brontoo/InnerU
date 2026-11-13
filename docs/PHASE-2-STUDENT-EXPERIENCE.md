@@ -1,3 +1,7 @@
+> Historical Phase 2 report. The current dashboard arrangement and validation are
+> described in [Student progress home](STUDENT-PROGRESS-HOME.md). The screenshots
+> below document the earlier interface.
+
 # Phase 2 — student experience
 
 Implemented on `feat/phase-two-student-experience`, building on local Phase 1

@@ -212,3 +212,49 @@ InneruLocale.register({
   "Explore the science glossary": "استكشف مسرد المصطلحات العلمية",
   "Use the glossary to understand scientific words. Your priorities will use saved lesson checks as you learn.": "استخدم المسرد لفهم المصطلحات العلمية. ستستند أولوياتك إلى اختبارات الدروس المحفوظة أثناء تعلّمك."
 });
+
+InneruLocale.register({
+  "Your first discovery starts here.": "يبدأ اكتشافك الأول من هنا.",
+  "Your next lesson": "درسك التالي",
+  "YOUR FIRST DISCOVERY": "اكتشافك الأول",
+  "Your next discovery will be ready soon.": "سيكون اكتشافك التالي جاهزًا قريبًا.",
+  "Continue after choosing the saved record below.": "تابع بعد اختيار السجلّ المحفوظ أدناه.",
+  "YOUR MISSION RECORD": "سجلّ مهمّاتك",
+  "Not started": "لم تبدأ بعد",
+  "In progress": "قيد التقدّم",
+  "Complete": "مكتمل",
+  "Locked": "مغلق",
+  "Next mission": "المهمّة التالية",
+  "All missions and the final challenge are complete.": "اكتملت جميع المهمّات والتحدّي النهائي.",
+  "Mission availability is checked with your class.": "يجري التحقّق من المهمّات المتاحة لصفّك.",
+  "View missions and objectives": "اعرض المهمّات والأهداف",
+  "Saved learning": "التعلّم المحفوظ",
+  "Which saved record would you like to continue?": "أيّ سجلّ محفوظ تريد أن تتابع به؟",
+  "Your progress below shows this device's record until you choose. Nothing is merged automatically.": "يعرض التقدّم أدناه سجلّ هذا الجهاز إلى أن تختار. لا تُدمج السجلّات تلقائيًا.",
+  "Cloud record": "السجلّ السحابي",
+  "This device's record": "سجلّ هذا الجهاز",
+  "Continue the record saved to your account. A recovery copy of this device's record is kept.": "تابع بالسجلّ المحفوظ في حسابك. تُحتفظ بنسخة استرداد من سجلّ هذا الجهاز.",
+  "Continue the record open on this device and save it to your account.": "تابع بالسجلّ المفتوح على هذا الجهاز واحفظه في حسابك.",
+  "Account and sharing details": "تفاصيل الحساب والمشاركة",
+  "YOUR PROGRESS BY SYSTEM": "تقدّمك في أجهزة الجسم",
+  "Every system. Every step.": "كلّ جهاز. كلّ خطوة.",
+  "Progress includes the system final. Open a system to see its missions and objectives.": "يشمل التقدّم التحدّي النهائي للجهاز. افتح جهازًا للاطّلاع على مهمّاته وأهدافه.",
+  "Browse the six worlds": "استكشف العوالم الستّة",
+  "YOUR LEARNING EVIDENCE": "أدلّة تعلّمك",
+  "See what your answers show.": "تعرّف إلى ما تُظهره إجاباتك.",
+  "View all objectives": "اعرض جميع الأهداف",
+  "What do the evidence statuses mean?": "ماذا تعني حالات أدلّة التعلّم؟",
+  "Discovery log and XP details": "سجلّ الاكتشافات وتفاصيل نقاط الخبرة",
+  "XP level": "مستوى نقاط الخبرة",
+  "missions and finals": "مهمّات وتحدّيات نهائية"
+});
+
+InneruLocale.register({"Final challenge still to earn":"لم يُكتسب التحدّي النهائي بعد"});
+
+InneruLocale.register({"View missions and objectives for {name}":"اعرض المهمّات والأهداف: الجهاز {name}"});
+
+InneruLocale.register({"Account registration pending":"تسجيل الحساب قيد الانتظار"});
+
+InneruLocale.register({"No teacher assigned":"لم يُعيَّن معلّم","Teacher registration pending":"تسجيل المعلّم قيد الانتظار"});
+
+InneruLocale.register({"{done} of {total} missions":"{done} من {total} مهمّات"});
