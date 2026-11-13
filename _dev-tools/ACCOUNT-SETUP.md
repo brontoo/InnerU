@@ -27,10 +27,11 @@ public Home link available. Accounts require a Supabase project connected in Ver
    `https://inneru-gamma.vercel.app` and allow the redirect URLs
    `https://inneru-gamma.vercel.app/login` and
    `https://inneru-gamma.vercel.app/login.html`.
-4. Keep email confirmation enabled for verified accounts. Configure the project's
-   email delivery service for its intended classroom use. The interface waits for
-   confirmation when required, then opens the account’s dashboard from the confirmation link. If the
-   project's email confirmation policy is disabled, signup opens its verified dashboard (or teacher approval screen) immediately.
+4. Choose the project's Email confirmation policy in Supabase, not in browser
+   code. With automatic confirmation enabled, a new student can enter immediately
+   after choosing an avatar and class; teacher approval is still required. When
+   confirmation is required, configure email delivery and use the verified callback.
+   Never simulate confirmation or grant teacher permissions from a signup choice.
 5. Redeploy Vercel so its Node function receives these environment settings. For a
    preview deployment, use that deployment's own origin and allowed redirect URLs.
 6. Test a real signup, delivered confirmation email, sign-out, returning sign-in
@@ -45,7 +46,10 @@ template must use `type=recovery`. Both forms are supported.
 
 ## Missing confirmation emails or signup limits
 
-The production Auth settings checked during this update require email confirmation.
+The production public settings checked on 13 November 2026 enable email signup
+and automatic confirmation. New registrations therefore do not require a
+confirmation email. The portal also supports projects/accounts that require
+confirmation; this setting belongs to Supabase and is not changed by deployment.
 A reachable account service does not prove that its emails are being delivered.
 Creating another account or repeatedly pressing Create account cannot confirm an
 existing email, and can hit the provider's request/email quotas.
@@ -108,15 +112,40 @@ Authentication → Users independently of the public learning tables.
 
 ## Verification
 
-Run `python3 _dev-tools/verify-accounts.py` and
-`python3 _dev-tools/verify-auth-recovery.py` with Node,
-Python Playwright and Chromium at `/usr/bin/chromium`. The runner starts an
-isolated in-memory provider fixture and exercises the actual production adapter,
-HTTP cookies, browser UI and redirects. The fixture is excluded from deployment
-with the rest of `_dev-tools/`; production never substitutes fake accounts.
+Use `npm test -- accounts auth-recovery student-classes` with the prerequisites in
+[README.md](README.md). The tests use Playwright's installed Chromium and a
+configurable temporary artifact directory, plus isolated PostgreSQL and fake
+Auth. `INNERU_TEST_CHROMIUM_EXECUTABLE` is an optional restricted-environment
+override; neither the suites nor CI assume a system Chromium path.
 
-The recovery suite uses the isolated local PostgreSQL database and fake Auth
-provider. It covers missing mail, manual resend, email/request quotas, retry
-intervals, existing-student sign-in, cookie preservation and mobile layouts. It
-never sends email or uses live account credentials. Run `verify-roles.py` and
-`verify-student-classes.py` for the current role and teacher-assignment rules.
+The recovery suite covers current/new student access, confirmation and quotas,
+interrupted/offline requests, a bounded 30-second timeout, malformed session
+responses that fail closed, explicit retry without repeating signup, and Arabic
+keyboard/mobile recovery. It never sends real email or uses live passwords.
+
+## Browser connection failures
+
+The message “The account service could not be reached. Check your connection and
+try again.” comes from the browser transport. It is distinct from the server's
+wrong-password, email-confirmation and role-approval messages. A green server
+health check alone cannot establish access from a particular school device.
+
+The sign-in form keeps its live values after a failed request, releases the
+controls, and links to **Check account connection** in a new tab. It never replays
+a password or signup automatically. Unreadable session HTML/JSON is an error,
+rather than being treated as an unconfigured guest session. Passwords and tokens
+remain absent from local/session storage.
+
+`connection.html` (CHECKER 3) separately checks the account API, public provider
+settings and a rejected empty login POST. Empty validation returns `invalid_email`
+before any provider request, so the checker creates no account, submits no real
+credentials and changes no session. It distinguishes a browser's ability to read
+the API from its ability to send sign-in requests. Owner database checks still
+require that browser's valid authenticated session. The external and embedded
+checker remain identical so a missing script cannot strand the page.
+
+On the deployed production domain, read-only session/settings and browser POST
+validation were reachable from this environment. Device-specific browser, proxy,
+endpoint-security or network failures cannot be diagnosed without the affected
+browser's checker results. Do not collect passwords or full personal API responses
+for troubleshooting, and do not weaken authentication or school network controls.

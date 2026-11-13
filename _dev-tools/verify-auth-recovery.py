@@ -1,16 +1,10 @@
 """Student entry regressions: signup limits, missing mail, recovery and valid sessions.
 Uses local Auth fixtures and PostgreSQL only. Never sends email or tests live passwords.
 """
-import json,os,subprocess,uuid,datetime,email.utils
-from pathlib import Path
-from playwright.sync_api import sync_playwright
-ROOT=Path(__file__).resolve().parents[1]
-ENV={**os.environ,'INNERU_DB_TEST_CONTAINER':'inneru-db-check','INNERU_DB_TEST_DATABASE':'inneru_auth_recovery_check'}
-subprocess.run(['python3',str(ROOT/'_dev-tools/prepare-db-tests.py')],env=ENV,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-# A retained test DB may contain this suite's earlier fictional accounts.
-subprocess.run(['docker','exec','-i','inneru-db-check','psql','-U','postgres','-d',ENV['INNERU_DB_TEST_DATABASE'],'-q'],input="delete from auth.users;",text=True,check=True)
-proc=subprocess.Popen(['node',str(ROOT/'_dev-tools/account-test-server.js')],env=ENV,stdout=subprocess.PIPE,stderr=open('/workspace/cloud-onboarding/auth-recovery-fixture.log','w'),text=True)
-ORIGIN=json.loads(proc.stdout.readline())['origin'];checks=0;errors=[];PASS='Fixture-Only-Entry-123'
+import json,datetime,email.utils
+from test_support import DatabaseFixture,playwright_session as sync_playwright,launch,new_context,artifact
+f=DatabaseFixture('inneru_auth_recovery_check');proc,ORIGIN=f.proc,f.origin
+f.sql('delete from auth.users;');checks=0;errors=[];PASS='Fixture-Only-Entry-123'
 def check(v,m):
  global checks
  assert v,m
@@ -36,9 +30,9 @@ def dashboard(p):
 def signout(p):api(p,'logout',{});p.goto(ORIGIN+'/login.html?nosw=1&role=student');p.wait_for_selector('#entry-email')
 try:
  with sync_playwright() as pw:
-  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--enable-unsafe-swiftshader'])
+  browser=launch(pw)
   def page(width=1440):
-   c=browser.new_context(service_workers='block',viewport={'width':width,'height':1000},reduced_motion='reduce');p=c.new_page();p.on('pageerror',lambda e:errors.append(str(e)));return p
+   c=new_context(browser,service_workers='block',viewport={'width':width,'height':1000},reduced_motion='reduce');p=c.new_page();p.on('pageerror',lambda e:errors.append(str(e)));return p
   p=page();p.goto(ORIGIN+'/login.html?nosw=1');existing='returning-entry@example.com';first=new_signup(p,existing).json()['user'];signout(p)
   signup_screen(p,existing);submit_avatar(p);p.wait_for_selector('#entry-error:not(:empty)')
   check('use Sign in' in p.locator('#entry-error').inner_text() and p.locator('#gate-avatar-form [data-auth-mode=login]').is_enabled(),'an existing account receives a direct route from avatar signup to sign-in')
@@ -63,7 +57,7 @@ try:
   check(q.locator('#gate-avatar-form [type=submit]').is_disabled() and 'PAUSED' in q.locator('[data-submit-label]').inner_text() and q.locator('[data-auth-mode=login]').is_enabled(),'a quota pauses signup while leaving existing-account sign-in available')
   q.locator('#gate-avatar-form').evaluate('f=>f.requestSubmit()');check(counts(q,'signup')==before+1,'a repeated form submit during cooldown cannot hit the provider again')
   check(q.evaluate('document.documentElement.scrollWidth<=innerWidth'),'the recovery message, countdown and sign-in link fit mobile screens')
-  q.screenshot(path='/workspace/cloud-onboarding/auth-recovery-mobile.png',full_page=True)
+  q.screenshot(path=artifact('auth-recovery-mobile.png'),full_page=True)
   q.locator('[data-avatar-back]').click();q.locator('#entry-password').fill(PASS);q.locator('#entry-confirm').fill(PASS);q.locator('#gate-entry-form [type=submit]').click();q.locator('input[value=nova]').check()
   check(q.locator('#gate-avatar-form [type=submit]').is_disabled(),'going back through account details cannot bypass the local signup pause')
   q.locator('[data-auth-mode=login]').click();q.clock.resume();signin(q,existing);dashboard(q)
@@ -98,7 +92,53 @@ try:
   for width in [1440,768,390,320]:
    w.set_viewport_size({'width':width,'height':1000});check(w.evaluate('document.documentElement.scrollWidth<=innerWidth'),'confirmation recovery fits '+str(width)+'px')
   check(PASS not in s.evaluate('JSON.stringify(localStorage)+JSON.stringify(sessionStorage)'),'passwords remain absent from browser application storage')
+  # Reproduce the screenshot's failed browser POST without real credentials.
+  network=page();network.goto(ORIGIN+'/login.html?nosw=1&role=student');network.wait_for_selector('#entry-email');sent=[]
+  network.on('request',lambda req:sent.append(req.url) if 'action=login' in req.url else None)
+  network.route('**/api/auth?action=login',lambda route:route.abort())
+  before_signup=counts(network,'signup');signin(network,existing);network.wait_for_selector('[data-auth-error-actions] a')
+  check('could not be reached' in network.locator('#entry-error').inner_text(),'failed browser sign-in is reported as a connection problem, not a password or approval failure')
+  check(network.locator('#entry-email').input_value()==existing and network.locator('#entry-password').input_value()==PASS and network.locator('#gate-entry-form [type=submit]').is_enabled(),'network failure retains the live form and makes an explicit retry available')
+  link=network.locator('[data-auth-error-actions] a');check(link.get_attribute('href')=='connection.html' and link.get_attribute('rel')=='noopener noreferrer','connection help opens safely without credentials in its URL')
+  link.focus();check(link.evaluate('e=>e===document.activeElement'),'connection recovery is reachable by keyboard')
+  network.wait_for_timeout(150);check(len(sent)==1 and counts(network,'signup')==before_signup,'a failed sign-in never automatically replays a password or creates another account')
+  network.unroute('**/api/auth?action=login');signin(network,existing);dashboard(network)
+  check(api(network,'session').json()['user']['id']==first['id'],'the same student enters the saved dashboard after an explicit successful retry')
+  # The checker performs only settings reads and rejected empty validation.
+  before_login=counts(network,'login');before_signup=counts(network,'signup');network.goto(ORIGIN+'/connection.html');network.wait_for_function('document.querySelector("#connection-retry").disabled===false')
+  check('Browser sign-in requests reach the portal' in network.locator('#connection-results').inner_text(),'the diagnostic distinguishes a working read path from actual browser POST access')
+  check(counts(network,'login')==before_login and counts(network,'signup')==before_signup,'connection diagnostics do not send credentials to the provider or create accounts')
+  # A broken or redirected API must fail closed instead of becoming guest mode.
+  malformed=page();malformed.route('**/api/auth?action=session',lambda route:route.fulfill(status=502,content_type='text/html',body='<html>Temporary gateway failure</html>'));malformed.goto(ORIGIN+'/login.html?nosw=1');malformed.wait_for_function('window.InneruAccount')
+  failure=malformed.evaluate('InneruAccount.api("session").then(x=>({accepted:true}),e=>({code:e.code}))')
+  check(failure.get('code')=='account_response_error','an unreadable session never becomes an unconfigured or authenticated portal session')
+  # A hung request becomes an actionable error rather than an indefinite spinner.
+  slow=page();slow.goto(ORIGIN+'/login.html?nosw=1&role=student');slow.wait_for_selector('#entry-email');pending=[];slow.route('**/api/auth?action=login',lambda route:pending.append(route));slow.clock.install();signin(slow,existing);slow.wait_for_function('document.querySelector("#gate-entry-form").getAttribute("aria-busy")==="true"');slow.clock.run_for(31000);slow.wait_for_selector('[data-auth-error-actions] a')
+  check('timed out' in slow.locator('#entry-error').inner_text() and slow.locator('#gate-entry-form [type=submit]').is_enabled(),'a stalled browser request times out and releases the sign-in controls')
+  for route in pending:
+   try:route.abort()
+   except Exception:pass
+  slow.clock.resume()
+  # Offline and Arabic recovery remain visible, labelled and usable on phones.
+  offline=page();offline.goto(ORIGIN+'/login.html?nosw=1&role=student');offline.wait_for_selector('#entry-email');offline.context.set_offline(True);signin(offline,existing);offline.wait_for_selector('[data-auth-error-actions] a')
+  check('offline' in offline.locator('#entry-error').inner_text() and offline.locator('#entry-password').input_value()==PASS,'offline entry explains the connection requirement without discarding the form')
+  offline.context.set_offline(False)
+  arabic=page();arabic.context.add_init_script("localStorage.setItem('inneru-accessibility-v1',JSON.stringify({language:'ar',guided:false}));");arabic.goto(ORIGIN+'/login.html?nosw=1&role=student');arabic.wait_for_selector('#entry-email');arabic.route('**/api/auth?action=login',lambda route:route.abort());signin(arabic,existing);arabic.wait_for_selector('[data-auth-error-actions] a');arabic.wait_for_function('document.documentElement.lang==="ar"')
+  check(arabic.locator('[data-auth-error-actions] a').evaluate('e=>/[\u0600-\u06ff]/.test(e.textContent)'),'the connection recovery action has an authored Arabic label')
+  for width in [1440,768,390,320]:
+   arabic.set_viewport_size({'width':width,'height':1000});check(arabic.evaluate('document.documentElement.scrollWidth<=innerWidth'),'Arabic network recovery fits '+str(width)+'px');arabic.screenshot(path=artifact('network-recovery-ar-'+str(width)+'.png'),full_page=True)
+  check(not arabic.evaluate('InneruLocale.coverage(document.querySelector(".gate-entry-panel"))'),'the rendered Arabic failure and recovery controls have no translation gaps')
+  # Standalone diagnostics use the same Arabic preferences, without translating identifiers.
+  arabic.goto(ORIGIN+'/connection.html');arabic.wait_for_function('document.querySelector("#connection-retry").disabled===false && InneruLocale.has("Check the connection.")');arabic.wait_for_function('!InneruLocale.coverage(document.querySelector("main")).length')
+  check(arabic.locator('#connection-language').input_value()=='ar' and arabic.locator('html').get_attribute('dir')=='rtl','the standalone connection checker retains Arabic and RTL preferences')
+  check(arabic.locator('#connection-results code').first.get_attribute('dir')=='ltr','technical project identifiers retain their left-to-right direction')
+  for width in [1440,768,390,320]:
+   arabic.set_viewport_size({'width':width,'height':1000});check(arabic.evaluate('document.documentElement.scrollWidth<=innerWidth'),'Arabic account connection fits '+str(width)+'px');arabic.screenshot(path=artifact('connection-ar-'+str(width)+'.png'),full_page=True)
+  arabic.route('**/api/auth?action=login',lambda route:route.abort());arabic.locator('#connection-retry').click();arabic.wait_for_selector('#connection-results [data-state=error]');arabic.wait_for_function('!InneruLocale.coverage(document.querySelector("main")).length')
+  check(arabic.locator('#connection-results [data-state=error]').evaluate('e=>/[\u0600-\u06ff]/.test(e.textContent)'),'a blocked sign-in POST is explained in Arabic on the checker')
+  arabic.unroute('**/api/auth?action=login');arabic.goto(ORIGIN+'/login?nosw=1&role=student');arabic.wait_for_selector('#entry-email');arabic.wait_for_function('InneruLocale.has("Welcome back, explorer.")')
+  check(not arabic.evaluate('InneruLocale.coverage(document.querySelector(".gate-entry-panel"))'),'extensionless login callbacks load the Arabic login catalogue')
   check(not errors,'no uncaught browser errors through quota, confirmation, sign-in and recovery flows: '+str(errors))
   browser.close()
  print(checks,'auth-recovery checks passed.')
-finally:proc.terminate();proc.wait(timeout=10)
+finally:f.close()

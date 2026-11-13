@@ -11,7 +11,7 @@ review option for recording an older checkout; it omits new-convention assertion
 See [the Phase 1 report](../docs/PHASE-1-IMPLEMENTATION-REPORT.md) for before/after
 artifacts and scope. These checks are not a full screen-reader/WCAG certification.
 
-`npm test` runs the same eighteen critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same nineteen critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
@@ -23,6 +23,7 @@ artifacts and scope. These checks are not a full screen-reader/WCAG certificatio
 | `verify-heart-studio.py` | Registered internal atlas, named coronary highlighting, bilingual controls, offline retry and preserved discovery rewards |
 | `verify-muscle-studio.py` | Optional on-demand muscular rotation, RTL/keyboard access, retry/offline recovery and preserved elbow/mission learning |
 | `verify-mastery.py` | Evidence-only objective statuses, six-system retry help, own feedback, class isolation and RTL/Guided reflow |
+| `verify-auth-recovery.py` | Existing/new student entry, network/timeout recovery, confirmation, API fail-closed behavior and Arabic keyboard access |
 | `verify-accounts.py` | Signup, sign-in, avatars, recovery, cookies and account isolation |
 | `verify-student-classes.py` | All six class choices, pending teacher linking and class permissions |
 | `verify-dashboard.py` | Real mission work, once-only XP, saved progress, badges and responsive student dashboard |

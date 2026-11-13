@@ -35,7 +35,7 @@ migrations have already been applied to the live project.
    a real signup, email confirmation when required, one task completion, sign-out
    and sign-in from a second browser.
 
-The current connection page displays **CHECKER 2**. Each API step has a 20-second
+The current connection page displays **CHECKER 3**. It also checks rejected empty sign-in validation, without sending credentials or creating an account. Each API step has a 20-second
 timeout and a specific result. The page embeds its own checker and also provides
 an external-script fallback. If JavaScript cannot run, its direct API links remain
 available. The old “Checking this deployment…” placeholder is not a successful

@@ -1,10 +1,10 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v71-heart-atlas-interior';
+const VERSION='inneru-v72-account-connection';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=atlas-inside-1",
+  "./locale.js?v=entry-connection-1",
   "./learning-support.js?v=muscle-sidebar-1",
   "./learning-support.css?v=usability-1",
   "./index.html",
@@ -12,7 +12,7 @@ const SHELL=[
   "./manifest.webmanifest",
   "./login.html",
   "./login.css?v=portrait-framing-1",
-  "./login.js?v=guided-ar-1",
+  "./login.js?v=entry-connection-1",
   "./favicon.svg?v=3",
   "./inneru-mark.svg?v=3",
   "./inneru-logo.svg?v=body-quest-1",
@@ -27,7 +27,7 @@ const SHELL=[
   "./access.css?v=roles-avatars-2",
   "./mission-access.css?v=usability-1",
   "./learning-catalog.js?v=on-demand-1",
-  "./account.js?v=usability-1",
+  "./account.js?v=entry-connection-1",
   "./access.js?v=owner-1",
   "./app.js?v=body-quest-1",
   "./route-runtime.js?v=on-demand-1",

@@ -19,10 +19,16 @@
  const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const PROFILE='bodyquest-v1',ARCHIVE='inneru-account-progress-v1:',UNDO='inneru-undo-v1';
  async function api(action,values){
-  let response;try{response=await fetch('/api/auth?action='+encodeURIComponent(action),{method:values===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:values===undefined?{}:{'Content-Type':'application/json'},...(values===undefined?{}:{body:JSON.stringify(values)})});}catch{throw new Error('The account service could not be reached. Check your connection and try again.');}
-  let data;try{data=await response.json();}catch{if(action==='session')return {configured:false,authenticated:false};throw new Error('Account sign-in is not connected yet. Please try again after the service is connected.');}
-  if(!response.ok){const error=new Error(data.error||'This account action could not be completed.');error.status=response.status;error.code=typeof data.code==='string'?data.code:'';error.action=action;error.retryAfter=Math.max(1,Math.min(86400,Number(data.retryAfter)||Number(response.headers.get('Retry-After'))||60));throw error;}return data;
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+  const failure=()=>Object.assign(new Error(controller.signal.aborted?'The account request timed out. Check the connection before trying again.':navigator.onLine===false?'You are offline. Connect to the internet to sign in. Your saved learning stays on this device.':'The account service could not be reached. Check your connection and try again.'),{code:controller.signal.aborted?'account_timeout':'account_network_error',action});
+  try{
+   let response;try{response=await fetch('/api/auth?action='+encodeURIComponent(action),{method:values===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',signal:controller.signal,headers:values===undefined?{}:{'Content-Type':'application/json'},...(values===undefined?{}:{body:JSON.stringify(values)})});}catch{throw failure();}
+   let data;try{data=await response.json();}catch{if(controller.signal.aborted)throw failure();throw Object.assign(new Error('The account service returned an unreadable response. Check the connection and try again.'),{code:'account_response_error',action});}
+   if(!data||typeof data!=='object'||Array.isArray(data))throw Object.assign(new Error('The account service returned an unreadable response. Check the connection and try again.'),{code:'account_response_error',action});
+   if(!response.ok){const error=new Error(data.error||'This account action could not be completed.');error.status=response.status;error.code=typeof data.code==='string'?data.code:'';error.action=action;error.retryAfter=Math.max(1,Math.min(86400,Number(data.retryAfter)||Number(response.headers.get('Retry-After'))||60));throw error;}return data;
+  }finally{clearTimeout(timer);}
  }
+
  function readProfile(key=PROFILE){const raw=localStorage.getItem(key);if(!raw)return null;const value=JSON.parse(raw);if(!value||!Array.isArray(value.done)||!Array.isArray(value.rewards))throw new Error('Saved learning could not be read. Your record has not been replaced.');return value;}
  function archive(profile){
   if(!profile)return;

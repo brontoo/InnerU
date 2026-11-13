@@ -1,4 +1,9 @@
 InneruLocale.register({
+  "The account request timed out. Check the connection before trying again.": "انتهت مهلة طلب الحساب. تحقّق من الاتصال قبل المحاولة مجددًا.",
+  "You are offline. Connect to the internet to sign in. Your saved learning stays on this device.": "أنت غير متصل بالإنترنت. اتصل بالإنترنت لتسجيل الدخول. يبقى تعلّمك المحفوظ على هذا الجهاز.",
+  "The account service returned an unreadable response. Check the connection and try again.": "تعذّرت قراءة ردّ خدمة الحسابات. تحقّق من الاتصال وحاول مجددًا.",
+  "Check account connection (opens in a new tab)": "تحقّق من اتصال الحساب (يفتح في علامة تبويب جديدة)",
+
   "Checking mission access…": "جارٍ التحقّق من إتاحة المهمّات…",
   "Mission access could not be checked. Reconnect and refresh this page.": "تعذّر التحقّق من إتاحة المهمّات. أعِد الاتصال وحدّث هذه الصفحة.",
   "No unfinished mission is available here. Your teacher may need to unlock your next mission.": "لا تتوفّر هنا مهمّة غير مكتملة يمكنك فتحها الآن. قد يحتاج معلّمك إلى إتاحة مهمّتك التالية.",

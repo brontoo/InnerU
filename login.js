@@ -140,7 +140,7 @@
   function showError(error){
     if(error.status===429){const until=Date.now()+(error.retryAfter||60)*1000;const actions=error.code==='over_email_send_rate_limit'?['signup','recover','resend']:[error.action||requestAction()];for(const action of actions)if(action)retryUntil[action]=Math.max(retryUntil[action]||0,until);}
     setBusy(false);const node=panel.querySelector('#entry-error');node.classList.remove('is-success');node.textContent=error.message||String(error);
-    const actions=panel.querySelector('[data-auth-error-actions]');if(actions){actions.hidden=true;actions.innerHTML='';if(error.code==='email_not_confirmed'&&accountEmail){actions.hidden=false;actions.innerHTML='<button type="button" class="gate-auth-link" data-confirmation-help>Help me confirm my email</button>';}}
+    const actions=panel.querySelector('[data-auth-error-actions]');if(actions){actions.hidden=true;actions.innerHTML='';if(error.code==='email_not_confirmed'&&accountEmail){actions.hidden=false;actions.innerHTML='<button type="button" class="gate-auth-link" data-confirmation-help>Help me confirm my email</button>';}else if(['account_network_error','account_timeout','account_response_error'].includes(error.code)){actions.hidden=false;actions.innerHTML='<a class="gate-auth-link" href="connection.html" target="_blank" rel="noopener noreferrer">Check account connection (opens in a new tab)</a>';}}
     node.scrollIntoView({block:'nearest'});
   }
   function validateEmail(){const input=panel.querySelector('#entry-email');if(!input.value.trim()||!input.checkValidity()){input.setAttribute('aria-invalid','true');input.focus();throw new Error('Enter a valid email address.');}accountEmail=input.value.trim();return accountEmail;}
