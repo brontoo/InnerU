@@ -81,7 +81,7 @@
       }else if(d.type==='layers'||d.type==='repair'&&round<4){
         const layer=d.type==='layers',length=layer?3:4;
         if(layer&&round===3){
-          task.innerHTML='<span class="quest-objective-label">RENEWAL BONUS</span><h3>Where does surface renewal begin?</h3><p>Choose the region where new epidermal cells are produced.</p>';
+          task.innerHTML='<span class="quest-objective-label">REQUIRED RENEWAL CHECK</span><h3>Where does surface renewal begin?</h3><p>Choose the region where new epidermal cells are produced.</p>';
           workspace.innerHTML=`<div class="quest-action-options">${['At the outer dead-cell surface','In the basal epidermis','In the subcutaneous fat'].map((text,i)=>`<button type="button" data-renewal="${i}">${text}</button>`).join('')}</div>`;
         }else{
           task.innerHTML=`<span class="quest-objective-label">${layer?'OUTSIDE → INSIDE':'REPAIR CHECKPOINT'} ${round+1} / ${length}</span><h3>${layer?['Start with the outer covering','Add the supporting tissue','Place the cushion underneath'][round]:['Seal the break','Defend and protect the wound','Close the surface','Strengthen the repair'][round]}</h3><p>${layer?'Tap a tissue tile or drag it to the next open slot.':'Select the matching repair checkpoint. This is a simplified story; biological phases overlap.'}</p>`;

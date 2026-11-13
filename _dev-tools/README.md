@@ -11,11 +11,12 @@ review option for recording an older checkout; it omits new-convention assertion
 See [the Phase 1 report](../docs/PHASE-1-IMPLEMENTATION-REPORT.md) for before/after
 artifacts and scope. These checks are not a full screen-reader/WCAG certification.
 
-`npm test` runs the same nineteen critical checks as GitHub Actions, **sequentially**:
+`npm test` runs the same twenty critical checks as GitHub Actions, **sequentially**:
 
 | Script | Release coverage |
 |---|---|
 | `verify-mission-openings.py` | Shared title/objective/status, all 45 bilingual previews, student/teacher/owner roles, native activity navigation and unchanged learning |
+| `verify-mission-clarity.py` | All 45 authorized student missions/finals, relevant anatomy, explicit task actions, optional work after required checks, bilingual reflow, Guided/keyboard/speech and unchanged records |
 | `verify-student-experience.py` | Six-system student cards, authorized next actions, real evidence/due priorities, cloud choice, 45-mission totals and six mission headers |
 | `verify-design-foundation.py` | English/Arabic shared shell, mobile navigation, current destinations, target sizes, focus and unchanged learning state |
 | `verify-pronunciation.py` | No page-wide reader or duplicate anatomy buttons; 45 Guided previews, named structures, native Arabic delegation/failure, cancellation, privacy and offline controls |
@@ -411,3 +412,17 @@ isolation, pronunciation and broader Arabic accessibility checks. Full collectio
 code is now loaded only for `#badges` through the existing route loader. See
 [the implementation and verification report](../docs/STUDENT-PROGRESS-HOME.md)
 for the hierarchy, data limits and screenshots. No migration or new setup is needed.
+
+## Required mission anatomy and task clarity
+
+`npm run test:mission-clarity` uses the existing local database/browser fixture.
+Prerequisite completions and their canonical reward IDs are seeded only in that
+isolated database; each mission opens through the actual student authorization
+gateway in a fresh account-bound browser context. The current task remains
+unfinished. All 45 missions/finals are reviewed in English/Arabic at 390 and
+1440px, with representative 320/768px, Guided, keyboard, optional-disclosure,
+explicit speech and reduced-motion checks. No production records or services are
+used. It writes `mission-audit.json`, `captures.json` and screenshots under its
+artifact directory. See [the baseline and final audit](../docs/MISSION-ANATOMY-AUDIT.md)
+and [the implementation report](../docs/MISSION-CLARITY.md). Existing progression,
+feedback/retry, rewards, preview and class-boundary checks remain in the release gate.

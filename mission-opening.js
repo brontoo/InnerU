@@ -4,6 +4,88 @@
   const source = node => window.InneruLocale?.source(node) || node?.textContent || '';
   const normal = text => text.replace(/\s+/g, ' ').trim();
   const headings = '.skel-mission-heading,.mq-mission-heading,.resp-mission-header,.circ-mission-head,.exc-mission-header,.quest-finale-hero';
+  const actions = {
+    skeletal: ['Match each region to its skeletal division','Match each bone shape to its example','Find seven structures, then choose the spongy-bone model','Match each joint to its movement','Predict how remodeling changes bone mass','Order the stages of fracture repair','Match each case to its anatomical evidence','Use the ankle evidence to explain the injury'],
+    integumentary: ['Match each skin tissue to its structure','Build the skin layers from outside inward','Choose the route for each skin structure','Predict the skin response to each environment','Select the structure that responds to each challenge','Order wound repair, then classify burn depth'],
+    respiratory: ['Identify what moves in each breathing process','Order the air pathway, then choose its defense','Choose the direction of each gas at the alveolus','Predict how diaphragm movement changes airflow','Choose both gas routes at each exchange site','Match each condition to its affected structure'],
+    circ: ['Inspect and compare the three vessel types','Predict oxygen movement between blood and tissue','Select the chambers in blood-flow order','Choose the next stop in the blood pathway','Match each blood component to its job','Choose a compatible donor for each recipient','Measure a pulse and examine arterial narrowing'],
+    excretory: ['Sort each waste into its exit organ','Select the kidney structure that matches the clue','Sort substances by whether they enter the capsule','Sort substances by return to blood or removal in urine','Predict the water response, then test the ADH setting','Use each case’s evidence to identify the mechanism']
+  };
+  const muscleActions = {scanner:'Identify the muscle tissue from its features',zoom:'Explore each level of muscle organization',build:'Label the sarcomere structures',energy:'Compare contraction without and with ATP',stimulate:'Change the nerve signal and observe contraction',arm:'Move the arm and compare the opposing muscles',slide:'Move the slider and compare filament overlap',target:'Move the arm to full extension',contract:'Move the sarcomere to full contraction'};
+  let taskObserver;
+
+  function task(root, action, check=false) {
+    if (!root || root.querySelector(':scope > .iu-task-action,:scope > .quest-check-content > .iu-task-action')) return false;
+    const box = document.createElement('div');
+    box.className = 'iu-task-action' + (check === true ? ' is-check' : '');
+    const kind = document.createElement('span');
+    kind.className = 'iu-task-kind';
+    kind.textContent = check === 'optional' ? 'Optional challenge' : check ? 'Required check' : 'Required activity';
+    const title = document.createElement('div');
+    title.setAttribute('role', 'heading');
+    title.setAttribute('aria-level', '3');
+    title.dataset.missionTask = '';
+    if (check !== true) title.dataset.supportInstruction = '';
+    else {
+      const prompt = root.querySelector('h3,h4,:scope > p');
+      if (prompt) prompt.dataset.supportInstruction = '';
+    }
+    title.textContent = action;
+    box.append(kind, title);
+    // Original h2/h3 prompts stay intact, including the headings used to bind
+    // older activity submissions to their evidence records.
+    const context = root.querySelector(':scope > .mq-panel-head,:scope > .quest-heading,:scope > .ra-lab-header,:scope > .exc-challenge-heading,:scope > .skel-lab-heading');
+    const cargo = root.id === 'exc-main-lab' && root.querySelector('.exc-chips');
+    const questionColumn = root.querySelector(':scope > .quest-check-content');
+    if (questionColumn) questionColumn.prepend(box); else if (cargo) cargo.before(box); else if (context) context.after(box); else root.prepend(box);
+    root.classList.add(check === 'optional' ? 'iu-optional-task' : 'iu-required-task');
+    return true;
+  }
+
+  function optional(node, label, after) {
+    if (!node || node.parentElement.matches('.iu-optional')) return;
+    const details = disclosure(label, 'iu-optional');
+    node.before(details);
+    details.append(node);
+    if (after) after.after(details);
+  }
+
+  function clarify(main, mission) {
+    let changed = false;
+    const action = actions[mission.world.id]?.[mission.number-1];
+    const lab = main.querySelector('.skel-lab-section,.integ-quest,.resp-activity-game,#circ-lab,#exc-main-lab');
+    if (action) changed = task(lab, action) || changed;
+    main.querySelectorAll('.mq-panel').forEach(panel => {
+      if (!panel.querySelector('.mq-status')) return; // Reference anatomy is not an assessed task.
+      const suffix = panel.id.replace(/^m\d+-/, '');
+      const action = muscleActions[suffix] || (panel.querySelector('[data-sort-check]') ? 'Match each card to its correct group' : panel.querySelector('[data-sequence-check]') ? 'Order the stages using the arrow controls' : panel.querySelector('[data-compare]') ? 'Explain your answer using the evidence' : panel.querySelector('[data-option]') ? 'Select one answer to the question below' : null);
+      if (action) changed = task(panel, action, suffix.startsWith('check-')) || changed;
+    });
+    main.querySelectorAll('.skel-check,.resp-question,.circ-question,.ra-prediction').forEach(question => {
+      changed = task(question, question.querySelector('textarea') ? 'Explain your answer using the evidence' : 'Select one answer to the question below', true) || changed;
+    });
+    for (const [selector, action] of [['.exc-ph-task','Select the response that helps regulate blood pH'],['#exc-weekly','Calculate the urine volume for seven days'],['#exc-audit','Calculate the water remaining in urine'],['.exc-treatment-question','Select the treatment that uses an external filter']]) changed = task(main.querySelector(selector), action, 'optional') || changed;
+    main.querySelectorAll('.ra-breath-goals').forEach(bonus => optional(bonus, 'Optional challenge · explore further'));
+    if (changed) window.InneruLocale?.refresh();
+  }
+
+  function activityHierarchy(main, mission) {
+    main.classList.add('iu-mission-canvas');
+    main.querySelectorAll('.exc-bonus').forEach(bonus => optional(bonus, 'Optional challenge · explore further', main.querySelector('.exc-checks')));
+    main.querySelectorAll('.circ-route-quest').forEach(map => optional(map, 'Learn more · follow the complete circulation route'));
+    main.querySelectorAll('.exc-lab .ea-study').forEach(study => {
+      if ([1,3,4,5].includes(Number(study.dataset.eaStudy))) optional(study, 'Learn more · inspect the anatomy');
+    });
+    clarify(main, mission);
+    taskObserver?.disconnect();
+    let queued = false;
+    taskObserver = new MutationObserver(() => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; if (main.isConnected) clarify(main, mission); });
+    });
+    taskObserver.observe(main, {childList:true,subtree:true});
+  }
 
   function move(node, destination) {
     // Read-aloud controls may already have been attached to an original paragraph.
@@ -39,6 +121,7 @@
   }
 
   function mount() {
+    taskObserver?.disconnect();
     const main = document.querySelector('main.main');
     if (!main || main.querySelector('.iu-mission-access-notice,[data-route-loading],[data-route-retry],[data-mission-objective]')) return;
     const mission = window.InneruMissionAccess?.parse();
@@ -161,6 +244,7 @@
     const pathway = disclosure('Mission map and access', 'iu-mission-pathway');
     main.querySelectorAll('.skel-mode-bar,.resp-preview-bar,.integ-preview-bar,.exc-mode-banner,.skel-mission-nav,.quest-mission-nav,.resp-gallery-nav').forEach(node => move(node, pathway));
     if (pathway.childElementCount > 1) opening.append(pathway);
+    if (mission) activityHierarchy(main, mission);
     window.InneruLocale?.refresh();
   }
 

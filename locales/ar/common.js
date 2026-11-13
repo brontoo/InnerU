@@ -812,3 +812,15 @@ InneruLocale.register({
   "School assignments": "إدارة الصفوف والمعلمين",
   "No teacher assigned. Your class and saved learning are unchanged.": "لم يُعيَّن معلم. يبقى صفك وتعلمك المحفوظ كما هما."
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Required activity": "نشاط مطلوب",
+  "Required check": "اختبار مطلوب",
+  "Optional challenge": "تحدٍّ اختياري",
+  "Select one answer to the question below": "اختر إجابة واحدة عن السؤال الآتي",
+  "Explain your answer using the evidence": "فسّر إجابتك مستندًا إلى الأدلة",
+  "Optional challenge · explore further": "تحدٍّ اختياري · اكتشف المزيد",
+  "Learn more · follow the complete circulation route": "تعرّف أكثر · تتبّع مسار الدورة الدموية كاملًا",
+  "Learn more · inspect the anatomy": "تعرّف أكثر · افحص التراكيب التشريحية"
+});

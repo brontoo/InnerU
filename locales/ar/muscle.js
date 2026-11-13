@@ -1018,3 +1018,20 @@ InneruLocale.register({
   "Dorsiflexes the ankle.": "تثني الكاحل لترفع مقدّمة القدم نحو الساق.",
   "Clearing the toes while stepping.": "رفع أصابع القدم عن الأرض عند الخطو."
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Identify the muscle tissue from its features": "حدّد النسيج العضلي من خصائصه",
+  "Explore each level of muscle organization": "استكشف كل مستوى من مستويات تنظيم العضلة",
+  "Label the sarcomere structures": "حدّد أسماء تراكيب القطعة العضلية",
+  "Compare contraction without and with ATP": "قارن الانقباض في غياب ATP ووجوده",
+  "Change the nerve signal and observe contraction": "غيّر الإشارة العصبية ولاحظ الانقباض",
+  "Move the arm and compare the opposing muscles": "حرّك الذراع وقارن بين العضلتين المتضادتين",
+  "Move the slider and compare filament overlap": "حرّك المنزلق وقارن مقدار تداخل الخيوط",
+  "Move the arm to full extension": "حرّك الذراع إلى البسط الكامل",
+  "Move the sarcomere to full contraction": "حرّك القطعة العضلية إلى الانقباض الكامل",
+  "Match each card to its correct group": "طابق كل بطاقة مع مجموعتها الصحيحة",
+  "Order the stages using the arrow controls": "رتّب المراحل باستخدام أزرار الأسهم"
+});
+
+InneruLocale.register({"Reach full arm extension.":"أوصل الذراع إلى البسط الكامل."});

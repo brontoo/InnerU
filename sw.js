@@ -1,10 +1,10 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v74-progress-home';
+const VERSION='inneru-v75-mission-clarity';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=progress-home-1",
+  "./locale.js?v=mission-clarity-1",
   "./learning-support.js?v=muscle-sidebar-1",
   "./learning-support.css?v=usability-1",
   "./index.html",
@@ -42,7 +42,7 @@ const SHELL=[
   "./account-session.js?v=student-experience-2",
   "./cloud-learning.js?v=progress-home-1",
   "./mission-access.js?v=progress-home-1",
-  "./route-manifest.js?v=progress-home-1",
+  "./route-manifest.js?v=mission-clarity-1",
   "./route-loader.js?v=progress-home-1",
   "./pwa.js"
 ];

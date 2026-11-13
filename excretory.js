@@ -514,7 +514,7 @@ function challengeHead(title, intro, tag = "INTERACTIVE LAB") {
 function lab(n) {
     const d = LABS[n];
     if (d)
-      return `<section class="panel exc-lab" id="exc-main-lab">${challengeHead(d.title, d.intro)}<div class="exc-game-status"><span id="exc-lab-step">0 / ${d.items.length} cargo placed</span><span id="exc-combo">Build your accuracy streak</span></div><div class="exc-lab-diagram">${labIllustration(n)}</div><div class="exc-chips" role="group" aria-label="Cargo to sort">${shuffled(
+      return `<section class="panel exc-lab" id="exc-main-lab">${challengeHead(d.title, d.intro)}<div class="exc-game-status"><span id="exc-lab-step">0 / ${d.items.length} cargo placed</span><span id="exc-combo">Build your accuracy streak</span></div><div class="exc-lab-diagram">${labIllustration(n)}</div>${n===1?'':art.process(n)}<div class="exc-chips" role="group" aria-label="Cargo to sort">${shuffled(
         d.items,
       )
         .map(
@@ -523,7 +523,7 @@ function lab(n) {
         )
         .join(
           "",
-        )}</div><div class="exc-bins">${d.bins.map((bin, i) => `<button type="button" class="exc-bin" data-exc-bin="${i}"><span class="exc-bin-symbol" aria-hidden="true">${i === 0 ? "↗" : "↓"}</span><strong>${bin}</strong><span class="exc-bin-list" id="exc-bin-${i}"></span></button>`).join("")}</div><p class="exc-hint">Drag a cargo tile to its destination, or tap a tile then a destination. Keyboard: Tab, then Enter.</p><div id="exc-lab-feedback" class="exc-lab-feedback" role="status" aria-live="polite">Your first cargo is waiting.</div>${art.process(n)}<button type="button" class="exc-replay" data-replay>Reset this challenge ↻</button></section>${bonus(n)}`;
+        )}</div><div class="exc-bins">${d.bins.map((bin, i) => `<button type="button" class="exc-bin" data-exc-bin="${i}">${n===1?art.picture(1,i):n===3?art.picture(3,i===0?1:0):art.picture(4,i===0?2:0)}<strong>${bin}</strong><span class="exc-bin-list" id="exc-bin-${i}"></span></button>`).join("")}</div><p class="exc-hint">Drag a cargo tile to its destination, or tap a tile then a destination. Keyboard: Tab, then Enter.</p><div id="exc-lab-feedback" class="exc-lab-feedback" role="status" aria-live="polite">Select one substance, then choose its destination.</div>${n===1?art.process(n):''}<button type="button" class="exc-replay" data-replay>Reset this challenge ↻</button></section>${bonus(n)}`;
     if (n === 2)
       return `<section class="panel exc-lab" id="exc-main-lab">${challengeHead("Map the kidney", "Read the clue, then select the matching labeled structure. Each correct location reveals its job.")}<div class="exc-game-status"><span id="exc-lab-step">0 / 6 structures located</span></div>${art.study(2)}<p class="exc-active-clue" id="exc-map-clue">${KIDNEY_TARGETS[0][1]}</p><div class="exc-map-labels">${shuffled(
         KIDNEY_TARGETS,

@@ -664,3 +664,32 @@ InneruLocale.register({
   "Return to the mission board →": "عُد إلى لوحة المهمّات ←",
   "Moderate ADH · intermediate water return and urine volume. Move the ADH slider to change the channels.": "ADH متوسّط · عودة ماء وحجم بول متوسّطان. حرّك منزلق ADH لتغيير القنوات."
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Sort each waste into its exit organ": "صنّف كل مادة مطروحة بحسب العضو الذي يخرجها",
+  "Select the kidney structure that matches the clue": "اختر تركيب الكلية الذي يطابق الدليل",
+  "Sort substances by whether they enter the capsule": "صنّف المواد بحسب دخولها محفظة بومان أو بقائها في الدم",
+  "Sort substances by return to blood or removal in urine": "صنّف المواد بحسب عودتها إلى الدم أو طرحها في البول",
+  "Predict the water response, then test the ADH setting": "توقّع استجابة توازن الماء، ثم اختبر مستوى ADH",
+  "Use each case’s evidence to identify the mechanism": "استعن بأدلة كل حالة لتحديد الآلية",
+  "Trace filtration from blood to capsule": "تتبّع الترشيح من الدم إلى المحفظة",
+  "Choose the direction of tubular exchange": "اختر اتجاه انتقال المواد عبر النبيب",
+  "Predict water movement when ADH changes": "توقّع حركة الماء عند تغيّر ADH",
+  "The highlighted routes show relative water movement through apical channels. Channel counts do not represent measured hormone levels.": "توضّح المسارات المبرزة حركة الماء النسبية عبر القنوات القِمّية. لا تمثّل أعداد القنوات مستويات هرمونية مقيسة.",
+  "Predict how the kidney responds to excess acid": "توقّع استجابة الكلية لزيادة الحموضة",
+  "Tubular fluid": "السائل النبيبي",
+  "α-intercalated cell": "خلية بينيّة من النوع ألفا",
+  "Hydrogen-ion secretion into tubular fluid": "إفراز أيونات الهيدروجين إلى السائل النبيبي",
+  "Bicarbonate return toward blood": "إعادة البيكربونات باتجاه الدم",
+  "Enlarged collecting-duct wall section. The neighboring cells and capillary provide anatomical context; structures are not to scale.": "مقطع مكبّر في جدار القناة الجامعة. توضّح الخلايا المجاورة والشعيرة الدموية العلاقات التشريحية؛ والتراكيب غير مرسومة بمقياس واحد.",
+  "Select the response that helps regulate blood pH": "اختر الاستجابة التي تساعد على تنظيم pH الدم",
+  "Calculate the urine volume for seven days": "احسب حجم البول خلال سبعة أيام",
+  "Calculate the water remaining in urine": "احسب كمية الماء المتبقّية في البول",
+  "Select the treatment that uses an external filter": "اختر العلاج الذي يستخدم مرشّحًا خارج الجسم",
+  "Select one substance, then choose its destination.": "اختر مادة واحدة، ثم اختر وجهتها.",
+  "Duct lumen": "تجويف القناة",
+  "Principal cells": "الخلايا الرئيسية",
+  "Interstitium": "الحيّز الخلالي",
+  "Blood": "الدم"
+});

@@ -1,0 +1,177 @@
+{
+  "date": "2026-11-14",
+  "timezone": "Asia/Dubai",
+  "baseline_commit": "d4df25c09dcb8934466a39fc9e884a8157ad4d12",
+  "branch": "improve/mission-anatomy-task-clarity",
+  "deployment": "Publication to GitHub main and the connected Vercel production site authorized after verification; deployment verification is reported separately.",
+  "database_migration_required": false,
+  "browser": "Pinned Playwright 1.58.0 with supported /usr/bin/chromium override",
+  "critical_suites": [
+    {
+      "name": "mission-openings",
+      "label": "Consistent bilingual mission openings and role-safe activity navigation",
+      "status": "PASS",
+      "seconds": 120
+    },
+    {
+      "name": "mission-clarity",
+      "label": "Required mission anatomy, explicit tasks and optional-work hierarchy",
+      "status": "PASS",
+      "seconds": 118
+    },
+    {
+      "name": "student-experience",
+      "label": "Student experience, evidence priorities and accessible navigation",
+      "status": "PASS",
+      "seconds": 49
+    },
+    {
+      "name": "design-foundation",
+      "label": "Shared design foundation, bilingual navigation and keyboard access",
+      "status": "PASS",
+      "seconds": 22
+    },
+    {
+      "name": "pronunciation",
+      "label": "Arabic audio coverage, scientific names and voice fallback",
+      "status": "PASS",
+      "seconds": 246
+    },
+    {
+      "name": "usability",
+      "label": "Available pathways, honest mastery guidance and class-scoped attention",
+      "status": "PASS",
+      "seconds": 18
+    },
+    {
+      "name": "muscle-studio",
+      "label": "Optional muscular rotation and preserved elbow learning",
+      "status": "PASS",
+      "seconds": 105
+    },
+    {
+      "name": "heart-studio",
+      "label": "Heart anatomy, named selection and preserved discovery rewards",
+      "status": "PASS",
+      "seconds": 75
+    },
+    {
+      "name": "mastery",
+      "label": "Evidence-based mastery, feedback and isolation",
+      "status": "PASS",
+      "seconds": 26
+    },
+    {
+      "name": "accounts",
+      "label": "Sign-in and signup",
+      "status": "PASS",
+      "seconds": 44
+    },
+    {
+      "name": "auth-recovery",
+      "label": "Student account access, connection recovery and confirmation",
+      "status": "PASS",
+      "seconds": 24
+    },
+    {
+      "name": "student-classes",
+      "label": "Student classes and teacher assignment",
+      "status": "PASS",
+      "seconds": 78
+    },
+    {
+      "name": "dashboard",
+      "label": "Student progress and dashboard",
+      "status": "PASS",
+      "seconds": 21
+    },
+    {
+      "name": "mission-access",
+      "label": "Mission locks, progression, previews and controls",
+      "status": "PASS",
+      "seconds": 85
+    },
+    {
+      "name": "teacher-dashboard",
+      "label": "Teacher roster, student work and feedback",
+      "status": "PASS",
+      "seconds": 23
+    },
+    {
+      "name": "teacher-workspace",
+      "label": "Teacher workspace, isolation and navigation",
+      "status": "PASS",
+      "seconds": 28
+    },
+    {
+      "name": "owner",
+      "label": "Owner access, teacher approval and class assignments",
+      "status": "PASS",
+      "seconds": 27
+    },
+    {
+      "name": "learning-support",
+      "label": "Guided mode, Arabic presentation and controlled read-aloud",
+      "status": "PASS",
+      "seconds": 56
+    },
+    {
+      "name": "arabic-coverage",
+      "label": "Strict Arabic coverage audit",
+      "status": "PASS",
+      "seconds": 145
+    },
+    {
+      "name": "arabic-layout",
+      "label": "Rendered Arabic layout and artwork separation",
+      "status": "PASS",
+      "seconds": 381
+    }
+  ],
+  "mission_assertions": 800,
+  "authorized_student_routes": 45,
+  "languages": [
+    "English",
+    "Arabic/RTL"
+  ],
+  "mission_viewport_widths": [
+    390,
+    1440
+  ],
+  "representative_additional_widths": [
+    320,
+    768
+  ],
+  "arabic_untranslated_occurrences": 0,
+  "arabic_coverage_views_states": 188,
+  "arabic_layout_viewport_states": 450,
+  "arabic_layout_assertions": 476,
+  "performance_assertions": 49,
+  "cold_loading": {
+    "login": {
+      "requests": 18,
+      "bytes": {
+        "js": 24550,
+        "css": 11676,
+        "images": 431251,
+        "models": 0
+      }
+    },
+    "dashboard": {
+      "requests": 44,
+      "bytes": {
+        "js": 81789,
+        "css": 35795,
+        "images": 317563,
+        "models": 0
+      }
+    }
+  },
+  "screenshots": "docs/screenshots/mission-clarity/",
+  "artifact_root": "/workspace/scratch/inneru-mission-release-20261114",
+  "limitations": [
+    "Automated local Chromium fixtures; no production learner data used.",
+    "Physical devices, manual screen-reader operation and acoustic Arabic pronunciation were not verified.",
+    "No independent scientific illustration review or exhaustive verification of every conditional feedback branch."
+  ]
+}

@@ -29,3 +29,19 @@
 .iu-mission-opening .iu-mission-pathway>.skel-mode-bar,.iu-mission-opening .iu-mission-pathway>.resp-preview-bar,.iu-mission-opening .iu-mission-pathway>.integ-preview-bar,.iu-mission-opening .iu-mission-pathway>.exc-mode-banner{padding:12px;margin-block:8px 12px}
 @media(max-width:540px){.iu-mission-opening{padding:16px}.iu-mission-opening .iu-mission-trail{gap:4px 12px}.iu-mission-trail bdi{margin-inline-start:0}.iu-mission-opening .iu-mission-jumps{grid-template-columns:repeat(2,minmax(0,1fr))}.iu-mission-opening .iu-mission-jumps button:only-child{grid-column:1/-1}.iu-mission-opening .iu-opening-heading.quest-finale-hero{grid-template-columns:minmax(0,1fr) 80px}.iu-mission-opening .quest-finale-hero>img{inline-size:80px}.iu-opening-objective{margin-block-start:12px}}
 @media print{.iu-mission-opening .iu-mission-trail,.iu-mission-opening .iu-mission-jumps{display:none}}
+/* Task actions are presentation-only; original evidence headings stay intact. */
+.iu-mission-canvas .iu-task-action{margin-block:16px 20px;padding:14px 18px;border-inline-start:4px solid var(--iu-action,#087e80);background:var(--iu-selected,#e2f1ee);border-radius:12px;color:var(--iu-text,#183044);min-inline-size:0}
+.iu-mission-canvas .iu-task-kind{display:block;font-size:.8rem;font-weight:700;line-height:1.6;color:#315f68;margin-block-end:4px}
+.iu-mission-canvas [data-mission-task]{font-size:1.15rem;font-weight:700;line-height:1.65;letter-spacing:normal;overflow-wrap:break-word}
+.iu-mission-canvas .iu-task-action .support-read-controls{margin-block:8px 0}
+.iu-mission-canvas .iu-task-action.is-check{border:0;padding:0;background:none;margin-block:0 12px}
+.iu-mission-canvas .iu-task-action.is-check [data-mission-task]{font-size:1rem;line-height:1.6}
+.iu-mission-canvas .iu-required-task>.mq-panel-head h2,.iu-mission-canvas .iu-required-task>.quest-heading h2,.iu-mission-canvas .iu-required-task>.ra-lab-header h2{font-size:1.05rem;line-height:1.5}
+.iu-mission-canvas .iu-optional{margin-block:20px;border:1px solid var(--iu-border,#d7e3e6);border-radius:14px;background:var(--iu-surface,#fff);color:var(--iu-text,#183044);min-inline-size:0}
+.iu-mission-canvas .iu-optional>summary{padding:16px;min-block-size:48px;cursor:pointer;font-weight:650;font-size:.95rem;line-height:1.7;overflow-wrap:break-word}
+.iu-mission-canvas .iu-optional>summary:focus-visible{outline:3px solid var(--iu-action,#087e80);outline-offset:3px}
+.iu-mission-canvas .iu-optional>.ea-study,.iu-mission-canvas .iu-optional>.exc-bonus,.iu-mission-canvas .iu-optional>.circ-route-quest{margin:0;border:0;box-shadow:none}
+.iu-mission-canvas .exc-mission-layout,.iu-mission-canvas .circ-columns,.iu-mission-canvas .resp-columns{align-items:start}
+.iu-mission-canvas .exc-bonus>h2{font-size:1.25rem}
+.iu-mission-canvas .exc-bonus .eyebrow{font-size:.8rem}
+@media(max-width:540px){.iu-mission-canvas .iu-task-action{padding:12px 14px;margin-block:14px 16px}.iu-mission-canvas [data-mission-task]{font-size:1.05rem}.iu-mission-canvas .iu-task-kind{font-size:.8rem}.iu-mission-canvas .iu-optional>summary{padding:14px}}

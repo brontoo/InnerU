@@ -59,6 +59,18 @@
 .ea-process .ea-process-note { color:#265f65; line-height:1.7; font-size:.82rem; margin:10px 0!important; padding:14px; border-radius:10px; background:#e0ebe033; border:1px solid #cfdbc8; }
 .ea-process>small { color:#738173; font-size:.68rem; display:block; }
 .ea-acid-base figcaption { font-size:.72rem; line-height:1.7; color:#647970; }
+.ea-anatomical-process h3,.ea-acid-base h3{font-size:1.15rem;line-height:1.5;color:#173f4e;margin:0 0 16px}
+.ea-transport-anatomy{margin:16px 0;background:#fffaf0;border:1px solid #d8dacc;border-radius:14px;overflow:hidden}
+.ea-transport-anatomy>svg{display:block;inline-size:100%;block-size:auto;direction:ltr}
+.ea-anatomy-key{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:14px;background:#fffdf7;color:#24474c;font-size:.88rem;line-height:1.65}
+.ea-anatomy-key>span{display:flex;align-items:center;gap:8px;min-inline-size:0}
+.ea-anatomy-key>span:before{content:'';inline-size:9px;block-size:9px;border-radius:50%;background:#087e80;flex-shrink:0}
+.ea-anatomy-key>span:nth-child(2):before{background:#a56a61}.ea-anatomy-key>span:nth-child(3):before{background:#85602b}.ea-anatomy-key>span:nth-child(4):before{background:#a13b55}
+.ea-acid-base>svg{direction:ltr}.ea-scope .ea-acid-base svg .ea-ion-label text{font-size:25px;letter-spacing:0;fill:#173f4e}
+.ea-acid-base figcaption{font-size:.9rem;color:#24474c}.ea-acid-base figcaption p{margin:10px 0}.ea-acid-base figcaption small{font-size:.82rem;line-height:1.7}
+.exc-bin>.ea-picture{inline-size:100%;block-size:115px;object-fit:contain;margin-block-end:12px}.exc-bin .exc-bin-symbol{display:none}
+@media(min-width:1100px){.ea-anatomy-key{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:540px){.ea-process{padding:16px}.ea-anatomy-key{padding:12px;font-size:.88rem}.exc-bin>.ea-picture{block-size:90px}.ea-acid-base>svg{min-block-size:190px}}
 .ea-process-tabs { display:flex; flex-wrap:wrap; gap:7px; margin:15px 0 0; }
 .ea-process-tabs button { min-height:44px; border:1px solid #b3c9b9; padding:9px 12px; border-radius:9px; color:#316970; background:#fffdf5; cursor:pointer; font:inherit; font-size:.75rem; }
 .ea-process-tabs button[aria-pressed=true] { color:white; background:#237b7d; border-color:#237b7d; }

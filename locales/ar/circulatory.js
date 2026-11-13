@@ -736,3 +736,14 @@ InneruLocale.register({
   "TOWARD HEART": "نحو القلب",
   "Anterior chamber walls and near-side AV valve tissue are cut away to expose connected chambers, the septum and valve supports. Fine structures are enlarged for study.": "أُزيلت الجدران الأمامية للحجرات وأجزاء نسيج الصمامات الأذينية البطينية القريبة من المشاهد لإظهار الحجرات المتصلة والحاجز ودعامات الصمامات. كُبّرت التراكيب الدقيقة لتسهيل دراستها."
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Inspect and compare the three vessel types": "افحص الأنواع الثلاثة للأوعية الدموية وقارن بينها",
+  "Predict oxygen movement between blood and tissue": "توقّع حركة الأكسجين بين الدم والنسيج",
+  "Select the chambers in blood-flow order": "اختر الحجرات بحسب ترتيب مرور الدم",
+  "Choose the next stop in the blood pathway": "اختر المحطة التالية في مسار الدم",
+  "Match each blood component to its job": "طابق كل مكوّن من مكوّنات الدم مع وظيفته",
+  "Choose a compatible donor for each recipient": "اختر متبرّعًا متوافقًا لكل متلقٍّ",
+  "Measure a pulse and examine arterial narrowing": "قِس النبض وافحص تضيّق الشريان"
+});

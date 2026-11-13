@@ -2,7 +2,7 @@
 window.InneruRouteManifest={
   "student":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=usability-1","student-dashboard.js?v=progress-home-1"],"styles":[]},
   "achievements":{"scripts":["student-achievements.js?v=progress-home-1"],"styles":[]},
-  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=mission-opening-1","mission-opening.js?v=mission-opening-1"],"styles":[{"url":"mission-navigation.css?v=mission-opening-1","order":41}]},
+  "evidence-help":{"scripts":["mastery-catalog.js?v=mastery-1","retry-feedback.js?v=mission-opening-1","mission-opening.js?v=mission-clarity-1"],"styles":[{"url":"mission-navigation.css?v=mission-clarity-1","order":41}]},
   "mastery":{"scripts":["mastery-catalog.js?v=mastery-1","mastery-model.js?v=usability-1","mastery.js?v=student-experience-2"],"styles":[{"url":"mastery.css?v=mastery-1","order":40}]},
   "owner":{"scripts":["owner.js?v=owner-1"],"styles":[{"url":"owner.css?v=owner-1","order":39}]},
   "art": {
@@ -68,7 +68,7 @@ window.InneruRouteManifest={
       "muscle-pair.js?v=arm-team-1",
       "muscle-learning.js?v=arm-team-1",
       "muscle-rotator.js?v=sidebar-1",
-      "muscle.js?v=rotation-1",
+      "muscle.js?v=mission-clarity-1",
       "muscle-force.js?v=on-demand-1"
     ],
     "styles": [
@@ -174,14 +174,14 @@ window.InneruRouteManifest={
   },
   "integ-missions": {
     "scripts": [
-      "integ-activities.js?v=guided-ar-1"
+      "integ-activities.js?v=mission-clarity-1"
     ],
     "styles": []
   },
   "excretory": {
     "scripts": [
-      "excretory-art.js?v=guided-ar-1",
-      "excretory.js?v=usability-1"
+      "excretory-art.js?v=mission-clarity-1",
+      "excretory.js?v=mission-clarity-1"
     ],
     "styles": [
       {
@@ -189,7 +189,7 @@ window.InneruRouteManifest={
         "order": 27
       },
       {
-        "url": "excretory-art.css?v=renal-studies-1",
+        "url": "excretory-art.css?v=mission-clarity-1",
         "order": 28
       }
     ]

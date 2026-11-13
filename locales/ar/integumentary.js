@@ -604,3 +604,15 @@ InneruLocale.register({
   "DEPTH SCANNER": "فاحص العمق",
   "INCOMING CHALLENGE": "تحدٍّ قادم"
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Match each skin tissue to its structure": "طابق كل نسيج جلدي مع تركيبه",
+  "Build the skin layers from outside inward": "رتّب طبقات الجلد من الخارج إلى الداخل",
+  "Choose the route for each skin structure": "اختر المسار المرتبط بكل تركيب جلدي",
+  "Predict the skin response to each environment": "توقّع استجابة الجلد لكل ظرف بيئي",
+  "Select the structure that responds to each challenge": "اختر التركيب الذي يستجيب لكل تحدٍّ",
+  "Order wound repair, then classify burn depth": "رتّب مراحل التئام الجرح، ثم صنّف عمق الحرق"
+});
+
+InneruLocale.register({"REQUIRED RENEWAL CHECK":"اختبار تجديد مطلوب"});

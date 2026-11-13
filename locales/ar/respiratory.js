@@ -718,3 +718,13 @@ InneruLocale.register({
   "Breathing texture program failed": "تعذّر تشغيل برنامج رسم التنفّس",
   "Back": "الخلف"
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Identify what moves in each breathing process": "حدّد ما يتحرّك في كل عملية مرتبطة بالتنفّس",
+  "Order the air pathway, then choose its defense": "رتّب مسار الهواء، ثم اختر وسيلة حمايته",
+  "Choose the direction of each gas at the alveolus": "اختر اتجاه حركة كل غاز عند الحويصلة الهوائية",
+  "Predict how diaphragm movement changes airflow": "توقّع كيف تؤثّر حركة الحجاب الحاجز في تدفّق الهواء",
+  "Choose both gas routes at each exchange site": "اختر مسارَي الغازين عند كل موضع لتبادل الغازات",
+  "Match each condition to its affected structure": "طابق كل حالة مع التركيب المتأثّر بها"
+});

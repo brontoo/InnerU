@@ -944,3 +944,15 @@ InneruLocale.register({
   "DISCOVERY SAVED": "اكتشاف محفوظ",
   "Back": "الخلف"
 });
+
+/* Required mission task clarity and anatomical process labels. */
+InneruLocale.register({
+  "Match each region to its skeletal division": "طابق كل منطقة مع القسم الهيكلي الذي تنتمي إليه",
+  "Match each bone shape to its example": "طابق كل شكل عظمي مع مثاله",
+  "Find seven structures, then choose the spongy-bone model": "حدّد سبعة تراكيب، ثم اختر نموذج العظم الإسفنجي",
+  "Match each joint to its movement": "طابق كل مفصل مع حركته",
+  "Predict how remodeling changes bone mass": "توقّع كيف تغيّر إعادة التشكيل كتلة العظم",
+  "Order the stages of fracture repair": "رتّب مراحل التئام الكسر",
+  "Match each case to its anatomical evidence": "طابق كل حالة مع أدلتها التشريحية",
+  "Use the ankle evidence to explain the injury": "استعن بأدلة الكاحل لتفسير الإصابة"
+});
