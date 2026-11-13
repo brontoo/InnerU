@@ -166,5 +166,17 @@ InneruLocale.register({
   "Ready when you are, explorer!": "نحن مستعدّون عندما تكون مستعدًا أيّها المستكشف!",
   "A fresh journey is waiting for you.": "رحلة جديدة تنتظرك.",
   "XP saved here · Your next discovery awaits": "نقاط الخبرة محفوظة هنا · اكتشافك التالي ينتظرك",
-  "Send again in {time}": "أعِد الإرسال بعد {time}"
+  "Send again in {time}": "أعِد الإرسال بعد {time}",
+  "The email or password is incorrect.": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "Confirm your email before signing in. Check your inbox and spam folder for the confirmation link.": "أكّد بريدك الإلكتروني قبل تسجيل الدخول. ابحث عن رابط التأكيد في البريد الوارد والبريد غير المرغوب فيه.",
+  "Account emails are temporarily limited. Check your inbox and spam folder for an earlier account email. If none arrived, ask your teacher to check account email delivery.": "إرسال رسائل الحساب محدود مؤقتًا. ابحث عن رسالة سابقة في البريد الوارد والبريد غير المرغوب فيه. إذا لم تصل، اطلب من معلّمك مراجعة إعدادات إرسال رسائل الحساب.",
+  "Account emails cannot be sent to this address yet. Ask your teacher to check the portal’s email delivery settings.": "يتعذّر إرسال رسائل الحساب إلى هذا العنوان حاليًا. اطلب من معلّمك مراجعة إعدادات إرسال البريد في البوابة.",
+  "The account email could not be sent. Ask your teacher to check the portal’s email delivery settings before trying again.": "تعذّر إرسال رسالة الحساب. اطلب من معلّمك مراجعة إعدادات إرسال البريد في البوابة قبل المحاولة مجددًا.",
+  "New accounts are currently closed. Use Sign in if you already have an account, or ask your teacher for help.": "إنشاء حسابات جديدة متوقف حاليًا. اختر تسجيل الدخول إذا كان لديك حساب، أو اطلب المساعدة من معلّمك.",
+  "If you already created this account, use Sign in. If it still needs confirmation, check your inbox for the confirmation email.": "إذا أنشأت هذا الحساب سابقًا، فاختر تسجيل الدخول. وإذا كان يحتاج إلى تأكيد، فابحث عن رسالة التأكيد في بريدك الوارد.",
+  "Choose a stronger password with at least eight characters.": "اختر كلمة مرور أقوى تتكوّن من ثمانية أحرف على الأقل.",
+  "Sign-in attempts are temporarily limited. Wait before trying again.": "محاولات تسجيل الدخول محدودة مؤقتًا. انتظر قبل المحاولة مجددًا.",
+  "New account requests are temporarily limited. Use Sign in for an existing account, or wait before trying again.": "طلبات إنشاء الحسابات محدودة مؤقتًا. اختر تسجيل الدخول لحساب موجود، أو انتظر قبل المحاولة مجددًا.",
+  "Account requests are temporarily limited. Wait before trying again.": "طلبات الحساب محدودة مؤقتًا. انتظر قبل المحاولة مجددًا.",
+  "This account request could not be completed. Check your details and try again.": "تعذّر إكمال طلب الحساب. تحقّق من بياناتك وحاول مجددًا."
 });

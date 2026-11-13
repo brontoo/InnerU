@@ -86,6 +86,13 @@ try:
   check(response.status==503 and response.json()['code']=='email_delivery_failed' and 'smtp-fixture-secret' not in response.text(),'SMTP failures give actionable guidance without exposing provider internals')
   deadline=email.utils.format_datetime(datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(seconds=20),usegmt=True);limit(v,'signup',retryAfter=deadline);response=new_signup(v,'retry-date-entry@example.com')
   check(response.status==429 and 1<=response.json()['retryAfter']<=20 and response.headers['retry-after']==str(response.json()['retryAfter']),'HTTP-date Retry-After headers become a bounded retry interval')
+  # Hosted GoTrue may put an HTTP number in code and the actual reason in error_code.
+  before_users=v.request.get(ORIGIN+'/__test/status').json()['users']
+  for action,status,reason,text in [('signup',422,'user_already_exists','use Sign in'),('login',400,'invalid_credentials','email or password is incorrect'),('login',400,'email_not_confirmed','Confirm your email'),('recover',429,'over_email_send_rate_limit','Account emails are temporarily limited')]:
+   limit(v,action,status=status,code=status,errorCode=reason,message='provider-only-private-detail',retryAfter=90 if status==429 else None)
+   response=new_signup(v,existing) if action=='signup' else api(v,action,{'email':existing,'password':PASS})
+   check(response.json()['code']==reason and text in response.json()['error'] and 'provider-only-private-detail' not in response.text(),'numeric provider status preserves the specific '+reason+' recovery message without leaking raw details')
+  check(v.request.get(ORIGIN+'/__test/status').json()['users']==before_users,'duplicate-account and recovery errors preserve all existing identities, metadata and classes')
   # A resend email quota also keeps verification intact and the sign-in escape open.
   w=page();w.goto(ORIGIN+'/login.html?nosw=1&role=student');w.wait_for_selector('#entry-email');limit(w,'login',status=400,code='email_not_confirmed');signin(w,'confirm@example.com');w.wait_for_selector('[data-confirmation-help]');w.locator('[data-confirmation-help]').click();limit(w,'resend',code='over_email_send_rate_limit',retryAfter=120);w.locator('[data-auth-resend]').click();w.wait_for_selector('#entry-error:not(:empty)')
   check(w.locator('[data-auth-resend]').is_disabled() and w.locator('[data-auth-mode=login]').is_enabled(),'a resend quota disables further email attempts while keeping sign-in usable')
@@ -138,6 +145,9 @@ try:
   check(arabic.locator('#connection-results [data-state=error]').evaluate('e=>/[\u0600-\u06ff]/.test(e.textContent)'),'a blocked sign-in POST is explained in Arabic on the checker')
   arabic.unroute('**/api/auth?action=login');arabic.goto(ORIGIN+'/login?nosw=1&role=student');arabic.wait_for_selector('#entry-email');arabic.wait_for_function('InneruLocale.has("Welcome back, explorer.")')
   check(not arabic.evaluate('InneruLocale.coverage(document.querySelector(".gate-entry-panel"))'),'extensionless login callbacks load the Arabic login catalogue')
+  limit(arabic,'login',status=400,code=400,errorCode='invalid_credentials');signin(arabic,existing);arabic.wait_for_selector('#entry-error:not(:empty)');arabic.wait_for_function('!InneruLocale.coverage(document.querySelector(".gate-entry-panel")).length')
+  check(arabic.locator('#entry-error').evaluate('e=>e.getAttribute("role")==="alert" && /[\u0600-\u06ff]/.test(e.textContent)'),'numeric provider sign-in errors produce an authored Arabic accessible announcement')
+  signin(arabic,existing);dashboard(arabic);check(api(arabic,'session').json()['user']['id']==first['id'],'an explicit retry after a classified error restores the existing student without another signup')
   check(not errors,'no uncaught browser errors through quota, confirmation, sign-in and recovery flows: '+str(errors))
   browser.close()
  print(checks,'auth-recovery checks passed.')

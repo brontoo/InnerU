@@ -1,10 +1,10 @@
 /* Essential shell only. Lessons, illustrations and models enter the runtime
    cache only after use; never cache account/session or learning API responses. */
-const VERSION='inneru-v72-account-connection';
+const VERSION='inneru-v73-provider-errors';
 const RUNTIME='inneru-visited-v1';
 const SHELL=[
   "./preferences.js?v=guided-ar-1",
-  "./locale.js?v=entry-connection-1",
+  "./locale.js?v=entry-errors-1",
   "./learning-support.js?v=muscle-sidebar-1",
   "./learning-support.css?v=usability-1",
   "./index.html",

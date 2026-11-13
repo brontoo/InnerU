@@ -149,3 +149,10 @@ validation were reachable from this environment. Device-specific browser, proxy,
 endpoint-security or network failures cannot be diagnosed without the affected
 browser's checker results. Do not collect passwords or full personal API responses
 for troubleshooting, and do not weaken authentication or school network controls.
+
+Provider error parsing accepts both symbolic `code` responses and the hosted GoTrue
+shape `{code: 422, error_code: "user_already_exists"}`. The symbolic reason takes
+precedence over numeric HTTP codes, so duplicate accounts, invalid credentials,
+confirmation requirements and email quotas keep their specific recovery actions.
+Never create a replacement identity or reset an existing password without its
+normal authenticated/recovery flow.

@@ -25,7 +25,7 @@ function grant(u){const a='access-'+crypto.randomUUID(),r='refresh-'+crypto.rand
 const provider=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://local'),data=req.method==='GET'?{}:await input(req),u=access.get((req.headers.authorization||'').replace('Bearer ',''));
  const authAction=url.pathname==='/auth/v1/token'?(url.searchParams.get('grant_type')==='refresh_token'?'refresh':'login'):url.pathname==='/auth/v1/user'?(req.method==='PUT'?'avatar':'session'):url.pathname.startsWith('/auth/v1/')?url.pathname.slice(9):null;
- if(authAction){authCounts[authAction]=(authCounts[authAction]||0)+1;const limit=limits.get(authAction);if(limit?.remaining>0){limit.remaining--;if(limit.retryAfter!==undefined)res.setHeader('Retry-After',String(limit.retryAfter));return send(res,limit.status||429,{code:limit.code||'over_request_rate_limit',message:limit.message||'Fixture limit'});}}
+ if(authAction){authCounts[authAction]=(authCounts[authAction]||0)+1;const limit=limits.get(authAction);if(limit?.remaining>0){limit.remaining--;if(limit.retryAfter!==undefined)res.setHeader('Retry-After',String(limit.retryAfter));return send(res,limit.status||429,{code:limit.code||'over_request_rate_limit',...(limit.errorCode?{error_code:limit.errorCode}:{}),message:limit.message||'Fixture limit'});}}
  if(url.pathname==='/auth/v1/settings')return send(res,200,{external:{email:true}});
  if(url.pathname==='/auth/v1/signup'){
   if(data.email==='limited@example.com')return send(res,429,{code:'over_request_rate_limit'});
