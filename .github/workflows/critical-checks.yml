@@ -18,12 +18,17 @@ permissions:
 jobs:
   critical-checks:
     name: ${{ github.event_name == 'workflow_dispatch' && inputs.loading_only && 'Loading diagnostics' || 'Critical checks' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+      - name: Prepare failure artifacts
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/inneru-release-artifacts/setup"
+          echo "INNERU_TEST_ARTIFACT_DIR=$RUNNER_TEMP/inneru-release-artifacts" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -32,10 +37,28 @@ jobs:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: _dev-tools/requirements-test.txt
-      - name: Install test browser and dependencies
+      - name: Install test Python dependencies
+        id: python_dependencies
+        shell: bash
         run: |
-          python -m pip install -r _dev-tools/requirements-test.txt
-          python -m playwright install --with-deps chromium
+          python -m pip install -r _dev-tools/requirements-test.txt 2>&1 | tee "$INNERU_TEST_ARTIFACT_DIR/setup/python-packages.log"
+      - name: Install Playwright Chromium and Linux dependencies
+        id: browser_setup
+        shell: bash
+        run: |
+          python -m playwright install --with-deps chromium 2>&1 | tee "$INNERU_TEST_ARTIFACT_DIR/setup/chromium-install.log"
+      - name: Report setup failure details
+        if: failure() && (steps.python_dependencies.outcome == 'failure' || steps.browser_setup.outcome == 'failure')
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          for log in (Path(os.environ['INNERU_TEST_ARTIFACT_DIR']) / 'setup').glob('*.log'):
+              text = '\n'.join(log.read_text(errors='replace').splitlines()[-35:])
+              message = (log.name + '\n' + text).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Release setup failed::' + message)
+          PY
       - name: Check tracked JavaScript syntax
         run: git ls-files -z '*.js' | xargs -0 -n 1 node --check
       - name: Run critical suite sequentially
@@ -65,7 +88,7 @@ jobs:
           fi
       - name: Upload failure logs and screenshots
         if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: inneru-critical-check-failures
           path: ${{ runner.temp }}/inneru-release-artifacts

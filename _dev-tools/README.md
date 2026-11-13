@@ -39,6 +39,12 @@ teacher/import interface. Existing progress-code formats are checked as data
 compatibility without restoring one account over another. The other historical
 harnesses below are optional; they are not part of this release gate.
 
+GitHub Actions uses **Ubuntu 24.04** with the pinned Playwright release, rather
+than the moving `ubuntu-latest` image. Python dependency and Chromium/Linux setup
+are separate steps. Their logs are created before installation, uploaded only on
+failure, and their final error lines appear as job annotations. The workflow keeps
+the same required `Critical checks` status and a bounded 45-minute job timeout.
+
 ## Prerequisites and commands
 
 Use Node.js 22+, Python 3.12+, and a running Docker engine with Linux-container
